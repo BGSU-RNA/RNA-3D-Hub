@@ -12,7 +12,7 @@ class Release extends CI_Controller {
         $data['title'] = 'All Motif Atlas releases';
         $data['baseurl'] = base_url();
 
-        $this->load->view('headerview', $data);
+        $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('releaseview', $data);
         $this->load->view('footer');
@@ -30,7 +30,7 @@ class Release extends CI_Controller {
         $data['title'] = 'Release ' . $id;
 
         $data['baseurl'] = base_url();
-        $this->load->view('headerview', $data);
+        $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('releaseview', $data);
         $this->load->view('footer');
@@ -57,7 +57,7 @@ class Release extends CI_Controller {
 	        $data['ul_loops_only_in_2']    = ul($data['loops']['only_in_2']);
 
             $data['baseurl'] = base_url();
-            $this->load->view('headerview', $data);
+            $this->load->view('header_view', $data);
             $this->load->view('menu_view', $data);
             $this->load->view('release_compare_results_view', $data);
             $this->load->view('footer');
@@ -71,7 +71,7 @@ class Release extends CI_Controller {
             $data['title'] = 'Compare releases';
 
             $data['baseurl'] = base_url();
-            $this->load->view('headerview', $data);
+            $this->load->view('header_view', $data);
             $this->load->view('menu_view', $data);
             $this->load->view('release_compare_view', $data);
             $this->load->view('footer');

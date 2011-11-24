@@ -13,7 +13,7 @@ class Nrlist extends CI_Controller {
         $data['title']   = 'All non-redundant list releases';
         $data['baseurl'] = base_url();
 
-        $this->load->view('headerview', $data);
+        $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_all_releases_view', $data);
         $this->load->view('footer');
@@ -41,7 +41,7 @@ class Nrlist extends CI_Controller {
         }
 
         $data['baseurl'] = base_url();
-        $this->load->view('headerview', $data);
+        $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_release_view', $data);
         $this->load->view('footer');
@@ -59,7 +59,8 @@ class Nrlist extends CI_Controller {
         $this->table->set_template($tmpl);
         $data['releases'] = $this->table->generate($releases);
 
-        list($type, $resolution, $handle, $version) = split('_', $id);
+        list($type, $resolution, $temp) = split('_', $id);
+        list($handle, $version) = split('.', $temp);
 	    $data['resolution'] = $resolution;
 	    $data['version']    = $version;
 
@@ -81,7 +82,7 @@ class Nrlist extends CI_Controller {
         $data['children'] = $this->table->generate($history);
 
         $data['baseurl'] = base_url();
-        $this->load->view('headerview', $data);
+        $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_class_view', $data);
         $this->load->view('footer');
@@ -99,7 +100,8 @@ class Nrlist extends CI_Controller {
         $data['title'] = 'Compare releases';
 
         $data['baseurl'] = base_url();
-        $this->load->view('headerview', $data);
+        $data['action']  = site_url('nrlist/compare');
+        $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_release_compare_view', $data);
         $this->load->view('footer');
@@ -148,7 +150,7 @@ class Nrlist extends CI_Controller {
         $data['rel2']  = $rel2;
 
         $data['baseurl'] = base_url();
-        $this->load->view('headerview', $data);
+        $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_release_compare_results_view', $data);
         $this->load->view('footer');
@@ -172,7 +174,7 @@ class Nrlist extends CI_Controller {
 
         $data['title'] = 'Release History';
         $data['baseurl'] = base_url();
-        $this->load->view('headerview', $data);
+        $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_release_history_view', $data);
         $this->load->view('footer');

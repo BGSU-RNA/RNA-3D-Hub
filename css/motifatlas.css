@@ -181,6 +181,12 @@ body {
     text-align:center;
 }
 
+.nodec a:hover {
+    text-decoration:none;
+}
+body.home {
+    padding-top: 60px;
+}
 /* RCSB stylesheet */
 .rcsb_clickable {cursor: pointer;}
 .rcsb_highlighted {border-bottom: 1px dotted #6493c2; display: inline-block;}

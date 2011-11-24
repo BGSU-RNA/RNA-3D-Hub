@@ -49,7 +49,7 @@ class Motif extends CI_Controller {
         $data['history'] = $this->table->generate($history);
         $data['baseurl'] = base_url();
 
-        $this->load->view('headerview', $data);
+        $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('motifview', $data);
         $this->load->view('footer');

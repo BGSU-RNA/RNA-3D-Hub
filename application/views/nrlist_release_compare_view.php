@@ -8,7 +8,7 @@
         <div class="row">
           <div class="span8">
 
-            <form method="post" action="http://rna.bgsu.edu/MotifAtlas/index.php/nrlist/compare"  />
+            <form method="post" action="<?=$action?>"  />
             <div>
                 <?=$table?>
             </div>

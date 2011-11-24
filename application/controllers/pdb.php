@@ -15,7 +15,7 @@ class Pdb extends CI_Controller {
         $data['pdb_count'] = count($pdbs);
 
         $data['baseurl'] = base_url();
-        $this->load->view('headerview', $data);
+        $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('pdb_view', $data);
         $this->load->view('footer');
@@ -51,7 +51,7 @@ class Pdb extends CI_Controller {
               $this->generate_table_block($hls['missing'], array('Loop id', 'Sequence'));
 
         $data['baseurl'] = base_url();
-        $this->load->view('headerview', $data);
+        $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('pdb_loops_view', $data);
         $this->load->view('footer');

@@ -25,6 +25,7 @@
 
             <div class="tab-content" id="my-tab-content">
                 <div class="tab-pane" id="1_5A">
+                    5 updated
                     <div >
                         <?php echo $class['1.5'];?>
                     </div>

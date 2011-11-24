@@ -1,9 +1,9 @@
     <div class="topbar" data-dropdown="dropdown">
       <div class="fill">
         <div class="container">
-          <a class="brand" href="<?php echo $baseurl;?>">RNA 3D Motif Atlas</a>
+          <a class="brand" href="<?php echo $baseurl;?>">RNA 3D Hub</a>
           <ul class="nav">
-            <li><a href="<?php echo $baseurl;?>release/view/0.5">RNA Motifs</a></li>
+            <li><a href="<?php echo $baseurl;?>release/view/0.5">Motif Atlas</a></li>
             <li><a href="<?php echo $baseurl;?>pdb">RNA Structures</a></li>
 
             <li class="dropdown">
