@@ -1,7 +1,7 @@
     <div class="topbar" data-dropdown="dropdown">
       <div class="fill">
         <div class="container">
-          <a class="brand" href="http://rna.bgsu.edu/MotifAtlas">RNA 3D Motif Atlas</a>
+          <a class="brand" href="<?php echo $baseurl;?>">RNA 3D Motif Atlas</a>
           <ul class="nav">
             <li><a href="http://rna.bgsu.edu/MotifAtlas/release/view/0.5">RNA Motifs</a></li>
             <li><a href="http://rna.bgsu.edu/MotifAtlas/pdb">RNA Structures</a></li>
