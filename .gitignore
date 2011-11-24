@@ -9,7 +9,6 @@ Thumbs.db
 application/config/config.php
 application/config/database.php
 application/cache/*
-index.php
 
 */config/development
 */logs/log-*.php
