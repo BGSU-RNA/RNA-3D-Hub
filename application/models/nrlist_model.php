@@ -54,14 +54,28 @@ class Nrlist_model extends CI_Model {
             $data['uls'][$labels[$row->resolution]]['num_motifs1'] = $counts1[$row->resolution];
             $data['uls'][$labels[$row->resolution]]['num_motifs2'] = $counts2[$row->resolution];
 
-
-            $data['uls'][$labels[$row->resolution]]['ul_intersection'] = ul(array_map("add_url", split(', ',$row->same_groups)),$attributes);
-            $data['uls'][$labels[$row->resolution]]['ul_updated']      = ul(array_map("add_url", split(', ',$row->updated_groups)),$attributes);
-            $data['uls'][$labels[$row->resolution]]['ul_only_in_1']    = ul(array_map("add_url", split(', ',$row->added_groups)),$attributes);
-            $data['uls'][$labels[$row->resolution]]['ul_only_in_2']    = ul(array_map("add_url", split(', ',$row->removed_groups)),$attributes);
-
+            if ($row->num_same_groups > 0) {
+                $data['uls'][$labels[$row->resolution]]['ul_intersection'] = ul(array_map("add_url", split(', ',$row->same_groups)),$attributes);
+            } else {
+                $data['uls'][$labels[$row->resolution]]['ul_intersection'] = '';
+            }
+            if ($row->num_updated_groups > 0) {
+                $data['uls'][$labels[$row->resolution]]['ul_updated'] = ul(array_map("add_url", split(', ',$row->updated_groups)),$attributes);
+            } else {
+                $data['uls'][$labels[$row->resolution]]['ul_updated'] = '';
+            }
+            if ($row->num_added_groups > 0) {
+                $data['uls'][$labels[$row->resolution]]['ul_only_in_1'] = ul(array_map("add_url", split(', ',$row->added_groups)),$attributes);
+            } else {
+                $data['uls'][$labels[$row->resolution]]['ul_only_in_1'] = '';
+            }
+            if ($row->num_removed_groups > 0) {
+                $data['uls'][$labels[$row->resolution]]['ul_only_in_2'] = ul(array_map("add_url", split(', ',$row->removed_groups)),$attributes);
+            } else {
+                $data['uls'][$labels[$row->resolution]]['ul_only_in_2'] = '';
+            }
             $data['uls'][$labels[$row->resolution]]['num_intersection'] = $row->num_same_groups;
-            $data['uls'][$labels[$row->resolution]]['num_updated']      = $row->num_same_groups;
+            $data['uls'][$labels[$row->resolution]]['num_updated']      = $row->num_updated_groups;
             $data['uls'][$labels[$row->resolution]]['num_only_in_1']    = $row->num_added_groups;
             $data['uls'][$labels[$row->resolution]]['num_only_in_2']    = $row->num_removed_groups;
         }
@@ -173,20 +187,17 @@ class Nrlist_model extends CI_Model {
 
     function get_change_counts_by_release()
     {
-//         $releases = $this->get_release_precedence();
-
         $this->db->select('nr_release_id1')
                  ->select_sum('num_added_groups','nag')
                  ->select_sum('num_removed_groups','nrg')
                  ->select_sum('num_updated_groups','nug')
                  ->from('nr_release_diff')
+                 ->where('direct_parent',1)
                  ->group_by('nr_release_id1');
         $query = $this->db->get();
         $changes = array();
         foreach ($query->result() as $row) {
-//             if ($row->nr_release_id2 == $releases[$row->nr_release_id1]) {
-                $changes[$row->nr_release_id1] = $row->nag + $row->nug + $row->nrg;
-//             }
+            $changes[$row->nr_release_id1] = $row->nag + $row->nug + $row->nrg;
         }
         return $changes;
     }
@@ -294,6 +305,7 @@ class Nrlist_model extends CI_Model {
         $this->db->select()
                  ->from('nr_releases')
                  ->join('nr_release_diff','nr_releases.id=nr_release_diff.nr_release_id1')
+                 ->where('direct_parent',1)
                  ->order_by('date','desc');
         $query = $this->db->get();
 

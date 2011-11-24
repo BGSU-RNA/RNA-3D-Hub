@@ -7,7 +7,7 @@
         </div>
 
 
-          <div class="span16 block">
+          <div class="span16">
 
             <ul class="tabs" data-tabs="tabs">
                 <li><a href="#1_5A">1.5A</a></li>
