@@ -1,0 +1,18 @@
+# system files
+.DS_Store*
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# codeigniter deployment-specific files
+.htaccess
+application/config/config.php
+application/config/database.php
+application/cache/*
+index.php
+
+*/config/development
+*/logs/log-*.php
+*/logs/!index.html
+*/cache/*
+*/cache/!index.html

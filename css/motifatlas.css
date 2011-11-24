@@ -1,0 +1,210 @@
+/* Override some defaults */
+body, html {
+    background-color: #eee;
+}
+body {
+    padding-top: 40px; /* 40px to make the container go all the way to the bottom of the topbar */
+}
+.container > footer p {
+    text-align: center; /* center align it with the container */
+}
+.container {
+    width: 940px;
+}
+/* The white background content wrapper */
+.content {
+    background-color: #fff;
+    padding: 20px;
+    min-height: 800px;
+    margin: 0 -20px; /* negative indent the amount of the padding to maintain the grid system */
+    -webkit-border-radius: 0 0 6px 6px;
+       -moz-border-radius: 0 0 6px 6px;
+            border-radius: 0 0 6px 6px;
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+       -moz-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+            box-shadow: 0 1px 2px rgba(0,0,0,.15);
+}
+/* Page header tweaks */
+.page-header {
+    background-color: #f5f5f5;
+    padding: 20px 20px 10px;
+    margin: -20px -20px 20px;
+}
+/* Pairwise interactions horizontal scrolling div */
+.motifview .interactions {
+    overflow:auto;
+    height: 300px;
+}
+.motifview .interactions td {
+	white-space: nowrap;
+}
+.motifview .interactions table {
+	margin-bottom:2px;
+}
+
+.motifview .jmolheight {
+    height:340px;
+}
+.motifview #checkboxes {
+    overflow:auto;
+}
+.motifview ul.inputs-list {
+    width:100px;
+    margin-left:auto;
+    margin-right:auto;
+}
+.motifview div.mdmatrix {
+    border: 1px solid #ddd;
+}
+/* Mutual discrepancy matrix */
+.motifview .mdmatrix table{
+    height:340px;
+    width:340px;
+}
+/* overrides bootstrap */
+.motifview .mdmatrix td, .motifview .mdmatrix tr {
+    padding:0;
+}
+.block {
+  border: 1px solid #ddd;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+}
+.motifview .mdmatrix td:hover {background-color:grey;}
+/* Color classes */
+.motifview .md00 {background-color:rgb(100%,0%,0%);}
+.motifview .md01 {background-color:rgb(100%,25%,0%);}
+.motifview .md02 {background-color:rgb(100%,50%,0%);}
+.motifview .md03 {background-color:rgb(100%,75%,0%);}
+.motifview .md04 {background-color:rgb(100%,100%,0%);}
+.motifview .md05 {background-color:rgb(75%,100%,25%);}
+.motifview .md06 {background-color:rgb(50%,100%,50%);}
+.motifview .md07 {background-color:rgb(25%,100%,75%);}
+.motifview .md08 {background-color:rgb(0%,100%,100%);}
+.motifview .md09 {background-color:rgb(0%,50%,100%);}
+.motifview .md10 {background-color:rgb(0%,0%,100%);}
+/* history widget */
+.motifview .history table {
+    width:940px;
+}
+.motifview .center {
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.release_compare_view input[type=radio], .nrlist_release_compare_view input[type=radio] {
+    margin-right:10px;
+}
+.release_compare_results_view .comparison, .nrlist_release_compare_results_view .comparison {
+    overflow:auto;
+    max-height:300px;
+}
+.nrlist_release_compare_results_view .info {
+    margin-bottom:10px;
+    padding:10px;
+}
+.nrlist_release_compare_view .compare {
+    overflow:auto;
+    max-height:400px;
+    margin-bottom:10px;
+}
+.nrlist_release_view .parents table {
+    table-layout: fixed;
+}
+
+.nrlist_class_view .parents table {
+    table-layout: fixed;
+}
+.nrlist_class_view .parents th:nth-of-type(1) {
+    width:120px;
+}
+.nrlist_class_view .parents th:nth-of-type(2) {
+    width:120px;
+}
+.nrlist_class_view .parents th:nth-of-type(3) {
+    width:80px;
+}
+.nrlist_class_view .parents th:nth-of-type(4) {
+    width:300px;
+}
+.nrlist_class_view .parents th:nth-of-type(5) {
+    width:150px;
+}
+.nrlist_class_view .parents th:nth-of-type(6) {
+    width:150px;
+}
+
+.nrlist_release_view table {
+    table-layout: fixed;
+}
+.nrlist_release_view th:nth-of-type(1) {
+    width:30px;
+}
+.nrlist_release_view th:nth-of-type(3) {
+    width:70px;
+}
+.nrlist_release_view th:nth-of-type(4) {
+    width:60px;
+}
+.nrlist_release_view th:nth-of-type(6) {
+    width:90px;
+}
+.nrlist_release_view th:nth-of-type(8) {
+    width:250px;
+}
+.overflow_400 {
+    overflow:auto;
+    max-height:400px;
+}
+.maxheight400 {
+    overflow:auto;
+    max-height:400px;
+}
+.horizontal_overflow {
+    overflow-x: none;
+    overflow-y: auto;
+}
+.pdb_loops_view div.valid, .pdb_loops_view div.modified, .pdb_loops_view div.missing {
+    max-height:200px;
+    overflow:auto;
+    margin-bottom:15px;
+}
+.pdb_loops_view input[type=checkbox] {
+    margin-right:5px;
+}
+.pdb_loops_view .content {
+    min-height: 650px;
+}
+
+.nrlist_release_history_view td {
+    text-align:center;
+}
+
+/* RCSB stylesheet */
+.rcsb_clickable {cursor: pointer;}
+.rcsb_highlighted {border-bottom: 1px dotted #6493c2; display: inline-block;}
+.rcsb_hidden {display: none;}
+.rcsb_menu_text {background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAHxJREFUeNpiXLVqVQ8DA4M+EP9hQAUsQHwSRLwCYhcG7GANE5CYBsTHsEjuAuJ5TKGhoV+AjBYg/o8kCbKuCSj3G2QCA5CxHUitQFIwDyh2FMRgQhLsAuKvQPwGiLthgoz//yNMXr169SQg9QmouwbZK8hgKxB/RxYACDAA08AhcOf+QrUAAAAASUVORK5CYII%3D) right no-repeat; *background: url(http://darvo.sdsc.edu:10601/pdb/widgets/images/downArrow.png) right no-repeat; _background: none; padding-right: 10px; _padding-right: 0; position: relative; z-index: 1;}
+.rcsb_menu {background: #eaf2f8; border: 1px solid #dfdfdf; display: block;  font-family: Verdana, Geneva, sans-serif; font-size: 12px; font-style: normal; font-weight: normal; letter-spacing: 0pt; line-height: 1.5; padding: 2px; position: absolute; text-align: left; width: 175px; z-index: 900;}
+.rcsb_menu a {color: #336699; text-decoration:none;}
+.rcsb_menu a:visited {color: #6493c2;}
+.rcsb_menu a:hover {color: #ff6600; text-decoration: underline;}
+.rcsb_menu_left {left:0;}
+.rcsb_menu_right {right:0;}
+.rcsb_menu_top {top:100%;}
+.rcsb_menu_bottom {bottom:100%;}
+.rcsb_search_text {background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAMAAAC67D+PAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAK5QTFRFqKio+vr69fX1/Pz89/f3vL7E9PT21NTUxMfSx8fH9PT0vLy8zMzPzc3N0dPav7+/w8PD+fn5urzEu7u77u7usbGx7e3t6Orx7+/xyMjI19jdq6urubm5w8bRzs7PxcXF1dXW8fHxysrKt7e309PTuLi44OLs6urq2trawMDArKys9vb2tri/wsTM39/f4eHh09TW7Ozspqamvb296u75np6e5Oj38fP79/j9////nf3UYgAAADp0Uk5T////////////////////////////////////////////////////////////////////////////ADfA/woAAABnSURBVHjaJMEHEoIwAATACxGwImJFKYKKUqwx4P3/Y2TGXZC0wsPHXxHkeJ3snCM2YDab/oxXCT7UvjO2AJ9z72sUFVif7da456Bc6iYeBicLVHpyG6WuIC5aycX7OiChI8G/XoABABxvDrlc/BH5AAAAAElFTkSuQmCC) right no-repeat; *background: url(http://darvo.sdsc.edu:10601/pdb/widgets/images/search.png) right no-repeat; _background: none; padding-right: 14px; _padding-right: 0;}
+.rcsb_ext_text {background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAOCAYAAAAbvf3sAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAHlJREFUeNqkUoEJwCAMq7pfBJ+0O1K/kc6KjjGtThYoCEnaWFVEBDFGDwAIc6Bz7oQQgs9FK7CGtYoP2Xm3ydO61o1nTkukBA2b6AyjSKLhKTbGlHrjGHVhobX2W6SZeGhIKS3vgC07r1Raa9Wg2v0axfDrHVa4BBgAS6NZ7QexVxsAAAAASUVORK5CYII%3D) right no-repeat; *background: url(http://darvo.sdsc.edu:10601/pdb/widgets/images/extLink.png) right no-repeat; _background: none; padding-right: 15px; _padding-right: 0;}
+.rcsb_tooltip {background: #ffffc7; border:1px solid #dfdfdf; font-family: Verdana, Geneva, sans-serif; font-size: 12px; font-style: normal; font-weight: normal; letter-spacing: 0pt; line-height: 1.5; max-width:260px; padding:2px; position:static; text-align:center;}
+.rcsb_tooltip .rcsb_h2 {margin: 0px; padding: 0px;}
+.rcsb_tooltip_wrapper {display: block; position: absolute; width: auto; z-index:900;}
+#rcsb_shadowbox_shadow_bg {background: #333; filter: alpha(opacity=90); height: 100%; left: 0; opacity: 0.9; position: fixed; top: 0; width: 100%; z-index: 1001;}
+#rcsb_shadowbox_imgBox {background: #fff; filter: alpha(opacity=100); height: 565px; left: 50%; margin-left: -250px; margin-top: -280px; opacity: 1; position: fixed; top: 50%; width: 500px; z-index: 1002;}
+#rcsb_shadowbox_closeBox {bottom: 0; color: #333; font-family: Verdana, Geneva, sans-serif; padding:10px; position: absolute; right: 0;}
+#rcsb_shadowbox_idBox {bottom: 0; color: #333; font-family: Verdana, Geneva, sans-serif; font-size: 10px; left: 0; margin-right:100px; padding:10px; position: absolute;}
+
+.rcsb_inlineBox {min-height: 150px; display: -moz-inline-stack; display: inline-block; vertical-align: top; margin: 5px; zoom: 1; *display: inline; _height: 150px;}
+
+.rcsb_altBg {background: #eaf2f8;}
+/* RCSB stylesheet */

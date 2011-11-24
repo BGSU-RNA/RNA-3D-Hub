@@ -1,0 +1,180 @@
+<?php
+class Nrlist extends CI_Controller {
+
+	public function index()
+	{
+	    $this->load->model('Nrlist_model', '', TRUE);
+        $result = $this->Nrlist_model->get_all_releases();
+
+        $this->table->set_heading('Release id', 'All changes', 'Date', 'PDB files');
+        $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table'>" );
+        $this->table->set_template($tmpl);
+        $data['table'] = $this->table->generate($result);
+        $data['title'] = 'All non-redundant list releases';
+
+        $this->load->view('headerview', $data);
+        $this->load->view('menuview');
+        $this->load->view('nrlist_all_releases_view', $data);
+        $this->load->view('footer');
+	}
+
+	public function release($id)
+	{
+//         $this->output->cache(1000000);
+	    $this->load->model('Nrlist_model', '', TRUE);
+        if ($id == 'current') {
+            $id = $this->Nrlist_model->get_latest_release();
+        }
+
+	    $data['title']       = "NR list $id";
+        $data['release_id']  = $id;
+        $data['description'] = $this->Nrlist_model->get_release_description($id);
+
+        $resolution = array('1.5','2.0','2.5','3.0','3.5','4.0','20.0','all');
+        foreach ($resolution as $res) {
+            $table_id = str_replace('.','_',$res) . 'Atable';
+            $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table' id='{$table_id}'>" );
+            $this->table->set_template($tmpl);
+            $this->table->set_heading('#', 'Equivalence class', 'Status', 'PDB', 'Title', 'Resolution', 'Source', 'Represents');
+            $data['class'][$res]  = $this->table->generate( $this->Nrlist_model->get_release($id,$res) );
+        }
+
+        $this->load->view('headerview', $data);
+        $this->load->view('menuview');
+        $this->load->view('nrlist_release_view', $data);
+        $this->load->view('footer');
+//         $this->output->enable_profiler(TRUE);
+	}
+
+	public function view($id)
+	{
+//         $this->output->cache(1000000);
+	    $this->load->model('Nrlist_model', '', TRUE);
+	    $data['title']       = $id;
+
+	    $releases         = $this->Nrlist_model->get_releases_by_class($id);
+        $tmpl = array( 'table_open'  => "<table class='bordered-table'>" );
+        $this->table->set_template($tmpl);
+        $data['releases'] = $this->table->generate($releases);
+
+        list($type, $resolution, $handle, $version) = split('_', $id);
+	    $data['resolution'] = $resolution;
+	    $data['version']    = $version;
+
+        $data['status'] = $this->Nrlist_model->get_status($id);
+
+        $members = $this->Nrlist_model->get_members($id);
+        $tmpl = array( 'table_open'  => "<table class='zebra-striped bordered-table' id='members_table'>" );
+        $this->table->set_template($tmpl);
+        $this->table->set_heading('#','PDB','Title','Source','Method','Resolution','Date');
+        $data['members'] = $this->table->generate($members);
+        $data['num_members'] = count($members);
+
+        $history = $this->Nrlist_model->get_history($id,'parents');
+        $this->table->set_heading('This class','Parent classes','Release id','Intersection','Added','Removed');
+        $data['parents'] = $this->table->generate($history);
+
+        $history = $this->Nrlist_model->get_history($id,'children');
+        $this->table->set_heading('This class','Descendant classes','Release id','Intersection','Added','Removed');
+        $data['children'] = $this->table->generate($history);
+
+        $this->load->view('headerview', $data);
+        $this->load->view('menuview');
+        $this->load->view('nrlist_class_view', $data);
+        $this->load->view('footer');
+	}
+
+    public function compare_releases()
+    {
+        $this->load->model('Nrlist_model', '', TRUE);
+        $table = $this->Nrlist_model->get_compare_radio_table();
+        $table = $this->table->make_columns($table, 3);
+        $this->table->set_heading('Release 1', 'Release 2', 'Release date');
+        $tmpl = array( 'table_open'  => '<table class="condensed-table bordered-table">' );
+        $this->table->set_template($tmpl);
+        $data['table'] = $this->table->generate($table);
+        $data['title'] = 'Compare releases';
+
+        $this->load->view('headerview', $data);
+        $this->load->view('menuview');
+        $this->load->view('nrlist_release_compare_view', $data);
+        $this->load->view('footer');
+    }
+
+	public function compare($rel1 = NULL, $rel2 = NULL)
+	{
+        if ($rel1 == NULL and $rel2 == NULL) {
+            $rel1 = $this->input->post('release1');
+            $rel2 = $this->input->post('release2');
+        }
+
+        $this->load->model('Nrlist_model', '' , TRUE);
+        $data = $this->Nrlist_model->get_release_diff($rel1,$rel2);
+
+//         $this->load->model('Nrlist_release_history_model', '' , TRUE);
+//         $this->Nrlist_release_history_model->set_releases($rel1, $rel2);
+//         $attributes = array('class' => 'unstyled');
+//         $resolutions = array(1.5,2.0,2.5,3.0,3.5,4.0,20.0,'all');
+//         $labels      = array('1_5A','2_0A','2_5A','3_0A','3_5A','4_0A','20_0A','all');
+// //
+//         $i = 0;
+//
+//         foreach ($resolutions as $res) {
+//             $this->Nrlist_release_history_model->set_resolution($res);
+//             $data['uls'][$labels[$i]]['intersection'] = $this->Nrlist_release_history_model->get_intersection();
+//             $data['uls'][$labels[$i]]['updated']      = $this->Nrlist_release_history_model->get_updated();
+//             $data['uls'][$labels[$i]]['diff']         = $this->Nrlist_release_history_model->get_diff();
+//             $data['uls'][$labels[$i]]['num_motifs1']  = $this->Nrlist_release_history_model->count_motifs($rel1);
+//             $data['uls'][$labels[$i]]['num_motifs2']  = $this->Nrlist_release_history_model->count_motifs($rel2);
+// //
+//             $data['uls'][$labels[$i]]['ul_intersection'] = ul($data['uls'][$labels[$i]]['intersection'],$attributes);
+//             $data['uls'][$labels[$i]]['ul_updated']      = ul($data['uls'][$labels[$i]]['updated'],$attributes);
+//             $data['uls'][$labels[$i]]['ul_only_in_1']    = ul($data['uls'][$labels[$i]]['diff']['only_in_1'],$attributes);
+//             $data['uls'][$labels[$i]]['ul_only_in_2']    = ul($data['uls'][$labels[$i]]['diff']['only_in_2'],$attributes);
+// //
+//             $data['uls'][$labels[$i]]['num_intersection'] = count($data['uls'][$labels[$i]]['intersection']);
+//             $data['uls'][$labels[$i]]['num_updated']      = count($data['uls'][$labels[$i]]['updated']);
+//             $data['uls'][$labels[$i]]['num_only_in_1']    = count($data['uls'][$labels[$i]]['diff']['only_in_1']);
+//             $data['uls'][$labels[$i]]['num_only_in_2']    = count($data['uls'][$labels[$i]]['diff']['only_in_2']);
+//             $i++;
+//         }
+
+        $data['title'] = "{$rel1} | {$rel2}";
+        $data['rel1']  = $rel1;
+        $data['rel2']  = $rel2;
+
+        $this->load->view('headerview', $data);
+        $this->load->view('menuview');
+        $this->load->view('nrlist_release_compare_results_view', $data);
+        $this->load->view('footer');
+	}
+
+    public function release_history()
+    {
+        $this->load->model('Nrlist_model', '' , TRUE);
+        $tables = $this->Nrlist_model->get_complete_release_history();
+        $resolutions = array('1.5','2.0','2.5','3.0','3.5','4.0','20.0','all');
+        $labels      = array('1_5A','2_0A','2_5A','3_0A','3_5A','4_0A','20_0A','all');
+
+        $i = 0;
+        foreach ($resolutions as $res) {
+            $this->table->set_heading('Release','Date','Added groups','Removed groups','Updated groups','Added pdbs','Removed pdbs');
+            $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped' id='{$labels[$i]}table'>" );
+            $this->table->set_template($tmpl);
+            $data['tables'][$labels[$i]] = $this->table->generate($tables[$res]);
+            $i++;
+        }
+
+        $data['title'] = 'Release History';
+
+        $this->load->view('headerview', $data);
+        $this->load->view('menuview');
+        $this->load->view('nrlist_release_history_view', $data);
+        $this->load->view('footer');
+    }
+
+
+}
+
+/* End of file nrlist.php */
+/* Location: ./application/controllers/nrlist.php */
