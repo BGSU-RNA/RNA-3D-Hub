@@ -13,7 +13,7 @@ class Release extends CI_Controller {
         $data['baseurl'] = base_url();
 
         $this->load->view('headerview', $data);
-        $this->load->view('menuview');
+        $this->load->view('menu_view', $data);
         $this->load->view('releaseview', $data);
         $this->load->view('footer');
 	}
@@ -28,8 +28,10 @@ class Release extends CI_Controller {
         $this->table->set_heading('Motif id', 'Instances');
         $data['table'] = $this->table->generate($result);
         $data['title'] = 'Release ' . $id;
+
+        $data['baseurl'] = base_url();
         $this->load->view('headerview', $data);
-        $this->load->view('menuview');
+        $this->load->view('menu_view', $data);
         $this->load->view('releaseview', $data);
         $this->load->view('footer');
 	}
@@ -53,8 +55,10 @@ class Release extends CI_Controller {
 	        $data['ul_loops_intersection'] = ul($data['loops']['intersection']);
 	        $data['ul_loops_only_in_1']    = ul($data['loops']['only_in_1']);
 	        $data['ul_loops_only_in_2']    = ul($data['loops']['only_in_2']);
+
+            $data['baseurl'] = base_url();
             $this->load->view('headerview', $data);
-            $this->load->view('menuview');
+            $this->load->view('menu_view', $data);
             $this->load->view('release_compare_results_view', $data);
             $this->load->view('footer');
 	    }
@@ -66,8 +70,9 @@ class Release extends CI_Controller {
             $data['table'] = $this->table->generate($table);
             $data['title'] = 'Compare releases';
 
+            $data['baseurl'] = base_url();
             $this->load->view('headerview', $data);
-            $this->load->view('menuview');
+            $this->load->view('menu_view', $data);
             $this->load->view('release_compare_view', $data);
             $this->load->view('footer');
         }
