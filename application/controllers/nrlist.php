@@ -171,7 +171,6 @@ class Nrlist extends CI_Controller {
         }
 
         $data['title'] = 'Release History';
-
         $data['baseurl'] = base_url();
         $this->load->view('headerview', $data);
         $this->load->view('menu_view', $data);
