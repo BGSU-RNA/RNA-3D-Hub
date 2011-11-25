@@ -71,6 +71,7 @@ class Release extends CI_Controller {
             $data['title'] = 'Compare releases';
 
             $data['baseurl'] = base_url();
+            $data['action']  = base_url('release/compare');
             $this->load->view('header_view', $data);
             $this->load->view('menu_view', $data);
             $this->load->view('release_compare_view', $data);

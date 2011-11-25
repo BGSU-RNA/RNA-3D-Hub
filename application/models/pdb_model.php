@@ -16,7 +16,7 @@ class Pdb_model extends CI_Model {
     {
         $this->db->select('pdb')
                  ->distinct()
-                 ->from('all_loops');
+                 ->from('loops_all');
         $query = $this->db->get();
         $pdbs = array();
         foreach ($query->result() as $row) {
@@ -33,14 +33,14 @@ class Pdb_model extends CI_Model {
     function get_all_valid_loops($pdb_id, $loop_type)
     {
         $this->db->select()
-                 ->from('all_loops')
-                 ->join('loop_qa','all_loops.id=loop_qa.id')
+                 ->from('loops_all')
+                 ->join('loop_qa','loops_all.id=loop_qa.id')
                  ->where('release_id',$this->latest_release)
                  ->where('type',$loop_type)
                  ->where('pdb',$pdb_id)
                  ->where('valid',1)
                  ->order_by('length','desc')
-                 ->order_by('all_loops.id');
+                 ->order_by('loops_all.id');
         $query = $this->db->get();
         $ils = array();
         foreach ($query->result() as $row) {
@@ -53,7 +53,7 @@ class Pdb_model extends CI_Model {
     {
         $this->db
              ->select()
-             ->from('all_loops as t1')
+             ->from('loops_all as t1')
              ->join('loop_qa as t2','t1.id=t2.id')
              ->join('loop_modifications as t3','t2.id=t3.id')
              ->where('release_id',$this->latest_release)
@@ -73,7 +73,7 @@ class Pdb_model extends CI_Model {
     function get_all_missing_nts_loops($pdb_id, $loop_type)
     {
         $this->db->select()
-             ->from('all_loops as t1')
+             ->from('loops_all as t1')
              ->join('loop_qa as t2','t1.id=t2.id')
              ->where('release_id',$this->latest_release)
              ->where('type', $loop_type)
@@ -92,7 +92,7 @@ class Pdb_model extends CI_Model {
 //     function get_all_valid_hairpin_loops($id)
 //     {
 //         $this->db->select()
-//              ->from('all_loops as t1')
+//              ->from('loops_all as t1')
 //              ->join('loop_qa as t2','t1.id=t2.id')
 //              ->where('release_id',$this->latest_release)
 //              ->where('type','HL')
@@ -111,7 +111,7 @@ class Pdb_model extends CI_Model {
 //     function get_all_modified_hairpin_loops($id)
 //     {
 //         $this->db->select()
-//                  ->from('all_loops as t1')
+//                  ->from('loops_all as t1')
 //                  ->join('loop_qa as t2','t1.id=t2.id')
 //                  ->join('loop_modifications as t3','t2.id=t3.id')
 //                  ->where('release_id',$this->latest_release)
@@ -131,7 +131,7 @@ class Pdb_model extends CI_Model {
 //     function get_all_missing_nts_hairpin_loops($id)
 //     {
 //         $this->db->select()
-//                  ->from('all_loops as t1')
+//                  ->from('loops_all as t1')
 //                  ->join('loop_qa as t2','t1.id=t2.id')
 //                  ->where('release_id',$this->latest_release)
 //                  ->where('type','HL')

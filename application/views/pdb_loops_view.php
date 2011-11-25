@@ -10,7 +10,15 @@
                   <?=$jls['valid_count']?> three-way junctions
               </small>
           </h1>
+            <ul class="pills">
+              <li class="active"><a href="#">Loops</a></li>
+              <li><a href="#">General</a></li>
+              <li><a href="#">Motifs</a></li>
+              <li><a href="#">Triples</a></li>
+            </ul>
+
         </div>
+
 
         <div class="row">
           <div class="span8">

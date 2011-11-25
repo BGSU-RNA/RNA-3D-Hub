@@ -366,19 +366,19 @@ class Nrlist_model extends CI_Model {
     function get_release($id,$resolution)
     {
         // get raw release data
-//         $this->db->select('nr_pdbs.*,PDB.Files.resolution as resolution,PDB.Files.source as source,PDB.Files.title as title')
-//                  ->from('nr_pdbs')
-//                  ->join('PDB.Files','nr_pdbs.id=PDB.Files.name')
-//                  ->where('release_id', $id)
-//                  ->like('class_id', "NR_{$resolution}", 'after');
-
         $this->db->select('nr_pdbs.*,PDB.Files.resolution as resolution,PDB.Files.source as source,PDB.Files.title as title')
-                 ->from('nr_classes')
-                 ->join('nr_pdbs','nr_classes.id=nr_pdbs.class_id')
+                 ->from('nr_pdbs')
                  ->join('PDB.Files','nr_pdbs.id=PDB.Files.name')
-                 ->where('nr_classes.release_id', $id)
-                 ->where('nr_pdbs.release_id', $id)
-                 ->where('nr_classes.resolution', $resolution);
+                 ->where('release_id', $id)
+                 ->like('class_id', "NR_{$resolution}", 'after');
+
+//         $this->db->select('nr_pdbs.*,PDB.Files.resolution as resolution,PDB.Files.source as source,PDB.Files.title as title')
+//                  ->from('nr_classes')
+//                  ->join('nr_pdbs','nr_classes.id=nr_pdbs.class_id')
+//                  ->join('PDB.Files','nr_pdbs.id=PDB.Files.name')
+//                  ->where('nr_classes.release_id', $id)
+//                  ->where('nr_pdbs.release_id', $id);
+// //                  ->where('nr_classes.resolution', $resolution);
 
 
         $query = $this->db->get();

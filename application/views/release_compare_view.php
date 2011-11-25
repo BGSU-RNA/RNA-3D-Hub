@@ -9,7 +9,7 @@
           <div class="span10">
 
             <h2></h2>
-            <form method="post" action="http://rna.bgsu.edu/MotifAtlas/index.php/release/compare"  />
+            <form method="post" action="<?=$action?>"  />
             <?php echo $table;?>
             <br>
             <input type='submit' class='btn primary' value="Compare selected">

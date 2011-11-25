@@ -44,6 +44,7 @@ body {
 
 .motifview .jmolheight {
     height:340px;
+    width:350px;
 }
 .motifview #checkboxes {
     overflow:auto;
@@ -135,11 +136,9 @@ body {
     width:150px;
 }
 
-/*
 .nrlist_release_view table {
     table-layout: fixed;
 }
-*/
 .nrlist_release_view th:nth-of-type(1) {
     width:30px;
 }
