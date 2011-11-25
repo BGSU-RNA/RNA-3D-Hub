@@ -11,7 +11,7 @@ class Pdb extends CI_Controller {
         $tmpl = array( 'table_open'  => '<table class="bordered-table">' );
         $this->table->set_template($tmpl);
         $data['table'] = $this->table->generate($list);
-        $data['title'] = 'All structures with RNA 3D motifs';
+        $data['title'] = 'All RNA-containing 3D structures';
         $data['pdb_count'] = count($pdbs);
 
         $data['baseurl'] = base_url();
@@ -25,13 +25,17 @@ class Pdb extends CI_Controller {
 	{
 //         $this->output->cache(1000000);
 	    $this->load->model('Pdb_model', '', TRUE);
-        $ils['valid']    = $this->Pdb_model->get_all_valid_internal_loops($id);
-        $ils['modified'] = $this->Pdb_model->get_all_modified_internal_loops($id);
-        $ils['missing']  = $this->Pdb_model->get_all_missing_nts_internal_loops($id);
+        $ils['valid']    = $this->Pdb_model->get_all_valid_loops($id, 'IL');
+        $ils['modified'] = $this->Pdb_model->get_all_modified_loops($id, 'IL');
+        $ils['missing']  = $this->Pdb_model->get_all_missing_nts_loops($id, 'IL');
 
-        $hls['valid']    = $this->Pdb_model->get_all_valid_hairpin_loops($id);
-        $hls['modified'] = $this->Pdb_model->get_all_modified_hairpin_loops($id);
-        $hls['missing']  = $this->Pdb_model->get_all_missing_nts_hairpin_loops($id);
+        $hls['valid']    = $this->Pdb_model->get_all_valid_loops($id, 'HL');
+        $hls['modified'] = $this->Pdb_model->get_all_modified_loops($id, 'HL');
+        $hls['missing']  = $this->Pdb_model->get_all_missing_nts_loops($id, 'HL');
+
+        $jls['valid']    = $this->Pdb_model->get_all_valid_loops($id,'J3');
+        $jls['modified'] = $this->Pdb_model->get_all_modified_loops($id, 'J3');
+        $jls['missing']  = $this->Pdb_model->get_all_missing_nts_loops($id, 'J3');
 
         $data['title'] = 'PDB ' . $id;
         // internal loops
@@ -50,6 +54,15 @@ class Pdb extends CI_Controller {
         list($data['hls']['missing'],$data['hls']['missing_count']) =
               $this->generate_table_block($hls['missing'], array('Loop id', 'Sequence'));
 
+        // j3 loops
+        list($data['jls']['valid'],$data['jls']['valid_count']) =
+              $this->generate_table_block($jls['valid'], array('Loop id', 'Sequence'));
+        list($data['jls']['modified'],$data['jls']['modified_count']) =
+              $this->generate_table_block($jls['modified'], array('Loop id', 'Modification'));
+        list($data['jls']['missing'],$data['jls']['missing_count']) =
+              $this->generate_table_block($jls['missing'], array('Loop id', 'Sequence'));
+
+
         $data['baseurl'] = base_url();
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
@@ -67,7 +80,7 @@ class Pdb extends CI_Controller {
             $output = $this->table->generate($input);
         } else {
             $num = 0;
-            $output = '<p>No valid internal loops</p>';
+            $output = '<p>No loops found</p>';
         }
         return array($output, $num);
     }

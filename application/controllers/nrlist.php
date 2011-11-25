@@ -33,11 +33,13 @@ class Nrlist extends CI_Controller {
 
         $resolution = array('1.5','2.0','2.5','3.0','3.5','4.0','20.0','all');
         foreach ($resolution as $res) {
+            $temp = $this->Nrlist_model->get_release($id,$res);
+            $data['counts'][$res] = $temp['counts'];
             $table_id = str_replace('.','_',$res) . 'Atable';
             $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table' id='{$table_id}'>" );
             $this->table->set_template($tmpl);
             $this->table->set_heading('#', 'Equivalence class', 'Status', 'PDB', 'Title', 'Resolution', 'Source', 'Represents');
-            $data['class'][$res]  = $this->table->generate( $this->Nrlist_model->get_release($id,$res) );
+            $data['class'][$res] = $this->table->generate($temp['table']);
         }
 
         $data['baseurl'] = base_url();
@@ -45,7 +47,7 @@ class Nrlist extends CI_Controller {
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_release_view', $data);
         $this->load->view('footer');
-//         $this->output->enable_profiler(TRUE);
+        $this->output->enable_profiler(TRUE);
 	}
 
 	public function view($id)

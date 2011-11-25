@@ -3,7 +3,7 @@
 
       <div class="content">
         <div class="page-header">
-          <h1>Nonredundant lists of RNA structures
+          <h1>Non-redundant lists of RNA structures
           <small>Release <?=$release_id?>, <?=$description?></small>
           </h1>
         </div>
@@ -25,43 +25,48 @@
 
             <div class="tab-content" id="my-tab-content">
                 <div class="tab-pane" id="1_5A">
-                    5 updated
                     <div >
-                        <?php echo $class['1.5'];?>
+                        <?php echo $counts['1.5']; echo $class['1.5'];?>
                     </div>
                 </div>
                 <div class="tab-pane" id="2_0A">
                     <div >
-                        <?php echo $class['2.0'];?>
+                        <?php echo $counts['2.0']; echo $class['2.0'];?>
                     </div>
                 </div>
                 <div class="tab-pane" id="2_5A">
                     <div >
+                        <?=$counts['2.5']?>
                         <?php echo $class['2.5'];?>
                     </div>
                 </div>
                 <div class="tab-pane" id="3_0A">
                     <div >
+                        <?=$counts['3.0']?>
                         <?php echo $class['3.0'];?>
                     </div>
                 </div>
                 <div class="tab-pane" id="3_5A">
                     <div >
+                        <?=$counts['3.5']?>
                         <?php echo $class['3.5'];?>
                     </div>
                 </div>
                 <div class="tab-pane active" id="4_0A">
                     <div >
+                        <?=$counts['4.0']?>
                         <?php echo $class['4.0'];?>
                     </div>
                 </div>
                 <div class="tab-pane" id="20_0A">
                     <div >
+                        <?=$counts['20.0']?>
                         <?php echo $class['20.0'];?>
                     </div>
                 </div>
                 <div class="tab-pane" id="all">
                     <div >
+                        <?=$counts['all']?>
                         <?php echo $class['all'];?>
                     </div>
                 </div>

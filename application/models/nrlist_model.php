@@ -344,10 +344,20 @@ class Nrlist_model extends CI_Model {
         return $this->beautify_description_date($s);
     }
 
-    function add_label($class_id,$reason)
+    function get_annotation_label_type($comment)
+    {
+        if ($comment == 'Exact match') {
+            return 'success';
+        } else {
+            return 'important';
+        }
+    }
+
+    function add_annotation_label($class_id,$reason)
     {
         if (array_key_exists($class_id,$reason)) {
-            return " <span class='label warning'>{$reason[$class_id]}</span>";
+            $label = $this->get_annotation_label_type($reason[$class_id]);
+            return " <span class='label $label'>{$reason[$class_id]}</span>";
         } else {
             return '';
         }
@@ -356,11 +366,21 @@ class Nrlist_model extends CI_Model {
     function get_release($id,$resolution)
     {
         // get raw release data
+//         $this->db->select('nr_pdbs.*,PDB.Files.resolution as resolution,PDB.Files.source as source,PDB.Files.title as title')
+//                  ->from('nr_pdbs')
+//                  ->join('PDB.Files','nr_pdbs.id=PDB.Files.name')
+//                  ->where('release_id', $id)
+//                  ->like('class_id', "NR_{$resolution}", 'after');
+
         $this->db->select('nr_pdbs.*,PDB.Files.resolution as resolution,PDB.Files.source as source,PDB.Files.title as title')
-                 ->from('nr_pdbs')
+                 ->from('nr_classes')
+                 ->join('nr_pdbs','nr_classes.id=nr_pdbs.class_id')
                  ->join('PDB.Files','nr_pdbs.id=PDB.Files.name')
-                 ->where('release_id', $id)
-                 ->like('class_id', "NR_{$resolution}", 'after');
+                 ->where('nr_classes.release_id', $id)
+                 ->where('nr_pdbs.release_id', $id)
+                 ->where('nr_classes.resolution', $resolution);
+
+
         $query = $this->db->get();
 
         // reorganize by class and rep and pdb
@@ -378,25 +398,25 @@ class Nrlist_model extends CI_Model {
             $pdb[$row->id]['source']     = $row->source;
         }
 
-        // get parents
-//         $changed = array();
-//         $this->db->select('nr_parents.class_id as class_id,nr_parents.parents as parents,nr_classes.comment as comment')
-//                  ->from('nr_classes')
-//                  ->join('nr_parents','nr_classes.id=nr_parents.class_id')
-//                  ->where('nr_parents.release_id', $id)
-//                  ->where('nr_classes.release_id', $id)
-//                  ->like('nr_parents.class_id', "NR_{$resolution}", 'after');
+        // get annotations: updated/>2 parents etc
         $this->db->select()
                  ->from('nr_classes')
                  ->where('release_id',$id)
                  ->like('id',"NR_{$resolution}",'after');
         $query = $this->db->get();
-
         foreach ($query->result() as $row) {
-//             $changed[$row->class_id] = $row->parents;
             $reason[$row->id]  = $row->comment;
+            $reason_flat[]     = $row->comment;
         }
 
+        // count all annotation types
+        $counts = array_count_values($reason_flat);
+        $counts_text = '';
+        foreach ($counts as $comment => $count) {
+            $label = $this->get_annotation_label_type($comment);
+            $counts_text .= "<span class='label $label'>$comment</span> <strong>$count</strong>;    ";
+        }
+        $counts_text .= '<br><br>';
 
         // get order
         $this->db->select('*,count(id) as num')
@@ -420,7 +440,7 @@ class Nrlist_model extends CI_Model {
             $table[] = array($i,
                              anchor(base_url("nrlist/view/".$class_id),$class_id),
 //                              $this->make_pdb_widget_link($pdb_id),
-                             $this->add_label($class_id, $reason),
+                             $this->add_annotation_label($class_id, $reason),
                              $pdb_id,
                              $pdb[$pdb_id]['title'],
                              $pdb[$pdb_id]['resolution'],
@@ -428,7 +448,7 @@ class Nrlist_model extends CI_Model {
                              join(', ',$class[$class_id]));
             $i++;
         }
-        return $table;
+        return array('table'=>$table, 'counts'=>$counts_text);
     }
 
     function get_compare_radio_table()
