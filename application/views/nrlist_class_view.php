@@ -56,6 +56,7 @@
     <script>
         $(function () {
             $("#members_table").tablesorter();
+            $(".pdb").click(LookUpPDBInfo);
         })
 
     </script>

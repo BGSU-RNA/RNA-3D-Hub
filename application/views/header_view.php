@@ -11,14 +11,17 @@
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" type="text/javascript"></script>
     <script src="<?php echo $baseurl;?>jmol/jmol.js"></script>
     <script src="http://rna.bgsu.edu/Motifs/jmolInlineLoader/jmolInlineLoader.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" type="text/javascript"></script>
+
     <script src="<?php echo $baseurl;?>js/bootstrap-twipsy.js" type="text/javascript"></script>
     <script src="<?php echo $baseurl;?>js/bootstrap-popover.js" type="text/javascript"></script>
     <script src="<?php echo $baseurl;?>js/bootstrap-dropdown.js" type="text/javascript"></script>
     <script src="<?php echo $baseurl;?>js/bootstrap-tabs.js" type="text/javascript"></script>
     <script src="<?php echo $baseurl;?>js/jquery.tablesorter.min.js" type="text/javascript"></script>
+
+    <script src="<?php echo $baseurl;?>js/MotifAtlas.js" type="text/javascript"></script>
     <script src="<?php echo $baseurl;?>js/rcsbPdbImageLib.min.js" type="text/javascript"> </script>
 
     <!-- Le styles -->

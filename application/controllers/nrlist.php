@@ -54,9 +54,9 @@ class Nrlist extends CI_Controller {
 	{
 //         $this->output->cache(1000000);
 	    $this->load->model('Nrlist_model', '', TRUE);
-	    $data['title']       = $id;
+	    $data['title'] = $id;
 
-	    $releases         = $this->Nrlist_model->get_releases_by_class($id);
+	    $releases = $this->Nrlist_model->get_releases_by_class($id);
         $tmpl = array( 'table_open'  => "<table class='bordered-table'>" );
         $this->table->set_template($tmpl);
         $data['releases'] = $this->table->generate($releases);
@@ -76,11 +76,11 @@ class Nrlist extends CI_Controller {
         $data['num_members'] = count($members);
 
         $history = $this->Nrlist_model->get_history($id,'parents');
-        $this->table->set_heading('This class','Parent classes','Release id','Intersection','Added','Removed');
+        $this->table->set_heading('This class','Parent classes','Release id','Intersection','Added to this class','Only in parent');
         $data['parents'] = $this->table->generate($history);
 
         $history = $this->Nrlist_model->get_history($id,'children');
-        $this->table->set_heading('This class','Descendant classes','Release id','Intersection','Added','Removed');
+        $this->table->set_heading('This class','Descendant classes','Release id','Intersection','Only in this class','Added to child');
         $data['children'] = $this->table->generate($history);
 
         $data['baseurl'] = base_url();
@@ -118,34 +118,6 @@ class Nrlist extends CI_Controller {
 
         $this->load->model('Nrlist_model', '' , TRUE);
         $data = $this->Nrlist_model->get_release_diff($rel1,$rel2);
-
-//         $this->load->model('Nrlist_release_history_model', '' , TRUE);
-//         $this->Nrlist_release_history_model->set_releases($rel1, $rel2);
-//         $attributes = array('class' => 'unstyled');
-//         $resolutions = array(1.5,2.0,2.5,3.0,3.5,4.0,20.0,'all');
-//         $labels      = array('1_5A','2_0A','2_5A','3_0A','3_5A','4_0A','20_0A','all');
-// //
-//         $i = 0;
-//
-//         foreach ($resolutions as $res) {
-//             $this->Nrlist_release_history_model->set_resolution($res);
-//             $data['uls'][$labels[$i]]['intersection'] = $this->Nrlist_release_history_model->get_intersection();
-//             $data['uls'][$labels[$i]]['updated']      = $this->Nrlist_release_history_model->get_updated();
-//             $data['uls'][$labels[$i]]['diff']         = $this->Nrlist_release_history_model->get_diff();
-//             $data['uls'][$labels[$i]]['num_motifs1']  = $this->Nrlist_release_history_model->count_motifs($rel1);
-//             $data['uls'][$labels[$i]]['num_motifs2']  = $this->Nrlist_release_history_model->count_motifs($rel2);
-// //
-//             $data['uls'][$labels[$i]]['ul_intersection'] = ul($data['uls'][$labels[$i]]['intersection'],$attributes);
-//             $data['uls'][$labels[$i]]['ul_updated']      = ul($data['uls'][$labels[$i]]['updated'],$attributes);
-//             $data['uls'][$labels[$i]]['ul_only_in_1']    = ul($data['uls'][$labels[$i]]['diff']['only_in_1'],$attributes);
-//             $data['uls'][$labels[$i]]['ul_only_in_2']    = ul($data['uls'][$labels[$i]]['diff']['only_in_2'],$attributes);
-// //
-//             $data['uls'][$labels[$i]]['num_intersection'] = count($data['uls'][$labels[$i]]['intersection']);
-//             $data['uls'][$labels[$i]]['num_updated']      = count($data['uls'][$labels[$i]]['updated']);
-//             $data['uls'][$labels[$i]]['num_only_in_1']    = count($data['uls'][$labels[$i]]['diff']['only_in_1']);
-//             $data['uls'][$labels[$i]]['num_only_in_2']    = count($data['uls'][$labels[$i]]['diff']['only_in_2']);
-//             $i++;
-//         }
 
         $data['title'] = "{$rel1} | {$rel2}";
         $data['rel1']  = $rel1;

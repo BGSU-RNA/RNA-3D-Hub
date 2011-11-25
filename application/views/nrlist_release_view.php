@@ -93,6 +93,7 @@
             $("#4_0Atable").tablesorter();
             $("#20_0Atable").tablesorter();
             $("#allAtable").tablesorter();
+            $(".pdb").click(LookUpPDBInfo);
         })
 
     </script>

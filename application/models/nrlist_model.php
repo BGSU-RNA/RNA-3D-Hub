@@ -137,7 +137,7 @@ class Nrlist_model extends CI_Model {
 
     function make_pdb_widget_link($pdb)
     {
-        return "<span class='rcsb_image' title='{$pdb}|asr|xsmall|'></span>$pdb";
+        return "<span class='rcsb_image' title='{$pdb}|asr|xsmall|'></span><a class='pdb'>$pdb</a>";
     }
 
     function get_members($id)
@@ -166,12 +166,25 @@ class Nrlist_model extends CI_Model {
         return $table;
     }
 
+    function add_pdb_class($list)
+    {
+        if (!is_array($list)) {
+            $s = split(',', $list);
+        } else {
+            $s = $list;
+        }
+        for ($i = 0; $i < count($s); $i++) {
+            $s[$i] = "<a class='pdb'>$s[$i]</a>";
+        }
+        return implode(', ', $s);
+    }
+
     function get_history($id,$mode)
     {
         $this->db->select()->from('nr_set_diff')->where('nr_class1',$id);
         if ($mode == 'parents') {
             $this->db->where('release_id',$this->first_seen_in);
-        } else {
+        } elseif ($mode=='children') {
             $this->db->where('release_id !=',$this->first_seen_in);
         }
         $query = $this->db->get();
@@ -180,9 +193,9 @@ class Nrlist_model extends CI_Model {
             $table[] = array($row->nr_class1,
                              anchor(base_url("nrlist/view/".$row->nr_class2),$row->nr_class2),
                              anchor(base_url("nrlist/release/".$row->release_id), $row->release_id),
-                             str_replace(',',', ',$row->intersection),
-                             str_replace(',',', ',$row->one_minus_two),
-                             str_replace(',',', ',$row->two_minus_one));
+                             $this->add_pdb_class($row->intersection),
+                             $this->add_pdb_class($row->one_minus_two),
+                             $this->add_pdb_class($row->two_minus_one));
         }
         return $table;
     }
@@ -445,7 +458,7 @@ class Nrlist_model extends CI_Model {
                              $pdb[$pdb_id]['title'],
                              $pdb[$pdb_id]['resolution'],
                              $pdb[$pdb_id]['source'],
-                             join(', ',$class[$class_id]));
+                             $this->add_pdb_class($class[$class_id]));
             $i++;
         }
         return array('table'=>$table, 'counts'=>$counts_text);

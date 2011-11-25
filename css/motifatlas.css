@@ -185,9 +185,27 @@ body {
     text-align:center;
 }
 
+/* LAB */
 .nodec a:hover {
     text-decoration:none;
 }
+.popover .content {
+    margin: 0;
+    min-height:100px;
+    max-height:200px;
+}
+.popover .content p {
+    font-size:12px;
+}
+.pdb {
+    border-bottom:1px dotted;
+}
+.pdb:hover {
+    text-decoration:none;
+    cursor:pointer;
+}
+/* LAB */
+
 body.home {
     padding-top: 60px;
 }
