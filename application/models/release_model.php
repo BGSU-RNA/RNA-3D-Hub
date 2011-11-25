@@ -63,6 +63,16 @@ class Release_model extends CI_Model {
         return $table;
     }
 
+    function get_latest_release()
+    {
+        $this->db->select()
+                 ->from('ml_releases')
+                 ->order_by('date','desc')
+                 ->limit(1);
+        $result = $this->db->get()->result_array();
+        return $result[0]['id'];
+    }
+
 }
 
 /* End of file release_model.php */

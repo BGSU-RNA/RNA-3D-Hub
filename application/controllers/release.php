@@ -21,6 +21,9 @@ class Release extends CI_Controller {
 	public function view($id)
 	{
 	    $this->load->model('Release_model', '', TRUE);
+        if ($id == 'current') {
+            $id = $this->Release_model->get_latest_release();
+        }
         $result = $this->Release_model->get_release($id);
 
         $tmpl = array( 'table_open'  => '<table class="zebra-striped">' );
