@@ -11,7 +11,7 @@ class Pdb extends CI_Controller {
         $tmpl = array( 'table_open'  => '<table class="bordered-table">' );
         $this->table->set_template($tmpl);
         $data['table'] = $this->table->generate($list);
-        $data['title'] = 'All RNA-containing 3D structures';
+        $data['title'] = 'All RNA-containing 3D structures with 3D motifs';
         $data['pdb_count'] = count($pdbs);
 
         $data['baseurl'] = base_url();

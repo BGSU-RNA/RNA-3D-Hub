@@ -19,7 +19,7 @@ class Motif extends CI_Controller {
 	    $table_array = $this->Motif_model->get_interaction_table();
         $this->load->library('table');
         $this->table->set_heading($this->Motif_model->header);
-        $tmpl = array( 'table_open'  => '<table class="condensed-table">' );
+        $tmpl = array( 'table_open'  => '<table class="condensed-table bordered-table zebra-striped" id="sort">' );
         $this->table->set_template($tmpl);
         $data['table']      = $this->table->generate($table_array);
 
@@ -32,12 +32,13 @@ class Motif extends CI_Controller {
         if ( $this->Motif_model->num_loops > 1 ) {
             $matrix_linear = $this->Motif_model->get_mutual_discrepancy_matrix();
             $matrix_column = $this->table->make_columns($matrix_linear, $this->Motif_model->num_loops);
+            $tmpl = array( 'table_open'  => '<table class="condensed-table">' );
+            $this->table->set_template($tmpl);
             $data['matrix'] = $this->table->generate($matrix_column);
         } else {
             $data['matrix'] = '';
         }
 
-        // string parameters
         $data['title']      = 'Motif ' . $motif_id;
         $data['release_id'] = $release_id;
         $data['motif_id']   = $motif_id;
@@ -46,13 +47,17 @@ class Motif extends CI_Controller {
         $this->benchmark->mark('d');
         $history = $this->Motif_model->get_history();
 //        $this->table->set_heading($this->Motif_model->get_history_header());
+        $tmpl = array( 'table_open'  => '<table class="condensed-table bordered-table">' );
+        $this->table->set_template($tmpl);
         $data['history'] = $this->table->generate($history);
         $data['baseurl'] = base_url();
 
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
-        $this->load->view('motifview', $data);
+        $this->load->view('motif_view', $data);
         $this->load->view('footer');
+
+        $this->output->enable_profiler(TRUE);
 	}
 }
 

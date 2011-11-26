@@ -7,7 +7,7 @@
         </div>
 
         <div class="row">
-          <div class="span16 block interactions">
+          <div class="span16 interactions">
             <h2></h2>
             <?php echo $table;?>
           </div>
@@ -16,13 +16,15 @@
         <br>
 
 
-        <div class="span16 block row">
+        <div class="block row special_style">
+        <div class="span16">
+        <div class="row">
             <div class="span6" id="jmol" >
                 <div class="block jmolheight">
                     <script type="text/javascript">
-                        jmolInitialize(" /jmol");
-                        jmolSetAppletColor("#ffffff");
-                        jmolApplet(340, "javascript appletLoaded()");
+//                         jmolInitialize(" /jmol");
+//                         jmolSetAppletColor("#ffffff");
+//                         jmolApplet(340, "javascript appletLoaded()");
                     </script>
                 </div>
                 <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
@@ -43,6 +45,8 @@
                 <?php echo $matrix;?>
             </div>
         </div>
+        </div>
+        </div>
 
 
         <br>
@@ -59,7 +63,8 @@
       <script>
 
         $('.twipsy').twipsy();
-
+        $(".pdb").click(LookUpPDBInfo);
+        $("#sort").tablesorter();
       	function appletLoaded (){
 			var timeoutID = window.setTimeout(function(){
 	    		jmolInlineLoader.init({

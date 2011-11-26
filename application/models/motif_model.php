@@ -18,10 +18,10 @@ class Motif_model extends CI_Model {
     // history widget
     function get_history()
     {
-        $this->db->select('id');
-        $this->db->from('ml_releases');
-        $this->db->order_by("date", "desc");
-        $this->db->limit(2);
+        $this->db->select('id')
+                 ->from('ml_releases')
+                 ->order_by("date", "desc")
+                 ->limit(2);
         $result = $this->db->get()->result_array();
         $prev_release = $result[1]['id'];
 
@@ -126,11 +126,11 @@ class Motif_model extends CI_Model {
     // mutual discrepancy matrix widget
     function get_mutual_discrepancy_matrix()
     {
-        $this->db->select();
-        $this->db->from('ml_mutual_discrepancy');
-        $this->db->where('release_id', $this->release_id);
-        $this->db->where_in('loop_id1', $this->loops);
-        $this->db->where_in('loop_id2', $this->loops);
+        $this->db->select()
+                 ->from('ml_mutual_discrepancy')
+                 ->where('release_id', $this->release_id)
+                 ->where_in('loop_id1', $this->loops)
+                 ->where_in('loop_id2', $this->loops);
         $result = $this->db->get()->result_array();
 
         $disc = array(); // $disc['IL_1S72_001']['IL_1J5E_023'] = 0.2897
@@ -237,7 +237,7 @@ class Motif_model extends CI_Model {
                 $row[$i] = $this->loops[$id];
             } elseif ( $key == 'PDB' ) {
                 $parts = explode("_", $this->loops[$id]);
-                $row[$i] = $parts[1];
+                $row[$i] = '<a class="pdb">' . $parts[1] . '</a>';
             } elseif ( is_int($key) ) {
                 $row[$i] = $this->nts[$this->loops[$id]][$key];
             } elseif ( $key == 'Discrepancy' ) {
@@ -259,10 +259,10 @@ class Motif_model extends CI_Model {
 
     function get_interactions()
     {
-        $this->db->select('*');
-        $this->db->from('ndb_test_copy');
-        $this->db->where_in('iPdbSig', array_keys($this->nt_ids));
-        $this->db->where_in('jPdbSig', array_keys($this->nt_ids));
+        $this->db->select()
+                 ->from('ndb_test_copy')
+                 ->where_in('iPdbSig', array_keys($this->nt_ids))
+                 ->where_in('jPdbSig', array_keys($this->nt_ids));
         $result = $this->db->get()->result_array();
         for ($i = 0; $i < count($result); $i++) {
             $nt_full1 = $result[$i]['iPdbSig'];
@@ -275,11 +275,11 @@ class Motif_model extends CI_Model {
 
     function get_discrepancies()
     {
-        $this->db->select('*');
-        $this->db->from('ml_mutual_discrepancy');
-        $this->db->where('release_id', $this->release_id);
-        $this->db->where('loop_id1', $this->loops[1]);
-        $this->db->where_in('loop_id2', $this->loops);
+        $this->db->select()
+                 ->from('ml_mutual_discrepancy')
+                 ->where('release_id', $this->release_id)
+                 ->where('loop_id1', $this->loops[1])
+                 ->where_in('loop_id2', $this->loops);
         $result = $this->db->get()->result_array();
         for ($i = 0; $i < count($result); $i++) {
             $disc[$result[$i]['loop_id1']][$result[$i]['loop_id2']] = number_format($result[$i]['discrepancy'],4);

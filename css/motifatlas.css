@@ -33,10 +33,11 @@ body {
 /* Pairwise interactions horizontal scrolling div */
 .motifview .interactions {
     overflow:auto;
-    height: 300px;
+    max-height: 300px;
 }
-.motifview .interactions td {
+.motifview .interactions th, .motifview .interactions td {
 	white-space: nowrap;
+	text-align:right;
 }
 .motifview .interactions table {
 	margin-bottom:2px;
@@ -53,8 +54,14 @@ body {
     margin-left:auto;
     margin-right:auto;
 }
+/*
 .motifview div.mdmatrix {
     border: 1px solid #ddd;
+}
+*/
+.mdmatrix td {
+    min-height:1px;
+
 }
 /* Mutual discrepancy matrix */
 .motifview .mdmatrix table{
@@ -91,6 +98,9 @@ body {
 .motifview .center {
     margin-left:auto;
     margin-right:auto;
+}
+.motifview .special_style {
+    margin-left:0px;
 }
 
 .release_compare_view input[type=radio], .nrlist_release_compare_view input[type=radio] {
