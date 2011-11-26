@@ -1,5 +1,4 @@
-<body class="release_compare_view">
-    <div class="container">
+    <div class="container release_compare_view">
 
       <div class="content">
         <div class="page-header">

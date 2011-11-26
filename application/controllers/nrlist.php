@@ -10,7 +10,7 @@ class Nrlist extends CI_Controller {
         $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table'>" );
         $this->table->set_template($tmpl);
         $data['table']   = $this->table->generate($result);
-        $data['title']   = 'All non-redundant list releases';
+        $data['title']   = 'All Non-redundant List Releases';
         $data['baseurl'] = base_url();
 
         $this->load->view('header_view', $data);
@@ -102,7 +102,7 @@ class Nrlist extends CI_Controller {
         $data['title'] = 'Compare releases';
 
         $data['baseurl'] = base_url();
-        $data['action']  = site_url('nrlist/compare');
+        $data['action']  = base_url('nrlist/compare');
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_release_compare_view', $data);

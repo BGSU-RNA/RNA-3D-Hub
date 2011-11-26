@@ -1,5 +1,4 @@
-<body class="nrlist_class_view">
-    <div class="container">
+    <div class="container nrlist_class_view">
 
       <div class="content">
         <div class="page-header">

@@ -1,5 +1,4 @@
-<body class="nrlist_release_compare_results_view">
-    <div class="container">
+    <div class="container nrlist_release_compare_results_view">
       <div class="content">
 
         <div class="page-header">

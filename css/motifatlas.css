@@ -44,7 +44,6 @@ body {
 
 .motifview .jmolheight {
     height:340px;
-    width:350px;
 }
 .motifview #checkboxes {
     overflow:auto;
@@ -186,7 +185,16 @@ body {
 }
 
 /* LAB */
-.nodec a:hover {
+.pdb_loops_view .jmolheight {
+    width:350px;
+}
+.release_view .content {
+    min-height: 500px;
+}
+.nodec {
+    text-decoration:none;
+}
+.nodec:hover {
     text-decoration:none;
 }
 .popover .content {
@@ -203,6 +211,9 @@ body {
 .pdb:hover {
     text-decoration:none;
     cursor:pointer;
+}
+.release_compare_view .label {
+    margin-left:10px;
 }
 /* LAB */
 

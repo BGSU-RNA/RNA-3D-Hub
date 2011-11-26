@@ -1,5 +1,4 @@
-<body class="pdb_loops_view">
-    <div class="container">
+    <div class="container pdb_loops_view">
 
       <div class="content">
         <div class="page-header">

@@ -9,9 +9,9 @@
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle">Motif Atlas</a>
                 <ul class="dropdown-menu">
-                    <li><a href="#">Home</a></li>
-                    <li><a href="<?php echo $baseurl;?>release">Release history</a></li>
-                    <li><a href="<?php echo $baseurl;?>release/compare">Compare releases</a></li>
+                    <li><a href="<?php echo $baseurl;?>release">Home</a></li>
+                    <li><a href="<?php echo $baseurl;?>release/history">Release history</a></li>
+                    <li><a href="<?php echo $baseurl;?>release/compare_releases">Compare releases</a></li>
                     <li class="divider"></li>
                     <li><a href="<?php echo $baseurl;?>release/view/current">View current release</a></li>
                 </ul>

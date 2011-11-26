@@ -58,7 +58,7 @@ class Release_history_model extends CI_Model {
 
     function make_link($id, $rel)
     {
-        return anchor(base_url("motif/view",$rel,$id), $id);
+        return anchor(base_url(array("motif/view",$rel,$id)), $id);
     }
 
     function get_intersection()
