@@ -16,7 +16,7 @@ class Release extends CI_Controller {
 
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
-        $this->load->view('releaseview', $data);
+        $this->load->view('release_all_view', $data);
         $this->load->view('footer');
 	}
 
@@ -28,16 +28,18 @@ class Release extends CI_Controller {
         }
         $result = $this->Release_model->get_release($id);
 
-        $tmpl = array( 'table_open'  => '<table class="zebra-striped">' );
+        $tmpl = array( 'table_open'  => '<table class="zebra-striped condensed-table bordered-table" id="sort">' );
         $this->table->set_template($tmpl);
-        $this->table->set_heading('Motif id', 'Instances');
-        $data['table'] = $this->table->generate($result);
-        $data['title'] = 'Release ' . $id;
-
+        $this->table->set_heading('#', 'Motif id', 'Status', 'Instances');
+        $data['table']  = $this->table->generate($result['table']);
+        $data['status'] = $this->Release_model->get_release_status($id);
+        $data['counts'] = $result['counts'];
+        $data['title']  = 'Motif Atlas Release ' . $id;
         $data['baseurl'] = base_url();
+
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
-        $this->load->view('releaseview', $data);
+        $this->load->view('release_view', $data);
         $this->load->view('footer');
 	}
 

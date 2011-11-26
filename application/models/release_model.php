@@ -49,6 +49,23 @@ class Release_model extends CI_Model {
         return $releases;
     }
 
+    function get_release_status($id)
+    {
+        $this->db->select()
+                 ->from('ml_releases')
+                 ->order_by('date','desc')
+                 ->limit(1);
+        $query = $this->db->get();
+        foreach ($query->result() as $row) {
+            $current_release = $row->id;
+        }
+        if ($id == $current_release) {
+            return 'Current';
+        } else {
+            return 'Obsolete';
+        }
+    }
+
     function get_label_type($changes)
     {
         if ($changes == 0) {
@@ -133,19 +150,65 @@ class Release_model extends CI_Model {
         return $table;
     }
 
+    function get_annotation_label_type($comment)
+    {
+        if ($comment == 'Exact match') {
+            return 'success';
+        } elseif ($comment == 'New id, no parents') {
+            return 'notice';
+        } else {
+            return 'important';
+        }
+    }
+
+    function add_annotation_label($class_id,$reason)
+    {
+        if (array_key_exists($class_id,$reason)) {
+            $label = $this->get_annotation_label_type($reason[$class_id]);
+            return " <span class='label $label'>{$reason[$class_id]}</span>";
+        } else {
+            return '';
+        }
+    }
+
     function get_release($id)
     {
+        // get annotations: updated/>2 parents etc
+        $this->db->select()
+                 ->from('ml_motifs')
+                 ->where('release_id',$id);
+        $query = $this->db->get();
+        foreach ($query->result() as $row) {
+            $reason[$row->id]  = $row->comment;
+            $reason_flat[]     = $row->comment;
+        }
+        // count all annotation types
+        $counts = array_count_values($reason_flat);
+        $counts_text = '';
+        foreach ($counts as $comment => $count) {
+            $label = $this->get_annotation_label_type($comment);
+            $counts_text .= "<span class='label $label'>$comment</span> <strong>$count</strong>;    ";
+        }
+        $counts_text .= '<br><br>';
+
+        // get the motif ids and counts
         $this->db->select('motif_id,count(id) AS instances')
                  ->from('ml_loops')
                  ->where('release_id', $id)
                  ->group_by('motif_id')
                  ->order_by('instances','desc');
-        $result = $this->db->get()->result_array();
+        $query = $this->db->get();
 
-        for ($i = 0; $i < count($result); $i++) {
-            $result[$i]['motif_id'] = anchor(base_url(array("motif/view",$id,$result[$i]['motif_id'])), $result[$i]['motif_id']);
+        $table = array();
+        $i = 1;
+        foreach ($query->result() as $row) {
+            $table[] = array($i,
+                             anchor(base_url(array("motif/view",$id,$row->motif_id)), $row->motif_id),
+                             $this->add_annotation_label($row->motif_id, $reason),
+                             $row->instances);
+            $i++;
         }
-        return $result;
+        return array( 'table' => $table, 'counts' => $counts_text );
     }
 
     function get_compare_radio_table()

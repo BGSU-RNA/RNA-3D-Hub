@@ -2,13 +2,16 @@
 
       <div class="content">
         <div class="page-header">
-          <h1><?php echo $title;?></h1>
+          <h1>
+            <?php echo $title;?>
+            <small><?=$status?></small>
+          </h1>
         </div>
         <div class="row">
           <div class="span10">
 
             <h2></h2>
-            <?php echo $table;?>
+            <?php echo $counts; echo $table;?>
 
           </div>
           <div class="span4">
@@ -16,3 +19,9 @@
           </div>
         </div>
       </div>
+
+    <script>
+        $(function () {
+            $("#sort").tablesorter();
+        })
+    </script>
