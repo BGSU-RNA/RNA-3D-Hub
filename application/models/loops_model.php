@@ -199,22 +199,3 @@ class Loops_model extends CI_Model {
 //                         'sfcheck_B_iso_main_chain','sfcheck_B_iso_side_chain',
 //                         'mapman_correlation','mapman_real_space_R',
 //                         'mapman_Biso_mean','mapman_occupancy_mean');
-
-
-//         return array('#',
-//                          '<a href="#" class="twipsy" data-placement="above" rel="twipsy" title="loop id Correlation between observed and calculated structure-factor amplitudes.">1</a>',
-//                          '<a href="#" class="twipsy" data-placement="above" rel="twipsy" title="sfcheck_correlation">2</a>',
-//                          '<a href="#" class="twipsy" data-placement="above" rel="twipsy" title="sfcheck_correlation_side_chain">3</a>',
-//                          '<a href="#" class="twipsy" data-placement="above" rel="twipsy" title="sfcheck_real_space_R">4</a>',
-//                          '<a href="#" class="twipsy" data-placement="above" rel="twipsy" title="sfcheck_real_space_R_side_chain">5</a>',
-//                          '<a href="#" class="twipsy" data-placement="above" rel="twipsy" title="sfcheck_connect">6</a>',
-//                          '<a href="#" class="twipsy" data-placement="above" rel="twipsy" title="sfcheck_shift">7</a>',
-//                          '<a href="#" class="twipsy" data-placement="above" rel="twipsy" title="sfcheck_shift_side_chain">8</a>',
-//                          '<a href="#" class="twipsy" data-placement="above" rel="twipsy" title="sfcheck_density_index_main_chain">9</a>',
-//                          '<a href="#" class="twipsy" data-placement="above" rel="twipsy" title="sfcheck_density_index_side_chain">10</a>',
-//                          '<a href="#" class="twipsy" data-placement="above" rel="twipsy" title="sfcheck_B_iso_main_chain">11</a>',
-//                          '<a href="#" class="twipsy" data-placement="above" rel="twipsy" title="sfcheck_B_iso_side_chain">12</a>',
-//                          '<a href="#" class="twipsy" data-placement="above" rel="twipsy" title="mapman_correlation">13</a>',
-//                          '<a href="#" class="twipsy" data-placement="above" rel="twipsy" title="mapman_real_space_R">14</a>',
-//                          '<a href="#" class="twipsy" data-placement="above" rel="twipsy" title="mapman_Biso_mean">15</a>',
-//                          '<a href="#" class="twipsy" data-placement="above" rel="twipsy" title="mapman_occupancy_mean">16</a>');

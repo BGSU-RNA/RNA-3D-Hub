@@ -31,7 +31,7 @@
 
             <div class="span9 offset1" id='explanation'>
                 <p>
-                Table columns can be reordered by dragging.
+                Table columns can be reordered by dragging and sorted by clicking the table header.
                 </p>
 
                 <h5>1,2: correlation, correlation_side_chain</h4>

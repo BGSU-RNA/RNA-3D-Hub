@@ -4,7 +4,14 @@
           <a class="brand" href="<?php echo $baseurl;?>">RNA 3D Hub</a>
           <ul class="nav">
 
-            <li><a href="<?php echo $baseurl;?>pdb">RNA 3D Structures</a></li>
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle">RNA 3D Structures</a>
+                <ul class="dropdown-menu">
+                    <li><a href="<?php echo $baseurl;?>pdb">View all</a></li>
+                    <li class="divider"></li>
+                    <li><a href="<?php echo $baseurl;?>loops/sfdata">Sfcheck and Mapman</a></li>
+                </ul>
+            </li>
 
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle">Motif Atlas</a>
