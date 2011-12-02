@@ -86,9 +86,9 @@
           <div class="span6" id="jmol" >
                 <div class="block jmolheight">
                     <script type="text/javascript">
-                        jmolInitialize(" /jmol");
-                        jmolSetAppletColor("#ffffff");
-                        jmolApplet(340, "javascript appletLoaded()");
+//                         jmolInitialize(" /jmol");
+//                         jmolSetAppletColor("#ffffff");
+//                         jmolApplet(340, "javascript appletLoaded()");
                     </script>
                 </div>
                 <input type='button' id='neighborhood' class='btn' value="Show neighborhood">

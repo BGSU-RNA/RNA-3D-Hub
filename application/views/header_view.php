@@ -20,6 +20,7 @@
     <script src="<?php echo $baseurl;?>js/bootstrap-dropdown.js" type="text/javascript"></script>
     <script src="<?php echo $baseurl;?>js/bootstrap-tabs.js" type="text/javascript"></script>
     <script src="<?php echo $baseurl;?>js/jquery.tablesorter.min.js" type="text/javascript"></script>
+    <script src="<?php echo $baseurl;?>js/dragtable.js" type="text/javascript"></script>
 
     <script src="<?php echo $baseurl;?>js/MotifAtlas.js" type="text/javascript"></script>
     <script src="<?php echo $baseurl;?>js/rcsbPdbImageLib.min.js" type="text/javascript"> </script>

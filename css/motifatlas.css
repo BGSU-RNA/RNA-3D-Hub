@@ -189,13 +189,12 @@ body {
 .pdb_loops_view .content {
     min-height: 650px;
 }
-
 .nrlist_release_history_view td {
     text-align:center;
 }
 
 /* LAB */
-.pdb_loops_view .jmolheight {
+.pdb_loops_view .jmolheight, .loops_sfdata_view .jmolheight {
     width:350px;
 }
 .release_view .content {
@@ -225,6 +224,33 @@ body {
 .release_compare_view .label {
     margin-left:10px;
 }
+.loops_sfdata_view .scroll_table {
+    overflow:auto;
+    max-height:300px;
+    table-layout: fixed;
+}
+.loops_sfdata_view .twipsy {
+    position:static;
+}
+.loops_sfdata_view #explanation>p {
+    font-size:smaller;
+}
+.loops_sfdata_view label.narrow {
+    width:105px;
+}
+.loops_sfdata_view td {
+    text-align:center;
+    font-size:x-small;
+}
+.loops_sfdata_view input[type=radio],.loops_sfdata_view input[type=checkbox] {
+    margin-right:10px;
+}
+.loops_sfdata_view th:nth-of-type(1) {
+    width:50px;
+    text-align:left;
+}
+
+
 /* LAB */
 
 body.home {
