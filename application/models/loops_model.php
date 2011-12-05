@@ -31,12 +31,12 @@ class Loops_model extends CI_Model {
 
         $this->db->select()
                  ->from('ml_loop_positions')
-                 ->join('mltest.dcc_residues','nt_id = mltest.dcc_residues.id')
+                 ->join('dcc_residues','nt_id = dcc_residues.id')
                  ->join('loops_all','loop_id=loops_all.id')
                  ->join('ml_loops','loop_id=ml_loops.id','left')
                  ->where('ml_loop_positions.release_id','0.5')
                  ->where('ml_loops.release_id','0.5')
-                 ->group_by('loop_id')
+                 ->group_by('loop_id') // NB! comment out or leave in?
                  ->order_by('ml_loops.motif_id','asc')
                  ->order_by('loop_id','asc');
         $query = $this->db->get();
