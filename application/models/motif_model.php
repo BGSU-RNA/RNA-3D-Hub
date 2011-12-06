@@ -3,6 +3,7 @@ class Motif_model extends CI_Model {
 
     function __construct()
     {
+        $this->release_id = '';
         $this->loops      = array(); // loops in the search order
         $this->nts        = array(); // human-readable nts
         $this->nt_ids     = array(); // full nt ids
@@ -359,9 +360,19 @@ class Motif_model extends CI_Model {
 	}
 
     // auxiliary functions
-    function set_release_id($release_id)
+    function set_release_id()
     {
-        $this->release_id = $release_id;
+        $this->db->select('release_id')
+                 ->from('ml_motifs')
+                 ->where('id',$this->motif_id)
+                 ->limit(1);
+        $query = $this->db->get();
+
+        foreach ($query->result() as $row) {
+            $this->release_id = $row->release_id;
+        }
+        return $this->release_id;
+//         $this->release_id = $release_id;
     }
 
     function set_motif_id($motif_id)

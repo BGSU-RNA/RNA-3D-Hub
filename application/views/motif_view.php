@@ -22,13 +22,14 @@
             <div class="span6" id="jmol" >
                 <div class="block jmolheight">
                     <script type="text/javascript">
-                        jmolInitialize(" /jmol", "JmolApplet0.jar");
+                        jmolInitialize(" /jmol");
                         jmolSetAppletColor("#ffffff");
                         jmolApplet(340, "javascript appletLoaded()");
                     </script>
                 </div>
                 <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
                 <input type='button' id='all' class='btn' value="Show all">
+                <label><input type="checkbox" id="showNtNums">Nucleotide numbers</label>
            </div>
 
             <div class="span3 block">
@@ -73,7 +74,8 @@
                     neighborhoodButtonId: 'neighborhood',
                     showNextButtonId: 'next',
                     showPreviousButtonId: 'prev',
-                    showAllButtonId: 'all'
+                    showAllButtonId: 'all',
+                    showNucleotideNumbersId: 'showNtNums'
 	    		});
 			}, 1500);
       	}

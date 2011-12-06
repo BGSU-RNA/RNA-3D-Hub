@@ -16,11 +16,12 @@
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle">Motif Atlas</a>
                 <ul class="dropdown-menu">
-                    <li><a href="<?php echo $baseurl;?>release">Home</a></li>
-                    <li><a href="<?php echo $baseurl;?>release/history">Release history</a></li>
-                    <li><a href="<?php echo $baseurl;?>release/compare_releases">Compare releases</a></li>
+                    <li><a href="<?php echo $baseurl;?>motifs">Home</a></li>
+                    <li><a href="<?php echo $baseurl;?>motifs/release_history">Release history</a></li>
+                    <li><a href="<?php echo $baseurl;?>motifs/compare_releases">Compare releases</a></li>
                     <li class="divider"></li>
-                    <li><a href="<?php echo $baseurl;?>release/view/current">View current release</a></li>
+                    <li><a href="<?php echo $baseurl;?>motifs/release/il/current">View current ILs</a></li>
+                    <li><a href="<?php echo $baseurl;?>motifs/release/hl/current">View current HLs</a></li>
                 </ul>
             </li>
 

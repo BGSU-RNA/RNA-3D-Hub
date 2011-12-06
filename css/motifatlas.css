@@ -103,14 +103,14 @@ body {
     margin-left:0px;
 }
 
-.release_compare_view input[type=radio], .nrlist_release_compare_view input[type=radio] {
+.motifs_compare_view input[type=radio], .nrlist_release_compare_view input[type=radio] {
     margin-right:10px;
 }
-.release_compare_results_view .comparison, .nrlist_release_compare_results_view .comparison {
+.motifs_compare_results_view .comparison, .nrlist_release_compare_results_view .comparison {
     overflow:auto;
     max-height:300px;
 }
-.nrlist_release_compare_results_view .info {
+.nrlist_release_compare_results_view .info, .motifs_release_compare_results_view .info {
     margin-bottom:10px;
     padding:10px;
 }
@@ -197,7 +197,7 @@ body {
 .pdb_loops_view .jmolheight, .loops_sfdata_view .jmolheight {
     width:350px;
 }
-.release_view .content {
+.motifs_view .content {
     min-height: 500px;
 }
 .nodec {
@@ -221,7 +221,7 @@ body {
     text-decoration:none;
     cursor:pointer;
 }
-.release_compare_view .label {
+.motifs_compare_view .label {
     margin-left:10px;
 }
 .loops_sfdata_view .scroll_table {

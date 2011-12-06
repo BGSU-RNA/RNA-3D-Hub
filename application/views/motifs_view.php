@@ -1,4 +1,4 @@
-    <div class="container release_view">
+    <div class="container motifs_view">
 
       <div class="content">
         <div class="page-header">

@@ -6,13 +6,13 @@ class Motif extends CI_Controller {
         echo "motif";
 	}
 
-	public function view($release_id, $motif_id)
+	public function view($motif_id)
 	{
 //         $this->output->cache(10);
-        $this->output->cache(1000000);
+//         $this->output->cache(1000000);
 	    $this->load->model('Motif_model', '', TRUE);
-	    $this->Motif_model->set_release_id($release_id);
 	    $this->Motif_model->set_motif_id($motif_id);
+	    $release_id = $this->Motif_model->set_release_id();
 
         // pairwise interactions table
         $this->benchmark->mark('a');
