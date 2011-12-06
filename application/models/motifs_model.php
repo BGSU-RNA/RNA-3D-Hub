@@ -159,7 +159,7 @@ class Motifs_model extends CI_Model {
             foreach ($query->result() as $row) {
                 if ($row->release_id2 == $releases[$row->id]) {
                     $table[$motif_type][] = array(
-                        anchor(base_url(array('release','compare',$row->id,$releases[$row->id])), $row->id),
+                        anchor(base_url(array('motifs','compare',$motif_type,$row->id,$releases[$row->id])), $row->id),
                         $this->make_release_label($row->num_added_groups),
                         $this->make_release_label($row->num_removed_groups),
                         $this->make_release_label($row->num_updated_groups),
