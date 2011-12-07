@@ -224,6 +224,10 @@ body {
 .motifs_compare_view .label {
     margin-left:10px;
 }
+.motifs_view .varna {
+    width:80px;
+    height:80px;
+}
 .loops_sfdata_view .scroll_table {
     overflow:auto;
     max-height:300px;

@@ -194,6 +194,12 @@ class Motifs_model extends CI_Model {
         }
     }
 
+    function make_fancybox_link($id, $motif_type, $release_id)
+    {
+         $image = 'http://rna.bgsu.edu/img/MotifAtlas/' . strtoupper($motif_type) . $release_id . '/' . $id . '.png';
+         return "<a class='fancybox' rel='v' title='$id' href='$image'><img src='$image' alt='$id' class='varna' /></a>";
+    }
+
     function get_release($motif_type,$id)
     {
         // get annotations: updated/>2 parents etc
@@ -226,8 +232,10 @@ class Motifs_model extends CI_Model {
 
         $table = array();
         $i = 1;
+
         foreach ($query->result() as $row) {
             $table[] = array($i,
+                             $this->make_fancybox_link($row->motif_id, $motif_type, $id),
                              anchor(base_url(array("motif/view",$row->motif_id)), $row->motif_id),
                              $this->add_annotation_label($row->motif_id, $reason),
                              $row->instances);

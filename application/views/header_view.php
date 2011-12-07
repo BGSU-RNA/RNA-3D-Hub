@@ -25,6 +25,10 @@
     <script src="<?php echo $baseurl;?>js/MotifAtlas.js" type="text/javascript"></script>
     <script src="<?php echo $baseurl;?>js/rcsbPdbImageLib.min.js" type="text/javascript"> </script>
 
+    <!-- fancybox -->
+    <link rel="stylesheet" href="<?php echo $baseurl;?>js/fancybox/jquery.fancybox.css?v=2.0.3" type="text/css" media="screen" />
+    <script type="text/javascript" src="<?php echo $baseurl;?>js/fancybox/jquery.fancybox.pack.js?v=2.0.3"></script>
+
     <!-- Le styles -->
     <link href="<?php echo $baseurl;?>css/bootstrap.min.css" rel="stylesheet">
     <link href="<?php echo $baseurl;?>css/motifatlas.css" rel="stylesheet">
