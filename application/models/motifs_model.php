@@ -194,6 +194,18 @@ class Motifs_model extends CI_Model {
         }
     }
 
+    function get_graphml($motif_type, $id)
+    {
+        $this->db->select('graphml')
+                 ->from('ml_releases')
+                 ->where('type',$motif_type)
+                 ->where('id',$id);
+        $query = $this->db->get();
+        foreach ($query->result() as $row) {
+            return $graphml = $row->graphml;
+        }
+    }
+
     function make_fancybox_link($id, $motif_type, $release_id)
     {
          $image = 'http://rna.bgsu.edu/img/MotifAtlas/' . strtoupper($motif_type) . $release_id . '/' . $id . '.png';

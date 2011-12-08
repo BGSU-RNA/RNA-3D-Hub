@@ -29,6 +29,15 @@
     <link rel="stylesheet" href="<?php echo $baseurl;?>js/fancybox/jquery.fancybox.css?v=2.0.3" type="text/css" media="screen" />
     <script type="text/javascript" src="<?php echo $baseurl;?>js/fancybox/jquery.fancybox.pack.js?v=2.0.3"></script>
 
+    <!-- cytoscapeweb -->
+    <!-- JSON support for IE (needed to use JS API) -->
+    <script type="text/javascript" src="<?php echo $baseurl;?>cytoscapeweb/js/min/json2.min.js"></script>
+    <!-- Flash embedding utility (needed to embed Cytoscape Web) -->
+    <script type="text/javascript" src="<?php echo $baseurl;?>cytoscapeweb/js/min/AC_OETags.min.js"></script>
+    <!-- Cytoscape Web JS API (needed to reference org.cytoscapeweb.Visualization) -->
+    <script type="text/javascript" src="<?php echo $baseurl;?>cytoscapeweb/js/min/cytoscapeweb.min.js"></script>
+
+
     <!-- Le styles -->
     <link href="<?php echo $baseurl;?>css/bootstrap.min.css" rel="stylesheet">
     <link href="<?php echo $baseurl;?>css/motifatlas.css" rel="stylesheet">

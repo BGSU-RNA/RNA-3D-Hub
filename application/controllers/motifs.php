@@ -17,7 +17,7 @@ class Motifs extends CI_Controller {
         $this->table->set_heading('Release id', 'All changes', 'Description', 'Loops', 'Motifs');
         $data['table']['hls'] = $this->table->generate($result['HL']);
 
-        $data['title'] = 'All Motif Atlas Releases';
+        $data['title']   = 'All Motif Atlas Releases';
         $data['baseurl'] = base_url();
 
         $this->load->view('header_view', $data);
@@ -38,17 +38,40 @@ class Motifs extends CI_Controller {
         $tmpl = array( 'table_open'  => '<table class="zebra-striped condensed-table bordered-table" id="sort">' );
         $this->table->set_template($tmpl);
         $this->table->set_heading('#', 'Varna 2D', 'Motif id', 'Status', 'Instances');
-        $data['table']  = $this->table->generate($result['table']);
-        $data['status'] = $this->Motifs_model->get_release_status($motif_type,$id);
-        $data['counts'] = $result['counts'];
-        $data['title']  = 'Motif Atlas Release ' . $id;
-        $data['baseurl'] = base_url();
+        $data['table']    = $this->table->generate($result['table']);
+        $data['status']   = $this->Motifs_model->get_release_status($motif_type,$id);
+        $data['counts']   = $result['counts'];
+        $data['title']    = 'Motif Atlas Release ' . $id;
+        $data['baseurl']  = base_url();
+        $data['alt_view'] = base_url(array('motifs','graph',$motif_type,$id));
 
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('motifs_view', $data);
         $this->load->view('footer');
 	}
+
+    public function graph($motif_type,$id)
+    {
+	    $motif_type = strtolower($motif_type);
+	    $this->load->model('Motifs_model', '', TRUE);
+
+        $data['graphml'] = $this->Motifs_model->get_graphml($motif_type,$id);
+
+        $data['img_loc']   = strtoupper($motif_type) . $id;
+        $data['alt_view']  = base_url(array('motifs','release',$motif_type,$id));
+        $data['title']     = 'Motif Atlas Release ' . $id . ' (' . $motif_type . ')';
+        $data['baseurl']   = base_url();
+
+        $this->load->view('header_view', $data);
+        $this->load->view('menu_view', $data);
+        if ($data['graphml'] == '') {
+            $this->load->view('motifs_graph_not_exists_view', $data);
+        } else {
+            $this->load->view('motifs_graph_view', $data);
+        }
+        $this->load->view('footer');
+    }
 
     public function compare_releases()
     {

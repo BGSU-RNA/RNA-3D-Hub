@@ -6,6 +6,7 @@
             <?php echo $title;?>
             <small><?=$status?></small>
           </h1>
+          <a href='<?=$alt_view?>'>Switch to graph view</a>
         </div>
         <div class="row">
           <div class="span10">

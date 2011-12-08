@@ -13,7 +13,7 @@
         <div class="span6">
           <h2>RNA 3D Motifs</h2>
           <p>Etiam porta sem malesuada magna mollis euismod. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.</p>
-          <p><a class="btn" href="<?php echo $baseurl;?>release">View details &raquo;</a></p>
+          <p><a class="btn" href="<?php echo $baseurl;?>motifs">View details &raquo;</a></p>
         </div>
         <div class="span5">
           <h2>Non-redundant lists</h2>

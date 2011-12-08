@@ -194,7 +194,7 @@ body {
 }
 
 /* LAB */
-.pdb_loops_view .jmolheight, .loops_sfdata_view .jmolheight {
+.pdb_loops_view .jmolheight, .loops_sfdata_view .jmolheight, .motifs_graph_view .jmolheight {
     width:350px;
 }
 .motifs_view .content {
@@ -246,15 +246,26 @@ body {
     text-align:center;
     font-size:x-small;
 }
-.loops_sfdata_view input[type=radio],.loops_sfdata_view input[type=checkbox] {
+.loops_sfdata_view input[type=radio],.loops_sfdata_view input[type=checkbox], .motifs_graph_view input[type=checkbox] {
     margin-right:10px;
 }
 .loops_sfdata_view th:nth-of-type(1) {
     width:50px;
     text-align:left;
 }
-
-
+.motifs_graph_view #cytoscapeweb {
+    height:340px;
+    margin-bottom:10px;
+}
+.motifs_graph_view #buttons>.btn {
+    margin-left:10px;
+}
+.motifs_graph_view input, .motifs_graph_view .btn {
+    margin-bottom:5px;
+}
+.motifs_graph_view #varna>img {
+    width:150px;
+}
 /* LAB */
 
 body.home {
