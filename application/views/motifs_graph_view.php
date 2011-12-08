@@ -30,7 +30,7 @@
                   </script>
               </div>
               <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
-              <input type='button' id='neighborhood' class='btn' value="Show numbers">
+              <input type='button' id='showNtNums' class='btn' value="Show numbers">
 
               <div id='signature'></div><br>
               <ul class="media-grid"><a href='#' id='varna'></a></ul>
@@ -76,27 +76,8 @@
                 vis.select("nodes",[id]);
             });
 
-            $('#neighborhood').click(function() {
-                var t = $(this);
-                if ( t.attr('value') == 'Show neighborhood' ) {
-                    t.attr('value', 'Hide neighborhood');
-                    jmolScript('frame *;display displayed or 1.2;');
-                } else {
-                    t.attr('value', 'Show neighborhood');
-                    jmolScript('frame *;display displayed and not 1.2;');
-                }
-            });
-
-            $('#showNtNums').click(function() {
-                var t = $(this);
-                if ( t.attr('value') == 'Show numbers' ) {
-                    t.attr('value', 'Hide numbers');
-                    jmolScript('select {*.P},{*.CA};label %[sequence]%[resno];');
-                } else {
-                    t.attr('value', 'Show numbers');
-                    jmolScript('label off;');
-                }
-            });
+            jmol_neighborhood_button_click('neighborhood');
+            jmol_show_nucleotide_numbers_click('showNtNums');
 
             // id of Cytoscape Web container div
             var div_id = "cytoscapeweb";

@@ -37,7 +37,7 @@
                     <input type='button' id='prev' class='btn' value='Previous'>
                     <input type='button' id='next' class='btn' value="Next">
                 </div>
-                <div id="checkboxes" class="jmolheight">
+                <div id="checkboxes">
                     <?php echo $checkboxes;?>
                 </div>
             </div>

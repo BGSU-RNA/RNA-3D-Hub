@@ -42,12 +42,16 @@ body {
 .motifview .interactions table {
 	margin-bottom:2px;
 }
-
-.motifview .jmolheight {
+.jmolheight {
     height:340px;
+    width:350px;
 }
 .motifview #checkboxes {
     overflow:auto;
+    height:340px;
+}
+.motifview input[type=checkbox] {
+    margin-right:3px;
 }
 .motifview ul.inputs-list {
     width:100px;
@@ -194,9 +198,11 @@ body {
 }
 
 /* LAB */
+/*
 .pdb_loops_view .jmolheight, .loops_sfdata_view .jmolheight, .motifs_graph_view .jmolheight {
-    width:350px;
+
 }
+*/
 .motifs_view .content {
     min-height: 500px;
 }
@@ -246,7 +252,12 @@ body {
     text-align:center;
     font-size:x-small;
 }
+/*
 .loops_sfdata_view input[type=radio],.loops_sfdata_view input[type=checkbox], .motifs_graph_view input[type=checkbox] {
+    margin-right:10px;
+}
+*/
+input[type=radio], input[type=checkbox] {
     margin-right:10px;
 }
 .loops_sfdata_view th:nth-of-type(1) {
@@ -265,6 +276,9 @@ body {
 }
 .motifs_graph_view #varna>img {
     width:150px;
+}
+.motifs_view img.thumbnail {
+    width:90px;
 }
 /* LAB */
 

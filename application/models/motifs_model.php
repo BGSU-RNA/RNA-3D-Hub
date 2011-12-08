@@ -209,7 +209,7 @@ class Motifs_model extends CI_Model {
     function make_fancybox_link($id, $motif_type, $release_id)
     {
          $image = 'http://rna.bgsu.edu/img/MotifAtlas/' . strtoupper($motif_type) . $release_id . '/' . $id . '.png';
-         return "<a class='fancybox' rel='v' title='$id' href='$image'><img src='$image' alt='$id' class='varna' /></a>";
+         return "<ul class='media-grid'><a class='fancybox' rel='v' title='$id' href='$image'><img class='thumbnail' src='$image' alt='$id' class='varna' /></a></ul>";
     }
 
     function get_release($motif_type,$id)
@@ -242,15 +242,14 @@ class Motifs_model extends CI_Model {
                  ->order_by('instances','desc');
         $query = $this->db->get();
 
-        $table = array();
         $i = 1;
-
         foreach ($query->result() as $row) {
             $table[] = array($i,
                              $this->make_fancybox_link($row->motif_id, $motif_type, $id),
-                             anchor(base_url(array("motif/view",$row->motif_id)), $row->motif_id),
+                             '<input type="radio" class="exemplar" name="ex">' . anchor(base_url(array('motif','view',$row->motif_id)), $row->motif_id),
                              $this->add_annotation_label($row->motif_id, $reason),
-                             $row->instances);
+                             $row->instances,
+                             '');
             $i++;
         }
         return array( 'table' => $table, 'counts' => $counts_text );
