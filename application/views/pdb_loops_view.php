@@ -86,14 +86,16 @@
           <div class="span6" id="jmol" >
                 <div class="block jmolheight">
                     <script type="text/javascript">
-//                         jmolInitialize(" /jmol");
-//                         jmolSetAppletColor("#ffffff");
-//                         jmolApplet(340, "javascript appletLoaded()");
+                        jmolInitialize(" /jmol");
+                        jmolSetAppletColor("#ffffff");
+                        jmolApplet(340, "javascript appletLoaded()");
                     </script>
                 </div>
                 <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
                 <input type='button' id='prev' class='btn' value='Previous'>
                 <input type='button' id='next' class='btn' value="Next">
+                <br>
+                <label><input type="checkbox" id="showNtNums">Nucleotide numbers</label>
            </div>
 
 
@@ -112,10 +114,12 @@
 			var timeoutID = window.setTimeout(function(){
 	    		jmolInlineLoader.init({
                     chbxClass: 'jmolInline',
-                    serverUrl: 'http://leontislab.bgsu.edu/Motifs/jmolInlineLoader/nt_coord_new.php',
+                    serverUrl: 'http://leontislab.bgsu.edu/Motifs/jmolInlineLoader/nt_coord_test.php',
+//                     serverUrl: 'http://leontislab.bgsu.edu/Motifs/jmolInlineLoader/nt_coord_new.php',
                     neighborhoodButtonId: 'neighborhood',
                     showNextButtonId: 'next',
-                    showPreviousButtonId: 'prev'
+                    showPreviousButtonId: 'prev',
+                    showNucleotideNumbersId: 'showNtNums'
 	    		});
 			}, 1500);
       	}
