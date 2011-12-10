@@ -12,6 +12,85 @@ class Loops_model extends CI_Model {
         parent::__construct();
     }
 
+    function get_status_counts_by_release()
+    {
+        $motif_types = array('IL','HL','J3');
+        $types       = array('valid','modified_nt','missing_nt');//,'complementary');
+
+        foreach ($motif_types as $motif_type) {
+            $this->db->select_sum('valid')
+                     ->select_sum('complementary')
+                     ->select_sum('modified_nt')
+                     ->select_sum('missing_nt')
+                     ->select('release_id')
+                     ->from('loop_qa')
+                     ->like('id',$motif_type,'after')
+                     ->group_by('release_id');
+            $query = $this->db->get();
+
+            foreach ($query->result() as $row) {
+                $result[$motif_type]['valid'][$row->release_id] = $row->valid;
+                $result[$motif_type]['complementary'][$row->release_id] = $row->complementary;
+                $result[$motif_type]['modified_nt'][$row->release_id] = $row->modified_nt;
+                $result[$motif_type]['missing_nt'][$row->release_id] = $row->missing_nt;
+            }
+        }
+
+        foreach ($motif_types as $motif_type) {
+            foreach ($motif_types as $motif_type) {
+                $this->db->select('count(id) as num, release_id',false)
+                         ->from('loop_qa')
+                         ->like('id',$motif_type,'after')
+                         ->group_by('release_id');
+                $query = $this->db->get();
+
+                foreach ($query->result() as $row) {
+                    $result[$motif_type]['total'][$row->release_id] = $row->num;
+                }
+            }
+        }
+        return $result; // $result['IL']['valid']['0.1'] = 20220
+    }
+
+    function get_release_order()
+    {
+        $this->db->select()
+                 ->from('loop_releases')
+                 ->order_by('date','desc');
+        $query = $this->db->get();
+
+        foreach ($query->result() as $row) {
+            $result[] = $row->id;
+        }
+        return $result; // $result[0] = '0.1'
+    }
+
+    function get_loop_releases()
+    {
+        $releases = $this->get_release_order();
+
+        // $counts['valid']['IL']['0.1'] = 20220
+        $counts = $this->get_status_counts_by_release();
+
+        $motif_types = array('IL','HL','J3');
+        foreach ($motif_types as $motif_type) {
+            for ($i = 0; $i<count($releases); $i++) {
+                if ($i == 0) {
+                    $id = $releases[$i] . ' (current)';
+                } else {
+                    $id = $releases[$i];
+                }
+                $tables[$motif_type][] = array($id,
+                                               $counts[$motif_type]['total'][$releases[$i]],
+                                               $counts[$motif_type]['valid'][$releases[$i]],
+                                               $counts[$motif_type]['modified_nt'][$releases[$i]],
+                                               $counts[$motif_type]['missing_nt'][$releases[$i]],
+                                               $counts[$motif_type]['complementary'][$releases[$i]]
+                                               );
+            }
+        }
+        return $tables;
+    }
 
     function query_dcc()
     {
