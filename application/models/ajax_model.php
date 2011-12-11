@@ -9,26 +9,18 @@ class Ajax_model extends CI_Model {
         parent::__construct();
     }
 
-    function get_exemplar_coordinates($motif_id)
+    function get_loop_coordinates($loop_id)
     {
-        // given a motif_id find the representative loop
-        $this->db->select('loop_id')
-                 ->from('ml_loop_order')
-                 ->where('motif_id',$motif_id)
-                 ->where('original_order',1);
-        $query = $this->db->get();
-        if ($query->num_rows() == 0) {
-            return '';
-        }
-        $row = $query->row();
-
         // find all constituent nucleotides
-        $this->db->distinct('nt_id')
-                 ->from('ml_loop_positions')
-                 ->where('loop_id',$row->loop_id);
+        $this->db->select('nt_ids')
+                 ->distinct()
+                 ->from('loops_all')
+                 ->where('id',$loop_id);
         $query = $this->db->get();
+        if ($query->num_rows() == 0) { return 'Loop id not found'; }
+
         foreach ($query->result() as $row) {
-            $nt_ids[] = $row->nt_id;
+            $nt_ids = explode(',',$row->nt_ids);
         }
 
         // get their coordinates
@@ -36,6 +28,7 @@ class Ajax_model extends CI_Model {
                  ->from('motifatlas.coordinates_copy')
                  ->where_in('nt_id',$nt_ids);
         $query = $this->db->get();
+        if ($query->num_rows() == 0) { return 'Loop coordinates not found'; }
 
         $final_result = "MODEL     1\n";
         foreach ($query->result() as $row) {
@@ -44,11 +37,6 @@ class Ajax_model extends CI_Model {
         $final_result .= "ENDMDL\n";
 
         // get neighborhood
-        // SELECT DISTINCT(t1.Coordinates)
-        // FROM distances_copy AS t2
-        // JOIN coordinates_copy AS t1
-        // ON t1.nt_id = t2.id1
-        // WHERE t2.id2 IN ($nts) AND t2.id1 NOT IN ($nts);
         $this->db->select('coordinates')
                  ->distinct()
                  ->from('motifatlas.coordinates_copy')
@@ -66,6 +54,22 @@ class Ajax_model extends CI_Model {
          $final_result .= "ENDMDL";
 
         return $final_result;
+    }
+
+    function get_exemplar_coordinates($motif_id)
+    {
+        // given a motif_id find the representative loop
+        $this->db->select('loop_id')
+                 ->from('ml_loop_order')
+                 ->where('motif_id',$motif_id)
+                 ->where('original_order',1);
+        $query = $this->db->get();
+        if ($query->num_rows() == 0) {
+            return '';
+        }
+        $row = $query->row();
+
+        return $this->get_loop_coordinates($row->loop_id);
     }
 
 }
