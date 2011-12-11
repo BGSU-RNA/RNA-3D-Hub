@@ -15,7 +15,7 @@ body {
 .content {
     background-color: #fff;
     padding: 20px;
-    min-height: 800px;
+    min-height: 500px;
     margin: 0 -20px; /* negative indent the amount of the padding to maintain the grid system */
     -webkit-border-radius: 0 0 6px 6px;
        -moz-border-radius: 0 0 6px 6px;
@@ -279,6 +279,12 @@ input[type=radio], input[type=checkbox] {
 }
 .motifs_view img.thumbnail {
     width:90px;
+}
+/* override bootstrap */
+.pagination .next a {
+    border-right: 1px solid;
+    border-right-color: #DDD;
+    border-right-color: rgba(0, 0, 0, 0.15);
 }
 /* LAB */
 

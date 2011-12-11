@@ -5,11 +5,42 @@ class Loops_model extends CI_Model {
     {
         $CI = & get_instance();
 
-        $this->q   = $this->query_dcc();
-        $this->avg = $this->get_averages();
-
         // Call the Model constructor
         parent::__construct();
+    }
+
+    function initialize_sfdata()
+    {
+        $this->q   = $this->query_dcc();
+        $this->avg = $this->get_averages();
+    }
+
+    function get_loops($type,$motif_type,$release_id,$num,$offset)
+    {
+        $this->db->select('id')
+                 ->from('loop_qa')
+                 ->where($type,1)
+                 ->like('id',$motif_type,'after')
+                 ->where('release_id',$release_id)
+                 ->order_by('id')
+                 ->limit($num,$offset);
+        $query = $this->db->get();
+
+        foreach ($query->result() as $row) {
+            $table[] = array('<label><input type="radio" class="loop" name="l"><span>' . $row->id . '</span></label>',
+                              '200');
+        }
+
+        return $table;
+    }
+
+    function get_loops_count($type,$motif_type,$release_id)
+    {
+        $this->db->from('loop_qa')
+                 ->where($type,1)
+                 ->like('id',$motif_type,'after')
+                 ->where('release_id',$release_id);
+        return $this->db->count_all_results();
     }
 
     function get_status_counts_by_release()
@@ -65,6 +96,14 @@ class Loops_model extends CI_Model {
         return $result; // $result[0] = '0.1'
     }
 
+    function make_loop_release_link($counts,$motif_type,$type,$release_id)
+    {
+        return anchor(
+                      base_url(array('loops','view_all',$type,$motif_type,$release_id)),
+                      $counts[$motif_type][$type][$release_id]
+                      );
+    }
+
     function get_loop_releases()
     {
         $releases = $this->get_release_order();
@@ -81,11 +120,15 @@ class Loops_model extends CI_Model {
                     $id = $releases[$i];
                 }
                 $tables[$motif_type][] = array($id,
-                                               $counts[$motif_type]['total'][$releases[$i]],
-                                               $counts[$motif_type]['valid'][$releases[$i]],
-                                               $counts[$motif_type]['modified_nt'][$releases[$i]],
-                                               $counts[$motif_type]['missing_nt'][$releases[$i]],
-                                               $counts[$motif_type]['complementary'][$releases[$i]]
+                                               $this->make_loop_release_link($counts,$motif_type,'total',$releases[$i]),
+                                               $this->make_loop_release_link($counts,$motif_type,'valid',$releases[$i]),
+                                               $this->make_loop_release_link($counts,$motif_type,'modified_nt',$releases[$i]),
+                                               $this->make_loop_release_link($counts,$motif_type,'missing_nt',$releases[$i]),
+                                               $this->make_loop_release_link($counts,$motif_type,'complementary',$releases[$i])
+//                                                $counts[$motif_type]['valid'][$releases[$i]],
+//                                                $counts[$motif_type]['modified_nt'][$releases[$i]],
+//                                                $counts[$motif_type]['missing_nt'][$releases[$i]],
+//                                                $counts[$motif_type]['complementary'][$releases[$i]]
                                                );
             }
         }
