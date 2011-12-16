@@ -12,6 +12,7 @@
                     <li class="divider"></li>
                     <li><a href="<?php echo $baseurl;?>loops/sfdata">Sfcheck and Mapman: Loops</a></li>
                     <li><a href="<?php echo $baseurl;?>loops/sfjmol">Sfcheck and Mapman: PDBs</a></li>
+                    <li><a href="<?php echo $baseurl;?>loops/graphs">Sfcheck and Mapman: Graphs</a></li>
                 </ul>
             </li>
 
