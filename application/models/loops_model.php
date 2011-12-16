@@ -21,7 +21,7 @@ class Loops_model extends CI_Model {
         if ($handle = opendir('/Servers/rna.bgsu.edu/img/MotifAtlas/dcc_loops')) {
             /* This is the correct way to loop over the directory. */
             while (false !== ($entry = readdir($handle))) {
-                if ($entry != "." && $entry != "..") {
+                if ($entry != "." && $entry != ".." && $entry != ".DS_Store") {
                     $graphs[] = $entry;
                 }
             }
