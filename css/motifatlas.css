@@ -246,7 +246,11 @@ body {
     font-size:smaller;
 }
 .loops_sfdata_view label.narrow {
-    width:105px;
+/*      width:105px;*/
+    width:auto;
+}
+.loops_paginated_view label {
+    width:auto;
 }
 .loops_sfdata_view td {
     text-align:center;

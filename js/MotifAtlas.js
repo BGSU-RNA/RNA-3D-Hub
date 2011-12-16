@@ -54,13 +54,7 @@ function jmol_show_nucleotide_numbers_click(id) {
 // *****************************************************************************
 // End of common Jmol functions
 // *****************************************************************************
-
-
-// Cytoscapeweb functions
-function show_motif_exemplar_in_jmol(id) {
-    $.post('http://rna.bgsu.edu/MotifAtlas_dev/ajax/get_exemplar_coordinates', { motif_id: id }, function(data) {
-        jmolScript('zap;');
-        jmolLoadInlineScript(data);
+function apply_jmol_styling() {
         jmolScript('select [U];color navy;');
         jmolScript('select [G]; color chartreuse;');
         jmolScript('select [C]; color gold;');
@@ -69,7 +63,16 @@ function show_motif_exemplar_in_jmol(id) {
         jmolScript('select protein; color purple; color translucent 0.8;');
         jmolScript('select 1.0;spacefill off;center 1.1;');
         jmolScript('frame *;display displayed and not 1.2;');
+        jmolScript('select hetero;color pink;');
         jmolScript('zoom 150');
+}
+
+// Cytoscapeweb functions
+function show_motif_exemplar_in_jmol(id) {
+    $.post('http://rna.bgsu.edu/MotifAtlas_dev/ajax/get_exemplar_coordinates', { motif_id: id }, function(data) {
+        jmolScript('zap;');
+        jmolLoadInlineScript(data);
+        apply_jmol_styling();
     });
 }
 // end of Cytoscapeweb functions
@@ -79,15 +82,6 @@ function show_loop_in_jmol(id) {
     $.post('http://rna.bgsu.edu/MotifAtlas_dev/ajax/get_loop_coordinates', { loop_id: id }, function(data) {
         jmolScript('zap;');
         jmolLoadInlineScript(data);
-        jmolScript('select [U];color navy;');
-        jmolScript('select [G]; color chartreuse;');
-        jmolScript('select [C]; color gold;');
-        jmolScript('select [A]; color red;');
-        jmolScript('select 1.2; color grey; color translucent 0.8;');
-        jmolScript('select protein; color purple; color translucent 0.8;');
-        jmolScript('select 1.0;spacefill off;center 1.1;');
-        jmolScript('frame *;display displayed and not 1.2;');
-        jmolScript('zoom 150');
-    });
+        apply_jmol_styling();    });
 }
 // end of Cytoscapeweb functions

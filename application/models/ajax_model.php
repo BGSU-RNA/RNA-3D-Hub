@@ -25,7 +25,7 @@ class Ajax_model extends CI_Model {
 
         // get their coordinates
         $this->db->select('coordinates')
-                 ->from('motifatlas.coordinates_copy')
+                 ->from('motifversions.coordinates')
                  ->where_in('nt_id',$nt_ids);
         $query = $this->db->get();
         if ($query->num_rows() == 0) { return 'Loop coordinates not found'; }
@@ -39,8 +39,8 @@ class Ajax_model extends CI_Model {
         // get neighborhood
         $this->db->select('coordinates')
                  ->distinct()
-                 ->from('motifatlas.coordinates_copy')
-                 ->join('motifatlas.distances_copy','coordinates_copy.nt_id=distances_copy.id1')
+                 ->from('motifversions.coordinates')
+                 ->join('motifversions.distances','coordinates.nt_id=distances.id1')
                  ->where_in('id2',$nt_ids)
                  ->where_not_in('id1',$nt_ids);
         $query = $this->db->get();

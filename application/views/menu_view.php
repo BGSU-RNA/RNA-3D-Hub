@@ -10,7 +10,8 @@
                     <li><a href="<?php echo $baseurl;?>pdb">View all PDBs</a></li>
                     <li><a href="<?php echo $baseurl;?>loops">View loop stats</a></li>
                     <li class="divider"></li>
-                    <li><a href="<?php echo $baseurl;?>loops/sfdata">Sfcheck and Mapman</a></li>
+                    <li><a href="<?php echo $baseurl;?>loops/sfdata">Sfcheck and Mapman: Loops</a></li>
+                    <li><a href="<?php echo $baseurl;?>loops/sfjmol">Sfcheck and Mapman: PDBs</a></li>
                 </ul>
             </li>
 

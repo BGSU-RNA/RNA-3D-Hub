@@ -15,6 +15,52 @@ class Loops_model extends CI_Model {
         $this->avg = $this->get_averages();
     }
 
+    function get_graphs()
+    {
+        $url = 'http://rna.bgsu.edu/img/MotifAtlas/dcc_loops';
+        if ($handle = opendir('/Servers/rna.bgsu.edu/img/MotifAtlas/dcc_loops')) {
+            /* This is the correct way to loop over the directory. */
+            while (false !== ($entry = readdir($handle))) {
+                if ($entry != "." && $entry != "..") {
+                    $graphs[] = $entry;
+                }
+            }
+            closedir($handle);
+        }
+        $text = '';
+        foreach ($graphs as $graph) {
+            $text .= <<<EOT
+              <li>
+                <a href="{$url}/{$graph}" class='fancybox' rel='g'>
+                  <img class="thumbnail span4" src="$url/{$graph}" alt="">
+                  $graph
+                </a>
+              </li>
+EOT;
+        }
+        return $text;
+    }
+
+    function get_loop_modifications()
+    {
+        $query = $this->db->get('loop_modifications');
+        foreach ($query->result() as $row) {
+            $mod[$row->id] = $row->modification;
+        }
+        return $mod;
+    }
+
+    function make_ligand_link($s)
+    {
+        // http://www.pdb.org/pdb/images/UR3_300.png
+        $parts = explode(',',$s);
+        $links = '';
+        foreach ($parts as $part) {
+            $links .= "<a href='http://www.rcsb.org/pdb/ligand/ligandsummary.do?hetId={$part}' target='_blank'>$part</a> ";
+        }
+        return $links;
+    }
+
     function get_loops($type,$motif_type,$release_id,$num,$offset)
     {
         $this->db->select('id')
@@ -26,11 +72,26 @@ class Loops_model extends CI_Model {
                  ->limit($num,$offset);
         $query = $this->db->get();
 
-        foreach ($query->result() as $row) {
-            $table[] = array('<label><input type="radio" class="loop" name="l"><span>' . $row->id . '</span></label>',
-                              '200');
+        if ($type == 'modified_nt') {
+            $mod = $this->get_loop_modifications();
         }
 
+        $table = array();
+        $i = 1;
+        foreach ($query->result() as $row) {
+            if ($type == 'modified_nt') {
+                $table[] = array($offset + $i,
+                                 '<label><input type="radio" class="loop" name="l"><span>' . $row->id . '</span></label>',
+                                 '<a class="pdb">' . substr($row->id,3,4) . '</a>',
+                                 $this->make_ligand_link($mod[$row->id]));
+            } else {
+                $table[] = array($offset + $i,
+                                 '<label><input type="radio" class="loop" name="l"><span>' . $row->id . '</span></label>',
+                                 '<a class="pdb">' . substr($row->id,3,4) . '</a>');
+            }
+
+            $i++;
+        }
         return $table;
     }
 
@@ -92,21 +153,31 @@ class Loops_model extends CI_Model {
 
         foreach ($query->result() as $row) {
             $result[] = $row->id;
+            $dates[$row->id] = substr($row->date,0,10);
         }
-        return $result; // $result[0] = '0.1'
+        return array('order' => $result, 'dates' => $dates); // $result[0] = '0.1'
     }
 
     function make_loop_release_link($counts,$motif_type,$type,$release_id)
     {
-        return anchor(
-                      base_url(array('loops','view_all',$type,$motif_type,$release_id)),
-                      $counts[$motif_type][$type][$release_id]
-                      );
+        if ($type == 'total') {
+            return $counts[$motif_type][$type][$release_id];
+        } elseif ($type == 'complementary' and $motif_type != 'IL') {
+            return 'N/A';
+        }
+        else {
+            return anchor(
+                          base_url(array('loops','view_all',$type,$motif_type,$release_id)),
+                          $counts[$motif_type][$type][$release_id]
+                          );
+        }
     }
 
     function get_loop_releases()
     {
-        $releases = $this->get_release_order();
+        $temp = $this->get_release_order();
+        $releases = $temp['order'];
+        $dates    = $temp['dates'];
 
         // $counts['valid']['IL']['0.1'] = 20220
         $counts = $this->get_status_counts_by_release();
@@ -114,21 +185,19 @@ class Loops_model extends CI_Model {
         $motif_types = array('IL','HL','J3');
         foreach ($motif_types as $motif_type) {
             for ($i = 0; $i<count($releases); $i++) {
+                $original_id = $releases[$i];
                 if ($i == 0) {
                     $id = $releases[$i] . ' (current)';
                 } else {
                     $id = $releases[$i];
                 }
                 $tables[$motif_type][] = array($id,
+                                               $dates[$original_id],
                                                $this->make_loop_release_link($counts,$motif_type,'total',$releases[$i]),
                                                $this->make_loop_release_link($counts,$motif_type,'valid',$releases[$i]),
                                                $this->make_loop_release_link($counts,$motif_type,'modified_nt',$releases[$i]),
                                                $this->make_loop_release_link($counts,$motif_type,'missing_nt',$releases[$i]),
                                                $this->make_loop_release_link($counts,$motif_type,'complementary',$releases[$i])
-//                                                $counts[$motif_type]['valid'][$releases[$i]],
-//                                                $counts[$motif_type]['modified_nt'][$releases[$i]],
-//                                                $counts[$motif_type]['missing_nt'][$releases[$i]],
-//                                                $counts[$motif_type]['complementary'][$releases[$i]]
                                                );
             }
         }
@@ -306,18 +375,76 @@ class Loops_model extends CI_Model {
         return $table;
     }
 
+    function get_fields_array()
+    {
+        return array('sfcheck_correlation','sfcheck_correlation_side_chain',
+                     'sfcheck_real_space_R','sfcheck_real_space_R_side_chain',
+                     'sfcheck_connect',
+                     'sfcheck_shift','sfcheck_shift_side_chain',
+                     'sfcheck_density_index_main_chain',
+                     'sfcheck_density_index_side_chain',
+                     'sfcheck_B_iso_main_chain','sfcheck_B_iso_side_chain',
+                     'mapman_correlation','mapman_real_space_R',
+                     'mapman_Biso_mean','mapman_occupancy_mean');
+    }
+
+    function get_min($pdb)
+    {
+        $this->db->select_min('sfcheck_correlation')
+                 ->select_min('sfcheck_correlation_side_chain')
+                 ->select_min('sfcheck_real_space_R')
+                 ->select_min('sfcheck_real_space_R_side_chain')
+                 ->select_min('sfcheck_connect')
+                 ->select_min('sfcheck_shift')
+                 ->select_min('sfcheck_shift_side_chain')
+                 ->select_min('sfcheck_density_index_main_chain')
+                 ->select_min('sfcheck_density_index_side_chain')
+                 ->select_min('sfcheck_B_iso_main_chain')
+                 ->select_min('sfcheck_B_iso_side_chain')
+                 ->select_min('mapman_correlation')
+                 ->select_min('mapman_real_space_R')
+                 ->select_min('mapman_Biso_mean')
+                 ->select_min('mapman_occupancy_mean')
+                 ->from('dcc_residues')
+                 ->like('id',strtoupper($pdb),'after');
+        $result = $this->db->get()->result_array();
+        return $result[0];
+    }
+
+    function get_max($pdb)
+    {
+        $this->db->select_max('sfcheck_correlation')
+                 ->select_max('sfcheck_correlation_side_chain')
+                 ->select_max('sfcheck_real_space_R')
+                 ->select_max('sfcheck_real_space_R_side_chain')
+                 ->select_max('sfcheck_connect')
+                 ->select_max('sfcheck_shift')
+                 ->select_max('sfcheck_shift_side_chain')
+                 ->select_max('sfcheck_density_index_main_chain')
+                 ->select_max('sfcheck_density_index_side_chain')
+                 ->select_max('sfcheck_B_iso_main_chain')
+                 ->select_max('sfcheck_B_iso_side_chain')
+                 ->select_max('mapman_correlation')
+                 ->select_max('mapman_real_space_R')
+                 ->select_max('mapman_Biso_mean')
+                 ->select_max('mapman_occupancy_mean')
+                 ->from('dcc_residues')
+                 ->like('id',strtoupper($pdb),'after');
+        $result = $this->db->get()->result_array();
+        return $result[0];
+     }
+
+    function get_dcc_pdbs()
+    {
+        $this->db->select('DISTINCT(substr(id,1,4)) as pdb FROM dcc_residues;',false);
+        $query = $this->db->get();
+        foreach($query->result() as $row) {
+            $result[] = anchor(base_url(array('loops','sfjmol',$row->pdb)),$row->pdb);
+        }
+        return $result;
+    }
+
 }
 
 /* End of file loops_model.php */
 /* Location: ./application/model/loops_model.php */
-
-
-
-//         $fields = array('sfcheck_correlation','sfcheck_real_space_R',
-//                         'sfcheck_real_space_R_side_chain','sfcheck_connect',
-//                         'sfcheck_shift','sfcheck_shift_side_chain',
-//                         'sfcheck_density_index_main_chain',
-//                         'sfcheck_density_index_side_chain',
-//                         'sfcheck_B_iso_main_chain','sfcheck_B_iso_side_chain',
-//                         'mapman_correlation','mapman_real_space_R',
-//                         'mapman_Biso_mean','mapman_occupancy_mean');
