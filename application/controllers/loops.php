@@ -152,6 +152,19 @@ class Loops extends CI_Controller {
         }
     }
 
+    function view($id)
+    {
+//             $this->load->model('Loops_model', '', TRUE);
+
+            $data['title'] = 'Loop ' . $id;
+            $data['id']    = $id;
+            $data['baseurl'] = base_url();
+            $this->load->view('header_view', $data);
+            $this->load->view('menu_view', $data);
+            $this->load->view('loops_single_view', $data);
+            $this->load->view('footer');
+    }
+
 }
 
 /* End of file loops.php */
