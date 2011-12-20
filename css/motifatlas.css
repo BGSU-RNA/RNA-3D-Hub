@@ -234,7 +234,7 @@ body {
     width:80px;
     height:80px;
 }
-.loops_sfdata_view .scroll_table {
+.loops_sfdata_view .scroll_table, .loops_benchmark_view .scroll_table {
     overflow:auto;
     max-height:300px;
     table-layout: fixed;
@@ -289,6 +289,9 @@ input[type=radio], input[type=checkbox] {
     border-right: 1px solid;
     border-right-color: #DDD;
     border-right-color: rgba(0, 0, 0, 0.15);
+}
+.loops_benchmark_view .label {
+    width:auto;
 }
 /* LAB */
 

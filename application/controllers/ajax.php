@@ -23,6 +23,17 @@ class Ajax extends CI_Controller {
         }
 	}
 
+    public function get_coordinates()
+    {
+        $input = $this->input->post('model');
+        if ($input != false) {
+            $this->load->model('Ajax_model', '', TRUE);
+            echo $this->Ajax_model->get_coordinates($input);
+        } else {
+            echo 'No input';
+        }
+    }
+
 }
 
 /* End of file ajax.php */

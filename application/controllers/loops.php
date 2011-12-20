@@ -165,6 +165,29 @@ class Loops extends CI_Controller {
             $this->load->view('footer');
     }
 
+    function benchmark($kind = NULL)
+    {
+        if ($kind == NULL) {
+            echo 'Overview and statistics. Coming soon';
+        } else {
+            $this->load->model('Loops_model', '', TRUE);
+            $table  = $this->Loops_model->get_benchmark_table($kind);
+
+            $this->table->set_heading('id','FR3D','RNA3DMotif','SCOR','RLooM','RNAJunction','CoSSMos','Manual annotation');
+            $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table' id='sortable'>" );
+            $this->table->set_template($tmpl);
+            $data['table'] = $this->table->generate($table);
+            $data['kind']    = $kind;
+            $data['title']   = 'Loop extraction benchmark';
+            $data['baseurl'] = base_url();
+            $this->load->view('header_view', $data);
+            $this->load->view('menu_view', $data);
+            $this->load->view('loops_benchmark_view', $data);
+            $this->load->view('footer');
+        }
+
+    }
+
 }
 
 /* End of file loops.php */
