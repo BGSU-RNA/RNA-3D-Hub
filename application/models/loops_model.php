@@ -13,6 +13,12 @@ class Loops_model extends CI_Model {
     {
         $this->q   = $this->query_dcc();
         $this->avg = $this->get_averages();
+        $this->low_is_good = array('mapman_Biso_mean','mapman_real_space_R','sfcheck_B_iso_main_chain',
+        'sfcheck_B_iso_side_chain','sfcheck_connect','sfcheck_density_index_side_chain','sfcheck_density_index_main_chain',
+        'sfcheck_real_space_R','sfcheck_real_space_R_side_chain','sfcheck_shift','sfcheck_shift_side_chain');
+
+        $this->high_is_good = array('mapman_correlation','mapman_occupancy_mean','sfcheck_correlation',
+        'sfcheck_correlation_side_chain');
     }
 
     function get_graphs()
@@ -230,6 +236,7 @@ EOT;
                  ->group_by('loop_id') // NB! comment out or leave in?
                  ->order_by('ml_loops.motif_id','asc')
                  ->order_by('loop_id','asc');
+//                  ->limit(10);
         $query = $this->db->get();
 
         return $query;
@@ -240,8 +247,10 @@ EOT;
         $heading = array('#','loop id','nt id','motif');
         $i = 1;
         foreach ($this->avg as $key => $value) {
-            $heading[] = "<a href='#' class='twipsy' title='{$key}. Avg {$value}'>$i</a>";
-            $i++;
+            if (preg_match('/mapman|sfcheck/',$key)) {
+                $heading[] = "<a href='#' class='twipsy' title='{$key}. Avg {$value}'>$i</a>";
+                $i++;
+            }
         }
         return $heading;
     }
@@ -249,39 +258,25 @@ EOT;
 
     function get_averages()
     {
-        $cum['sfcheck_correlation']              = 0;
-        $cum['sfcheck_correlation_side_chain']   = 0;
-        $cum['sfcheck_real_space_R']             = 0;
-        $cum['sfcheck_real_space_R_side_chain']  = 0;
-        $cum['sfcheck_connect']                  = 0;
-        $cum['sfcheck_shift']                    = 0;
-        $cum['sfcheck_shift_side_chain']         = 0;
-        $cum['sfcheck_density_index_main_chain'] = 0;
-        $cum['sfcheck_density_index_side_chain'] = 0;
-        $cum['sfcheck_B_iso_main_chain']         = 0;
-        $cum['sfcheck_B_iso_side_chain']         = 0;
-        $cum['mapman_correlation']               = 0;
-        $cum['mapman_real_space_R']              = 0;
-        $cum['mapman_Biso_mean']                 = 0;
-        $cum['mapman_occupancy_mean']            = 0;
-
+        $cum = array();
+        $i = 0;
         foreach ($this->q->result() as $row) {
-            $cum['sfcheck_correlation']              += $row->sfcheck_correlation;
-            $cum['sfcheck_correlation_side_chain']   += $row->sfcheck_correlation_side_chain;
-            $cum['sfcheck_real_space_R']             += $row->sfcheck_real_space_R;
-            $cum['sfcheck_real_space_R_side_chain']  += $row->sfcheck_real_space_R_side_chain;
-            $cum['sfcheck_connect']                  += $row->sfcheck_connect;
-            $cum['sfcheck_shift']                    += $row->sfcheck_shift;
-            $cum['sfcheck_shift_side_chain']         += $row->sfcheck_shift_side_chain;
-            $cum['sfcheck_density_index_main_chain'] += $row->sfcheck_density_index_main_chain;
-            $cum['sfcheck_density_index_side_chain'] += $row->sfcheck_density_index_side_chain;
-            $cum['sfcheck_B_iso_main_chain']         += $row->sfcheck_B_iso_main_chain;
-            $cum['sfcheck_B_iso_side_chain']         += $row->sfcheck_B_iso_side_chain;
-            $cum['mapman_correlation']               += $row->mapman_correlation;
-            $cum['mapman_real_space_R']              += $row->mapman_real_space_R;
-            $cum['mapman_Biso_mean']                 += $row->mapman_Biso_mean;
-            $cum['mapman_occupancy_mean']            += $row->mapman_occupancy_mean;
+
+            if ($i == 0) {
+                $fields = get_object_vars($row);
+                foreach ($fields as $key => $value) {
+                    if (!array_key_exists($key,$cum)) {
+                        $cum[$key] = 0;
+                    }
+                }
+                $i = 1;
+            }
+
+            foreach ($fields as $key => $value) {
+                $cum[$key] += $value;
+            }
         }
+
         $total = $this->q->num_rows();
         foreach ($cum as $key => $value) {
             $avg[$key] = number_format($value / $total, 3);
@@ -294,21 +289,35 @@ EOT;
     // return an empty string.
     function analyze_nucleotide($row, $i)
     {
-
         $props = get_object_vars($row);
 
         $extreme_case = false;
         foreach ($props as $key => $value) {
+
+            if (array_key_exists($key,$this->low_is_good)) {
+                if ($value > $this->avg[$key]) {
+                    $extreme_case = true;
+                    break;
+                }
+            } else {
+                if ($value < $this->avg[$key]) {
+                    $extreme_case = true;
+                    break;
+                }
+
+            }
+
+
             // high b values are bad, so we highlight them
-            $pos = strpos($key,'iso');
-            if ( $pos != false and $value > $this->avg[$key] ) {
-                $extreme_case = true;
-                break;
-            }
-            if ( array_key_exists($key,$this->avg) and $value < $this->avg[$key] ) {
-                $extreme_case = true;
-                break;
-            }
+//             $pos = strpos($key,'iso');
+//             if ( $pos != false and $value > $this->avg[$key] ) {
+//                 $extreme_case = true;
+//                 break;
+//             }
+//             if ( array_key_exists($key,$this->avg) and $value < $this->avg[$key] ) {
+//                 $extreme_case = true;
+//                 break;
+//             }
         }
 
         if ($extreme_case == true) {
@@ -341,36 +350,35 @@ EOT;
 
     function make_label($value, $key)
     {
-        $pos = strpos($key,'iso');
-        if ( $pos != false and $value > $this->avg[$key] ) {
-            return "<span class='label important twipsy' title='{$key}. Avg {$this->avg[$key]}'>$value</label>";
-        } elseif ( $pos != false and $value <= $this->avg[$key] ) {
-            return "<span class='label twipsy' title='{$key}. Avg {$this->avg[$key]}'>$value</label>";
-        }
-
-        if ($value < $this->avg[$key]) {
-            return "<span class='label important twipsy' title='{$key}. Avg {$this->avg[$key]}'>$value</label>";
+        if (in_array($key,$this->low_is_good)) {
+            if ($value > $this->avg[$key]) {
+                return "<span class='label important twipsy' title='{$key}. Avg {$this->avg[$key]}'>$value</label>";
+            } else {
+                return "<span class='label success twipsy' title='{$key}. Avg {$this->avg[$key]}'>$value</label>";
+            }
         } else {
-            return "<span class='label twipsy' title='{$key}. Avg {$this->avg[$key]}'>$value</label>";
+            if ($value < $this->avg[$key]) {
+                return "<span class='label important twipsy' title='{$key}. Avg {$this->avg[$key]}'>$value</label>";
+            } else {
+                return "<span class='label success twipsy' title='{$key}. Avg {$this->avg[$key]}'>$value</label>";
+            }
         }
     }
 
     function make_checkbox($loop,$nts)
     {
-        return "<label class='narrow'><input type='radio' name='loops' id='{$loop}' class='jmolInline' data-nt='$nts'>$loop</label>";
+        return "<label class='narrow'><input type='radio' name='loops' id='{$loop}' class='jmolInline' data-nt='$nts'><span>$loop</span></label>";
     }
 
     function get_sfdata_table()
     {
         $i = 1;
         foreach ($this->q->result() as $row) {
-
             $row_array = $this->analyze_nucleotide($row,$i);
             if (count($row_array) > 0) {
                 $table[] = $row_array;
+                $i++;
             }
-
-            $i++;
         }
         return $table;
     }

@@ -100,6 +100,7 @@ class Loops extends CI_Controller {
         $data['table'] = $this->table->generate($table);
         $data['title'] = 'Sfcheck and mapman';
 
+        $data['fields']  = $this->Loops_model->get_fields_array();
         $data['baseurl'] = base_url();
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);

@@ -30,6 +30,69 @@
            </div>
 
             <div class="span9 offset1" id='explanation'>
+
+                <ul class="inputs-list">
+                <?php
+                foreach ($fields as $field) {
+                echo <<<EOT
+                    <label>
+                        <input type="radio" name="d" class='sfcolor'>
+                        <span>$field</span>
+                    </label>
+EOT;
+                }
+                ?>
+                </ul>
+
+            </div>
+
+        </div>
+      </div>
+
+      <script>
+        $('.twipsy').twipsy();
+        $(".pdb").click(LookUpPDBInfo);
+        $("#sftable").tablesorter();
+
+      	function appletLoaded (){
+			var timeoutID = window.setTimeout(function(){
+	    		jmolInlineLoader.init({
+                    chbxClass: 'jmolInline',
+                    serverUrl: '<?=$baseurl?>ajax/get_coordinates',
+                    neighborhoodButtonId: 'neighborhood',
+                    showNextButtonId: 'next',
+                    showPreviousButtonId: 'prev',
+                    showNucleotideNumbersId: 'showNtNums',
+                    sfdata: true
+	    		});
+			}, 1500);
+      	}
+
+        var low_is_good = new Array('mapman_Biso_mean','mapman_real_space_R','sfcheck_B_iso_main_chain',
+        'sfcheck_B_iso_side_chain','sfcheck_connect','sfcheck_density_index_side_chain','sfcheck_density_index_main_chain',
+        'sfcheck_real_space_R','sfcheck_real_space_R_side_chain','sfcheck_shift','sfcheck_shift_side_chain');
+
+//         $this->high_is_good = array('mapman_correlation','mapman_occupancy_mean','sfcheck_correlation',
+//         'sfcheck_correlation_side_chain');
+
+
+      	$('.sfcolor').click(function() {
+      	    var p = $(this).next().html();
+      	    if (p in low_is_good) {
+      	        var colorScheme = 'roygb';
+      	    } else {
+      	        var colorScheme = 'bgyor';
+      	    }
+      	    colorScheme = 'low';
+
+      	    jmolScript('select displayed;color atoms property_'+p+ ' "'+colorScheme+'";select {*.P};label %[property_'+p+'];color labels black;');
+      	});
+
+
+      </script>
+
+
+<!--
                 <p>
                 Table columns can be reordered by dragging and sorted by clicking the table header.
                 </p>
@@ -84,28 +147,4 @@
                 <p>
                 explanation here
                 </p>
-
-
-            </div>
-
-        </div>
-      </div>
-
-      <script>
-        $('.twipsy').twipsy();
-        $(".pdb").click(LookUpPDBInfo);
-        $("#sftable").tablesorter();
-      	function appletLoaded (){
-			var timeoutID = window.setTimeout(function(){
-	    		jmolInlineLoader.init({
-                    chbxClass: 'jmolInline',
-                    serverUrl: 'http://leontislab.bgsu.edu/Motifs/jmolInlineLoader/nt_coord_new.php',
-                    neighborhoodButtonId: 'neighborhood',
-                    showNextButtonId: 'next',
-                    showPreviousButtonId: 'prev',
-                    showNucleotideNumbersId: 'showNtNums'
-	    		});
-			}, 1500);
-      	}
-
-      </script>
+ -->
