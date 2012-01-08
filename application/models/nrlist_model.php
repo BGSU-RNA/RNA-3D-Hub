@@ -146,7 +146,8 @@ class Nrlist_model extends CI_Model {
                  ->from('nr_pdbs')
                  ->join('PDB.Files','PDB.Files.name=nr_pdbs.id')
                  ->where('nr_pdbs.class_id',$id)
-                 ->where('nr_pdbs.release_id',$this->last_seen_in);
+                 ->where('nr_pdbs.release_id',$this->last_seen_in)
+                 ->order_by('nr_pdbs.rep','desc');
         $query = $this->db->get();
         $i = 0;
         foreach ($query->result() as $row) {
