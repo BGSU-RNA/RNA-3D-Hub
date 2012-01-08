@@ -44,7 +44,7 @@ function jmol_show_nucleotide_numbers_click(id) {
         var t = $(this);
         if ( t.attr('value') == 'Show numbers' ) {
             t.attr('value', 'Hide numbers');
-            jmolScript('select {*.P},{*.CA};label %[sequence]%[resno];');
+            jmolScript('select {*.P},{*.CA};label %[sequence]%[resno];color labels black;');
         } else {
             t.attr('value', 'Show numbers');
             jmolScript('label off;');
