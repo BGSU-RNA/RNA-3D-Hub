@@ -9,11 +9,54 @@ class Ajax_model extends CI_Model {
         parent::__construct();
     }
 
+    function get_dcc_data($s)
+    {
+        // detect what $s is in the future
+
+        // assume nt_list for now
+        $nt_ids = explode(',',$s);
+        return $this->get_nt_json_dcc($nt_ids);
+    }
+
+    function get_nt_json_dcc($nt_ids)
+    {
+        $lengths = array('C' => 24, 'U' => 23, 'A' => 26, 'G' => 27);
+
+        $list_ids = "'" . implode("','",$nt_ids) . "'";
+
+        $sql_command = '* FROM dcc_residues where id IN ('. $list_ids .') order by(FIELD(id,'.$list_ids.'));';
+        $this->db->select($sql_command, FALSE);
+        $query = $this->db->get();
+        //         $this->db->select()
+        //                  ->from('dcc_residues')
+        //                  ->where_in('id',$nt_ids)
+        //                  ->order_by($list_ids);
+        //         $query = $this->db->get();
+
+        $s = array();
+        foreach ($query->result() as $row) {
+            $parts   = explode('_',$row->id);
+            $nt_type = $parts[5];
+
+            $fields = get_object_vars($row);
+            unset($fields['id']);
+
+            foreach ($fields as $key => $value) {
+                if (!array_key_exists($key,$s)) {
+                    $s[$key] = '';
+                }
+            }
+            foreach ($fields as $key => $value) {
+                $s[$key] .= str_repeat($value . ' ', $lengths[$nt_type]);
+            }
+        }
+        return json_encode($s);
+    }
+
     function get_coordinates($s)
     {
-
-        //1S72_AU_1_0_30_U_
-//         $is_nt_list = preg_match('/([a-z]|[A-Z]|[0-9]){4}_[a-zA-Z0-9]{2,3}_\d+_\d+_\d+_\[a-zA-Z]/',$s);
+        // 1S72_AU_1_0_30_U_
+        // $is_nt_list = preg_match('/([a-z]|[A-Z]|[0-9]){4}_[a-zA-Z0-9]{2,3}_\d+_\d+_\d+_\[a-zA-Z]/',$s);
         $is_nt_list = substr_count($s,'_');
         if ($is_nt_list > 3) {
             $nt_ids = explode(',',$s);
