@@ -1,5 +1,5 @@
       <footer>
-        <p>BGSU RNA group, 2011</p>
+        <p>BGSU RNA group, 2012</p>
         <p>Page generated in {elapsed_time} s</p>
       </footer>
 
