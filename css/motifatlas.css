@@ -239,7 +239,7 @@ body {
     max-height:300px;
     table-layout: fixed;
 }
-.loops_sfdata_view .twipsy {
+.loops_sfdata_view .twipsy, .loops_benchmark_view .twipsy {
     position:static;
 }
 .loops_sfdata_view #explanation>p {
@@ -255,6 +255,9 @@ body {
 .loops_sfdata_view td {
     text-align:center;
     font-size:x-small;
+}
+.loops_benchmark_view #save, .loops_benchmark_view #status {
+    display: none;
 }
 /*
 .loops_sfdata_view input[type=radio],.loops_sfdata_view input[type=checkbox], .motifs_graph_view input[type=checkbox] {
