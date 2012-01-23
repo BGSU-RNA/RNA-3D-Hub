@@ -9,6 +9,20 @@ class Ajax_model extends CI_Model {
         parent::__construct();
     }
 
+    function save_loop_extraction_benchmark_annotation($contents)
+    {
+        try {
+            for ($i=0; $i<count($contents)-1; $i+=2) {
+                $data = array('manual_annotation' => $contents[$i+1]);
+                $this->db->where('id', $contents[$i]);
+                $this->db->update('loop_benchmark', $data);
+            }
+            return 1;
+        } catch (Exception $e) {
+            return 0;
+        }
+    }
+
     function get_dcc_data($s)
     {
         // detect what $s is in the future
@@ -74,6 +88,43 @@ class Ajax_model extends CI_Model {
         } else {
             return 'Input was not recognized';
         }
+    }
+
+    function get_nt_coordinates_approximate($nt_ids)
+    {
+        $this->db->select('coordinates')->from('coordinates');
+
+        $nts = explode(',', $nt_ids);
+        foreach ($nts as $nt) {
+            $this->db->or_like('nt_id', $nt, 'after');
+        }
+        $query = $this->db->get();
+        if ($query->num_rows() == 0) { return 'Loop coordinates not found'; }
+
+        $final_result = "MODEL     1\n";
+        foreach ($query->result() as $row) {
+            $final_result .= $row->coordinates . "\n";
+        }
+        $final_result .= "ENDMDL\n";
+
+        // get neighborhood
+        $this->db->select('coordinates')
+                 ->distinct()
+                 ->from('coordinates')
+                 ->join('distances','coordinates.nt_id=distances.id1')
+                 ->where_in('id2',$nt_ids)
+                 ->where_not_in('id1',$nt_ids);
+        $query = $this->db->get();
+
+         $final_result .= "MODEL     2\n";
+         if ($query->num_rows() > 0) {
+            foreach ($query->result() as $row) {
+                $final_result .= $row->coordinates . "\n";
+            }
+         }
+         $final_result .= "ENDMDL";
+
+        return $final_result;
     }
 
     function get_nt_coordinates($nt_ids)
