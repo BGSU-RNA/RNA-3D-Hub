@@ -6,6 +6,12 @@
           <small>PDB 1S72, <?=$kind?></small>
           <button id="save" class='btn primary'>Save</button>
           </h1>
+            <div class="span16">
+                Switch to:
+                <a href="<?=$baseurl?>loops/benchmark/IL">Internal loops</a>
+                <a href="<?=$baseurl?>loops/benchmark/HL">Hairpin loops</a>
+                <a href="<?=$baseurl?>loops/benchmark/J3">Three-way junctions</a>
+            </div>
         </div>
         <div class="row">
           <div class="span16 block scroll_table">
@@ -32,8 +38,6 @@
            </div>
 
             <div class="span9 offset1" id='explanation'>
-                <h4>About</h4>
-                Coming soon.
                 <div id='nts'></div>
             </div>
 
