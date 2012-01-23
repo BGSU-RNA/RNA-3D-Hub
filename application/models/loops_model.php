@@ -452,60 +452,6 @@ EOT;
         return $result;
     }
 
-    function make_benchmark_label($s)
-    {
-        if ($s == 'found') {
-            $s = "<label class='label success'>found</label>";
-        } elseif ($s == 'valid') {
-            $s = "<label class='label success'>{$s}</label>";
-        } elseif ($s == 'unusual') {
-            $s = "<label class='label warning'>{$s}</label>";
-        } elseif ($s == 'not found') {
-            $s = "<label class='label important'>not found</label>";
-        } elseif ($s == 'different boundary') {
-            $s = "<label class='label success'>~</label>";
-        } elseif ($s == 'false positive') {
-            $s = "<label class='label important'>{$s}</label>";
-        } elseif ($s == 'modified_nt') {
-            $s = "<label class='label warning'>psi</label>";
-        } elseif ($s == 'missing_nt') {
-            $s = "<label class='label warning'>mod</label>";
-        }
-        return $s;
-    }
-
-    function make_benchmark_radiobutton($id, $nt_list)
-    {
-        if (strlen($nt_list) > 0) {
-            $data = $nt_list;
-        } else {
-            $data = $id;
-        }
-        return "<label><input type='radio' class='jmolInline' id='{$id}' name='r' data-nt='{$data}'><span>{$id}</span></label>";
-
-    }
-
-    function get_benchmark_table($motif_type)
-    {
-        $this->db->select()
-                 ->from('loop_benchmark')
-                 ->where('type',$motif_type);
-        $query = $this->db->get();
-
-        foreach ($query->result() as $row) {
-            $table[] = array($this->make_benchmark_radiobutton($row->id,$row->nt_list),
-                             $this->make_benchmark_label($row->fr3d),
-                             $this->make_benchmark_label($row->rna3dmotif),
-                             $this->make_benchmark_label($row->scor),
-                             $this->make_benchmark_label($row->rloom),
-                             $this->make_benchmark_label($row->rnajunction),
-                             $this->make_benchmark_label($row->cossmos),
-                             $this->make_benchmark_label($row->manual_annotation));
-        }
-
-        return $table;
-    }
-
 }
 
 /* End of file loops_model.php */

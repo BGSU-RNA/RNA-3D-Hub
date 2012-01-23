@@ -171,10 +171,10 @@ class Loops extends CI_Controller {
         if ($kind == NULL) {
             echo 'Overview and statistics. Coming soon';
         } else {
-            $this->load->model('Loops_model', '', TRUE);
-            $table  = $this->Loops_model->get_benchmark_table($kind);
+            $this->load->model('Loops_benchmark_model', '', TRUE);
+            $table  = $this->Loops_benchmark_model->get_benchmark_table($kind);
 
-            $this->table->set_heading('id','FR3D','RNA3DMotif','SCOR','RLooM','RNAJunction','CoSSMos','Manual annotation');
+            $this->table->set_heading('#','id','chain','FR3D','RNA3DMotif','SCOR','RLooM','RNAJunction','CoSSMos','Manual annotation');
             $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table' id='sortable'>" );
             $this->table->set_template($tmpl);
             $data['table'] = $this->table->generate($table);
