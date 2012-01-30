@@ -23,11 +23,11 @@
               <input type='button' id='showNtNums'   class='btn' value="Show numbers">
 
               <br><br>
-              <?php if ($type == 'modified_nt'): ?>
+              <?php if ($type == 'modified'): ?>
                <p>
                Modified nucleotides are shown in pink when the 'Show neighborhood' button is clicked
                </p>
-              <?php elseif ($type == 'missing_nt'): ?>
+              <?php elseif ($type == 'missing'): ?>
                <p>
                Some nucleotides may either be completely missing in some 3D structures, or only
                their phosphate backbone is described in the PDB file. RNA 3D motifs with such nucleotides

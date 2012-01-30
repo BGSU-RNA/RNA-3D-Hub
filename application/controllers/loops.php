@@ -4,12 +4,11 @@ class Loops extends CI_Controller {
 	public function index()
 	{
 	    $this->load->model('Loops_model', '', TRUE);
-	    $tables = $this->Loops_model->get_loop_releases();
-
+	    $tables = $this->Loops_model->get_loop_stats();
         $motif_types = array('IL','HL','J3');
         foreach ($motif_types as $motif_type) {
-            $this->table->set_heading('id','Date','Total','Valid','Modified','Missing','Complementary');
-            $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table' id='sftable'>" );
+            $this->table->set_heading('id','Date','Total','Valid','Missing','Modified','Abnormal','Incomplete','Complementary');
+            $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table'>" );
             $this->table->set_template($tmpl);
             $data['tables'][$motif_type] = $this->table->generate($tables[$motif_type]);
         }
@@ -20,9 +19,6 @@ class Loops extends CI_Controller {
         $this->load->view('menu_view', $data);
         $this->load->view('loops_all_view', $data);
         $this->load->view('footer');
-
-        $this->output->enable_profiler(TRUE);
-
 	}
 
     public function view_all($type,$motif_type,$release_id)
@@ -38,7 +34,7 @@ class Loops extends CI_Controller {
         if (count($data['table']) == 0) {
             $data['table'] = "No $type $motif_type loops were found";
         } else {
-            if ($type == 'modified_nt') {
+            if ($type == 'modified') {
                 $this->table->set_heading('#','id','PDB','modifications');
             } else {
                 $this->table->set_heading('#','id','PDB');

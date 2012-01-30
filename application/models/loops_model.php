@@ -5,8 +5,121 @@ class Loops_model extends CI_Model {
     {
         $CI = & get_instance();
 
+        $this->qa_status = array(NULL,'valid','missing','modified','abnormal','incomplete','complementary');
+
         // Call the Model constructor
         parent::__construct();
+    }
+
+    function get_loop_stats()
+    {
+        // get release order
+        $this->db->select()
+                 ->from('loop_releases')
+                 ->order_by('date', 'desc');
+        $query = $this->db->get();
+
+        foreach ($query->result() as $row) {
+            $releases[] = $row->id;
+            $dates[$row->id] = substr($row->date,0,10);
+        }
+
+        // get loop counts group by loop type and release
+        $this->db->select('release_id, status, count(status) as counts, substr(id, 1, 2) as loop_type', FALSE)
+                 ->from('loop_qa')
+                 ->group_by(array('status', 'release_id', 'loop_type'));
+        $query = $this->db->get();
+
+        foreach ($query->result() as $row) {
+            $results[$row->loop_type][$row->release_id][$row->status] = $row->counts;
+        }
+
+        foreach (array_keys($results) as $loop_type) {
+            foreach ($releases as $release) {
+                $tables[$loop_type][] = array($release,
+                                            $dates[$release],
+                                            array_sum(array_values($results[$loop_type][$release])),
+                                            $this->make_view_loops_link($results,$loop_type,$release,1),
+                                            $this->make_view_loops_link($results,$loop_type,$release,2),
+                                            $this->make_view_loops_link($results,$loop_type,$release,3),
+                                            $this->make_view_loops_link($results,$loop_type,$release,4),
+                                            $this->make_view_loops_link($results,$loop_type,$release,5),
+                                            $this->make_view_loops_link($results,$loop_type,$release,6));
+            }
+        }
+        return $tables;
+    }
+
+    function make_view_loops_link($counts,$motif_type,$release_id,$status)
+    {
+        if (!array_key_exists($status,$counts[$motif_type][$release_id])) {
+            return '0';
+        }
+
+        $type = $this->qa_status[$status];
+        if ($type == 'complementary' and $motif_type != 'IL') {
+            return 'N/A';
+        }
+        else {
+            return anchor(
+                          base_url(array('loops','view_all',$type,$motif_type,$release_id)),
+                          $counts[$motif_type][$release_id][$status]
+                          );
+        }
+    }
+
+    function make_ligand_link($s)
+    {
+        // http://www.pdb.org/pdb/images/UR3_300.png
+        $parts = explode(',',$s);
+        $links = '';
+        foreach ($parts as $part) {
+            $part = trim($part);
+            $links .= "<a href='http://www.rcsb.org/pdb/ligand/ligandsummary.do?hetId={$part}' target='_blank'>$part</a> ";
+        }
+        return $links;
+    }
+
+    function get_loops($type,$motif_type,$release_id,$num,$offset)
+    {
+        $verbose = $type;
+        $type = array_search($type, $this->qa_status);
+        $this->db->select()
+                 ->from('loop_qa')
+                 ->where('status',$type)
+                 ->like('id',$motif_type,'after')
+                 ->where('release_id',$release_id)
+                 ->order_by('id')
+                 ->limit($num,$offset);
+        $query = $this->db->get();
+
+        $table = array();
+        $i = 1;
+        foreach ($query->result() as $row) {
+            $loop = array($offset + $i,
+                          '<label><input type="radio" class="loop" name="l"><span>' . $row->id . '</span></label>',
+                          '<a class="pdb">' . substr($row->id,3,4) . '</a>');
+            if ($verbose == 'modified') {
+                $loop[] = $this->make_ligand_link($row->modifications);
+            } elseif ($verbose == 'complementary') {
+                $loop[] = $row->complementary;
+            } elseif ($verbose != 'valid') {
+                $loop[] = $row->nt_signature;
+            }
+            $table[] = $loop;
+            $i++;
+        }
+        return $table;
+    }
+
+    function get_loops_count($type,$motif_type,$release_id)
+    {
+        $type = array_search($type, $this->qa_status);
+        $this->db->from('loop_qa')
+                 ->where('status',$type)
+                 ->like('id',$motif_type,'after')
+                 ->where('release_id',$release_id);
+        return $this->db->count_all_results();
     }
 
     function initialize_sfdata()
@@ -45,169 +158,6 @@ class Loops_model extends CI_Model {
 EOT;
         }
         return $text;
-    }
-
-    function get_loop_modifications()
-    {
-        $query = $this->db->get('loop_modifications');
-        foreach ($query->result() as $row) {
-            $mod[$row->id] = $row->modification;
-        }
-        return $mod;
-    }
-
-    function make_ligand_link($s)
-    {
-        // http://www.pdb.org/pdb/images/UR3_300.png
-        $parts = explode(',',$s);
-        $links = '';
-        foreach ($parts as $part) {
-            $links .= "<a href='http://www.rcsb.org/pdb/ligand/ligandsummary.do?hetId={$part}' target='_blank'>$part</a> ";
-        }
-        return $links;
-    }
-
-    function get_loops($type,$motif_type,$release_id,$num,$offset)
-    {
-        $this->db->select('id')
-                 ->from('loop_qa')
-                 ->where($type,1)
-                 ->like('id',$motif_type,'after')
-                 ->where('release_id',$release_id)
-                 ->order_by('id')
-                 ->limit($num,$offset);
-        $query = $this->db->get();
-
-        if ($type == 'modified_nt') {
-            $mod = $this->get_loop_modifications();
-        }
-
-        $table = array();
-        $i = 1;
-        foreach ($query->result() as $row) {
-            if ($type == 'modified_nt') {
-                $table[] = array($offset + $i,
-                                 '<label><input type="radio" class="loop" name="l"><span>' . $row->id . '</span></label>',
-                                 '<a class="pdb">' . substr($row->id,3,4) . '</a>',
-                                 $this->make_ligand_link($mod[$row->id]));
-            } else {
-                $table[] = array($offset + $i,
-                                 '<label><input type="radio" class="loop" name="l"><span>' . $row->id . '</span></label>',
-                                 '<a class="pdb">' . substr($row->id,3,4) . '</a>');
-            }
-
-            $i++;
-        }
-        return $table;
-    }
-
-    function get_loops_count($type,$motif_type,$release_id)
-    {
-        $this->db->from('loop_qa')
-                 ->where($type,1)
-                 ->like('id',$motif_type,'after')
-                 ->where('release_id',$release_id);
-        return $this->db->count_all_results();
-    }
-
-    function get_status_counts_by_release()
-    {
-        $motif_types = array('IL','HL','J3');
-        $types       = array('valid','modified_nt','missing_nt');//,'complementary');
-
-        foreach ($motif_types as $motif_type) {
-            $this->db->select_sum('valid')
-                     ->select_sum('complementary')
-                     ->select_sum('modified_nt')
-                     ->select_sum('missing_nt')
-                     ->select('release_id')
-                     ->from('loop_qa')
-                     ->like('id',$motif_type,'after')
-                     ->group_by('release_id');
-            $query = $this->db->get();
-
-            foreach ($query->result() as $row) {
-                $result[$motif_type]['valid'][$row->release_id] = $row->valid;
-                $result[$motif_type]['complementary'][$row->release_id] = $row->complementary;
-                $result[$motif_type]['modified_nt'][$row->release_id] = $row->modified_nt;
-                $result[$motif_type]['missing_nt'][$row->release_id] = $row->missing_nt;
-            }
-        }
-
-        foreach ($motif_types as $motif_type) {
-            foreach ($motif_types as $motif_type) {
-                $this->db->select('count(id) as num, release_id',false)
-                         ->from('loop_qa')
-                         ->like('id',$motif_type,'after')
-                         ->group_by('release_id');
-                $query = $this->db->get();
-
-                foreach ($query->result() as $row) {
-                    $result[$motif_type]['total'][$row->release_id] = $row->num;
-                }
-            }
-        }
-        return $result; // $result['IL']['valid']['0.1'] = 20220
-    }
-
-    function get_release_order()
-    {
-        $this->db->select()
-                 ->from('loop_releases')
-                 ->order_by('date','desc');
-        $query = $this->db->get();
-
-        foreach ($query->result() as $row) {
-            $result[] = $row->id;
-            $dates[$row->id] = substr($row->date,0,10);
-        }
-        return array('order' => $result, 'dates' => $dates); // $result[0] = '0.1'
-    }
-
-    function make_loop_release_link($counts,$motif_type,$type,$release_id)
-    {
-        if ($type == 'total') {
-            return $counts[$motif_type][$type][$release_id];
-        } elseif ($type == 'complementary' and $motif_type != 'IL') {
-            return 'N/A';
-        }
-        else {
-            return anchor(
-                          base_url(array('loops','view_all',$type,$motif_type,$release_id)),
-                          $counts[$motif_type][$type][$release_id]
-                          );
-        }
-    }
-
-    function get_loop_releases()
-    {
-        $temp = $this->get_release_order();
-        $releases = $temp['order'];
-        $dates    = $temp['dates'];
-
-        // $counts['valid']['IL']['0.1'] = 20220
-        $counts = $this->get_status_counts_by_release();
-
-        $motif_types = array('IL','HL','J3');
-        foreach ($motif_types as $motif_type) {
-            for ($i = 0; $i<count($releases); $i++) {
-                $original_id = $releases[$i];
-                if ($i == 0) {
-                    $id = $releases[$i] . ' (current)';
-                } else {
-                    $id = $releases[$i];
-                }
-                $tables[$motif_type][] = array($id,
-                                               $dates[$original_id],
-                                               $this->make_loop_release_link($counts,$motif_type,'total',$releases[$i]),
-                                               $this->make_loop_release_link($counts,$motif_type,'valid',$releases[$i]),
-                                               $this->make_loop_release_link($counts,$motif_type,'modified_nt',$releases[$i]),
-                                               $this->make_loop_release_link($counts,$motif_type,'missing_nt',$releases[$i]),
-                                               $this->make_loop_release_link($counts,$motif_type,'complementary',$releases[$i])
-                                               );
-            }
-        }
-        return $tables;
     }
 
     function query_dcc()
