@@ -92,11 +92,11 @@ class Ajax_model extends CI_Model {
 
     function get_nt_coordinates_approximate($nt_ids)
     {
-        $this->db->select('coordinates')->from('coordinates');
+        $this->db->select('coordinates')->from('pdb_coordinates');
 
         $nts = explode(',', $nt_ids);
         foreach ($nts as $nt) {
-            $this->db->or_like('nt_id', $nt, 'after');
+            $this->db->or_like('id', $nt, 'after');
         }
         $query = $this->db->get();
         if ($query->num_rows() == 0) { return 'Loop coordinates not found'; }
@@ -110,8 +110,8 @@ class Ajax_model extends CI_Model {
         // get neighborhood
         $this->db->select('coordinates')
                  ->distinct()
-                 ->from('coordinates')
-                 ->join('distances','coordinates.nt_id=distances.id1')
+                 ->from('pdb_coordinates')
+                 ->join('pdb_distances','pdb_coordinates.id=pdb_distances.id1')
                  ->where_in('id2',$nt_ids)
                  ->where_not_in('id1',$nt_ids);
         $query = $this->db->get();
@@ -130,8 +130,8 @@ class Ajax_model extends CI_Model {
     function get_nt_coordinates($nt_ids)
     {
         $this->db->select('coordinates')
-                 ->from('coordinates')
-                 ->where_in('nt_id',$nt_ids);
+                 ->from('pdb_coordinates')
+                 ->where_in('id',$nt_ids);
         $query = $this->db->get();
         if ($query->num_rows() == 0) { return 'Loop coordinates not found'; }
 
@@ -144,8 +144,8 @@ class Ajax_model extends CI_Model {
         // get neighborhood
         $this->db->select('coordinates')
                  ->distinct()
-                 ->from('coordinates')
-                 ->join('distances','coordinates.nt_id=distances.id1')
+                 ->from('pdb_coordinates')
+                 ->join('pdb_distances','pdb_coordinates.id=pdb_distances.id1')
                  ->where_in('id2',$nt_ids)
                  ->where_not_in('id1',$nt_ids);
         $query = $this->db->get();
@@ -177,8 +177,8 @@ class Ajax_model extends CI_Model {
 
         // get their coordinates
         $this->db->select('coordinates')
-                 ->from('coordinates')
-                 ->where_in('nt_id',$nt_ids);
+                 ->from('pdb_coordinates')
+                 ->where_in('id',$nt_ids);
         $query = $this->db->get();
         if ($query->num_rows() == 0) { return 'Loop coordinates not found'; }
 
@@ -191,19 +191,19 @@ class Ajax_model extends CI_Model {
         // get neighborhood
         $this->db->select('coordinates')
                  ->distinct()
-                 ->from('coordinates')
-                 ->join('distances','coordinates.nt_id=distances.id1')
+                 ->from('pdb_coordinates')
+                 ->join('pdb_distances','pdb_coordinates.id=pdb_distances.id1')
                  ->where_in('id2',$nt_ids)
                  ->where_not_in('id1',$nt_ids);
         $query = $this->db->get();
 
-         $final_result .= "MODEL     2\n";
-         if ($query->num_rows() > 0) {
+        $final_result .= "MODEL     2\n";
+        if ($query->num_rows() > 0) {
             foreach ($query->result() as $row) {
                 $final_result .= $row->coordinates . "\n";
             }
-         }
-         $final_result .= "ENDMDL";
+        }
+        $final_result .= "ENDMDL";
 
         return $final_result;
     }
