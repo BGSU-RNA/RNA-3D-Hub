@@ -72,7 +72,7 @@ class Pdb_model extends CI_Model {
 
     function get_checkbox($id, $nt_ids)
     {
-        return "<input type='radio' name='p' id='{$id}' class='jmolInline' data-nt='{$nt_ids}'>{$id}";
+        return "<label><input type='radio' name='p' id='{$id}' class='jmolInline' data-type='loop_id' data-nt='{$id}'>{$id}</label>";
     }
 
     function get_latest_loop_release()

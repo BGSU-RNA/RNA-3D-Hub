@@ -85,8 +85,7 @@
 			var timeoutID = window.setTimeout(function(){
 	    		jmolInlineLoader.init({
                     chbxClass: 'jmolInline',
-                    serverUrl: 'http://leontislab.bgsu.edu/Motifs/jmolInlineLoader/nt_coord_test.php',
-//                     serverUrl: 'http://leontislab.bgsu.edu/Motifs/jmolInlineLoader/nt_coord_new.php',
+                    serverUrl: 'http://rna.bgsu.edu/MotifAtlas_dev/ajax/get_loop_coordinates',
                     neighborhoodButtonId: 'neighborhood',
                     showNextButtonId: 'next',
                     showPreviousButtonId: 'prev',
