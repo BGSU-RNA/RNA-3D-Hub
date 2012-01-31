@@ -14,13 +14,16 @@
           <div class="span6" id="jmol">
               <div class="block jmolheight">
                   <script type="text/javascript">
-                      jmolInitialize(" /jmol");
-                      jmolSetAppletColor("#ffffff");
-                      jmolApplet(340);
+                    jmolInitialize(" /jmol");
+                    jmolSetAppletColor("#ffffff");
+                    jmolApplet(340, "javascript appletLoaded()");
                   </script>
               </div>
-              <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
-              <input type='button' id='showNtNums'   class='btn' value="Show numbers">
+                <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
+                <input type='button' id='prev' class='btn' value='Previous'>
+                <input type='button' id='next' class='btn' value="Next">
+                <br>
+                <label><input type="checkbox" id="showNtNums">Nucleotide numbers</label>
 
               <br><br>
               <?php if ($type == 'modified'): ?>
@@ -45,26 +48,26 @@
       </div>
 
       <script>
-          $(function () {
 
-            $(".pdb").click(LookUpPDBInfo);
-//             $("#sortable").tablesorter();
+      	function appletLoaded (){
+			var timeoutID = window.setTimeout(function(){
+	    		jmolInlineLoader.init({
+                    chbxClass: 'jmolInline',
+                    serverUrl: 'http://rna.bgsu.edu/MotifAtlas_dev/ajax/get_loop_coordinates',
+                    neighborhoodButtonId: 'neighborhood',
+                    showNextButtonId: 'next',
+                    showPreviousButtonId: 'prev',
+                    showNucleotideNumbersId: 'showNtNums'
+	    		});
+			}, 1500);
+      	}
 
-            $('.loop').click(function() {
-                var t = $(this);
-                var loop_id = t.next().html();
-                show_loop_in_jmol(loop_id);
-                $('#neighborhood').attr('value','Show neighborhood');
-                $('#showNtNums').attr('value','Show numbers');
-            });
+        $(".pdb").click(LookUpPDBInfo);
 
-            jmol_neighborhood_button_click('neighborhood');
-            jmol_show_nucleotide_numbers_click('showNtNums');
+        $('#jmol').css('position','fixed');
+        var offset_left = $('#left_content').offset().left + 530; // 530 = span9 width
+        var offset_top  = $('#left_content').offset().top;
+        $('#jmol').css('left',offset_left);
+        $('#jmol').css('top', offset_top);
 
-            $('#jmol').css('position','fixed');
-            var offset_left = $('#left_content').offset().left + 530; // 530 = span9 width
-            var offset_top  = $('#left_content').offset().top;
-            $('#jmol').css('left',offset_left);
-            $('#jmol').css('top', offset_top);
-        })
       </script>
