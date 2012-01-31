@@ -2,11 +2,40 @@
 
       <div class="content">
         <div class="page-header">
-            <h1><?php echo $title;?></h1>
+            <div class="row">
+                <div class="span7">
+                <h1><?php echo $title;?></h1>
+                </div>
+            <div class="span4">
+            <ul class="tabs" data-tabs="tabs">
+
+                <li class="dropdown" data-dropdown="dropdown">
+                <a href="#" class="dropdown-toggle">QA types</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="<?=$baseurl?>loops/view_all/valid/<?=$motif_type?>/<?=$release_id?>">Valid</a></li>
+                        <li><a href="<?=$baseurl?>loops/view_all/missing/<?=$motif_type?>/<?=$release_id?>">Missing</a></li>
+                        <li><a href="<?=$baseurl?>loops/view_all/modified/<?=$motif_type?>/<?=$release_id?>">Modified</a></li>
+                        <li><a href="<?=$baseurl?>loops/view_all/incomplete/<?=$motif_type?>/<?=$release_id?>">Incomplete</a></li>
+                        <li><a href="<?=$baseurl?>loops/view_all/abnormal/<?=$motif_type?>/<?=$release_id?>">Composite</a></li>
+                        <li><a href="<?=$baseurl?>loops/view_all/complementary/<?=$motif_type?>/<?=$release_id?>">Self-complementary</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown" data-dropdown="dropdown">
+                <a href="#" class="dropdown-toggle">Loop types</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="<?=$baseurl?>loops/view_all/<?=$type?>/IL/<?=$release_id?>">Internal loops</a></li>
+                        <li><a href="<?=$baseurl?>loops/view_all/<?=$type?>/HL/<?=$release_id?>">Hairpin loops</a></li>
+                        <li><a href="<?=$baseurl?>loops/view_all/<?=$type?>/J3/<?=$release_id?>">Junction loops</a></li>
+                    </ul>
+                </li>
+            </ul>
+            </div>
+            </div>
         </div>
         <div class="row">
 
-          <div class="span8" id='left_content'>
+          <div class="span9" id='left_content'>
             <?php echo $table;?>
             <?php echo $this->pagination->create_links(); ?>
           </div>
@@ -65,7 +94,7 @@
         $(".pdb").click(LookUpPDBInfo);
 
         $('#jmol').css('position','fixed');
-        var offset_left = $('#left_content').offset().left + 530; // 530 = span9 width
+        var offset_left = $('#left_content').offset().left + 560; // 530 = span9 width
         var offset_top  = $('#left_content').offset().top;
         $('#jmol').css('left',offset_left);
         $('#jmol').css('top', offset_top);

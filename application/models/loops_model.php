@@ -97,7 +97,8 @@ class Loops_model extends CI_Model {
         $i = 1;
         foreach ($query->result() as $row) {
             $loop = array($offset + $i,
-                          $this->make_radio_button($row->id));
+                          $this->make_radio_button($row->id),
+                          '<a class="pdb">' . substr($row->id,3,4) . '</a>');
             if ($verbose == 'modified') {
                 $loop[] = $this->make_ligand_link($row->modifications);
             } elseif ($verbose == 'complementary') {
@@ -113,8 +114,7 @@ class Loops_model extends CI_Model {
 
     function make_radio_button($id) {
         return "<label><input type='radio' class='jmolInline' data-type='loop_id'
-                id={$id} data-nt='{$id}' name='l'><span>{$id}</span></label>
-                <a class='pdb'>" . substr($id,3,4) . '</a>';
+                id={$id} data-nt='{$id}' name='l'><span>{$id}</span></label>";
     }
 
     function get_loops_count($type,$motif_type,$release_id)

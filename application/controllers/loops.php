@@ -35,11 +35,11 @@ class Loops extends CI_Controller {
             $data['table'] = "No $type $motif_type loops were found";
         } else {
             if ($type == 'modified') {
-                $this->table->set_heading('#','id','PDB','modifications');
+                $this->table->set_heading('#','id','PDB','Modifications');
             } else {
                 $this->table->set_heading('#','id','PDB');
             }
-            $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table' id='sortable'>" );
+            $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table'>" );
             $this->table->set_template($tmpl);
             $data['table'] =  $this->table->generate($data['table']);
         }
@@ -72,6 +72,7 @@ class Loops extends CI_Controller {
 
         $motif_full_names = array('IL'=>'internal loops', 'HL' => 'hairpin loops', 'J3' => 'junction loops');
         $data['title']      = 'All ' .  $type . ' ' . $motif_full_names[$motif_type];
+        $data['release_id'] = $release_id;
         $data['type']       = $type;
         $data['motif_type'] = $motif_type;
         $data['baseurl'] = base_url();
