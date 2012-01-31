@@ -2,22 +2,8 @@
 
       <div class="content">
         <div class="page-header">
-          <h1><?php echo $title;?>
-              <small>
-                  <?=$ils['valid_count']?> internal loops,
-                  <?=$hls['valid_count']?> hairpin loops,
-                  <?=$jls['valid_count']?> three-way junctions
-              </small>
-          </h1>
-            <ul class="pills">
-              <li class="active"><a href="#">Loops</a></li>
-              <li><a href="#">General</a></li>
-              <li><a href="#">Motifs</a></li>
-              <li><a href="#">Triples</a></li>
-            </ul>
-
+          <h1><?=$title?></h1>
         </div>
-
 
         <div class="row">
           <div class="span8">
@@ -30,50 +16,35 @@
 
             <div class="tab-content" id="my-tab-content">
                 <div class="tab-pane active" id="ils">
-                    <h2>Internal loops</h2>
-                    <h3>Valid loops <small>(<?=$ils['valid_count']?>)</small></h3>
+                    <h3>Valid loops</h3>
                     <div class="valid block">
-                        <?php echo $ils['valid'];?>
+                        <?=$loops['IL']['valid']?>
                     </div>
-                    <h3>Loops with modified nucleotides <small>(<?=$ils['modified_count']?>)</small></h3>
+                    <h3>Disqualified</h3>
                     <div class="modified block">
-                        <?php echo $ils['modified'];?>
-                    </div>
-                    <h3>Loops with missing nucleotides <small>(<?=$ils['missing_count']?>)</small></h3>
-                    <div class="missing block">
-                        <?php echo $ils['missing'];?>
+                        <?=$loops['IL']['invalid']?>
                     </div>
                 </div>
 
                 <div class="tab-pane" id="hls">
-                    <h2>Hairpin loops</h2>
-                    <h3>Valid loops <small>(<?=$hls['valid_count']?>)</small></h3>
+                    <h3>Valid loops</h3>
                     <div class="valid block">
-                        <?php echo $hls['valid'];?>
+                        <?=$loops['HL']['valid']?>
                     </div>
-                    <h3>Loops with modified nucleotides <small>(<?=$hls['modified_count']?>)</small></h3>
+                    <h3>Disqualified</h3>
                     <div class="modified block">
-                        <?php echo $hls['modified'];?>
-                    </div>
-                    <h3>Loops with missing nucleotides <small>(<?=$hls['missing_count']?>)</small></h3>
-                    <div class="missing block">
-                        <?php echo $hls['missing'];?>
+                        <?=$loops['HL']['invalid']?>
                     </div>
                 </div>
 
                 <div class="tab-pane" id="jls">
-                    <h2>Three-way junctions</h2>
-                    <h3>Valid loops <small>(<?=$jls['valid_count']?>)</small></h3>
+                    <h3>Valid loops</h3>
                     <div class="valid block">
-                        <?php echo $jls['valid'];?>
+                        <?=$loops['J3']['valid']?>
                     </div>
-                    <h3>Loops with modified nucleotides <small>(<?=$jls['modified_count']?>)</small></h3>
+                    <h3>Disqualified</h3>
                     <div class="modified block">
-                        <?php echo $jls['modified'];?>
-                    </div>
-                    <h3>Loops with missing nucleotides <small>(<?=$jls['missing_count']?>)</small></h3>
-                    <div class="missing block">
-                        <?php echo $jls['missing'];?>
+                        <?=$loops['J3']['invalid']?>
                     </div>
                 </div>
 

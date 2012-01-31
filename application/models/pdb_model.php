@@ -6,7 +6,7 @@ class Pdb_model extends CI_Model {
         $CI = & get_instance();
         $CI->load->helper('url');
 
-        $this->latest_release = $this->get_latest_loop_release();
+        $this->qa_status = array(NULL,'valid','missing','modified','abnormal','incomplete','complementary');
 
         // Call the Model constructor
         parent::__construct();
@@ -25,127 +25,55 @@ class Pdb_model extends CI_Model {
         return $pdbs;
     }
 
+    function get_loops($pdb_id)
+    {
+        $release_id = $this->get_latest_loop_release();
+//         $release_id = '0.2';
+        $this->db->select()
+                 ->from('loop_qa')
+                 ->join('loops_all', 'loops_all.id=loop_qa.id')
+                 ->where('pdb', $pdb_id)
+                 ->where('release_id', $release_id);
+        $query = $this->db->get();
+
+        $loop_types = array('IL','HL','J3');
+        foreach ($loop_types as $loop_type) {
+            $valid_tables[$loop_type] = array();
+            $invalid_tables[$loop_type] = array();
+        }
+
+        foreach ($query->result() as $row) {
+            $loop_type = substr($row->id,0,2);
+            if ($row->status == 1) {
+                $valid_tables[$loop_type][] = array(count($valid_tables[$loop_type])+1,
+                                                    $this->get_checkbox($row->id, $row->nt_ids),
+                                                    $row->loop_name);
+            } else {
+                if (!is_null($row->complementary)) {
+                    $annotation = $row->complementary;
+                } elseif (!is_null($row->modifications)) {
+                    $annotation = $row->modifications;
+                } else {
+                    $annotation = $row->nt_signature;
+                }
+                $invalid_tables[$loop_type][] = array(count($invalid_tables[$loop_type])+1,
+                                                      $this->get_checkbox($row->id, $row->nt_ids),
+                                                      $this->make_reason_label($row->status),
+                                                      $annotation);
+            }
+        }
+        return array('valid' => $valid_tables, 'invalid' => $invalid_tables);
+    }
+
+    function make_reason_label($status)
+    {
+        return '<label class="label important">' . $this->qa_status[$status] . '</label>';
+    }
+
     function get_checkbox($id, $nt_ids)
     {
-        return "<label><input type='radio' name='p' id='{$id}' class='jmolInline' data-nt='{$nt_ids}'>{$id}</label>";
+        return "<input type='radio' name='p' id='{$id}' class='jmolInline' data-nt='{$nt_ids}'>{$id}";
     }
-
-    function get_all_valid_loops($pdb_id, $loop_type)
-    {
-        $this->db->select()
-                 ->from('loops_all')
-                 ->join('loop_qa','loops_all.id=loop_qa.id')
-                 ->where('release_id',$this->latest_release)
-                 ->where('type',$loop_type)
-                 ->where('pdb',$pdb_id)
-                 ->where('valid',1)
-                 ->order_by('length','desc')
-                 ->order_by('loops_all.id');
-        $query = $this->db->get();
-        $ils = array();
-        foreach ($query->result() as $row) {
-            $ils[] = array($this->get_checkbox($row->id,$row->nt_ids), $row->seq);
-        }
-        return $ils;
-    }
-
-    function get_all_modified_loops($pdb_id, $loop_type)
-    {
-        $this->db
-             ->select()
-             ->from('loops_all as t1')
-             ->join('loop_qa as t2','t1.id=t2.id')
-             ->join('loop_modifications as t3','t2.id=t3.id')
-             ->where('release_id',$this->latest_release)
-             ->where('type', $loop_type)
-             ->where('pdb', $pdb_id)
-             ->where('modified_nt',1)
-             ->order_by('length','desc')
-             ->order_by('t1.id');
-        $query = $this->db->get();
-        $ils = array();
-        foreach ($query->result() as $row) {
-            $ils[] = array($this->get_checkbox($row->id,$row->nt_ids), $row->modification);
-        }
-        return $ils;
-    }
-
-    function get_all_missing_nts_loops($pdb_id, $loop_type)
-    {
-        $this->db->select()
-             ->from('loops_all as t1')
-             ->join('loop_qa as t2','t1.id=t2.id')
-             ->where('release_id',$this->latest_release)
-             ->where('type', $loop_type)
-             ->where('pdb', $pdb_id)
-             ->where('missing_nt',1)
-             ->order_by('length','desc')
-             ->order_by('t1.id');
-        $query = $this->db->get();
-        $ils = array();
-        foreach ($query->result() as $row) {
-            $ils[] = array($this->get_checkbox($row->id,$row->nt_ids), $row->seq);
-        }
-        return $ils;
-    }
-
-//     function get_all_valid_hairpin_loops($id)
-//     {
-//         $this->db->select()
-//              ->from('loops_all as t1')
-//              ->join('loop_qa as t2','t1.id=t2.id')
-//              ->where('release_id',$this->latest_release)
-//              ->where('type','HL')
-//              ->where('pdb',$id)
-//              ->where('valid',1)
-//              ->order_by('length','desc')
-//              ->order_by('t1.id');
-//         $query = $this->db->get();
-//         $ils = array();
-//         foreach ($query->result() as $row) {
-//             $ils[] = array($this->get_checkbox($row->id,$row->nt_ids), $row->seq);
-//         }
-//         return $ils;
-//     }
-//
-//     function get_all_modified_hairpin_loops($id)
-//     {
-//         $this->db->select()
-//                  ->from('loops_all as t1')
-//                  ->join('loop_qa as t2','t1.id=t2.id')
-//                  ->join('loop_modifications as t3','t2.id=t3.id')
-//                  ->where('release_id',$this->latest_release)
-//                  ->where('type','HL')
-//                  ->where('pdb',$id)
-//                  ->where('modified_nt',1)
-//                  ->order_by('length','desc')
-//                  ->order_by('t1.id');
-//         $query = $this->db->get();
-//         $ils = array();
-//         foreach ($query->result() as $row) {
-//             $ils[] = array($this->get_checkbox($row->id,$row->nt_ids), $row->modification);
-//         }
-//         return $ils;
-//     }
-//
-//     function get_all_missing_nts_hairpin_loops($id)
-//     {
-//         $this->db->select()
-//                  ->from('loops_all as t1')
-//                  ->join('loop_qa as t2','t1.id=t2.id')
-//                  ->where('release_id',$this->latest_release)
-//                  ->where('type','HL')
-//                  ->where('pdb',$id)
-//                  ->where('missing_nt',1)
-//                  ->order_by('length','desc')
-//                  ->order_by('t1.id');
-//         $query = $this->db->get();
-//         $ils = array();
-//         foreach ($query->result() as $row) {
-//             $ils[] = array($this->get_checkbox($row->id,$row->nt_ids), $row->seq);
-//         }
-//         return $ils;
-//     }
 
     function get_latest_loop_release()
     {
