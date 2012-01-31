@@ -70,7 +70,8 @@ class Loops extends CI_Controller {
 
         $this->pagination->initialize($config);
 
-        $data['title']      = 'All ' . $motif_type . ' (' . $type . ')';
+        $motif_full_names = array('IL'=>'internal loops', 'HL' => 'hairpin loops', 'J3' => 'junction loops');
+        $data['title']      = 'All ' .  $type . ' ' . $motif_full_names[$motif_type];
         $data['type']       = $type;
         $data['motif_type'] = $motif_type;
         $data['baseurl'] = base_url();
