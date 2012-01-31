@@ -293,7 +293,10 @@ input[type=radio], input[type=checkbox] {
     border-right-color: #DDD;
     border-right-color: rgba(0, 0, 0, 0.15);
 }
-.loops_benchmark_view .label {
+.loops_benchmark_view .label, .pdb_loops_view .label {
+    width:auto;
+}
+#jmol>label {
     width:auto;
 }
 /* LAB */
