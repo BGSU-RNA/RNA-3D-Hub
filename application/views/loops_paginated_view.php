@@ -3,10 +3,10 @@
       <div class="content">
         <div class="page-header">
             <div class="row">
-                <div class="span7">
+                <div class="span8">
                 <h1><?php echo $title;?></h1>
                 </div>
-            <div class="span4">
+            <div class="span5">
             <ul class="tabs" data-tabs="tabs">
 
                 <li class="dropdown" data-dropdown="dropdown">
@@ -88,7 +88,7 @@
                     showPreviousButtonId: 'prev',
                     showNucleotideNumbersId: 'showNtNums'
 	    		});
-			}, 1500);
+			}, 200);
       	}
 
         $(".pdb").click(LookUpPDBInfo);

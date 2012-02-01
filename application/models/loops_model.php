@@ -86,35 +86,53 @@ class Loops_model extends CI_Model {
         $type = array_search($type, $this->qa_status);
         $this->db->select()
                  ->from('loop_qa')
+                 ->join('loops_all','loop_qa.id=loops_all.id')
                  ->where('status',$type)
-                 ->like('id',$motif_type,'after')
+                 ->where('type',$motif_type)
                  ->where('release_id',$release_id)
-                 ->order_by('id')
+                 ->order_by('loops_all.id')
                  ->limit($num,$offset);
         $query = $this->db->get();
 
-        $table = array();
         $i = 1;
         foreach ($query->result() as $row) {
-            $loop = array($offset + $i,
-                          $this->make_radio_button($row->id),
-                          '<a class="pdb">' . substr($row->id,3,4) . '</a>');
             if ($verbose == 'modified') {
-                $loop[] = $this->make_ligand_link($row->modifications);
+                $info = $this->make_ligand_link($row->modifications);
             } elseif ($verbose == 'complementary') {
-                $loop[] = $row->complementary;
+                $info = $row->complementary;
             } elseif ($verbose != 'valid') {
-                $loop[] = $row->nt_signature;
+                $info = $row->nt_signature;
+            } elseif ($verbose == 'valid') {
+                $info = $row->seq;
+            } else {
+                $info = '';
             }
-            $table[] = $loop;
+            $this->table->add_row($offset + $i,
+                                          $this->make_radio_button($row->id),
+                                          '<a class="pdb">' . substr($row->id,3,4) . '</a>',
+                                          $info);
             $i++;
         }
-        return $table;
+
+        if ($query->num_rows() == 0) {
+            $data['table'] = "No $type $motif_type loops were found";
+        } else {
+            if ($type == 'modified') {
+                $this->table->set_heading('#','id','PDB','Modifications');
+            } else {
+                $this->table->set_heading('#','id','PDB','Info');
+            }
+            $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table'>" );
+            $this->table->set_template($tmpl);
+        }
+        return $this->table->generate();
     }
 
     function make_radio_button($id) {
-        return "<label><input type='radio' class='jmolInline' data-type='loop_id'
-                id={$id} data-nt='{$id}' name='l'><span>{$id}</span></label>";
+        $loop_link = anchor_popup("loops/view/$id", '&#10140;');
+        return array('data' => "<label><input type='radio' class='jmolInline' data-type='loop_id'
+                id={$id} data-nt='{$id}' name='l'><span>{$id}</span>
+                <span class='loop_link'>{$loop_link}</span></label>", 'class' => 'loop');
     }
 
     function get_loops_count($type,$motif_type,$release_id)

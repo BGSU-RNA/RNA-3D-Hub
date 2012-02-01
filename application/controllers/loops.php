@@ -31,19 +31,6 @@ class Loops extends CI_Controller {
                                                        $release_id,
                                                        $config['per_page'],
                                                        $this->uri->segment(6));
-        if (count($data['table']) == 0) {
-            $data['table'] = "No $type $motif_type loops were found";
-        } else {
-            if ($type == 'modified') {
-                $this->table->set_heading('#','id','PDB','Modifications');
-            } else {
-                $this->table->set_heading('#','id','PDB','Info');
-            }
-            $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table'>" );
-            $this->table->set_template($tmpl);
-            $data['table'] =  $this->table->generate($data['table']);
-        }
-
         // load pagination class
         $this->load->library('pagination');
         $config['base_url']         = base_url(array('loops','view_all',$type,$motif_type,$release_id));
