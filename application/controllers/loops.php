@@ -37,7 +37,7 @@ class Loops extends CI_Controller {
             if ($type == 'modified') {
                 $this->table->set_heading('#','id','PDB','Modifications');
             } else {
-                $this->table->set_heading('#','id','PDB');
+                $this->table->set_heading('#','id','PDB','Info');
             }
             $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table'>" );
             $this->table->set_template($tmpl);

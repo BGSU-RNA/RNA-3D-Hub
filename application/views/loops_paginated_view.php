@@ -10,7 +10,7 @@
             <ul class="tabs" data-tabs="tabs">
 
                 <li class="dropdown" data-dropdown="dropdown">
-                <a href="#" class="dropdown-toggle">QA types</a>
+                <a href="#" class="dropdown-toggle">Quality Assurance</a>
                     <ul class="dropdown-menu">
                         <li><a href="<?=$baseurl?>loops/view_all/valid/<?=$motif_type?>/<?=$release_id?>">Valid</a></li>
                         <li><a href="<?=$baseurl?>loops/view_all/missing/<?=$motif_type?>/<?=$release_id?>">Missing</a></li>
