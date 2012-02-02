@@ -97,14 +97,19 @@ class Loops_model extends CI_Model {
         $i = 1;
         foreach ($query->result() as $row) {
             if ($verbose == 'modified') {
+                $this->table->set_heading('#','id','PDB','Modifications');
                 $info = $this->make_ligand_link($row->modifications);
             } elseif ($verbose == 'complementary') {
+                $this->table->set_heading('#','id','PDB','Info');
                 $info = $row->complementary;
             } elseif ($verbose != 'valid') {
+                $this->table->set_heading('#','id','PDB','Info');
                 $info = $row->nt_signature;
             } elseif ($verbose == 'valid') {
+                $this->table->set_heading('#','id','PDB','Info');
                 $info = $row->seq;
             } else {
+                $this->table->set_heading('#','id','PDB','Info');
                 $info = '';
             }
             $this->table->add_row($offset + $i,
@@ -117,11 +122,6 @@ class Loops_model extends CI_Model {
         if ($query->num_rows() == 0) {
             $data['table'] = "No $type $motif_type loops were found";
         } else {
-            if ($type == 'modified') {
-                $this->table->set_heading('#','id','PDB','Modifications');
-            } else {
-                $this->table->set_heading('#','id','PDB','Info');
-            }
             $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table'>" );
             $this->table->set_template($tmpl);
         }
