@@ -4,34 +4,50 @@
       <!-- Main hero unit for a primary marketing message or call to action -->
       <div class="hero-unit">
         <h1>RNA 3D Hub</h1>
-        <p>Vestibulum id ligula porta felis euismod semper. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.</p>
-        <p><a class="btn primary large">Learn more &raquo;</a></p>
+        <p>The single-stop destination for RNA structural annotations</p>
+        <p>Public &szlig; release</p>
       </div>
 
-      <!-- Example row of columns -->
       <div class="row">
+
+        <div class="span5">
+          <h2>RNA Loops</h2>
+          <p>Hairpin, internal and three-way junction loops extracted from all RNA-containing PDB files. Automatic weekly updates.</p>
+          <p><a class="btn primary" href="<?php echo $baseurl;?>loops">View details &raquo;</a></p>
+        </div>
+
         <div class="span6">
-          <h2>RNA 3D Motifs</h2>
-          <p>Etiam porta sem malesuada magna mollis euismod. Integer posuere erat a ante venenatis dapibus posuere velit aliquet. Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit.</p>
-          <p><a class="btn" href="<?php echo $baseurl;?>motifs">View details &raquo;</a></p>
+          <h2>RNA 3D Motif Atlas</h2>
+          <p>Collection of recurrent RNA 3D motifs extracted from a non-redundant set of structures. Automatic updates coming soon!</p>
+          <p><a class="btn primary" href="<?php echo $baseurl;?>motifs">View details &raquo;</a></p>
         </div>
+
         <div class="span5">
-          <h2>Non-redundant lists</h2>
-           <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-          <p><a class="btn" href="<?php echo $baseurl;?>nrlist">View details &raquo;</a></p>
+          <h2>Non-redundant Lists</h2>
+          <p>PDB files grouped into equivalence classes by molecule type and biological organism. Automatic weekly updates.</p>
+          <p><a class="btn primary" href="<?php echo $baseurl;?>nrlist">View details &raquo;</a></p>
        </div>
-        <div class="span5">
-          <h2>RNA 3D structures</h2>
-          <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-          <p><a class="btn" href="<?php echo $baseurl;?>pdb">View details &raquo;</a></p>
-        </div>
+
       </div>
 
       <footer>
-        &copy; BGSU RNA group, 2011<br>
+        &copy; BGSU RNA group, 2012<br>
       </footer>
 
     </div> <!-- /container -->
+
+    <!-- Google Analytics Tracking -->
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-9081629-8']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    <!-- Google Analytics Tracking -->
 
   </body>
 </html>

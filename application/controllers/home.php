@@ -3,7 +3,7 @@ class Home extends CI_Controller {
 
 	public function index()
 	{
-        $data['title'] = 'All Motif Atlas releases';
+        $data['title'] = 'RNA 3D Hub';
         $data['baseurl'] = base_url();
 
         $this->load->view('header_view', $data);

@@ -85,7 +85,7 @@
 			var timeoutID = window.setTimeout(function(){
 	    		jmolInlineLoader.init({
                     chbxClass: 'jmolInline',
-                    serverUrl: 'http://rna.bgsu.edu/MotifAtlas_dev/ajax/get_loop_coordinates',
+                    serverUrl: '<?=$baseurl?>ajax/get_loop_coordinates',
                     neighborhoodButtonId: 'neighborhood',
                     showNextButtonId: 'next',
                     showPreviousButtonId: 'prev',
