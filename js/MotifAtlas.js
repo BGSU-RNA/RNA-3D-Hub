@@ -69,7 +69,7 @@ function apply_jmol_styling() {
 
 // Cytoscapeweb functions
 function show_motif_exemplar_in_jmol(id) {
-    $.post('http://rna.bgsu.edu/RNA3DHub_dev/ajax/get_exemplar_coordinates', { motif_id: id }, function(data) {
+    $.post('http://rna.bgsu.edu/rna3dhub/ajax/get_exemplar_coordinates', { motif_id: id }, function(data) {
         jmolScript('zap;');
         jmolLoadInlineScript(data);
         apply_jmol_styling();
@@ -79,7 +79,7 @@ function show_motif_exemplar_in_jmol(id) {
 
 // Cytoscapeweb functions
 function show_loop_in_jmol(id) {
-    $.post('http://rna.bgsu.edu/RNA3DHub_dev/ajax/get_loop_coordinates', { loop_id: id }, function(data) {
+    $.post('http://rna.bgsu.edu/rna3dhub/ajax/get_loop_coordinates', { loop_id: id }, function(data) {
         jmolScript('zap;');
         jmolLoadInlineScript(data);
         apply_jmol_styling();    });
