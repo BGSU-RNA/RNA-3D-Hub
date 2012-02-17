@@ -47,6 +47,29 @@
                     <li><a href="<?php echo $baseurl;?>loops/graphs">Sfcheck and Mapman: Graphs</a></li>
                 </ul>
             </li>
+
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle">RNA 3D Apps</a>
+                <ul class="dropdown-menu">
+                    <li><a href="http://rna.bgsu.edu/WebFR3D">WebFR3D</a></li>
+                    <li><a href="http://rna.bgsu.edu/WebFR3D">R3DAlign</a></li>
+                    <li><a href="http://rna.bgsu.edu/R3DAlign">JAR3D (private &szlig;)</a></li>
+                    <li class="divider"></li>
+                    <li><a href="http://rna.bgsu.edu/FR3D">FR3D</a></li>
+                    <li class="divider"></li>
+                    <li><a href="http://rna.bgsu.edu">RNA BGSU Home</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle">Links</a>
+                <ul class="dropdown-menu">
+                    <li><a href="https://twitter.com/#!/RNA3DHub">Twitter updates</a></li>
+                    <li><a href="https://github.com/AntonPetrov/RNA-3D-Hub">GitHub</a></li>
+                </ul>
+            </li>
+
+
 <!--
             <li><a href="#about">About</a></li>
             <li><a href="#contact">Contact</a></li>
