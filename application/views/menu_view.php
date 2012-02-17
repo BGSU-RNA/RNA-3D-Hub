@@ -53,7 +53,7 @@
                 <ul class="dropdown-menu">
                     <li><a href="http://rna.bgsu.edu/WebFR3D">WebFR3D</a></li>
                     <li><a href="http://rna.bgsu.edu/WebFR3D">R3DAlign</a></li>
-                    <li><a href="http://rna.bgsu.edu/R3DAlign">JAR3D (private &szlig;)</a></li>
+                    <li><a href="http://rna.bgsu.edu/research/JAR3D">JAR3D (private &szlig;)</a></li>
                     <li class="divider"></li>
                     <li><a href="http://rna.bgsu.edu/FR3D">FR3D</a></li>
                     <li class="divider"></li>
