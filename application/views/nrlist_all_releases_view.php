@@ -13,8 +13,10 @@
 
           </div>
           <div class="span5 offset1">
+<!--
             <h3>About</h3>
             <p>Coming soon.</p>
+ -->
           </div>
         </div>
       </div>

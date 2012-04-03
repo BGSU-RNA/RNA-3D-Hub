@@ -15,6 +15,7 @@
             Try these links:<br>
             <a href='<?=$baseurl?>/motifs/graph/il/0.1'>IL Release 0.1</a><br>
             <a href='<?=$baseurl?>/motifs/graph/il/0.2'>IL Release 0.2</a><br>
+            <a href='<?=$baseurl?>/motifs/graph/il/0.6'>IL Release 0.6</a><br>
           </div>
 
         </div>

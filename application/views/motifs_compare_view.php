@@ -42,8 +42,10 @@
           </div>
 
           <div class="span4 offset2">
+<!--
             <h3>About</h3>
             <p>Coming soon.</p>
+ -->
           </div>
 
         </div>

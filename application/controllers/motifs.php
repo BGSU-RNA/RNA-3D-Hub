@@ -24,10 +24,14 @@ class Motifs extends CI_Controller {
         $this->load->view('menu_view', $data);
         $this->load->view('motifs_all_view', $data);
         $this->load->view('footer');
+
+//         $this->output->enable_profiler(TRUE);
 	}
 
 	public function release($motif_type,$id)
 	{
+        $this->output->cache(1000000);
+
 	    $motif_type = strtolower($motif_type);
 	    $this->load->model('Motifs_model', '', TRUE);
         if ($id == 'current') {
@@ -53,6 +57,8 @@ class Motifs extends CI_Controller {
 
     public function graph($motif_type,$id)
     {
+        $this->output->cache(1000000);
+
 	    $motif_type = strtolower($motif_type);
 	    $this->load->model('Motifs_model', '', TRUE);
 
