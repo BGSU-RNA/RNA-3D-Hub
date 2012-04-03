@@ -51,7 +51,7 @@ class Motif extends CI_Controller {
 //         $tmpl = array( 'table_open'  => '<table class="condensed-table bordered-table">' );
 //         $this->table->set_template($tmpl);
 //         $data['history'] = $this->table->generate($history);
-        $data['history'] = array();
+//         $data['history'] = array();
         $data['baseurl'] = base_url();
 
         $this->load->view('header_view', $data);

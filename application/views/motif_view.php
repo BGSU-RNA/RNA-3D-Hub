@@ -51,6 +51,7 @@
         </div>
 
 
+<!--
         <br>
 
         <div class="row">
@@ -59,6 +60,7 @@
                 <?php echo $history;?>
             </div>
         </div>
+ -->
 
       </div>
 
