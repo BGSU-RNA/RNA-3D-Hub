@@ -29,6 +29,7 @@
                 </div>
                 <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
                 <input type='button' id='all' class='btn' value="Show all">
+                <input type='button' id='stereo' class='btn' value="Show stereo">
                 <label><input type="checkbox" id="showNtNums">Nucleotide numbers</label>
            </div>
 
@@ -75,7 +76,8 @@
                     showNextButtonId: 'next',
                     showPreviousButtonId: 'prev',
                     showAllButtonId: 'all',
-                    showNucleotideNumbersId: 'showNtNums'
+                    showNucleotideNumbersId: 'showNtNums',
+                    showStereoId: 'stereo'
 	    		});
 			}, 1500);
       	}

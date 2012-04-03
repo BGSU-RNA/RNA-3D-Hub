@@ -21,28 +21,47 @@
                   <script type="text/javascript">
                       jmolInitialize(" /jmol");
                       jmolSetAppletColor("#ffffff");
-                      jmolApplet(340);
+                      jmolApplet(340, "javascript appletLoaded()");
                   </script>
               </div>
               <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
               <input type='button' id='showNtNums'   class='btn' value="Show numbers">
+              <br>
+              <input type='button' id='prev' class='btn' value='Previous'>
+              <input type='button' id='next' class='btn' value="Next">
+              <input type='button' id='stereo' class='btn' value="Show stereo">
           </div>
 
         </div>
       </div>
 
     <script>
+
+       function appletLoaded (){
+        var timeoutID = window.setTimeout(function(){
+            jmolInlineLoader.init({
+                chbxClass: 'jmolInline',
+                serverUrl: '<?=$baseurl?>ajax/get_exemplar_coordinates',
+                neighborhoodButtonId: 'neighborhood',
+                showNextButtonId: 'next',
+                showPreviousButtonId: 'prev',
+                showNucleotideNumbersId: 'showNtNums',
+                showStereoId: 'stereo'
+            });
+        }, 200);
+    }
+
         $(function () {
 
-            $('.exemplar').click(function() {
-                var t = $(this);
-                var motif_id = t.next().html();
-                show_motif_exemplar_in_jmol(motif_id);
-                $('#neighborhood').attr('value','Show neighborhood');
-            });
-
-            jmol_neighborhood_button_click('neighborhood');
-            jmol_show_nucleotide_numbers_click('showNtNums');
+//             $('.exemplar').click(function() {
+//                 var t = $(this);
+//                 var motif_id = t.next().html();
+//                 show_motif_exemplar_in_jmol(motif_id);
+//                 $('#neighborhood').attr('value','Show neighborhood');
+//             });
+//
+//             jmol_neighborhood_button_click('neighborhood');
+//             jmol_show_nucleotide_numbers_click('showNtNums');
 
             $('#jmol').css('position','fixed');
             var offset_left = $('#left_content').offset().left + 530; // 530 = span9 width
