@@ -9,7 +9,7 @@ class Motif extends CI_Controller {
 	public function view($motif_id)
 	{
 //         $this->output->cache(10);
-//         $this->output->cache(1000000);
+        $this->output->cache(1000000);
 	    $this->load->model('Motif_model', '', TRUE);
 	    $this->Motif_model->set_motif_id($motif_id);
 	    $release_id = $this->Motif_model->set_release_id();
@@ -45,11 +45,12 @@ class Motif extends CI_Controller {
 
         // history widget
         $this->benchmark->mark('d');
-        $history = $this->Motif_model->get_history();
+        $history = $this->Motif_model->get_history($motif_id);
 //        $this->table->set_heading($this->Motif_model->get_history_header());
         $tmpl = array( 'table_open'  => '<table class="condensed-table bordered-table">' );
         $this->table->set_template($tmpl);
         $data['history'] = $this->table->generate($history);
+//         $data['history'] = array();
         $data['baseurl'] = base_url();
 
         $this->load->view('header_view', $data);
@@ -57,7 +58,7 @@ class Motif extends CI_Controller {
         $this->load->view('motif_view', $data);
         $this->load->view('footer');
 
-        $this->output->enable_profiler(TRUE);
+//         $this->output->enable_profiler(TRUE);
 	}
 }
 

@@ -17,11 +17,12 @@ class Motif_model extends CI_Model {
     }
 
     // history widget
-    function get_history()
+    function get_history($motif_id)
     {
         $this->db->select('id')
                  ->from('ml_releases')
                  ->order_by("date", "desc")
+                 ->where('type', substr($motif_id, 0, 2))
                  ->limit(2);
         $result = $this->db->get()->result_array();
         $prev_release = $result[1]['id'];
@@ -261,7 +262,7 @@ class Motif_model extends CI_Model {
     function get_interactions()
     {
         $this->db->select()
-                 ->from('ndb_test_copy')
+                 ->from('pdb_pairwise_interactions')
                  ->where_in('iPdbSig', array_keys($this->nt_ids))
                  ->where_in('jPdbSig', array_keys($this->nt_ids));
         $result = $this->db->get()->result_array();
