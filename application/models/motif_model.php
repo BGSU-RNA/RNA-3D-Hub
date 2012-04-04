@@ -16,6 +16,48 @@ class Motif_model extends CI_Model {
         parent::__construct();
     }
 
+    function get_annotations($motif_id)
+    {
+        $this->db->select()
+                  ->from('ml_motif_annotations')
+                  ->where('motif_id', $motif_id)
+                  ->limit(1);
+        $query = $this->db->get();
+        if ( $query->num_rows > 0 ) {
+            $result = $query->row();
+            return array(
+                'common_name' => $result->common_name,
+                'annotation' => $result->annotation
+            );
+        } else {
+            return array(
+                'common_name' => '',
+                'annotation' => ''
+            );
+        }
+    }
+
+    function save_annotation($motif_id, $common_name, $annotation)
+    {
+        $this->db->select()
+                  ->from('ml_motif_annotations')
+                  ->where('motif_id', $motif_id)
+                  ->limit(1);
+        $query = $this->db->get();
+
+        $this->db->set('common_name', $common_name)
+                 ->set('annotation', $annotation);
+
+        if ( $query->num_rows > 0 ) {
+            return $this->db
+                        ->where('motif_id', $motif_id)
+                        ->update('ml_motif_annotations');
+        } else {
+            return $this->db->set('motif_id', $motif_id)
+                        ->insert('ml_motif_annotations');
+        }
+    }
+
     // history widget
     function get_history($motif_id)
     {

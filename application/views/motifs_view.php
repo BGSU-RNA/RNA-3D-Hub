@@ -24,12 +24,14 @@
                       jmolApplet(340, "javascript appletLoaded()");
                   </script>
               </div>
-              <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
-              <input type='button' id='showNtNums'   class='btn' value="Show numbers">
-              <br>
               <input type='button' id='prev' class='btn' value='Previous'>
               <input type='button' id='next' class='btn' value="Next">
               <input type='button' id='stereo' class='btn' value="Show stereo">
+              <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
+              <br>
+
+              <label><input type="checkbox" id="showNtNums">Nucleotide numbers</label>
+
           </div>
 
         </div>

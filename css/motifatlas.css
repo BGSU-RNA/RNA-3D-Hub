@@ -67,6 +67,22 @@ body {
     min-height:1px;
 
 }
+
+/* motif annotation slider */
+.motifview #annotation {
+    margin-top:1em;
+}
+.motifview form, .motifview .well {
+    margin-bottom:0;
+}
+.motifview #annotation, .motifview input.motif_id {
+    display:none;
+}
+.motifview div.messages {
+    margin-top:0.5em;
+}
+/* motif annotation slider */
+
 /* Mutual discrepancy matrix */
 .motifview .mdmatrix table{
     height:340px;

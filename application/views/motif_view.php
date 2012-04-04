@@ -3,8 +3,51 @@
       <div class="content">
 
         <div class="page-header">
-          <h1><?php echo $title;?> <small>Release <?php echo $release_id;?></small></h1>
-        </div>
+          <div class="row">
+            <div class="span14">
+              <h1>Motif <?php echo $title;?><small>Release <?php echo $release_id;?></small></h1>
+            </div>
+            <div class="span2">
+
+              <?php
+                if(!isset($_SESSION)) {
+                  session_start();
+                }
+                if (isset($_SESSION['username'])) {
+                    echo "<input type='button' id='annotate' class='btn success' value='Annotate'>";
+                }
+               ?>
+
+            </div>
+          </div>
+
+          <div class="span15 well" id="annotation">
+            <form>
+                <div class="row">
+                    <div class="span7">
+                        <div class="clearfix">
+                            <label for="common_name">Common name:</label>
+                            <div class="input">
+                                <input class="span4" id="common_name" name="common_name" size="30" type="text" value="<?=$annotation['common_name']?>">
+                            </div>
+                            <input type="text" name="motif_id" value="<?php echo $title;?>" class="motif_id">
+                        </div>
+                    </div>
+
+                    <div class="span6">
+                        <textarea class="span6" rows="4" name="annotation"><?=$annotation['annotation']?></textarea>
+                        <span class="help-block">Location on 2D, quality remarks etc </span>
+                    </div>
+
+                    <div class="span2">
+                        <input type="submit" id="submit_annotation" class="btn primary" value="Save">
+                        <div class="messages"></div>
+                    </div>
+                </div>
+            </form>
+          </div>
+
+        </div> <!-- end of page-header -->
 
         <div class="row">
           <div class="span16 interactions">
@@ -22,9 +65,9 @@
             <div class="span6" id="jmol" >
                 <div class="block jmolheight">
                     <script type="text/javascript">
-                        jmolInitialize(" /jmol");
-                        jmolSetAppletColor("#ffffff");
-                        jmolApplet(340, "javascript appletLoaded()");
+//                         jmolInitialize(" /jmol");
+//                         jmolSetAppletColor("#ffffff");
+//                         jmolApplet(340, "javascript appletLoaded()");
                     </script>
                 </div>
                 <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
@@ -83,5 +126,38 @@
 	    		});
 			}, 1500);
       	}
+
+        (function() {
+            var slider = $('#annotation');
+            var sliderSwitch = $('#annotate');
+            var messages = $('div.messages');
+
+            sliderSwitch.toggle(function() {
+                sliderSwitch.val('Hide');
+            }, function() {
+                sliderSwitch.val('Annotate');
+            });
+
+            sliderSwitch.click( function() {
+                slider.slideToggle('slow', 'linear');
+            });
+
+            $('#submit_annotation').click( function(e) {
+                $.ajax({
+                    url: '<?php echo $baseurl;?>motif/save_annotation',
+                    type: 'POST',
+                    data: $('form').serialize()
+                }).done(function(result) {
+                    messages.empty()
+                            .append('<div class="alert-message success">Data saved</div>')
+                            .delay(2000)
+                            .fadeOut(300);
+                }).fail(function(result) {
+                    messages.empty().append('<div class="alert-message error">Error</div>');
+                });
+                e.preventDefault();
+            });
+        }());
+
 
       </script>

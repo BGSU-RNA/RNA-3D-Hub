@@ -69,6 +69,17 @@
                 </ul>
             </li>
 
+            <?php
+                if(!isset($_SESSION)) {
+                    session_start();
+                }
+                if (isset($_SESSION['username'])) {
+                    echo "<li><a href='{$baseurl}logout'>Logout {$_SESSION['username']}</a></li>";
+                } else {
+                    echo "<li><a href='{$baseurl}admin'>Login</a></li>";
+                }
+            ?>
+
 
 <!--
             <li><a href="#about">About</a></li>

@@ -6,14 +6,39 @@ class Motif extends CI_Controller {
         echo "motif";
 	}
 
+    public function test()
+    {
+        $data['baseurl'] = base_url();
+
+        $this->load->view('header_view', $data);
+        $this->load->view('menu_view', $data);
+        $this->load->view('motif_view_test');
+        $this->load->view('footer');
+    }
+
+    public function save_annotation()
+    {
+        $motif_id    = $this->input->post('motif_id');
+        $common_name = $this->input->post('common_name');
+        $annotation  = $this->input->post('annotation');
+
+        $this->load->model('Motif_model', '', TRUE);
+        echo $this->Motif_model->save_annotation($motif_id,
+                                                 $common_name,
+                                                 $annotation);
+    }
+
 	public function view($motif_id)
 	{
 //         $this->output->cache(10);
-        $this->output->cache(1000000);
+//         $this->output->cache(1000000);
 
 	    $this->load->model('Motif_model', '', TRUE);
 	    $this->Motif_model->set_motif_id($motif_id);
 	    $release_id = $this->Motif_model->set_release_id();
+
+        //annotations
+        $data['annotation'] = $this->Motif_model->get_annotations($motif_id);
 
         // pairwise interactions table
         $this->benchmark->mark('a');
@@ -40,7 +65,7 @@ class Motif extends CI_Controller {
             $data['matrix'] = '';
         }
 
-        $data['title']      = 'Motif ' . $motif_id;
+        $data['title']      = $motif_id;
         $data['release_id'] = $release_id;
         $data['motif_id']   = $motif_id;
 
