@@ -63,10 +63,6 @@ body {
     border: 1px solid #ddd;
 }
 */
-.mdmatrix td {
-    min-height:1px;
-
-}
 
 /* motif annotation slider */
 .motifview #annotation {
@@ -87,11 +83,19 @@ body {
 .motifview .mdmatrix table{
     height:340px;
     width:340px;
+    table-layout: fixed;
 }
 /* overrides bootstrap */
 .motifview .mdmatrix td, .motifview .mdmatrix tr {
     padding:0;
+    border-top-width:0;
 }
+/*
+.mdmatrix td {
+    min-height:1px;
+    min-width:1px;
+}
+*/
 .block {
   border: 1px solid #ddd;
   -webkit-border-radius: 4px;
