@@ -1,19 +1,9 @@
 <?php
-class Motif extends CI_Controller {
+class Motif extends MY_Controller {
 
-	public function index()
-	{
-        echo "motif";
-	}
-
-    public function test()
+    public function __construct()
     {
-        $data['baseurl'] = base_url();
-
-        $this->load->view('header_view', $data);
-        $this->load->view('menu_view', $data);
-        $this->load->view('motif_view_test');
-        $this->load->view('footer');
+        parent::__construct();
     }
 
     public function save_annotation()

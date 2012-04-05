@@ -1,16 +1,15 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Admin extends CI_Controller {
+class Admin extends MY_Controller {
 
    public function __construct()
    {
-      session_start();
       parent::__construct();
    }
 
     public function index()
     {
-      if ( isset($_SESSION['username']) ) {
+      if ( $this->session->userdata('username') ) {
          redirect('home');
       }
 
@@ -27,8 +26,13 @@ class Admin extends CI_Controller {
                   );
 
          if ( $res !== false ) {
-            $_SESSION['username'] = $this->input->post('username');
-            redirect('home');
+            $this->session->set_userdata('username', $this->input->post('username'));
+            if (!$this->session->userdata('next')) {
+                redirect('home');
+            } else {
+                redirect($this->session->userdata('next'));
+                $this->session->unset_userdata('next');
+            }
          }
 
       }
@@ -43,7 +47,8 @@ class Admin extends CI_Controller {
 
    public function logout()
    {
-      session_destroy();
+//       session_destroy();
+      $this->session->sess_destroy();
       $data['baseurl'] = base_url();
       $data['title'] = 'RNA 3D Hub Login';
       $this->load->view('header_view', $data);

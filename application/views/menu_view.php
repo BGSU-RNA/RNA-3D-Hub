@@ -1,3 +1,8 @@
+<?php
+    if(!isset($_SESSION)) {
+        session_start();
+    }
+?>
     <div class="topbar" data-dropdown="dropdown">
       <div class="fill">
         <div class="container">
@@ -70,13 +75,11 @@
             </li>
 
             <?php
-                if(!isset($_SESSION)) {
-                    session_start();
-                }
-                if (isset($_SESSION['username'])) {
-                    echo "<li><a href='{$baseurl}logout'>Logout {$_SESSION['username']}</a></li>";
-                } else {
+                if ( ! $this->session->userdata('username') ) { //! isset($_SESSION['username'])) {
                     echo "<li><a href='{$baseurl}admin'>Login</a></li>";
+                } else {
+                    echo "<li><a href='{$baseurl}logout'>Logout {$this->session->userdata('username')}</a></li>";
+//                     echo "<li><a href='{$baseurl}logout'>Logout {$_SESSION['username']}</a></li>";
                 }
             ?>
 

@@ -9,18 +9,14 @@
             </div>
             <div class="span2">
 
-              <?php
-                if(!isset($_SESSION)) {
-                  session_start();
-                }
-                if (isset($_SESSION['username'])) {
-                    echo "<input type='button' id='annotate' class='btn success' value='Annotate'>";
-                }
-               ?>
+              <?php if ($this->session->userdata('username')): ?>
+                <input type='button' id='annotate' class='btn success' value='Annotate'>
+              <?php endif; ?>
 
             </div>
           </div>
 
+          <?php if ($this->session->userdata('username')): ?>
           <div class="span15 well" id="annotation">
             <form>
                 <div class="row">
@@ -46,6 +42,8 @@
                 </div>
             </form>
           </div>
+          <?php endif; ?>
+
 
         </div> <!-- end of page-header -->
 
