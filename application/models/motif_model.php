@@ -1,4 +1,7 @@
 <?php
+
+ini_set("memory_limit","200M");
+
 class Motif_model extends CI_Model {
 
     function __construct()
