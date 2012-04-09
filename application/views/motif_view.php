@@ -63,9 +63,9 @@
             <div class="span6" id="jmol" >
                 <div class="block jmolheight">
                     <script type="text/javascript">
-//                         jmolInitialize(" /jmol");
-//                         jmolSetAppletColor("#ffffff");
-//                         jmolApplet(340, "javascript appletLoaded()");
+                        jmolInitialize(" /jmol");
+                        jmolSetAppletColor("#ffffff");
+                        jmolApplet(340, "javascript appletLoaded()");
                     </script>
                 </div>
                 <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
@@ -124,6 +124,15 @@
 	    		});
 			}, 1500);
       	}
+
+//         (function() {
+//             $('.mdmatrix td').click(function() {
+//                 var loops = $(this).data('pair').split(':');
+//                 checkbox_click(loops[0]);
+//                 checkbox_click(loops[1]);
+//             });
+//         })();
+
 
         (function() {
             var slider = $('#annotation');

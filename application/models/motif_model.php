@@ -190,7 +190,9 @@ class Motif_model extends CI_Model {
             $loop_id1 = $this->similarity[$i];
             for ($j = 1; $j <= $this->num_loops; $j++) {
                 $loop_id2 = $this->similarity[$j];
-                $cell = array('data-disc' => $disc[$loop_id1][$loop_id2], 'class' => $this->get_css_class($disc[$loop_id1][$loop_id2]) );
+                $cell = array('data-disc' => $disc[$loop_id1][$loop_id2],
+                              'data-pair' => "$loop_id1:$loop_id2",
+                              'class' => $this->get_css_class($disc[$loop_id1][$loop_id2]) );
                 $matrix[] = $cell;
             }
         }

@@ -10,9 +10,9 @@
           <ul class="nav">
 
             <li class="dropdown">
-                <a href="#" class="dropdown-toggle">RNA Loops</a>
+                <a href="#" class="dropdown-toggle">Loop Atlas</a>
                 <ul class="dropdown-menu">
-                    <li><a href="<?php echo $baseurl;?>loops">Weekly stats</a></li>
+                    <li><a href="<?php echo $baseurl;?>loops">Home</a></li>
                     <li><a href="<?php echo $baseurl;?>pdb">Browse by PDB</a></li>
                     <li class="divider"></li>
                     <li><a href="<?php echo $baseurl;?>loops/benchmark/IL">Loop extraction benchmark</a></li>
@@ -32,7 +32,7 @@
             </li>
 
             <li class="dropdown">
-                <a href="#" class="dropdown-toggle">Non-redundant Lists</a>
+                <a href="#" class="dropdown-toggle">NR Lists</a>
                 <ul class="dropdown-menu">
                     <li><a href="<?php echo $baseurl;?>nrlist">Home</a></li>
                     <li><a href="<?php echo $baseurl;?>nrlist/release_history">Release history</a></li>
@@ -43,7 +43,7 @@
             </li>
 
             <li class="dropdown">
-                <a href="#" class="dropdown-toggle">Annotated PDBs</a>
+                <a href="#" class="dropdown-toggle">RNA PDBs</a>
                 <ul class="dropdown-menu">
                     <li><a href="<?php echo $baseurl;?>pdb">View all PDBs</a></li>
                     <li class="divider"></li>
@@ -54,7 +54,7 @@
             </li>
 
             <li class="dropdown">
-                <a href="#" class="dropdown-toggle">RNA 3D Apps</a>
+                <a href="#" class="dropdown-toggle">Apps</a>
                 <ul class="dropdown-menu">
                     <li><a href="http://rna.bgsu.edu/WebFR3D">WebFR3D</a></li>
                     <li><a href="http://rna.bgsu.edu/WebFR3D">R3DAlign</a></li>
@@ -74,14 +74,6 @@
                 </ul>
             </li>
 
-            <?php
-                if ( ! $this->session->userdata('username') ) { //! isset($_SESSION['username'])) {
-                    echo "<li><a href='{$baseurl}admin'>Login</a></li>";
-                } else {
-                    echo "<li><a href='{$baseurl}logout'>Logout {$this->session->userdata('username')}</a></li>";
-//                     echo "<li><a href='{$baseurl}logout'>Logout {$_SESSION['username']}</a></li>";
-                }
-            ?>
 
 
 <!--
@@ -89,6 +81,17 @@
             <li><a href="#contact">Contact</a></li>
  -->
           </ul>
+            <ul class="nav secondary-nav">
+            <?php
+                if ( ! $this->session->userdata('username') ) { //! isset($_SESSION['username'])) {
+                    echo "<li class='pull-left'><a href='{$baseurl}admin'>Login</a></li>";
+                } else {
+                    echo "<li class='pull-left'><a href='{$baseurl}logout'>Logout {$this->session->userdata('username')}</a></li>";
+//                     echo "<li><a href='{$baseurl}logout'>Logout {$_SESSION['username']}</a></li>";
+                }
+            ?>
+          </ul>
+
         </div>
       </div>
     </div>

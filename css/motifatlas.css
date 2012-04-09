@@ -329,6 +329,18 @@ input[type=radio], input[type=checkbox] {
     margin-left:2px;
     display:inline;
 }
+
+/* Login page */
+.login_view label{
+    width: auto;
+}
+.login_view form .input, .login_view #submit {
+    margin-left: 100px;
+}
+.login_view #submit {
+    margin-top: 2em;
+}
+
 /* LAB */
 
 body.home {
