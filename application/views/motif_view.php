@@ -30,6 +30,14 @@
                             <dd id="annotation" class="edit_area">No annotation provided yet. Log in to add one.</dd>
                             <?php endif; ?>
                         </dl>
+
+                        <ul class='media-grid'>
+                            <a href='#'>
+                                <img class="span3 thumbnail"
+                                     src="http://rna.bgsu.edu/img/MotifAtlas/<?php echo substr($title,0,2) . $release_id;?>/<?=$title?>.png"
+                                     alt='2D diagram'>
+                            </a>
+                        </ul>
                 </div>
             </div>
             <div class="span12">
