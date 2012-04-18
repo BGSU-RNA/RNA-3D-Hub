@@ -42,14 +42,6 @@
 
         $("#sort").tablesorter();
 
-
-        $(".fancybox").fancybox({
-            openSpeed  : 'fast',
-            closeSpeed : 'fast',
-            arrows     : true
-        });
-
-
        function appletLoaded() {
             var timeoutID = window.setTimeout(function(){
                 jmolInlineLoader.init({
@@ -64,14 +56,16 @@
             }, 200);
         }
 
+        var offset_left = $('#left_content').offset().left + 530; // 530 = span9 width
+        var offset_top  = $('#left_content').offset().top;
+        $('#jmol').css('position','fixed')
+                  .css('left',offset_left)
+                  .css('top',offset_top);
 
-        $(function () {
+        $(".fancybox").fancybox({
+            openSpeed  : 'fast',
+            closeSpeed : 'fast',
+            arrows     : true
+        });
 
-            $('#jmol').css('position','fixed');
-            var offset_left = $('#left_content').offset().left + 530; // 530 = span9 width
-            var offset_top  = $('#left_content').offset().top;
-            $('#jmol').css('left',offset_left);
-            $('#jmol').css('top',offset_top);
-
-        })
     </script>

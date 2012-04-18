@@ -309,9 +309,15 @@ class Motifs_model extends CI_Model {
             } else {
                 $annotation = '';
             }
+            $signature  = $annotations[$row->motif_id]['bp_signature'];
+
             $table[] = array($i,
                              $this->make_fancybox_link($row->motif_id, $motif_type, $id),
-                             "<input type='radio' class='jmolInline' id='" . str_replace('.','_',$row->motif_id) . "' data-nt='{$row->motif_id}' data-type='motif_id' name='ex'>" . anchor(base_url(array('motif','view',$row->motif_id)), $row->motif_id),
+                             "<input type='radio' class='jmolInline' id='"
+                                . str_replace('.','_',$row->motif_id)
+                                . "' data-nt='{$row->motif_id}' data-type='motif_id' name='ex'>"
+                                . anchor(base_url(array('motif','view',$row->motif_id)), $row->motif_id)
+                                . '<br>' . $signature,
                              $this->add_annotation_label($row->motif_id, $reason),
                              $row->instances,
                              $annotation);

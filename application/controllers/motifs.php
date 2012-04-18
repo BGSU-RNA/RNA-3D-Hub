@@ -62,6 +62,7 @@ class Motifs extends CI_Controller {
         $this->table->set_template($tmpl);
         $this->table->set_heading('#', 'Varna 2D', 'Motif id', 'Status', 'Instances', 'Name');
         $data['table']    = $this->table->generate($result['table']);
+
         $data['status']   = $this->Motifs_model->get_release_status($motif_type,$id);
         $data['counts']   = $result['counts'];
         $data['title']    = 'Motif Atlas Release ' . $id;
