@@ -283,6 +283,15 @@ class Motifs_model extends CI_Model {
         }
         $counts_text .= '<br><br>';
 
+        // get common names and annotations
+        $this->db->select()
+                 ->from('ml_motif_annotations');
+        $query = $this->db->get();
+        foreach ($query->result() as $row) {
+            $annotations[$row->motif_id]['bp_signature'] = $row->bp_signature;
+            $annotations[$row->motif_id]['common_name'] = $row->common_name;
+        }
+
         // get the motif ids and counts
         $this->db->select('motif_id,count(id) AS instances')
                  ->from('ml_loops')
@@ -294,12 +303,18 @@ class Motifs_model extends CI_Model {
 
         $i = 1;
         foreach ($query->result() as $row) {
+            if ( array_key_exists($row->motif_id, $annotations) &&
+                 strlen($annotations[$row->motif_id]['common_name']) > 1 ) {
+                $annotation = $annotations[$row->motif_id]['common_name'];
+            } else {
+                $annotation = '';
+            }
             $table[] = array($i,
                              $this->make_fancybox_link($row->motif_id, $motif_type, $id),
                              "<input type='radio' class='jmolInline' id='" . str_replace('.','_',$row->motif_id) . "' data-nt='{$row->motif_id}' data-type='motif_id' name='ex'>" . anchor(base_url(array('motif','view',$row->motif_id)), $row->motif_id),
                              $this->add_annotation_label($row->motif_id, $reason),
                              $row->instances,
-                             '');
+                             $annotation);
             $i++;
         }
         return array( 'table' => $table, 'counts' => $counts_text );

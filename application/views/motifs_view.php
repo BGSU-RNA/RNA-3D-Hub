@@ -40,31 +40,32 @@
 
     <script>
 
-       function appletLoaded (){
-        var timeoutID = window.setTimeout(function(){
-            jmolInlineLoader.init({
-                chbxClass: 'jmolInline',
-                serverUrl: '<?=$baseurl?>ajax/get_exemplar_coordinates',
-                neighborhoodButtonId: 'neighborhood',
-                showNextButtonId: 'next',
-                showPreviousButtonId: 'prev',
-                showNucleotideNumbersId: 'showNtNums',
-                showStereoId: 'stereo'
-            });
-        }, 200);
-    }
+        $("#sort").tablesorter();
+
+
+        $(".fancybox").fancybox({
+            openSpeed  : 'fast',
+            closeSpeed : 'fast',
+            arrows     : true
+        });
+
+
+       function appletLoaded() {
+            var timeoutID = window.setTimeout(function(){
+                jmolInlineLoader.init({
+                    chbxClass: 'jmolInline',
+                    serverUrl: '<?=$baseurl?>ajax/get_exemplar_coordinates',
+                    neighborhoodButtonId: 'neighborhood',
+                    showNextButtonId: 'next',
+                    showPreviousButtonId: 'prev',
+                    showNucleotideNumbersId: 'showNtNums',
+                    showStereoId: 'stereo'
+                });
+            }, 200);
+        }
+
 
         $(function () {
-
-//             $('.exemplar').click(function() {
-//                 var t = $(this);
-//                 var motif_id = t.next().html();
-//                 show_motif_exemplar_in_jmol(motif_id);
-//                 $('#neighborhood').attr('value','Show neighborhood');
-//             });
-//
-//             jmol_neighborhood_button_click('neighborhood');
-//             jmol_show_nucleotide_numbers_click('showNtNums');
 
             $('#jmol').css('position','fixed');
             var offset_left = $('#left_content').offset().left + 530; // 530 = span9 width
@@ -72,12 +73,5 @@
             $('#jmol').css('left',offset_left);
             $('#jmol').css('top',offset_top);
 
-
-            $("#sort").tablesorter();
-    		$(".fancybox").fancybox({
-    		    openSpeed  : 'fast',
-    		    closeSpeed : 'fast',
-    		    arrows     : true
-    		});
         })
     </script>
