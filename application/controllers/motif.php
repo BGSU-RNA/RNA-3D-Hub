@@ -41,8 +41,8 @@ class Motif extends MY_Controller {
         $data['table']      = $this->table->generate($table_array);
 
         // checkbox widget
-        $this->benchmark->mark('b');
-        $data['checkboxes'] = array(); //$this->Motif_model->get_checkboxes($this->Motif_model->loops);
+//         $this->benchmark->mark('b');
+//         $data['checkboxes'] = array(); //$this->Motif_model->get_checkboxes($this->Motif_model->loops);
 
         // mutual discrepancy matrix widget
         $this->benchmark->mark('c');
