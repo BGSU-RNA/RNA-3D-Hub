@@ -473,6 +473,7 @@ class Motif_model extends CI_Model {
         $this->db->select('release_id')
                  ->from('ml_motifs')
                  ->where('id',$this->motif_id)
+                 ->order_by('release_id','desc')
                  ->limit(1);
         $query = $this->db->get();
 
