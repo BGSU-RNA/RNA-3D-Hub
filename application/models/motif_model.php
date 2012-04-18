@@ -64,12 +64,15 @@ class Motif_model extends CI_Model {
     // sequence variation
     function get_3d_sequence_variation( $motif_id )
     {
+        $latest_release = $this->get_latest_release(substr($motif_id, 0, 2));
+
         // complete motif
         $this->db->select('seq, count(seq) as num')
                  ->from('ml_loops as t1')
                  ->join('loops_all as t2', 't1.id = t2.id')
                  ->where('motif_id', $motif_id)
-                 ->group_by('seq, release_id')
+                 ->where('release_id',$latest_release)
+                 ->group_by('seq')
                  ->order_by('count(seq)', 'DESC');
         $query = $this->db->get();
         $complete_motif = array();
@@ -82,7 +85,8 @@ class Motif_model extends CI_Model {
                  ->from('ml_loops as t1')
                  ->join('loops_all as t2', 't1.id = t2.id')
                  ->where('motif_id', $motif_id)
-                 ->group_by('nwc_seq, release_id')
+                 ->where('release_id',$latest_release)
+                 ->group_by('nwc_seq')
                  ->order_by('count(nwc_seq)', 'DESC');
         $query = $this->db->get();
         $nwc_motif = array();
@@ -92,6 +96,17 @@ class Motif_model extends CI_Model {
 
         return array('complete' => $complete_motif,
                      'nwc' => $nwc_motif);
+    }
+
+    function get_latest_release($motif_type)
+    {
+        $this->db->select()
+                 ->from('ml_releases')
+                 ->where('type',$motif_type)
+                 ->order_by('date','desc')
+                 ->limit(1);
+        $result = $this->db->get()->result_array();
+        return $result[0]['id'];
     }
 
     // history widget
@@ -458,6 +473,7 @@ class Motif_model extends CI_Model {
         $this->db->select('release_id')
                  ->from('ml_motifs')
                  ->where('id',$this->motif_id)
+                 ->order_by('release_id','desc')
                  ->limit(1);
         $query = $this->db->get();
 
