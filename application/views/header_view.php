@@ -3,8 +3,10 @@
   <head>
     <meta charset="utf-8">
     <title><?php echo $title;?></title>
-    <meta name="description" content="">
-    <meta name="author" content="">
+
+    <?php if (isset($meta)): ?>
+    <meta name="description" content="<?=$meta['description']?>">
+    <?php endif; ?>
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
     <!--[if lt IE 9]>

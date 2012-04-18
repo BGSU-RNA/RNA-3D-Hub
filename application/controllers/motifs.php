@@ -68,6 +68,7 @@ class Motifs extends CI_Controller {
         $data['baseurl']  = base_url();
         $data['alt_view'] = base_url(array('motifs','graph',$motif_type,$id));
         $data['polymorph_url'] = base_url(array('motifs','polymorphs',$motif_type, $id));
+        $data['meta']['description'] = 'A list of RNA 3D motifs';
 
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
