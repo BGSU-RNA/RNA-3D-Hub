@@ -57,6 +57,17 @@ class Motif extends MY_Controller {
             $data['matrix'] = '';
         }
 
+        // sequence variability
+        $seq_var = $this->Motif_model->get_3d_sequence_variation($motif_id);
+        $this->table->set_heading(array('Sequence', 'Counts'));
+        $tmpl = array( 'table_open'  => '<table class="condensed-table zebra-striped" id="complete_seq_var">' );
+        $this->table->set_template($tmpl);
+        $data['sequence_variation']['complete'] = $this->table->generate($seq_var['complete']);
+        $this->table->set_heading(array('Sequence', 'Counts'));
+        $tmpl = array( 'table_open'  => '<table class="condensed-table zebra-striped" id="nwc_seq_var">' );
+        $this->table->set_template($tmpl);
+        $data['sequence_variation']['nwc'] = $this->table->generate($seq_var['nwc']);
+
         $data['title']      = $motif_id;
         $data['release_id'] = $release_id;
         $data['motif_id']   = $motif_id;

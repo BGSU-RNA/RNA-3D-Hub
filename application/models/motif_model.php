@@ -61,6 +61,39 @@ class Motif_model extends CI_Model {
         }
     }
 
+    // sequence variation
+    function get_3d_sequence_variation( $motif_id )
+    {
+        // complete motif
+        $this->db->select('seq, count(seq) as num')
+                 ->from('ml_loops as t1')
+                 ->join('loops_all as t2', 't1.id = t2.id')
+                 ->where('motif_id', $motif_id)
+                 ->group_by('seq, release_id')
+                 ->order_by('count(seq)', 'DESC');
+        $query = $this->db->get();
+        $complete_motif = array();
+        foreach ($query->result() as $row) {
+            $complete_motif[] = array($row->seq, $row->num);
+        }
+
+        // non-WC part
+        $this->db->select('nwc_seq, count(nwc_seq) as num')
+                 ->from('ml_loops as t1')
+                 ->join('loops_all as t2', 't1.id = t2.id')
+                 ->where('motif_id', $motif_id)
+                 ->group_by('nwc_seq, release_id')
+                 ->order_by('count(nwc_seq)', 'DESC');
+        $query = $this->db->get();
+        $nwc_motif = array();
+        foreach ($query->result() as $row) {
+            $nwc_motif[] = array($row->nwc_seq, $row->num);
+        }
+
+        return array('complete' => $complete_motif,
+                     'nwc' => $nwc_motif);
+    }
+
     // history widget
     function get_history($motif_id)
     {
