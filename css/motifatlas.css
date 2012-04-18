@@ -68,6 +68,15 @@ body {
 .motifview #interactions {
     margin-bottom: 10px;
 }
+.motifview #variants {
+    padding: 5px 10px;
+}
+.motifview #variants table {
+    font-family:monospace;
+}
+.motifview #variants .block-div {
+    margin-left: 5px;
+}
 /*
 .motifview #checkboxes {
     overflow:auto;

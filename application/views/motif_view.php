@@ -55,7 +55,22 @@
                         </div>
 
                         <div class="tab-pane block-div" id='variants'>
-                            Coming soon.
+                            <h4>3D structures</h4>
+                            <div class="row block-div">
+                                <div class="span5">
+                                <h5>Complete motif including flanking bases</h5>
+                                <?=$sequence_variation['complete']?>
+                                </div>
+                                <div class="span5 offset1">
+                                <h5>Non-Watson-Crick part of the motif</h5>
+                                <?=$sequence_variation['nwc']?>
+                                </div>
+                            </div>
+
+                            <h4>Sequence databases</h4>
+                            <div class="row block-div">
+                                Coming soon.
+                            </div>
                         </div>
                     </div>
                 </div>
