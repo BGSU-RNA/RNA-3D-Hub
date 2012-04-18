@@ -30,6 +30,56 @@ class Motifs_model extends CI_Model {
         return $this->db->get();
     }
 
+    // get motifs with same sequences
+    function get_polymorphs($motif_type, $release_id)
+    {
+        $query_string = "
+            seq, length, group_concat(motif_id) AS motifs, count(motif_id) AS motif_num
+            FROM (
+                SELECT DISTINCT(seq AND motif_id),seq, length, motif_id FROM ml_loops AS t1
+                JOIN loops_all AS t2
+                ON t1.id = t2.id
+                WHERE t1.release_id = '{$release_id}'
+                AND t2.`type` = '{$motif_type}'
+                ORDER BY length DESC
+            ) AS t3
+            GROUP BY seq
+            HAVING count(motif_id) > 1
+            ORDER BY length DESC;
+        ";
+        $query = $this->db->select($query_string, FALSE)->get();
+
+        if ($query->num_rows() == 0) { return 'No polymorphs found in this release'; }
+
+        $table = array();
+        foreach ($query->result() as $row) {
+            $table[] = array($row->seq,
+                             $row->length,
+                             $row->motif_num,
+                             $this->format_polymorphic_motif_list($row->motifs) );
+        }
+        return $table;
+    }
+
+    function format_polymorphic_motif_list($motif_list)
+    {
+        $motifs = explode(',', $motif_list);
+        $output = '<ul class="inputs-list">';
+        foreach ($motifs as $motif) {
+            $loop_link = anchor_popup("motif/view/$motif", '&#10140;');
+            $shuffled = str_shuffle($motif); // to avoid id collision
+            $output .=
+           "<li class='loop'>
+                <label>
+                    <input type='radio' class='jmolInline' name='m' data-coord='{$motif}' id='{$shuffled}'>
+                    <span>$motif</span>
+                    <span class='loop_link'>{$loop_link}</span>
+                </label>
+            </li>";
+        }
+        return $output . '</ul>';
+    }
+
     function get_change_counts_by_release($motif_type)
     {
         $this->db->select('release_id1')

@@ -29,35 +29,35 @@ class Motif_model extends CI_Model {
         if ( $query->num_rows > 0 ) {
             $result = $query->row();
             return array(
-                'common_name' => $result->common_name,
-                'annotation' => $result->annotation
+                'common_name'  => trim($result->common_name),
+                'annotation'   => trim($result->annotation),
+                'bp_signature' => trim($result->bp_signature)
             );
         } else {
             return array(
                 'common_name' => '',
-                'annotation' => ''
+                'annotation' => '',
+                'bp_signature' => ''
             );
         }
     }
 
-    function save_annotation($motif_id, $common_name, $annotation)
+    function save_annotation( $data )
     {
         $this->db->select()
                   ->from('ml_motif_annotations')
-                  ->where('motif_id', $motif_id)
+                  ->where('motif_id', $data['motif_id'])
                   ->limit(1);
         $query = $this->db->get();
 
-        $this->db->set('common_name', $common_name)
-                 ->set('annotation', $annotation);
-
         if ( $query->num_rows > 0 ) {
+            $this->db->set($data['column'], trim($data['value']) );
+            $this->db->set('author', trim($data['author']) );
             return $this->db
-                        ->where('motif_id', $motif_id)
+                        ->where('motif_id', $data['motif_id'])
                         ->update('ml_motif_annotations');
         } else {
-            return $this->db->set('motif_id', $motif_id)
-                        ->insert('ml_motif_annotations');
+            return 0;
         }
     }
 
@@ -158,12 +158,12 @@ class Motif_model extends CI_Model {
                 $row = $query->first_row();
                 $class = $this->get_css_class($row->discrepancy);
                 $checkboxes .= "<li><label><input type='checkbox' id='{$loop}' class='jmolInline' ";
-                $checkboxes .= 'data-nt="'. $this->get_corresponding_nucleotides($loop,$prev_release,$corr_positions) . '">';
-//                 $checkboxes .= 'data-nt="'. implode(',',$corr_positions) . '">';
+                $checkboxes .= 'data-coord="'. $this->get_corresponding_nucleotides($loop,$prev_release,$corr_positions) . '">';
+//                 $checkboxes .= 'data-coord="'. implode(',',$corr_positions) . '">';
                 $checkboxes .= "<span class='$class'>$loop</span></label></li>";
             } else {
                 $checkboxes .= "<li><label><input type='checkbox' id='{$loop}' class='jmolInline' ";
-                $checkboxes .= 'data-nt="">$loop</label></li>';
+                $checkboxes .= 'data-coord="">$loop</label></li>';
             }
         }
         $checkboxes .= '</ul>';
@@ -192,7 +192,9 @@ class Motif_model extends CI_Model {
                 $loop_id2 = $this->similarity[$j];
                 $cell = array('data-disc' => $disc[$loop_id1][$loop_id2],
                               'data-pair' => "$loop_id1:$loop_id2",
-                              'class' => $this->get_css_class($disc[$loop_id1][$loop_id2]) );
+                              'class'     => $this->get_css_class($disc[$loop_id1][$loop_id2]),
+                              'rel'       => 'twipsy',
+                              'title'     => "$loop_id1:$loop_id2, {$disc[$loop_id1][$loop_id2]}");
                 $matrix[] = $cell;
             }
         }
@@ -236,13 +238,21 @@ class Motif_model extends CI_Model {
         for ($i = 1; $i <= count($loops); $i++) {
             $checkbox_div .= "<li><label><input type='checkbox' id='{$loops[$i]}' class='jmolInline' ";
             ksort($this->full_nts[$loops[$i]]);
-            $checkbox_div .= "data-nt='" . implode(",", $this->full_nts[$loops[$i]]) . "'>";
+            $checkbox_div .= "data-coord='" . implode(",", $this->full_nts[$loops[$i]]) . "'>";
             $checkbox_div .= "&nbsp;{$loops[$i]}";
             $checkbox_div .= '</label></li>';
-            //<input type='checkbox' id='s1' class='jmolInline' data-nt='1S72_1_0_1095,1S72_1_0_1261'><label for='s1'>IL_1S72_038</label><br>
+            //<input type='checkbox' id='s1' class='jmolInline' data-coord='1S72_1_0_1095,1S72_1_0_1261'><label for='s1'>IL_1S72_038</label><br>
         }
         $checkbox_div .= '</ul>';
         return $checkbox_div;
+    }
+
+    function get_checkbox($i)
+    {
+        ksort($this->full_nts[$this->loops[$i]]);
+        return "<label><input type='checkbox' id='{$this->loops[$i]}' class='jmolInline' " .
+               "data-coord='". implode(",", $this->full_nts[$this->loops[$i]]) ."'>{$this->loops[$i]}</label>";
+
     }
 
     // pairwise interactions widget
@@ -262,7 +272,7 @@ class Motif_model extends CI_Model {
 
     function get_header()
     {
-        $header = array('#', 'Loop id', 'PDB', 'Discrepancy');
+        $header = array('#D', '#S', 'Loop id', 'PDB', 'Disc');
         // 1, 2, ..., N
         for ($i = 1; $i < $this->num_nt; $i++) {
             $header[] = $i;
@@ -280,16 +290,18 @@ class Motif_model extends CI_Model {
     {
         for ($i = 0; $i < count($this->header); $i++) {
             $key = $this->header[$i];
-            if ( $key == '#' ) {
+            if ( $key == '#D' ) {
                 $row[$i] = $id;
+            } elseif ( $key == '#S') {
+                $row[$i] = array_search($this->loops[$id], $this->similarity);
             } elseif ( $key == 'Loop id' ) {
-                $row[$i] = $this->loops[$id];
+                $row[$i] = $this->get_checkbox($id); //$this->loops[$id];
             } elseif ( $key == 'PDB' ) {
                 $parts = explode("_", $this->loops[$id]);
                 $row[$i] = '<a class="pdb">' . $parts[1] . '</a>';
             } elseif ( is_int($key) ) {
                 $row[$i] = $this->nts[$this->loops[$id]][$key];
-            } elseif ( $key == 'Discrepancy' ) {
+            } elseif ( $key == 'Disc' ) {
                 $row[$i] = $this->disc[$this->loops[1]][$this->loops[$id]];
             }
             else {

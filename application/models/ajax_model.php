@@ -129,10 +129,12 @@ class Ajax_model extends CI_Model {
 
     function get_nt_coordinates($nt_ids)
     {
-        $this->db->select('coordinates')
-                 ->from('pdb_coordinates')
-                 ->where_in('id',$nt_ids);
+        $imploded = "'" . implode("','",$nt_ids) . "'";
+
+        $query_string = "* from pdb_coordinates where id IN ($imploded) ORDER BY FIELD(id, $imploded);";
+        $this->db->select($query_string, FALSE);
         $query = $this->db->get();
+
         if ($query->num_rows() == 0) { return 'Loop coordinates not found'; }
 
         $final_result = "MODEL     1\n";
@@ -217,7 +219,7 @@ class Ajax_model extends CI_Model {
                  ->where('original_order',1);
         $query = $this->db->get();
         if ($query->num_rows() == 0) {
-            return '';
+            return 'No motif found';
         }
         $row = $query->row();
 

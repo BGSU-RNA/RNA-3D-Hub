@@ -7,6 +7,7 @@
             <small><?=$status?></small>
           </h1>
           <a href='<?=$alt_view?>'>Switch to graph view</a>
+          <a href='<?=$polymorph_url?>'>Polymorphs</a>
         </div>
         <div class="row">
           <div class="span9" id='left_content'>
@@ -17,7 +18,7 @@
           </div>
 
           <div class="span6" id="jmol">
-              <div class="block jmolheight">
+              <div class="block-div jmolheight">
                   <script type="text/javascript">
                       jmolInitialize(" /jmol");
                       jmolSetAppletColor("#ffffff");

@@ -28,6 +28,25 @@ class Motifs extends CI_Controller {
 //         $this->output->enable_profiler(TRUE);
 	}
 
+    public function polymorphs($motif_type, $release_id)
+    {
+        $this->load->model('Motifs_model', '', TRUE);
+        $table = $this->Motifs_model->get_polymorphs($motif_type, $release_id);
+
+        $this->table->set_heading('Sequence', 'Length', '# of motifs', 'Motifs');
+        $tmpl = array( 'table_open'  => '<table class="zebra-striped condensed-table bordered-table" id="sort">' );
+        $this->table->set_template($tmpl);
+        $data['table'] = $this->table->generate($table);
+
+        $data['title']   = 'Polymorphic motifs';
+        $data['baseurl'] = base_url();
+
+        $this->load->view('header_view', $data);
+        $this->load->view('menu_view', $data);
+        $this->load->view('motifs_polymorphs_view', $data);
+        $this->load->view('footer');
+    }
+
 	public function release($motif_type,$id)
 	{
 //         $this->output->cache(1000000);
@@ -48,6 +67,7 @@ class Motifs extends CI_Controller {
         $data['title']    = 'Motif Atlas Release ' . $id;
         $data['baseurl']  = base_url();
         $data['alt_view'] = base_url(array('motifs','graph',$motif_type,$id));
+        $data['polymorph_url'] = base_url(array('motifs','polymorphs',$motif_type, $id));
 
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
