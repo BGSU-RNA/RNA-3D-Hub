@@ -42,19 +42,36 @@
 
         $("#sort").tablesorter();
 
-       function appletLoaded() {
-            var timeoutID = window.setTimeout(function(){
-                jmolInlineLoader.init({
-                    chbxClass: 'jmolInline',
-                    serverUrl: '<?=$baseurl?>ajax/get_exemplar_coordinates',
-                    neighborhoodButtonId: 'neighborhood',
-                    showNextButtonId: 'next',
-                    showPreviousButtonId: 'prev',
-                    showNucleotideNumbersId: 'showNtNums',
-                    showStereoId: 'stereo'
-                });
-            }, 200);
-        }
+//        function appletLoaded() {
+//             var timeoutID = window.setTimeout(function(){
+//                 jmolInlineLoader.init({
+//                     chbxClass: 'jmolInline',
+//                     serverUrl: '<?=$baseurl?>ajax/get_exemplar_coordinates',
+//                     neighborhoodButtonId: 'neighborhood',
+//                     showNextButtonId: 'next',
+//                     showPreviousButtonId: 'prev',
+//                     showNucleotideNumbersId: 'showNtNums',
+//                     showStereoId: 'stereo'
+//                 });
+//             }, 200);
+//         }
+
+        // initialize jmolTools
+        $('.jmolInline').jmolTools({
+            showStereoId: 'stereo',
+            showNeighborhoodId: 'neighborhood',
+            showNumbersId: 'showNtNums',
+            showNextId: 'next',
+            showPrevId: 'prev',
+            showStereoId: 'stereo'
+        });
+
+        // run when jmol is ready
+      	function appletLoaded (){
+      	    // toggle the first checkbox
+      	    $('.jmolInline').first().jmolToggle();
+      	}
+
 
         var offset_left = $('#left_content').offset().left + 530; // 530 = span9 width
         var offset_top  = $('#left_content').offset().top;
