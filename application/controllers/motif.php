@@ -8,14 +8,15 @@ class Motif extends MY_Controller {
 
     public function save_annotation()
     {
-        $motif_id    = $this->input->post('motif_id');
-        $common_name = $this->input->post('common_name');
-        $annotation  = $this->input->post('annotation');
+        $params = array(
+            'column'   => $this->input->post('id'),
+            'value'    => $this->input->post('value'),
+            'motif_id' => $this->input->post('motif_id'),
+            'author'   => $this->input->post('author')
+        );
 
         $this->load->model('Motif_model', '', TRUE);
-        echo $this->Motif_model->save_annotation($motif_id,
-                                                 $common_name,
-                                                 $annotation);
+        echo $this->Motif_model->save_annotation($params);
     }
 
 	public function view($motif_id)
@@ -41,14 +42,15 @@ class Motif extends MY_Controller {
 
         // checkbox widget
         $this->benchmark->mark('b');
-        $data['checkboxes'] = $this->Motif_model->get_checkboxes($this->Motif_model->loops);
+        $data['checkboxes'] = array(); //$this->Motif_model->get_checkboxes($this->Motif_model->loops);
 
         // mutual discrepancy matrix widget
         $this->benchmark->mark('c');
         if ( $this->Motif_model->num_loops > 1 ) {
             $matrix_linear = $this->Motif_model->get_mutual_discrepancy_matrix();
             $matrix_column = $this->table->make_columns($matrix_linear, $this->Motif_model->num_loops);
-            $tmpl = array( 'table_open'  => '<table class="condensed-table">' );
+            $tmpl = array( 'table_open'  => '<table class="condensed-table">' ,
+                           'class' => 'mdmatrix-table');
             $this->table->set_template($tmpl);
             $data['matrix'] = $this->table->generate($matrix_column);
         } else {
@@ -58,6 +60,7 @@ class Motif extends MY_Controller {
         $data['title']      = $motif_id;
         $data['release_id'] = $release_id;
         $data['motif_id']   = $motif_id;
+        $data['author'] = $this->session->userdata('username');
 
         // history widget
         $this->benchmark->mark('d');

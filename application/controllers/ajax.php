@@ -1,11 +1,6 @@
 <?php
 class Ajax extends CI_Controller {
 
-    public function index()
-    {
-        $this->get_nt_coordinates_approximate();
-    }
-
 	public function get_exemplar_coordinates()
 	{
         $input = $this->input->post('motif_id');
@@ -30,14 +25,8 @@ class Ajax extends CI_Controller {
 
     public function get_nt_coordinates_approximate()
     {
-        $input = $this->input->post('short_nt_id');
-        echo $input;
-        if ($this->input->post('short_nt_id')) {
-        echo 'true'; } else {echo "false";}
-        echo is_string($input);
-
-//         $input = ;
-        if ($this->input->post('short_nt_id')) {
+        $input = $this->input->post('model');
+        if ($input != FALSE) {
             $this->load->model('Ajax_model', '', TRUE);
             echo $this->Ajax_model->get_nt_coordinates_approximate($input);
         } else {

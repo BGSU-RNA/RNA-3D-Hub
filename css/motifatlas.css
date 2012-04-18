@@ -30,60 +30,88 @@ body {
     padding: 20px 20px 10px;
     margin: -20px -20px 20px;
 }
+
 /* Pairwise interactions horizontal scrolling div */
 .motifview .interactions {
     overflow:auto;
     max-height: 300px;
 }
+.motifview #variants {
+    min-height:300px;
+}
 .motifview .interactions th, .motifview .interactions td {
 	white-space: nowrap;
 	text-align:right;
 }
+/*
 .motifview .interactions table {
-	margin-bottom:2px;
+	margin-bottom:10px;
 }
-.jmolheight {
+*/
+.motifview .jmolheight {
     height:340px;
     width:350px;
+    margin-bottom:10px;
 }
+.motifview #annotation-panel {
+    padding: 10px;
+    min-height: 300px;
+    margin-right:10px;
+    background-color:whiteSmoke;
+}
+.motifview dd {
+    margin-bottom:10px;
+}
+.motifview #jmolBlock {
+    margin-left: 0px;
+}
+.motifview #interactions {
+    margin-bottom: 10px;
+}
+/*
 .motifview #checkboxes {
     overflow:auto;
     height:340px;
 }
+*/
 .motifview input[type=checkbox] {
     margin-right:3px;
 }
+/*
 .motifview ul.inputs-list {
     width:100px;
     margin-left:auto;
     margin-right:auto;
 }
+*/
 /*
 .motifview div.mdmatrix {
     border: 1px solid #ddd;
 }
 */
 
-/* motif annotation slider */
-.motifview #annotation {
-    margin-top:1em;
-}
-.motifview form, .motifview .well {
+/* motif annotation well */
+/*
+.motifview form, .motifview .well, .motifview dl {
     margin-bottom:0;
 }
-.motifview #annotation, .motifview input.motif_id {
-    display:none;
+*/
+/*
+.motifview .well {
+    padding-top:5px;
+    padding-bottom:5px;
 }
-.motifview div.messages {
-    margin-top:0.5em;
-}
-/* motif annotation slider */
+*/
+/* motif annotation well */
 
 /* Mutual discrepancy matrix */
 .motifview .mdmatrix table{
     height:340px;
     width:340px;
     table-layout: fixed;
+}
+.motifview #legend {
+    height: 1em;
 }
 /* overrides bootstrap */
 .motifview .mdmatrix td, .motifview .mdmatrix tr {
@@ -96,13 +124,12 @@ body {
     min-width:1px;
 }
 */
-.block {
+.motifview .block-div {
   border: 1px solid #ddd;
   -webkit-border-radius: 4px;
   -moz-border-radius: 4px;
   border-radius: 4px;
 }
-.motifview .mdmatrix td:hover {background-color:grey;}
 /* Color classes */
 .motifview .md00 {background-color:rgb(100%,0%,0%);}
 .motifview .md01 {background-color:rgb(100%,25%,0%);}
@@ -115,6 +142,46 @@ body {
 .motifview .md08 {background-color:rgb(0%,100%,100%);}
 .motifview .md09 {background-color:rgb(0%,50%,100%);}
 .motifview .md10 {background-color:rgb(0%,0%,100%);}
+
+/*
+.motifview .md00 {background-color:rgb(104,104,104);}
+.motifview .md01 {background-color:rgb(112,112,112);}
+.motifview .md02 {background-color:rgb(120,120,120);}
+.motifview .md03 {background-color:rgb(128,128,128);}
+.motifview .md04 {background-color:rgb(136,136,136);}
+.motifview .md05 {background-color:rgb(144,144,144);}
+.motifview .md06 {background-color:rgb(152,152,152);}
+.motifview .md07 {background-color:rgb(160,160,160);}
+.motifview .md08 {background-color:rgb(168,168,168);}
+.motifview .md09 {background-color:rgb(176,176,176);}
+.motifview .md10 {background-color:rgb(184,184,184);}
+*/
+.motifview .clicked, .motifview .jmolActive, .motifview .mdmatrix td:hover {
+    background-repeat: no-repeat;
+    background-size: 50%;
+    background-position: 50%;
+}
+.motifview .clicked {
+    background-image: url('http://rna.bgsu.edu/img/MotifAtlas/glyphicons_free/glyphicons/png/glyphicons_206_ok_2.png');
+}
+.motifview .jmolActive {
+    background-image: url('http://rna.bgsu.edu/img/MotifAtlas/glyphicons_free/glyphicons/png/glyphicons_185_screenshot.png');
+}
+.motifview .mdmatrix-table td:hover {
+    background-image: url('http://rna.bgsu.edu/img/MotifAtlas/glyphicons_free/glyphicons/png/glyphicons_239_riflescope.png');
+}
+.motifview label {
+    width:auto;
+}
+.motifview #mdmatrix-help {
+    background-image: url('http://rna.bgsu.edu/img/MotifAtlas/glyphicons_free/glyphicons/png/glyphicons_194_circle_question_mark.png');
+    background-size: 100%;
+    height:1em;
+    width:1em;
+    display: inline-block;
+    margin-right: 10px;
+    float:right;
+}
 /* history widget */
 .motifview .history table {
     width:940px;
