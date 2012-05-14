@@ -32,10 +32,6 @@ body {
 }
 
 /* Pairwise interactions horizontal scrolling div */
-.motifview .interactions {
-    overflow:auto;
-    max-height: 300px;
-}
 .motifview #variants {
     min-height:300px;
 }
@@ -467,3 +463,8 @@ body.home {
 
 .rcsb_altBg {background: #eaf2f8;}
 /* RCSB stylesheet */
+
+.resizable {
+    resize:both;
+    overflow:auto;
+}

@@ -13,7 +13,7 @@
 
         <div class="row">
             <div class="span4">
-                <div class="block-div" id="annotation-panel">
+                <div class="block-div resizable" id="annotation-panel">
                         <dl>
                             <dt>Common name:</dt>
                             <?php if ($annotation['common_name']): ?>
@@ -41,7 +41,7 @@
                 </div>
             </div>
             <div class="span12">
-                <div class="row span 12 interactions" id="interactions">
+                <div class="row span 12 interactions resizable" id="interactions">
                     <ul class="tabs" data-tabs="tabs">
                         <li class="active"><a href="#int">Pairwise interactions</a></li>
                         <li><a href="#variants">Sequence variants</a></li>
@@ -268,5 +268,13 @@
 
             });
         })();
+
+        (function() {
+            var resizable = $('.motifview .interactions');
+            if ( resizable.height() > 300 ) {
+                resizable.height( Math.min( $('#sort').find('tr').length * 34, 300 ) );
+            }
+        })();
+
 
       </script>
