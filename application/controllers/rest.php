@@ -23,6 +23,7 @@ class Rest extends MY_Controller {
     public function getCoordinates()
     {
         // should be able to accept loop_id, nt_ids, motif_id, short_nt_id
+        // and loop pairs (returns the first loop of the two)
 
         // search POST, then GET
         $query = $this->input->get_post('coord');
@@ -51,6 +52,8 @@ class Rest extends MY_Controller {
                 return $this->Ajax_model->get_exemplar_coordinates($query);
             case 'nt_list':
                 return $this->Ajax_model->get_coordinates($query);
+            case 'loop_pair':
+                return $this->Ajax_model->get_loop_pair_coordinates($query);
             default: return $this->messages['error'];
         endswitch;
 
@@ -67,6 +70,8 @@ class Rest extends MY_Controller {
                 return 'motif_id';
             } elseif ( $this->_is_nt_list($query) ) {
                 return 'nt_list';
+            } elseif ( $this->_is_loop_pair($query) ) {
+                return 'loop_pair';
             } elseif ( $this->_is_short_nt_list($query) ) {
                 return 'short_nt_list';
             } else {
@@ -82,6 +87,18 @@ class Rest extends MY_Controller {
     {
         // IL_1J5E_001
         if ( preg_match('/^(IL|HL|J3)_[0-9A-Z]{4}_\d{3}$/i', $query) ) {
+            return TRUE;
+        } else {
+            return FALSE;
+        }
+    }
+
+    private function _is_loop_pair($query)
+    {
+        // @IL_1J5E_001:IL_1S72_001 or IL_1J5E_001:@IL_1S72_001
+        // "@" marks the loop for which the coordinates should be returned
+        if ( preg_match('/^@?(IL|HL|J3)_[0-9A-Z]{4}_\d{3}:@?(IL|HL|J3)_[0-9A-Z]{4}_\d{3}$/i', $query) and
+             substr_count($query, '@') == 1) {
             return TRUE;
         } else {
             return FALSE;

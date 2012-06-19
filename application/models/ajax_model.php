@@ -210,6 +210,64 @@ class Ajax_model extends CI_Model {
         return $final_result;
     }
 
+    function get_loop_pair_coordinates($loop_pair)
+    {
+        // IL_1J5E_001:IL_1J5E_002
+        $loop_ids = explode(':', $loop_pair);
+
+        if ($loop_ids[0][0] == '@') {
+            $loop_to_return = 1;
+            $loop_ids[0] = substr($loop_ids[0], 1);
+        } elseif ($loop_ids[1][0] == '@') {
+            $loop_to_return = 2;
+            $loop_ids[1] = substr($loop_ids[1], 1);
+        } else {
+            return 'Invalid loop pair';
+        }
+
+        // get coordinates from the alignment of loop1 and loop2
+        if ( $loop_to_return == 1 ) {
+            $nt_list = 'nt_list1';
+        } else {
+            $nt_list = 'nt_list2';
+        }
+        $this->db->select()
+                 ->from('loop_searches')
+                 ->where('loop_id1',$loop_ids[0])
+                 ->where('loop_id2',$loop_ids[1]);
+        $query = $this->db->get();
+
+        if ($query->num_rows() > 0) {
+            $row = $query->row_array();
+            // result found, but the loops don't match
+            if ($row['disc'] == -1) {
+                // try the reverse case
+                if ( $loop_to_return == 1 ) {
+                    $nt_list = 'nt_list2';
+                } else {
+                    $nt_list = 'nt_list1';
+                }
+                $this->db->select()
+                         ->from('loop_searches')
+                         ->where('loop_id1',$loop_ids[1])
+                         ->where('loop_id2',$loop_ids[0]);
+                $query = $this->db->get();
+                if ($query->num_rows() > 0) {
+                    $row = $query->row_array();
+                } else {
+                    return 'Loop pair not found';
+                }
+            }
+        } else {
+            return 'Loop pair not found';
+        }
+
+        $nt_ids = explode(',', $row[$nt_list]);
+
+        return $this->get_nt_coordinates($nt_ids);
+
+    }
+
     function get_exemplar_coordinates($motif_id)
     {
         // given a motif_id find the representative loop
