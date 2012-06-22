@@ -299,7 +299,8 @@ class Motif_model extends CI_Model {
     {
         ksort($this->full_nts[$this->loops[$i]]);
         return "<label><input type='checkbox' id='{$this->loops[$i]}' class='jmolInline' " .
-               "data-coord='". implode(",", $this->full_nts[$this->loops[$i]]) ."'>{$this->loops[$i]}</label>";
+               "data-coord='". implode(",", $this->full_nts[$this->loops[$i]]) ."'>{$this->loops[$i]}</label>"
+               . "<span class='loop_link'>" . anchor_popup("loops/view/{$this->loops[$i]}", '&#10140;') . "</span>";
 
     }
 
@@ -343,7 +344,7 @@ class Motif_model extends CI_Model {
             } elseif ( $key == '#S') {
                 $row[$i] = array_search($this->loops[$id], $this->similarity);
             } elseif ( $key == 'Loop id' ) {
-                $row[$i] = $this->get_checkbox($id); //$this->loops[$id];
+                $row[$i] = array('class'=>'loop','data'=>$this->get_checkbox($id)); //$this->loops[$id];
             } elseif ( $key == 'PDB' ) {
                 $parts = explode("_", $this->loops[$id]);
                 $row[$i] = '<a class="pdb">' . $parts[1] . '</a>';

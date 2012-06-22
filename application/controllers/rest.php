@@ -20,6 +20,13 @@ class Rest extends MY_Controller {
         echo 'Instructions page under construction';
     }
 
+    public function getPdbInfo()
+    {
+        $pdb = $this->input->get_post('pdb');
+        $this->load->model('Ajax_model', '', TRUE);
+        echo $this->Ajax_model->get_pdb_info($pdb);
+    }
+
     public function getCoordinates()
     {
         // should be able to accept loop_id, nt_ids, motif_id, short_nt_id

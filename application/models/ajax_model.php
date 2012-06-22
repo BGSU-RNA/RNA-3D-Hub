@@ -9,6 +9,30 @@ class Ajax_model extends CI_Model {
         parent::__construct();
     }
 
+    function get_pdb_info($pdb)
+    {
+        $this->db->select()
+                 ->from('pdb_info')
+                 ->where('structureId', $pdb)
+                 ->order_by('char_length(source)', 'desc')
+                 ->limit(1);
+        $query = $this->db->get();
+        if ( $query->num_rows() > 0 ) {
+            $row = $query->row();
+            $pdb_info = "<u>Title</u>: {$row->structureTitle}<br>" .
+                        "<u>Resolution</u>: {$row->resolution}<br>" .
+                        "<u>Method</u>: {$row->experimentalTechnique}<br>" .
+                        "<u>Organism</u>: {$row->source}<br><br>" .
+                        'Explore in ' .
+                        anchor_popup("http://www.pdb.org/pdb/explore/explore.do?structureId=$pdb", 'PDB') .
+                        ' or ' .
+                        anchor_popup("pdb/loops/$pdb", 'RNA 3D Hub');
+        } else {
+            $pdb_info = 'PDB file not found';
+        }
+        return $pdb_info;
+    }
+
     function save_loop_extraction_benchmark_annotation($contents)
     {
         try {

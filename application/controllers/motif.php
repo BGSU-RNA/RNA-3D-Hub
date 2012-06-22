@@ -36,7 +36,7 @@ class Motif extends MY_Controller {
 	    $table_array = $this->Motif_model->get_interaction_table();
         $this->load->library('table');
         $this->table->set_heading($this->Motif_model->header);
-        $tmpl = array( 'table_open'  => '<table class="condensed-table bordered-table zebra-striped" id="sort">' );
+        $tmpl = array( 'table_open'  => '<table class="condensed-table bordered-table zebra-striped pairwise-interactions" id="sort">' );
         $this->table->set_template($tmpl);
         $data['table']      = $this->table->generate($table_array);
 

@@ -39,6 +39,9 @@ body {
 	white-space: nowrap;
 	text-align:right;
 }
+.motifview .loop {
+    width:150px;
+}
 /*
 .motifview .interactions table {
 	margin-bottom:10px;
@@ -405,10 +408,12 @@ input[type=radio], input[type=checkbox] {
 .loops_paginated_view th:nth-of-type(2) {
     width:125px;
 }
-.loops_paginated_view .loop_link, .motifs_polymorphs_view .loop_link {
+.loops_paginated_view .loop_link, .motifs_polymorphs_view .loop_link, .loops_single_view .loop_link,
+.motifview .loop_link {
     display:none;
 }
-.loops_paginated_view .loop:hover .loop_link, .motifs_polymorphs_view .loop:hover .loop_link {
+.loops_paginated_view .loop:hover .loop_link, .motifs_polymorphs_view .loop:hover .loop_link,
+.loops_single_view .loop:hover .loop_link, .motifview .loop:hover .loop_link  {
     margin-left:2px;
     display:inline;
 }
@@ -468,3 +473,17 @@ body.home {
     resize:both;
     overflow:auto;
 }
+
+/* loops_single_view */
+.loops_single_view label {
+    width: auto;
+    float: none;
+}
+.loops_single_view th:nth-of-type(2) {
+    width: 130px;
+}
+/*
+.loops_single_view tab-pane {
+    border:none;
+}
+*/
