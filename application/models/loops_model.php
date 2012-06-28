@@ -76,7 +76,7 @@ class Loops_model extends CI_Model {
             }
             $result['bulges'] = implode(', ', $bulges);
         } else {
-            $result['bulges'] = "This loop doesn't appear to have any bulged out bases";
+            $result['bulges'] = "None detected";
         }
 
         return $result;
@@ -139,6 +139,7 @@ class Loops_model extends CI_Model {
         $this->db->select()
                  ->from('ml_releases')
                  ->order_by('date','desc')
+                 ->where('type',substr($id, 0, 2))
                  ->limit(1);
         $query = $this->db->get();
         $release = $query->row();

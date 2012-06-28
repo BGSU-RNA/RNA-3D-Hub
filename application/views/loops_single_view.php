@@ -51,7 +51,7 @@
                     </div>
                     <div class="row">
                         <div class="span3">
-                            <h4>Motif</h4>
+                            <h4>Motif assignment</h4>
                             <dl>
                                 <dt>Current motif</dt>
                                 <dd><?=$motif_url?></dd>
