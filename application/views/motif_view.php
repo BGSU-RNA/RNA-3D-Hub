@@ -5,9 +5,8 @@
         <div class="page-header">
           <div class="row">
             <div class="span14">
-              <h1>Motif <?php echo $title;?><small>Release <?php echo $release_id;?></small></h1>
+              <h1>Motif <?=$title?><small>Release <?=$release_id?> <?=$release_id_label?></small></h1>
             </div>
-            <div class="span2"></div>
           </div>
         </div> <!-- end of page-header -->
 
@@ -15,7 +14,7 @@
             <div class="span4">
                 <div class="block-div resizable" id="annotation-panel">
                         <dl>
-                            <dt>Common name:</dt>
+                            <dt>Description:</dt>
                             <?php if ($annotation['common_name']): ?>
                             <dd id="common_name" class="edit"><?=$annotation['common_name']?></dd>
                             <?php else: ?>
@@ -29,6 +28,12 @@
                             <?php else: ?>
                             <dd id="annotation" class="edit_area">No annotation provided yet. Log in to add one.</dd>
                             <?php endif; ?>
+                            <dt>Intraclusteral linkage</dt>
+                            <dd>
+                                <strong>Min</strong> <?php echo number_format($linkage['intra_min_disc'], 2); ?> |
+                                <strong>Avg</strong> <?php echo number_format($linkage['intra_avg_disc'], 2); ?> |
+                                <strong>Max</strong> <?php echo number_format($linkage['intra_max_disc'], 2); ?>
+                            </dd>
                         </dl>
 
                         <ul class='media-grid'>
@@ -41,37 +46,57 @@
                 </div>
             </div>
             <div class="span12">
-                <div class="row span 12 interactions resizable" id="interactions">
+                <div class="row span12 interactions resizable" id="interactions">
+
                     <ul class="tabs" data-tabs="tabs">
                         <li class="active"><a href="#int">Pairwise interactions</a></li>
                         <li><a href="#variants">Sequence variants</a></li>
+                        <li><a href="#similar">Similar motifs</a></li>
+                        <li><a href="#history">History</a></li>
                     </ul>
-
 
                     <div class="tab-content">
 
-                        <div class="tab-pane active block-div" id='int'>
+                        <div class="tab-pane active" id='int'>
                             <?php echo $table;?>
                         </div>
 
                         <div class="tab-pane block-div" id='variants'>
                             <h4>3D structures</h4>
-                            <div class="row block-div">
+                            <div class="row block-div span11">
                                 <div class="span5">
-                                <h5>Complete motif including flanking bases</h5>
-                                <?=$sequence_variation['complete']?>
+                                    <h5>Complete motif including flanking bases</h5>
+                                    <?=$sequence_variation['complete']?>
                                 </div>
-                                <div class="span5 offset1">
-                                <h5>Non-Watson-Crick part of the motif</h5>
-                                <?=$sequence_variation['nwc']?>
+                                <div class="span5">
+                                    <h5>Non-Watson-Crick part of the motif</h5>
+                                    <?=$sequence_variation['nwc']?>
                                 </div>
                             </div>
 
                             <h4>Sequence databases</h4>
-                            <div class="row block-div">
+                            <div class="row block-div span11">
                                 Coming soon.
                             </div>
                         </div>
+
+                        <div class="tab-pane" id='similar'>
+                            Coming soon
+                        </div>
+
+                        <div class="tab-pane" id='history'>
+                            <h4>Release history</h4>
+                            <div "class=row">
+                                <?=$motif_release_history?>
+                            </div>
+                            <h4>Parent motifs</h4>
+                            <div "class=row">
+                                <?=$history['parents']?>
+                            </div>
+                            <h4>Children motifs</h4>
+                                <?=$history['children']?>
+                        </div>
+
                     </div>
                 </div>
                 <div class="row">

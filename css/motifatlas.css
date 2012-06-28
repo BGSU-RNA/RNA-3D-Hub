@@ -30,6 +30,12 @@ body {
     padding: 20px 20px 10px;
     margin: -20px -20px 20px;
 }
+h1 small {
+    margin-left: 10px;
+}
+small .label {
+    float: none;
+}
 
 /* Pairwise interactions horizontal scrolling div */
 .motifview #variants {
@@ -41,6 +47,9 @@ body {
 }
 .motifview .loop {
     width:150px;
+}
+#history td {
+    white-space: normal;
 }
 /*
 .motifview .interactions table {
