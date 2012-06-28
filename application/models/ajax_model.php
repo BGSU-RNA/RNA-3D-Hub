@@ -20,7 +20,7 @@ class Ajax_model extends CI_Model {
         if ( $query->num_rows() > 0 ) {
             $row = $query->row();
             $pdb_info = "<u>Title</u>: {$row->structureTitle}<br>" .
-                        "<u>Resolution</u>: {$row->resolution}<br>" .
+                        "<u>Resolution</u>: {$row->resolution}&Aring<br>" .
                         "<u>Method</u>: {$row->experimentalTechnique}<br>" .
                         "<u>Organism</u>: {$row->source}<br><br>" .
                         'Explore in ' .
