@@ -61,10 +61,197 @@ class Motif_model extends CI_Model {
         }
     }
 
+    // compare two motifs page
+    function compare_motifs($motif1, $motif2)
+    {
+        // get ordering and loop ids
+        // NB! need to limit to one release only - ?
+        $this->db->select()
+                 ->from('ml_loop_order')
+                 ->where('motif_id', $motif1)
+                 ->or_where('motif_id', $motif2)
+                 ->order_by('motif_id, similarity_order');
+        $query = $this->db->get();
+        $i = 0;
+        foreach($query->result() as $row) {
+            $order[$row->motif_id][] = $row->loop_id;
+            $loop_ids[] = $row->loop_id;
+            $motifs[$row->motif_id][$row->loop_id] = 1;
+        }
+
+        // get mutual discrepancies
+        $this->db->select('loop_searches.loop_id1 as loop1,
+                           loop_searches.loop_id2 as loop2,
+                           loop_searches.disc as disc,
+                           loop_search_qa.status as status,
+                           loop_search_qa.message as qa_message,
+                           loop_search_qa.status as qa_status')
+                 ->from('loop_searches')
+                 ->join('loop_search_qa', 'loop_searches.loop_id1=loop_search_qa.loop_id1 AND loop_searches.loop_id2=loop_search_qa.loop_id2', 'left')
+                 ->where_in('loop_searches.loop_id1', $loop_ids)
+                 ->where_in('loop_searches.loop_id2', $loop_ids);
+        $query = $this->db->get();
+        $matrix = array();
+        foreach ($query->result() as $row) {
+            $qa_status[$row->loop1][$row->loop2] = $row->qa_status;
+            $qa_message[$row->loop1][$row->loop2] = $row->qa_message;
+            $matrix[$row->loop1][$row->loop2] = $row->disc;
+        }
+
+        // make the table
+        $table = array();
+        for ($i = 0; $i < count($order[$motif1]); $i++) {
+            for ($j = 0; $j < count($order[$motif2]); $j++) {
+
+                $class = 'annotation';
+
+                $loop1 = $order[$motif1][$i];
+                $loop2 = $order[$motif2][$j];
+
+                if ($i == 0 and $j == 0) {
+                    $table[] = array();
+                    continue;
+                } elseif ($i == 0) {
+                    if (array_key_exists($loop2, $motifs[$motif1]) and
+                        array_key_exists($loop2, $motifs[$motif2])) {
+                        $data = '1&2';
+                        $title = "Loop $loop2 is present in both $motif1 and $motif2";
+                    } else {
+                        $class .= ' highlight';
+                        $data = '1';
+                        $title = "Loop $loop1 is only in $motif1";
+                    }
+                } elseif ($j == 0) {
+                    if (array_key_exists($order[$motif1][$i], $motifs[$motif1]) and
+                        array_key_exists($order[$motif1][$i], $motifs[$motif2])) {
+                        $data = '1&2';
+                        $title = "Loop $loop1 is present in both $motif1 and $motif2";
+                    } else {
+                        $data = '2';
+                        $class .= ' highlight';
+                        $title = "Loop $loop2 is only in $motif2";
+                    }
+                }
+
+                if ($i == 0 or $j == 0) {
+                    $table[] = array(
+                                     'data' => $data,
+                                     'class' => $class,
+                                     'rel'   => 'twipsy',
+                                     'title' => $title
+                                     );
+                    continue;
+                }
+
+                $data = '';
+                $class = '';
+                // for asymmetric searches choose the real discrepancy over -1's
+                $disc = max($matrix[$loop1][$loop2], $matrix[$loop2][$loop1]);
+                $title = implode(', ', array("{$loop1}:{$loop2}",
+                                            ($disc == -1) ? 'no match' : number_format($disc, 4))
+                                );
+
+                if ($qa_status[$loop1][$loop2]) {
+                    $class = '';
+                    $data = 'x';
+                    if ( $qa_status[$loop1][$loop2] == 4 ) {
+                        $title .= '<br>Extra basepair:<br>';
+                    } elseif ( $qa_status[$loop1][$loop2] == 5 ) {
+                        $title .= '<br>Extra near pair:<br>';
+                    } elseif ( $qa_status[$loop1][$loop2] == 6 ) {
+                        $title .= '<br>Intercalation:<br>';
+                    } elseif ( $qa_status[$loop1][$loop2] == 7 ) {
+                        $title .= '<br>Basepair conflict:<br>';
+                    } elseif ( $qa_status[$loop1][$loop2] == 8 ) {
+                        $title .= '<br>Basepair-basestacking mismatch:<br>';
+                    }
+                    $title .= $qa_message[$loop1][$loop2];
+                }
+
+                $coord = "{$loop1}:{$loop2}";
+
+                $table[] = array(
+                                 'data'  => $data,
+                                 'class' => implode(' ' , array($this->get_css_class($disc), 'jmolTools-loop-pairs', $class)),
+                                 'rel'   => 'twipsy',
+                                 'title' => $title,
+                                 'data-coord' => $coord
+                                );
+            }
+        }
+
+        return array('table' => $table, 'columns' => $j);
+
+    }
+
+    // similar motifs tab
+    function get_similar_motifs($motif_id)
+    {
+        $data = array();
+
+        // check one search orientation
+        $this->db->select_min('t2.disc', 'similarity_level')
+                 ->select('t3.motif_id as similar_motif')
+                 ->from('ml_loops as t1')
+                 ->join('loop_searches as t2', 't1.id = t2.loop_id1')
+                 ->join('ml_loops as t3', 't2.loop_id2 = t3.id')
+                 ->where('t1.motif_id', $motif_id)
+                 ->where('t1.release_id', $this->release_id)
+                 ->where('t3.release_id', $this->release_id)
+                 ->where('t3.motif_id !=', $motif_id)
+                 ->where('t2.disc >=', 0)
+                 ->group_by('t3.motif_id')
+                 ->order_by('t2.disc');
+        $query = $this->db->get();
+
+        foreach ($query->result() as $row) {
+            $data[$row->similarity_level] = $row->similar_motif;
+        }
+
+        // check the second search orientation
+        $this->db->select_min('t2.disc', 'similarity_level')
+                 ->select('t3.motif_id as similar_motif')
+                 ->from('ml_loops as t1')
+                 ->join('loop_searches as t2', 't1.id = t2.loop_id2')
+                 ->join('ml_loops as t3', 't2.loop_id1 = t3.id')
+                 ->where('t1.motif_id', $motif_id)
+                 ->where('t1.release_id', $this->release_id)
+                 ->where('t3.release_id', $this->release_id)
+                 ->where('t3.motif_id !=', $motif_id)
+                 ->where('t2.disc >=', 0)
+                 ->group_by('t3.motif_id')
+                 ->order_by('t2.disc');
+        $query = $this->db->get();
+
+        foreach ($query->result() as $row) {
+            $data[$row->similarity_level] = $row->similar_motif;
+        }
+
+        // sort by discrepancy
+        ksort($data);
+        $done = array();
+        $table = array();
+
+        $i = 1;
+        foreach ($data as $similarity_level => $similar_motif) {
+            if (!array_key_exists($similar_motif, $done)) {
+                $compare_link = anchor_popup("motif/compare/$motif_id/$similar_motif", 'Compare');
+                $table[] = array($i,
+                                 $similarity_level,
+                                 $similar_motif,
+                                 $compare_link);
+                $done[$similar_motif] = 0;
+                $i++;
+            }
+        }
+
+        return $table;
+    }
+
+    // linkage
     function get_linkage_data( $motif_id )
     {
         // get loop ids from this motif
-//         SELECT id FROM ml_loops WHERE motif_id='IL_85647.1' AND release_id = '0.6';
         $this->db->select('id')
                  ->from('ml_loops')
                  ->where('motif_id', $motif_id)
@@ -280,6 +467,8 @@ class Motif_model extends CI_Model {
         $class = '';
         if ( $disc == 0 ) {
             $class = 'md00';
+        } elseif ( $disc == -1 ) {
+            $class = 'md_no_match';
         } elseif ( $disc < 0.1 ) {
             $class = 'md01';
         } elseif ( $disc < 0.2 ) {
@@ -508,13 +697,9 @@ class Motif_model extends CI_Model {
                  ->where('id',$this->motif_id)
                  ->order_by('release_id','desc')
                  ->limit(1);
-        $query = $this->db->get();
-
-        foreach ($query->result() as $row) {
-            $this->release_id = $row->release_id;
-        }
+        $row = $this->db->get()->row();
+        $this->release_id = $row->release_id;
         return $this->release_id;
-//         $this->release_id = $release_id;
     }
 
     function set_motif_id($motif_id)
@@ -528,9 +713,8 @@ class Motif_model extends CI_Model {
                  ->from('ml_releases')
                  ->where('type', substr($motif_id, 0, 2))
                  ->order_by('date','desc');
-        $query = $this->db->get();
+        $row = $this->db->get()->row();
 
-        $row = $query->row();
         if ($row->id == $this->release_id) {
             return ' <label class="label success">current</label>';
         } else {

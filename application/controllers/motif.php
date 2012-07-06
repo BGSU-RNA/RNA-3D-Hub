@@ -103,6 +103,12 @@ class Motif extends MY_Controller {
             $data['history']['children'] = 'This motif has no children motifs.';
         }
 
+        // similar motifs
+        $tmpl = array( 'table_open'  => '<table class="condensed-table bordered-table">' );
+        $this->table->set_heading(array('#', 'Min linkage', 'Motif', ''));
+        $this->table->set_template($tmpl);
+        $data['similar_motifs'] = $this->table->generate($this->Motif_model->get_similar_motifs($motif_id));
+
         $data['baseurl'] = base_url();
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
@@ -111,7 +117,30 @@ class Motif extends MY_Controller {
 
 //         $this->output->enable_profiler(TRUE);
 	}
-}
 
+    public function compare($motif1, $motif2)
+    {
+        $this->load->model('Motif_model', '', TRUE);
+
+        $tmpl = array( 'table_open'  => '<table class="condensed-table">' ,
+                       'class' => 'mdmatrix-table');
+        $this->table->set_template($tmpl);
+
+        // use make_columns to avoid generation of th tags
+        $compare = $this->Motif_model->compare_motifs($motif1, $motif2);
+        $data['matrix'] = $this->table->generate(
+                                                 $this->table->make_columns($compare['table'], $compare['columns'])
+                                                );
+        $data['motif1'] = $motif1;
+        $data['motif2'] = $motif2;
+        $data['title']  = "$motif1 vs. $motif2";
+        $data['baseurl'] = base_url();
+        $this->load->view('header_view', $data);
+        $this->load->view('menu_view', $data);
+        $this->load->view('motif_compare_view', $data);
+        $this->load->view('footer');
+    }
+
+}
 /* End of file motif.php */
 /* Location: ./application/controllers/motif.php */

@@ -122,25 +122,35 @@ small .label {
 /* motif annotation well */
 
 /* Mutual discrepancy matrix */
-.motifview .mdmatrix table{
+.motifview .mdmatrix table {
     height:340px;
     width:340px;
     table-layout: fixed;
 }
-.motifview #legend {
+.motif_compare_view .mdmatrix table {
+    table-layout:fixed;
+    height: 340px;
+}
+.motifview #legend, .motif_compare_view #legend {
     height: 1em;
 }
 /* overrides bootstrap */
-.motifview .mdmatrix td, .motifview .mdmatrix tr {
+.motifview .mdmatrix td, .motifview .mdmatrix tr,
+.motif_compare_view .mdmatrix td, .motif_compare_view .mdmatrix tr {
     padding:0;
     border-top-width:0;
 }
-/*
-.mdmatrix td {
-    min-height:1px;
-    min-width:1px;
+.motif_compare_view .mdmatrix td {
+    line-height: 0px;
 }
-*/
+.motif_compare_view .mdmatrix .annotation {
+    font-size: xx-small;
+    text-align: center;
+    vertical-align: middle;
+}
+.motif_compare_view .highlight {
+    color: red;
+}
 .block-div {
   border: 1px solid #ddd;
   -webkit-border-radius: 4px;
@@ -148,17 +158,18 @@ small .label {
   border-radius: 4px;
 }
 /* Color classes */
-.motifview .md00 {background-color:rgb(100%,0%,0%);}
-.motifview .md01 {background-color:rgb(100%,25%,0%);}
-.motifview .md02 {background-color:rgb(100%,50%,0%);}
-.motifview .md03 {background-color:rgb(100%,75%,0%);}
-.motifview .md04 {background-color:rgb(100%,100%,0%);}
-.motifview .md05 {background-color:rgb(75%,100%,25%);}
-.motifview .md06 {background-color:rgb(50%,100%,50%);}
-.motifview .md07 {background-color:rgb(25%,100%,75%);}
-.motifview .md08 {background-color:rgb(0%,100%,100%);}
-.motifview .md09 {background-color:rgb(0%,50%,100%);}
-.motifview .md10 {background-color:rgb(0%,0%,100%);}
+.motifview .md00, .motif_compare_view .md00 {background-color:rgb(100%,0%,0%);}
+.motifview .md01, .motif_compare_view .md01 {background-color:rgb(100%,25%,0%);}
+.motifview .md02, .motif_compare_view .md02 {background-color:rgb(100%,50%,0%);}
+.motifview .md03, .motif_compare_view .md03 {background-color:rgb(100%,75%,0%);}
+.motifview .md04, .motif_compare_view .md04 {background-color:rgb(100%,100%,0%);}
+.motifview .md05, .motif_compare_view .md05 {background-color:rgb(75%,100%,25%);}
+.motifview .md06, .motif_compare_view .md06 {background-color:rgb(50%,100%,50%);}
+.motifview .md07, .motif_compare_view .md07 {background-color:rgb(25%,100%,75%);}
+.motifview .md08, .motif_compare_view .md08 {background-color:rgb(0%,100%,100%);}
+.motifview .md09, .motif_compare_view .md09 {background-color:rgb(0%,50%,100%);}
+.motifview .md10, .motif_compare_view .md10 {background-color:rgb(0%,0%,100%);}
+.motif_compare_view .md_no_match {background-color:rgb(0%,0%,0%);}
 
 /*
 .motifview .md00 {background-color:rgb(104,104,104);}
@@ -173,7 +184,8 @@ small .label {
 .motifview .md09 {background-color:rgb(176,176,176);}
 .motifview .md10 {background-color:rgb(184,184,184);}
 */
-.motifview .clicked, .motifview .jmolActive, .motifview .mdmatrix td:hover {
+.motifview .clicked, .motifview .jmolActive, .motifview .mdmatrix td:hover,
+.motif_compare_view .jmolActive {
     background-repeat: no-repeat;
     background-size: 50%;
     background-position: 50%;
@@ -181,16 +193,16 @@ small .label {
 .motifview .clicked {
     background-image: url('http://rna.bgsu.edu/img/MotifAtlas/glyphicons_free/glyphicons/png/glyphicons_206_ok_2.png');
 }
-.motifview .jmolActive {
+.motifview .jmolActive, .motif_compare_view .jmolActive {
     background-image: url('http://rna.bgsu.edu/img/MotifAtlas/glyphicons_free/glyphicons/png/glyphicons_185_screenshot.png');
 }
 .motifview .mdmatrix-table td:hover {
     background-image: url('http://rna.bgsu.edu/img/MotifAtlas/glyphicons_free/glyphicons/png/glyphicons_239_riflescope.png');
 }
-.motifview label {
+.motifview label, .motif_compare_view label {
     width:auto;
 }
-.motifview #mdmatrix-help {
+.motifview #mdmatrix-help, .motif_compare_view #mdmatrix-help {
     background-image: url('http://rna.bgsu.edu/img/MotifAtlas/glyphicons_free/glyphicons/png/glyphicons_194_circle_question_mark.png');
     background-size: 100%;
     height:1em;
@@ -198,6 +210,14 @@ small .label {
     display: inline-block;
     margin-right: 10px;
     float:right;
+}
+.motif_compare_view #mdmatrix-help {
+    margin-right: 0px;
+}
+.motif_compare_view .mdmatrix td {
+    text-align: center;
+    vertical-align: middle;
+    font-size: xx-small;
 }
 /* history widget */
 .motifview .history table {
@@ -484,7 +504,7 @@ body.home {
 }
 
 /* loops_single_view */
-.loops_single_view label {
+.loops_single_view label, .motif_compare_view label {
     width: auto;
     float: none;
 }

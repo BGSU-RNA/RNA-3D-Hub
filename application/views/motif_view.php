@@ -81,7 +81,9 @@
                         </div>
 
                         <div class="tab-pane" id='similar'>
-                            Coming soon
+                            <div class="span6">
+                                <?=$similar_motifs?>
+                            </div>
                         </div>
 
                         <div class="tab-pane" id='history'>
