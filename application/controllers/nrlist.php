@@ -53,7 +53,7 @@ class Nrlist extends CI_Controller {
 
 	public function view($id)
 	{
-        $this->output->cache(1000000);
+//        $this->output->cache(1000000);
 
 	    $this->load->model('Nrlist_model', '', TRUE);
 	    $data['title'] = $id;
@@ -73,7 +73,7 @@ class Nrlist extends CI_Controller {
         $members = $this->Nrlist_model->get_members($id);
         $tmpl = array( 'table_open'  => "<table class='zebra-striped bordered-table' id='members_table'>" );
         $this->table->set_template($tmpl);
-        $this->table->set_heading('#','PDB','Title','Source','Method','Resolution','Date');
+        $this->table->set_heading('#','PDB','Title','Source','Compounds','Method','Resolution','Date');
         $data['members'] = $this->table->generate($members);
         $data['num_members'] = count($members);
 

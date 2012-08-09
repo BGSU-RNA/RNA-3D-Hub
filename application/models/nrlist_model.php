@@ -151,6 +151,7 @@ class Nrlist_model extends CI_Model {
         $query = $this->db->get();
         $i = 0;
         foreach ($query->result() as $row) {
+            $pdb_id = $row->name;
             $row->name = $this->make_pdb_widget_link($row->name);
             if ($i==0) {
                 $row->name = $row->name . ' <strong>(rep)</strong>';
@@ -160,11 +161,25 @@ class Nrlist_model extends CI_Model {
                              $row->name,
                              $row->title,
                              $row->source,
+                             $this->get_compound_list($pdb_id),
                              $row->method,
                              $row->resolution,
                              $row->date);
         }
         return $table;
+    }
+    
+    function get_compound_list($id)
+    {
+        $this->db->select('group_concat(compound separator ", ") as compounds', FALSE)
+                 ->from('pdb_info')
+                 ->where('structureId', $id)
+                 ->group_by('structureId');
+        $query = $this->db->get();
+        foreach ($query->result() as $row) {
+            $result = $row->compounds;
+        }
+        return $result;
     }
 
     function add_pdb_class($list)
