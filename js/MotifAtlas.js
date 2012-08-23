@@ -6,7 +6,7 @@ function LookUpPDBInfo()
 	re = /[a-zA-Z0-9]{4}/;
 	pdb = re.exec(anchor_text);
 
-    $.post('http://rna.bgsu.edu/webfr3d/lookuppdbinfo.php', { pdb: pdb[0] }, function(data) {
+    $.post('http://rna.bgsu.edu/rna3dhub_dev/rest/getPdbInfo', { pdb: pdb[0] }, function(data) {
         a.data('content',data);
         a.data('original-title',pdb);
         a.popover({

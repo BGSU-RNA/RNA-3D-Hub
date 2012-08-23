@@ -11,6 +11,316 @@ class Loops_model extends CI_Model {
         parent::__construct();
     }
 
+    function get_loop_info($id)
+    {
+        $result = array();
+        // info from loops_all
+        $this->db->select()
+                 ->from('loops_all')
+                 ->where('id',$id);
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            $loop_info = $query->row();
+            $result['length'] = $loop_info->length;
+            $result['sequence'] = $loop_info->seq;
+        } else {
+            $result['length'] = '';
+            $result['sequence'] = '';
+        }
+
+        // qa info
+        $this->db->select()
+                 ->from('loop_qa')
+                 ->where('id',$id)
+                 ->order_by('release_id', 'desc')
+                 ->limit(1);
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            $loop_qa = $query->row();
+            switch ($loop_qa->status) {
+                case 1:
+                    $result['qa'] = 'Valid loop';
+                    break;
+                case 2:
+                    $result['qa'] = 'Missing nucleotides: ' . $loop_qa->nt_signature;
+                    break;
+                case 3:
+                    $result['qa'] = 'Modified nucleotides: ' . $loop_qa->modifications;
+                    break;
+                case 4:
+                    $result['qa'] = 'Abnormal chains';
+                    break;
+                case 5:
+                    $result['qa'] = 'Incomplete nucleotides: ' . $loop_qa->nt_signature;
+                    break;
+                case 6:
+                    $result['qa'] = 'Self-complementary: ' . $loop_qa->complementary;
+                    break;
+            }
+        } else {
+            $result['qa'] = 'QA data not found';
+        }
+
+        // get list of bulges
+        $this->db->select()
+                 ->from('loop_positions')
+                 ->where('loop_id',$id)
+                 ->where('bulge',1)
+                 ->order_by('position');
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            $bulges = array();
+            foreach ($query->result() as $row) {
+                $parts = explode('_', $row->nt_id);
+                $bulges[] = $parts[5] . $parts[4];
+            }
+            $result['bulges'] = implode(', ', $bulges);
+        } else {
+            $result['bulges'] = "None detected";
+        }
+
+        return $result;
+    }
+
+    function get_pdb_info($id)
+    {
+        $result = array();
+        //general pdb info
+        $result['pdb'] = substr($id,3,4);
+        $result['rna3dhub_link'] = anchor_popup('pdb/loops/' . $result['pdb'], 'RNA 3D Hub');
+        $result['pdb_link'] = anchor_popup('http://www.rcsb.org/pdb/explore.do?structureId=' . $result['pdb'], 'PDB');
+        $this->db->select()
+                 ->from('pdb_info')
+                 ->where('structureId',$result['pdb'])
+                 ->limit(1);
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            $pdb_info = $query->row();
+            $result['pdb_desc'] = $pdb_info->structureTitle;
+            $result['pdb_exptechnique'] = $pdb_info->experimentalTechnique;
+            if ($pdb_info->resolution == Null) {
+                $result['pdb_resolution'] = '';
+            } else {
+                $result['pdb_resolution'] = $pdb_info->resolution . ' &Aring;';
+            }
+        } else {
+            $result['pdb_desc'] = '';
+            $result['pdb_exptechnique'] = '';
+            $result['pdb_resolution'] = '';
+        }
+
+        // non-redundant equivalence class info
+        // get latest NR release id
+        $this->db->select()
+                 ->from('nr_releases')
+                 ->order_by('date','desc')
+                 ->limit(1);
+        $query = $this->db->get();
+        $release = $query->row();
+        // get equivalence classes
+        $this->db->select()
+                 ->from('nr_pdbs')
+                 ->where('id',$result['pdb'])
+                 ->where('release_id', $release->id);
+        $query = $this->db->get();
+
+        $nr_classes = array();
+        foreach ($query->result() as $row) {
+            $nr_classes[] = anchor_popup('nrlist/view/' . $row->class_id, $row->class_id);
+        }
+        $result['nr_classes'] = implode(', ', $nr_classes);
+
+        return $result;
+    }
+
+    function get_current_motif_id_from_loop_id($id)
+    {
+        // get current motif release id
+        $this->db->select()
+                 ->from('ml_releases')
+                 ->order_by('date','desc')
+                 ->where('type',substr($id, 0, 2))
+                 ->limit(1);
+        $query = $this->db->get();
+        $release = $query->row();
+
+        // get motif id
+        $this->db->select()
+                 ->from('ml_loops')
+                 ->where('release_id',$release->id)
+                 ->where('id',$id);
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            $motif = $query->row();
+            return array('motif_id' => $motif->motif_id,
+                         'release_id' => $release->id);
+        } else {
+            return NULL;
+        }
+
+    }
+
+    function get_motif_info($id)
+    {
+        $result = array();
+        $motif = $this->get_current_motif_id_from_loop_id($id);
+
+        if ($motif != NULL) {
+            $result['motif_id'] = $motif['motif_id'];
+            $result['motif_url'] = anchor_popup('motif/view/' . $motif['motif_id'], $motif['motif_id']);
+            // get motif annotations
+            $this->db->select()
+                     ->from('ml_motif_annotations')
+                     ->where('motif_id', $result['motif_id']);
+            $query = $this->db->get();
+            $annotation = $query->row();
+            if ($annotation->common_name != Null) {
+                $result['motif_common_name'] = $annotation->common_name;
+            } else {
+                $result['motif_common_name'] = 'Not assigned yet';
+            }
+            $result['bp_signature'] = $annotation->bp_signature;
+            // get number of motif instances
+            $this->db->select()
+                     ->from('ml_loops')
+                     ->where('release_id',$motif['release_id'])
+                     ->where('motif_id', $motif['motif_id']);
+            $query = $this->db->get();
+            $result['motif_instances'] = $query->num_rows();
+        } else {
+            $result['motif_id'] = "This loop hasn't been annotated with motifs yet";
+            $result['motif_url'] = "This loop hasn't been annotated with motifs yet";
+            $result['bp_signature'] = 'Not available';
+            $result['motif_instances'] = 0;
+            $result['motif_common_name'] = 'Not available';
+        }
+
+        return $result;
+    }
+
+    function get_protein_info($id)
+    {
+        $result = array();
+        // get nearby protein chains
+        $this->db->select('t3.chain')
+                 ->distinct()
+                 ->from('loop_positions as t1')
+                 ->join('pdb_distances as t2', 't1.nt_id = t2.id1')
+                 ->join('pdb_coordinates as t3', 't2.id2 = t3.id')
+                 ->where('loop_id', $id)
+                 ->where('char_length(t3.unit) = 3')
+                 ->not_like('t3.coordinates','HETATM','after');
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            $chains = array();
+            foreach ($query->result() as $row) {
+                $chains[] = $row->chain;
+            }
+            $this->db->select()
+                     ->from('pdb_info')
+                     ->where('structureId', substr($id,3,4))
+                     ->where_in('chainId', $chains);
+            $query = $this->db->get();
+            // db_name = 'PDB, Uniprot'
+            // db_ids  = 'PDB_id, Uniprot_id'
+            foreach ($query->result() as $row) {
+                $result['proteins'][$row->chainId]['description'] = $row->compound;
+                $databases = explode(',', $row->db_name);
+                $ids = explode(',', $row->db_id);
+                for ($i = 0; $i < count($databases); $i++) {
+                    if (preg_match('/Uniprot/i', $databases[$i])) {
+                        $result['proteins'][$row->chainId]['uniprot'] = anchor_popup('http://www.uniprot.org/uniprot/' . trim($ids[$i]), $ids[$i]);
+                    }
+                }
+            }
+        } else {
+            $result['proteins'] = array();
+        }
+
+        return $result;
+    }
+
+    function get_similar_loops($id)
+    {
+        $where = "loop_searches.disc > 0 AND (loop_searches.loop_id1='$id' OR loop_searches.loop_id2='$id')";
+        $this->db->select('loop_searches.loop_id1, loop_searches.loop_id2, loop_searches.disc, loop_search_qa.status, loop_search_qa.message')
+                 ->from('loop_searches')
+                 ->join('loop_search_qa','loop_searches.loop_id1=loop_search_qa.loop_id1 AND loop_searches.loop_id2=loop_search_qa.loop_id2','left')
+                 ->where($where, NULL, FALSE)
+                 ->order_by('loop_searches.disc', 'asc');
+        $query = $this->db->get();
+
+        $matches = array();
+        $table = array();
+        $count = 0;
+        $motif = $this->get_current_motif_id_from_loop_id($id);
+
+        foreach ($query->result() as $row) {
+            // establish what loop is the match of $id
+            if ($row->loop_id1 == $id) {
+                $match = $row->loop_id2;
+            } else {
+                $match = $row->loop_id1;
+            }
+            // exclude rows with reversed orientation of loop_id1 and loop_id2
+            if ( array_key_exists($match, $matches) ) {
+                continue;
+            } else {
+                $matches[$match]='';
+            }
+            $count++;
+            $this->db->select()
+                     ->from('ml_loops')
+                     ->where('id',$match)
+                     ->where('release_id','0.6');
+            $q = $this->db->get();
+            if ($q->num_rows() > 0) {
+                $result = $q->row();
+            } else {
+                $result = '';
+            }
+
+            // compose the message
+            if ($row->status == 4) {
+                $message = 'Unmatched basepair: ' . $row->message;
+            } elseif ($row->status == 5) {
+                $message = 'Unmatched near pair: ' . $row->message;
+            } elseif ($row->status == 6) {
+                $message = 'Unmatched stacking: ' . $row->message;
+            } elseif ($row->status == 7) {
+                $message = 'Basepair mismatch: ' . $row->message;
+            } elseif ($row->status == 7) {
+                $message = 'Basepair-basestacking mismatch: ' . $row->message;
+            } else {
+                $message = '';
+            }
+
+            $radiobutton = "<input type='radio'
+                                   name='g'
+                                   id='s{$count}'
+                                   class='jmolTools-loop-pairs'
+                                   data-coord='{$id}:{$match}'>
+                            <label for='s{$count}'>$match</label>
+                            <span class='loop_link'>" . anchor_popup("loops/view/$match", '&#10140;') . "</span>";
+
+            if ($result->motif_id == $motif['motif_id']) {
+                $motif_link = '<span class="label success">' .
+                              anchor_popup('motif/view/' . $result->motif_id, $result->motif_id)
+                              . '</span>';
+            } else {
+                $motif_link = anchor_popup('motif/view/' . $result->motif_id, $result->motif_id);
+            }
+
+            $table[] = array($count,
+                             array('data' => $radiobutton, 'class' => 'loop'),
+                             number_format($row->disc, 4),
+                             $motif_link,
+                             $message);
+        }
+
+        return $table;
+    }
+
     function get_loop_stats()
     {
         // get release order

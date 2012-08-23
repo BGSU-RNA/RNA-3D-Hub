@@ -36,7 +36,7 @@ class Motif extends MY_Controller {
 	    $table_array = $this->Motif_model->get_interaction_table();
         $this->load->library('table');
         $this->table->set_heading($this->Motif_model->header);
-        $tmpl = array( 'table_open'  => '<table class="condensed-table bordered-table zebra-striped" id="sort">' );
+        $tmpl = array( 'table_open'  => '<table class="condensed-table bordered-table zebra-striped pairwise-interactions" id="sort">' );
         $this->table->set_template($tmpl);
         $data['table']      = $this->table->generate($table_array);
 
@@ -70,19 +70,46 @@ class Motif extends MY_Controller {
 
         $data['title']      = $motif_id;
         $data['release_id'] = $release_id;
+        $data['release_id_label'] = $this->Motif_model->is_current_motif($motif_id);
         $data['motif_id']   = $motif_id;
         $data['author'] = $this->session->userdata('username');
 
+        // linkage
+        $data = array_merge($data, $this->Motif_model->get_linkage_data($motif_id));
+
         // history widget
         $this->benchmark->mark('d');
-//         $history = $this->Motif_model->get_history($motif_id);
-// //        $this->table->set_heading($this->Motif_model->get_history_header());
-//         $tmpl = array( 'table_open'  => '<table class="condensed-table bordered-table">' );
-//         $this->table->set_template($tmpl);
-//         $data['history'] = $this->table->generate($history);
-//         $data['history'] = array();
-        $data['baseurl'] = base_url();
 
+        $motif_release_history = $this->Motif_model->get_motif_release_history($motif_id);
+        $tmpl = array( 'table_open'  => '<table class="condensed-table bordered-table">' );
+        $this->table->set_template($tmpl);
+        $data['motif_release_history'] = $this->table->generate($motif_release_history);
+
+        $history_tables = $this->Motif_model->get_history($motif_id);
+        if ( count($history_tables['parents']) > 0 ) {
+            $tmpl = array( 'table_open'  => '<table class="condensed-table bordered-table">' );
+            $this->table->set_heading(array('Parent class','Common motif instances',"Only in $motif_id",'Only in the parent class'));
+            $this->table->set_template($tmpl);
+            $data['history']['parents'] = $this->table->generate($history_tables['parents']);
+        } else {
+            $data['history']['parents'] = 'This motif has no parent motifs.';
+        }
+        if ( count($history_tables['children']) > 0 ) {
+            $tmpl = array( 'table_open'  => '<table class="condensed-table bordered-table">' );
+            $this->table->set_heading(array('Child class','Common motif instances',"Only in $motif_id",'Only in the child class'));
+            $this->table->set_template($tmpl);
+            $data['history']['children'] = $this->table->generate($history_tables['children']);
+        } else {
+            $data['history']['children'] = 'This motif has no children motifs.';
+        }
+
+        // similar motifs
+        $tmpl = array( 'table_open'  => '<table class="condensed-table bordered-table">' );
+        $this->table->set_heading(array('#', 'Min linkage', 'Motif', ''));
+        $this->table->set_template($tmpl);
+        $data['similar_motifs'] = $this->table->generate($this->Motif_model->get_similar_motifs($motif_id));
+
+        $data['baseurl'] = base_url();
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('motif_view', $data);
@@ -90,7 +117,30 @@ class Motif extends MY_Controller {
 
 //         $this->output->enable_profiler(TRUE);
 	}
-}
 
+    public function compare($motif1, $motif2)
+    {
+        $this->load->model('Motif_model', '', TRUE);
+
+        $tmpl = array( 'table_open'  => '<table class="condensed-table">' ,
+                       'class' => 'mdmatrix-table');
+        $this->table->set_template($tmpl);
+
+        // use make_columns to avoid generation of th tags
+        $compare = $this->Motif_model->compare_motifs($motif1, $motif2);
+        $data['matrix'] = $this->table->generate(
+                                                 $this->table->make_columns($compare['table'], $compare['columns'])
+                                                );
+        $data['motif1'] = $motif1;
+        $data['motif2'] = $motif2;
+        $data['title']  = "$motif1 vs. $motif2";
+        $data['baseurl'] = base_url();
+        $this->load->view('header_view', $data);
+        $this->load->view('menu_view', $data);
+        $this->load->view('motif_compare_view', $data);
+        $this->load->view('footer');
+    }
+
+}
 /* End of file motif.php */
 /* Location: ./application/controllers/motif.php */

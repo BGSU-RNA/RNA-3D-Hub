@@ -61,10 +61,258 @@ class Motif_model extends CI_Model {
         }
     }
 
+    // compare two motifs page
+    function compare_motifs($motif1, $motif2)
+    {
+        // get ordering and loop ids
+        $this->db->select()
+                 ->from('ml_loop_order')
+                 ->where('motif_id', $motif1)
+                 ->or_where('motif_id', $motif2)
+                 ->order_by('motif_id, similarity_order')
+                 // limit to one release only to avoid duplication
+                 ->group_by('motif_id, loop_id');
+        $query = $this->db->get();
+        $i = 0;
+        foreach($query->result() as $row) {
+            $order[$row->motif_id][] = $row->loop_id;
+            $loop_ids[] = $row->loop_id;
+            $motifs[$row->motif_id][$row->loop_id] = 1;
+        }
+
+        // get mutual discrepancies
+        $this->db->select('loop_searches.loop_id1 as loop1,
+                           loop_searches.loop_id2 as loop2,
+                           loop_searches.disc as disc,
+                           loop_search_qa.status as status,
+                           loop_search_qa.message as qa_message,
+                           loop_search_qa.status as qa_status')
+                 ->from('loop_searches')
+                 ->join('loop_search_qa', 'loop_searches.loop_id1=loop_search_qa.loop_id1 AND loop_searches.loop_id2=loop_search_qa.loop_id2', 'left')
+                 ->where_in('loop_searches.loop_id1', $loop_ids)
+                 ->where_in('loop_searches.loop_id2', $loop_ids);
+        $query = $this->db->get();
+        $matrix = array();
+        foreach ($query->result() as $row) {
+            $qa_status[$row->loop1][$row->loop2] = $row->qa_status;
+            $qa_message[$row->loop1][$row->loop2] = $row->qa_message;
+            $matrix[$row->loop1][$row->loop2] = $row->disc;
+        }
+
+        // make the table
+        $table = array();
+        $table[] = array(); // left top corner empty cell
+
+        // horizontal header
+        $i = 0;
+        for ($j = 0; $j < count($order[$motif2]); $j++) {
+
+            $loop1 = $order[$motif1][$i];
+            $loop2 = $order[$motif2][$j];
+
+            $class = 'annotation';
+
+            if (array_key_exists($order[$motif1][$i], $motifs[$motif1]) and
+                array_key_exists($order[$motif1][$i], $motifs[$motif2])) {
+                $data = '1&2';
+                $title = "Loop $loop1 is present in both $motif1 and $motif2";
+            } else {
+                $data = '2';
+                $class .= ' highlight';
+                $title = "Loop $loop2 is only in $motif2";
+            }
+
+            $table[] = array(
+                             'data' => $data,
+                             'class' => $class,
+                             'rel'   => 'twipsy',
+                             'title' => $title
+                             );
+        }
+
+        for ($i = 0; $i < count($order[$motif1]); $i++) {
+            for ($j = 0; $j < count($order[$motif2]); $j++) {
+
+                $loop1 = $order[$motif1][$i];
+                $loop2 = $order[$motif2][$j];
+
+                $class = 'annotation';
+
+                // first cell of each row with row info
+                if ($j == 0) {
+                    if (array_key_exists($loop2, $motifs[$motif1]) and
+                        array_key_exists($loop2, $motifs[$motif2])) {
+                        $data = '1&2';
+                        $title = "Loop $loop2 is present in both $motif1 and $motif2";
+                    } else {
+                        $class .= ' highlight';
+                        $data = '1';
+                        $title = "Loop $loop1 is only in $motif1";
+                    }
+
+                    $table[] = array(
+                                     'data' => $data,
+                                     'class' => $class,
+                                     'rel'   => 'twipsy',
+                                     'title' => $title
+                                     );
+                }
+
+                $data = '';
+                $class = '';
+                // for asymmetric searches choose the real discrepancy over -1's
+                $disc = max($matrix[$loop1][$loop2], $matrix[$loop2][$loop1]);
+                $title = implode(', ', array("{$loop1}:{$loop2}",
+                                            ($disc == -1) ? 'no match' : number_format($disc, 4))
+                                );
+
+                if ($qa_status[$loop1][$loop2]) {
+                    $class = '';
+                    $data = 'x';
+                    if ( $qa_status[$loop1][$loop2] == 4 ) {
+                        $title .= '<br>Extra basepair:<br>';
+                    } elseif ( $qa_status[$loop1][$loop2] == 5 ) {
+                        $title .= '<br>Extra near pair:<br>';
+                    } elseif ( $qa_status[$loop1][$loop2] == 6 ) {
+                        $title .= '<br>Intercalation:<br>';
+                    } elseif ( $qa_status[$loop1][$loop2] == 7 ) {
+                        $title .= '<br>Basepair conflict:<br>';
+                    } elseif ( $qa_status[$loop1][$loop2] == 8 ) {
+                        $title .= '<br>Basepair-basestacking mismatch:<br>';
+                    }
+                    $title .= $qa_message[$loop1][$loop2];
+                }
+
+                $coord = "{$loop1}:{$loop2}";
+
+                $table[] = array(
+                                 'data'  => $data,
+                                 'class' => implode(' ' , array($this->get_css_class($disc), 'jmolTools-loop-pairs', $class)),
+                                 'rel'   => 'twipsy',
+                                 'title' => $title,
+                                 'data-coord' => $coord
+                                );
+            }
+        }
+
+        $num_columns = $j + 1; // one additional column for the first cell in each row
+
+        return array('table' => $table, 'columns' => $num_columns);
+
+    }
+
+    // similar motifs tab
+    function get_similar_motifs($motif_id)
+    {
+        $data = array();
+
+        // check one search orientation
+        $this->db->select_min('t2.disc', 'similarity_level')
+                 ->select('t3.motif_id as similar_motif')
+                 ->from('ml_loops as t1')
+                 ->join('loop_searches as t2', 't1.id = t2.loop_id1')
+                 ->join('ml_loops as t3', 't2.loop_id2 = t3.id')
+                 ->where('t1.motif_id', $motif_id)
+                 ->where('t1.release_id', $this->release_id)
+                 ->where('t3.release_id', $this->release_id)
+                 ->where('t3.motif_id !=', $motif_id)
+                 ->where('t2.disc >=', 0)
+                 ->group_by('t3.motif_id')
+                 ->order_by('t2.disc');
+        $query = $this->db->get();
+
+        foreach ($query->result() as $row) {
+            $data[$row->similarity_level] = $row->similar_motif;
+        }
+
+        // check the second search orientation
+        $this->db->select_min('t2.disc', 'similarity_level')
+                 ->select('t3.motif_id as similar_motif')
+                 ->from('ml_loops as t1')
+                 ->join('loop_searches as t2', 't1.id = t2.loop_id2')
+                 ->join('ml_loops as t3', 't2.loop_id1 = t3.id')
+                 ->where('t1.motif_id', $motif_id)
+                 ->where('t1.release_id', $this->release_id)
+                 ->where('t3.release_id', $this->release_id)
+                 ->where('t3.motif_id !=', $motif_id)
+                 ->where('t2.disc >=', 0)
+                 ->group_by('t3.motif_id')
+                 ->order_by('t2.disc');
+        $query = $this->db->get();
+
+        foreach ($query->result() as $row) {
+            $data[$row->similarity_level] = $row->similar_motif;
+        }
+
+        // sort by discrepancy
+        ksort($data);
+        $done = array();
+        $table = array();
+
+        $i = 1;
+        foreach ($data as $similarity_level => $similar_motif) {
+            if (!array_key_exists($similar_motif, $done)) {
+                $compare_link = anchor_popup("motif/compare/$motif_id/$similar_motif", 'Compare');
+                $table[] = array($i,
+                                 $similarity_level,
+                                 $similar_motif,
+                                 $compare_link);
+                $done[$similar_motif] = 0;
+                $i++;
+            }
+        }
+
+        return $table;
+    }
+
+    // linkage
+    function get_linkage_data( $motif_id )
+    {
+        // get loop ids from this motif
+        $this->db->select('id')
+                 ->from('ml_loops')
+                 ->where('motif_id', $motif_id)
+                 ->where('release_id', $this->release_id);
+        $query = $this->db->get();
+        $loops = array();
+        foreach ($query->result() as $row) {
+            $loops[] = $row->id;
+        }
+
+        // intraclusteral linkage
+        $this->db->select_max('discrepancy', 'intra_max_disc')
+                 ->select_avg('discrepancy', 'intra_avg_disc')
+                 ->from('ml_mutual_discrepancy')
+                 ->where_in('loop_id1', $loops)
+                 ->where('release_id', $this->release_id);
+        $query = $this->db->get();
+
+        $results = array();
+        foreach ($query->result() as $row) {
+            $results['linkage']['intra_max_disc'] = $row->intra_max_disc;
+            $results['linkage']['intra_avg_disc'] = $row->intra_avg_disc;
+        }
+
+        $this->db->select_min('discrepancy', 'intra_min_disc')
+                 ->from('ml_mutual_discrepancy')
+                 ->where_in('loop_id1', $loops)
+                 ->where('release_id', $this->release_id)
+                 ->where('discrepancy >', 0);
+        $query = $this->db->get();
+        foreach ($query->result() as $row) {
+            $results['linkage']['intra_min_disc'] = $row->intra_min_disc;
+        }
+
+        // interclusteral linkage
+
+
+        return $results;
+    }
+
     // sequence variation
     function get_3d_sequence_variation( $motif_id )
     {
-        $latest_release = $this->get_latest_release(substr($motif_id, 0, 2));
+        $latest_release = $this->get_latest_release_for_motif($motif_id);
 
         // complete motif
         $this->db->select('seq, count(seq) as num')
@@ -98,124 +346,106 @@ class Motif_model extends CI_Model {
                      'nwc' => $nwc_motif);
     }
 
-    function get_latest_release($motif_type)
+    function get_latest_release_for_motif($motif_id)
     {
-        $this->db->select()
+        $this->db->select('ml_releases.id')
                  ->from('ml_releases')
-                 ->where('type',$motif_type)
+                 ->join('ml_motifs', 'ml_releases.id = ml_motifs.release_id')
+                 ->where('ml_motifs.id',$motif_id)
                  ->order_by('date','desc')
                  ->limit(1);
         $result = $this->db->get()->result_array();
         return $result[0]['id'];
     }
 
-    // history widget
+    // history tab
+    function get_motif_release_history($motif_id)
+    {
+        $this->db->select()
+                 ->from('ml_releases')
+                 ->join('ml_motifs', 'ml_releases.id = ml_motifs.release_id')
+                 ->where('ml_motifs.id',$motif_id)
+                 ->where('ml_releases.type', substr($motif_id, 0, 2))
+                 ->order_by('date');
+        $query = $this->db->get();
+
+        $table[0][0] = 'Release';
+        $table[1][0] = '<strong>Date</strong>';
+        $table[2][0] = '<strong>Status</strong>';
+        foreach ($query->result() as $row) {
+            $table[0][] = anchor(base_url("motifs/release/".substr($motif_id,0,2) .'/'.$row->release_id), $row->release_id);
+            $table[1][] = date('Y-m-d', strtotime($row->date));
+
+            if ($row->comment == 'Exact match') {
+                $label = 'success';
+            } elseif ($row->comment == 'New id, no parents') {
+                $label = 'notice';
+            } else {
+                $label = 'important';
+            }
+
+            $table[2][] = "<span class='label $label'>{$row->comment}</span>";
+        }
+
+        return $table;
+    }
+
     function get_history($motif_id)
     {
-        $this->db->select('id')
+        $this->db->select()
                  ->from('ml_releases')
-                 ->order_by("date", "desc")
-                 ->where('type', substr($motif_id, 0, 2))
-                 ->limit(2);
-        $result = $this->db->get()->result_array();
-        $prev_release = $result[1]['id'];
+                 ->join('ml_motifs', 'ml_releases.id = ml_motifs.release_id')
+                 ->where('ml_motifs.id', $motif_id)
+                 ->order_by('date');
+        $result = $this->db->get();
+        foreach ($result->result() as $row) {
+            $releases_present[] = $row->release_id;
+        }
 
-        $this->db->select('*');
-        $this->db->from('ml_set_diff');
-        $this->db->where('release_id', $this->release_id);
-        $this->db->where('motif_id1', $this->motif_id);
-        $this->db->order_by("overlap", "desc");
+        $this->db->select()
+                 ->from('ml_set_diff')
+                 ->where_in('release_id', $releases_present)
+                 ->where('motif_id1', $this->motif_id)
+                 ->order_by('overlap', 'desc');
         $result = $this->db->get()->result_array();
+        $tables['parents'] = $this->make_history_table($result, $motif_id);
 
-        $rows[0] = array('Parents','Intersection','Overlap','Only in the child','Only in the parent');
+        $this->db->select()
+                 ->from('ml_set_diff')
+                 ->where_not_in('release_id', $releases_present)
+                 ->where('motif_id1', $this->motif_id)
+                 ->order_by('overlap', 'desc');
+        $result = $this->db->get()->result_array();
+        $tables['children'] = $this->make_history_table($result, $motif_id);
+
+        return $tables;
+    }
+
+    function make_history_table($result, $motif_id)
+    {
+        $table = array();
         for ($i = 0; $i < count($result); $i++) {
 
-            $link = "http://rna.bgsu.edu/MotifAtlas/motif/view/{$prev_release}/{$result[$i]['motif_id2']}";
-            $chbx = $this->get_checkboxes_with_color($result[$i]['two_minus_one'],
-                                                     $result[$i]['intersection'],
-                                                     $prev_release);
-            $rows[] = array(
-                                "<a href='{$link}'>" . $result[$i]['motif_id2'] . "</a>",
-                                str_replace(',',', ',$result[$i]['intersection']),
-                                number_format($result[$i]['overlap']*100,1) . '%',
-                                str_replace(',',', ',$result[$i]['one_minus_two']),
-//                                str_replace(',',', ',$result[$i]['two_minus_one'])
-                                $chbx
-                           );
+            $table[] = array(
+                                anchor_popup("motif/view/{$result[$i]['motif_id2']}", $result[$i]['motif_id2']),
+                                $this->make_loop_links($result[$i]['intersection']),
+                                $this->make_loop_links($result[$i]['one_minus_two']),
+                                $this->make_loop_links($result[$i]['two_minus_one'])
+                             );
         }
-        return $rows;
+        return $table;
     }
 
-    function get_nucleotide_correspondence($parent, $prev_release)
+    function make_loop_links($loop_list)
     {
-        $this->db->select('t1.position')->from('ml_loop_positions as t1');
-        $this->db->join('ml_loop_positions as t2','t1.loop_id=t2.loop_id AND t1.nt_id=t2.nt_id');
-        $this->db->where('t1.loop_id', $parent);
-        $this->db->where('t1.release_id', $prev_release);
-        $this->db->where('t2.release_id', $this->release_id);
-        $this->db->order_by('t2.position');
-        $query = $this->db->get();
-        foreach ($query->result() as $row) {
-            $positions[] = $row->position;
+        if ( $loop_list == '' ) {
+            return $loop_list;
         }
-        return $positions;
-    }
-
-    function get_corresponding_nucleotides($loop_id, $release, $positions)
-    {
-
-// SELECT * FROM loop_positions
-// WHERE loop_id = 'IL_1FJG_051'
-// AND release_id='0.3'
-// AND position IN (3,4,5,1,2)
-// ORDER BY field (position,3,4,5,1,2);
-
-        $this->db->select()->from('ml_loop_positions')
-                           ->where('loop_id', $loop_id)
-                           ->where('release_id', $release)
-                           ->where_in('position', $positions);
-//         $this->db->order_by('position');
-        $query = $this->db->get();
-        foreach ($query->result() as $row) {
-            $nts[$row->position] = $row->nt_id;
+        $loops = explode(',', $loop_list);
+        for ($i = 0; $i < count($loops); $i++) {
+            $loops[$i] = anchor_popup("loops/view/$loops[$i]", $loops[$i]);
         }
-//         ksort($nts);
-        foreach ($positions as $p) {
-            $nt_string[] = $nts[$p];
-        }
-        return implode(',', $nts);
-    }
-
-    function get_checkboxes_with_color($loops_string, $intersection, $prev_release)
-    {
-        if ($loops_string == '') {
-            return '';
-        }
-        $intersection = explode(',', $intersection);
-        $corr_positions = $this->get_nucleotide_correspondence($intersection[0], $prev_release);
-
-        $checkboxes = '<ul class="inputs-list">';
-        $loops = explode(',', $loops_string);
-        foreach ($loops as $loop) {
-            $this->db->select()->from('ml_mutual_discrepancy');
-            $this->db->where('loop_id1',$loop);
-            $this->db->where_in('loop_id2',$intersection);
-            $this->db->order_by('discrepancy')->limit(1);
-            $query = $this->db->get();
-            if ( $query->num_rows() > 0 ) {
-                $row = $query->first_row();
-                $class = $this->get_css_class($row->discrepancy);
-                $checkboxes .= "<li><label><input type='checkbox' id='{$loop}' class='jmolInline' ";
-                $checkboxes .= 'data-coord="'. $this->get_corresponding_nucleotides($loop,$prev_release,$corr_positions) . '">';
-//                 $checkboxes .= 'data-coord="'. implode(',',$corr_positions) . '">';
-                $checkboxes .= "<span class='$class'>$loop</span></label></li>";
-            } else {
-                $checkboxes .= "<li><label><input type='checkbox' id='{$loop}' class='jmolInline' ";
-                $checkboxes .= 'data-coord="">$loop</label></li>';
-            }
-        }
-        $checkboxes .= '</ul>';
-        return $checkboxes;
+        return implode(', ', $loops);
     }
 
     // mutual discrepancy matrix widget
@@ -254,6 +484,8 @@ class Motif_model extends CI_Model {
         $class = '';
         if ( $disc == 0 ) {
             $class = 'md00';
+        } elseif ( $disc == -1 ) {
+            $class = 'md_no_match';
         } elseif ( $disc < 0.1 ) {
             $class = 'md01';
         } elseif ( $disc < 0.2 ) {
@@ -299,7 +531,8 @@ class Motif_model extends CI_Model {
     {
         ksort($this->full_nts[$this->loops[$i]]);
         return "<label><input type='checkbox' id='{$this->loops[$i]}' class='jmolInline' " .
-               "data-coord='". implode(",", $this->full_nts[$this->loops[$i]]) ."'>{$this->loops[$i]}</label>";
+               "data-coord='". implode(",", $this->full_nts[$this->loops[$i]]) ."'>{$this->loops[$i]}</label>"
+               . "<span class='loop_link'>" . anchor_popup("loops/view/{$this->loops[$i]}", '&#10140;') . "</span>";
 
     }
 
@@ -343,7 +576,7 @@ class Motif_model extends CI_Model {
             } elseif ( $key == '#S') {
                 $row[$i] = array_search($this->loops[$id], $this->similarity);
             } elseif ( $key == 'Loop id' ) {
-                $row[$i] = $this->get_checkbox($id); //$this->loops[$id];
+                $row[$i] = array('class'=>'loop','data'=>$this->get_checkbox($id)); //$this->loops[$id];
             } elseif ( $key == 'PDB' ) {
                 $parts = explode("_", $this->loops[$id]);
                 $row[$i] = '<a class="pdb">' . $parts[1] . '</a>';
@@ -378,6 +611,12 @@ class Motif_model extends CI_Model {
             $nt_full2 = $result[$i]['jPdbSig'];
             $nt1 = $this->nt_ids[$nt_full1];
             $nt2 = $this->nt_ids[$nt_full2];
+
+            if ($result[$i]['f_lwbp'] == $result[$i]['m_lwbp'] and
+                $result[$i]['m_lwbp'] == $result[$i]['r_lwbp']) {
+                $this->f_lwbp[$nt1][$nt2] = "<span class='label success'>{$result[$i]['f_lwbp']}</span>";
+            }
+
             $this->f_lwbp[$nt1][$nt2] = $result[$i]['f_lwbp'];
         }
     }
@@ -402,11 +641,11 @@ class Motif_model extends CI_Model {
 
     function get_loops()
     {
-        $this->db->select('loop_id,original_order,similarity_order');
-        $this->db->from('ml_loop_order');
-        $this->db->where('release_id', $this->release_id);
-        $this->db->where('motif_id', $this->motif_id);
-        $this->db->order_by('original_order');
+        $this->db->select('loop_id,original_order,similarity_order')
+                 ->from('ml_loop_order')
+                 ->where('release_id', $this->release_id)
+                 ->where('motif_id', $this->motif_id)
+                 ->order_by('original_order');
         $result = $this->db->get()->result_array();
         for ($i = 0; $i < count($result); $i++) {
             $loops[$result[$i]['original_order']] = $result[$i]['loop_id'];
@@ -421,10 +660,10 @@ class Motif_model extends CI_Model {
 
     function get_nucleotides()
     {
-        $this->db->select('loop_id,nt_id,position');
-        $this->db->from('ml_loop_positions');
-        $this->db->where('release_id', $this->release_id);
-        $this->db->where('motif_id', $this->motif_id);
+        $this->db->select('loop_id,nt_id,position')
+                 ->from('ml_loop_positions')
+                 ->where('release_id', $this->release_id)
+                 ->where('motif_id', $this->motif_id);
         $result = $this->db->get()->result_array();
         for ($i = 0; $i < count($result); $i++) {
             $parts = explode("_", $result[$i]['nt_id']);
@@ -475,13 +714,9 @@ class Motif_model extends CI_Model {
                  ->where('id',$this->motif_id)
                  ->order_by('release_id','desc')
                  ->limit(1);
-        $query = $this->db->get();
-
-        foreach ($query->result() as $row) {
-            $this->release_id = $row->release_id;
-        }
+        $row = $this->db->get()->row();
+        $this->release_id = $row->release_id;
         return $this->release_id;
-//         $this->release_id = $release_id;
     }
 
     function set_motif_id($motif_id)
@@ -489,6 +724,20 @@ class Motif_model extends CI_Model {
         $this->motif_id = $motif_id;
     }
 
+    function is_current_motif($motif_id)
+    {
+        $this->db->select()
+                 ->from('ml_releases')
+                 ->where('type', substr($motif_id, 0, 2))
+                 ->order_by('date','desc');
+        $row = $this->db->get()->row();
+
+        if ($row->id == $this->release_id) {
+            return ' <label class="label success">current</label>';
+        } else {
+            return '';
+        }
+    }
 
 }
 
