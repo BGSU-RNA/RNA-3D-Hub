@@ -65,12 +65,13 @@ class Motif_model extends CI_Model {
     function compare_motifs($motif1, $motif2)
     {
         // get ordering and loop ids
-        // NB! need to limit to one release only - ?
         $this->db->select()
                  ->from('ml_loop_order')
                  ->where('motif_id', $motif1)
                  ->or_where('motif_id', $motif2)
-                 ->order_by('motif_id, similarity_order');
+                 ->order_by('motif_id, similarity_order')
+                 // limit to one release only to avoid duplication
+                 ->group_by('motif_id, loop_id');
         $query = $this->db->get();
         $i = 0;
         foreach($query->result() as $row) {
@@ -100,18 +101,45 @@ class Motif_model extends CI_Model {
 
         // make the table
         $table = array();
+        $table[] = array(); // left top corner empty cell
+
+        // horizontal header
+        $i = 0;
+        for ($j = 0; $j < count($order[$motif2]); $j++) {
+
+            $loop1 = $order[$motif1][$i];
+            $loop2 = $order[$motif2][$j];
+
+            $class = 'annotation';
+
+            if (array_key_exists($order[$motif1][$i], $motifs[$motif1]) and
+                array_key_exists($order[$motif1][$i], $motifs[$motif2])) {
+                $data = '1&2';
+                $title = "Loop $loop1 is present in both $motif1 and $motif2";
+            } else {
+                $data = '2';
+                $class .= ' highlight';
+                $title = "Loop $loop2 is only in $motif2";
+            }
+
+            $table[] = array(
+                             'data' => $data,
+                             'class' => $class,
+                             'rel'   => 'twipsy',
+                             'title' => $title
+                             );
+        }
+
         for ($i = 0; $i < count($order[$motif1]); $i++) {
             for ($j = 0; $j < count($order[$motif2]); $j++) {
-
-                $class = 'annotation';
 
                 $loop1 = $order[$motif1][$i];
                 $loop2 = $order[$motif2][$j];
 
-                if ($i == 0 and $j == 0) {
-                    $table[] = array();
-                    continue;
-                } elseif ($i == 0) {
+                $class = 'annotation';
+
+                // first cell of each row with row info
+                if ($j == 0) {
                     if (array_key_exists($loop2, $motifs[$motif1]) and
                         array_key_exists($loop2, $motifs[$motif2])) {
                         $data = '1&2';
@@ -121,26 +149,13 @@ class Motif_model extends CI_Model {
                         $data = '1';
                         $title = "Loop $loop1 is only in $motif1";
                     }
-                } elseif ($j == 0) {
-                    if (array_key_exists($order[$motif1][$i], $motifs[$motif1]) and
-                        array_key_exists($order[$motif1][$i], $motifs[$motif2])) {
-                        $data = '1&2';
-                        $title = "Loop $loop1 is present in both $motif1 and $motif2";
-                    } else {
-                        $data = '2';
-                        $class .= ' highlight';
-                        $title = "Loop $loop2 is only in $motif2";
-                    }
-                }
 
-                if ($i == 0 or $j == 0) {
                     $table[] = array(
                                      'data' => $data,
                                      'class' => $class,
                                      'rel'   => 'twipsy',
                                      'title' => $title
                                      );
-                    continue;
                 }
 
                 $data = '';
@@ -180,7 +195,9 @@ class Motif_model extends CI_Model {
             }
         }
 
-        return array('table' => $table, 'columns' => $j);
+        $num_columns = $j + 1; // one additional column for the first cell in each row
+
+        return array('table' => $table, 'columns' => $num_columns);
 
     }
 

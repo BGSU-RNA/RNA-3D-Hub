@@ -10,10 +10,23 @@
                     echo anchor_popup("motif/view/$motif1", $motif1) . ' vs. ' .
                          anchor_popup("motif/view/$motif2", $motif2);
                 ?>
+                <small>explore geometric similarity between two motifs</small>
               </h1>
             </div>
           </div>
         </div> <!-- end of page-header -->
+
+        <div class="row">
+            <div class="span16">
+                <p>
+                This page shows mutual discrepancy between all instances of two motifs. Click on the
+                matrix to view two motif instances superimposed. If no superposition can be calculated
+                within the geometric discrepancy of 1.0 Å/nucleotide, then the cell is colored black.
+                If the match between two motif instances has been disqualified, then the corresponding
+                cell is marked with an "x" and the reason for disqualification is displayed on hover.
+                </p>
+            </div>
+        </div>
 
         <div class="row">
             <div class="span6" id="jmol">
@@ -21,7 +34,7 @@
                         <script type="text/javascript">
                             jmolInitialize(" /jmol");
                             jmolSetAppletColor("#ffffff");
-                            jmolApplet(340, "javascript appletLoaded()");
+                            jmolApplet(340);
                         </script>
                     </div>
                     <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
@@ -38,12 +51,8 @@
                 <?php if ($matrix != ''): ?>
                 Legend:
                 <div id='mdmatrix-help' rel='twipsy' title='
-                Clicking
-                <ul>
-                <li>on the diagonal toggles a motif instance</li>
-                <li>above the diagonal displays a pair of instances</li>
-                <li>below the diagonal selects multiple instances on the diagonal</li>
-                </ul>'>
+                Rows and columns are marked "1", "2", and "1&2" depending on whether
+                the loop instance is seen in the first, in the second, or in both motifs.'>
                 </div>
                 <table id='legend'><tr>
                 <td class="md00" rel="twipsy" data-original-title="Discrepancy = 0"></td>
@@ -78,51 +87,32 @@
             html: true
         });
 
-        // initialize jmolTools
-        $('.jmolInline').jmolTools({
-            showStereoId: 'stereo',
-            showNeighborhoodId: 'neighborhood',
-            showNumbersId: 'showNtNums',
-            showNextId: 'next',
-            showPrevId: 'prev',
-            showAllId: 'all',
-            clearId: 'clear',
-            insertionsId: 'insertions'
-        });
-
-        // run when jmol is ready
-      	function appletLoaded (){
-      	    // toggle the first checkbox
-      	    $('.jmolInline').first().jmolToggle();
-
-      	    // mark it on the mutual discrepancy matrix
-      	    var id = $('.jmolInline').first().attr('id');
-      	    $('.md00').each(function(ind, elem) {
-                $elem = $(elem);
-                if ( $elem.data('pair').indexOf(id) == 0 ) {
-                    $elem.addClass('jmolActive');
-                    $.jmolTools.clickedCell = $elem;
-                    return;
-                }
-      	    });
-      	}
-
         $('.jmolTools-loop-pairs').click(function(){
+
             $this = $(this);
+
             // mark the clicked element
             var jmolActive = 'jmolActive'; // css class for the clicked td
             $('.' + jmolActive).removeClass(jmolActive);
             $this.addClass(jmolActive);
+
             // get two loops that need to be shown
             var loop_ids = $this.data('coord').split(':');
+
             // clear jmol window
             jmolScript('zap;');
+
             // destroy all previously created temporary elements
             var tempClass = 'jmolTools-temp-elems';
             $('#checkboxes').children().remove();
-            $.jmolTools.numModels = 0;
-            // create new temporary elements
 
+            // reset the state of the system
+            $.jmolTools.numModels = 0;
+            $.jmolTools.stereo = false;
+            $.jmolTools.neighborhood = false;
+            $.jmolTools.models = {};
+
+            // create new temporary elements
             // get loop1 from the alignment of loop1 and loop2
             // if there is no alignment of loop1 and loop2, then
             // get loop1 from the alignment of loop2 and loop1
@@ -143,18 +133,28 @@
                 .html($this.data('original-title'))
             );
 
+            // unbind all events
+            $('#stereo').unbind();
+            $('#neighborhood').unbind();
+            $('#showNtNums').unbind();
+
             // initialize the plugin on the temporary elements
             $('.'+tempClass).jmolTools({
                 showStereoId: 'stereo',
                 showNeighborhoodId: 'neighborhood',
                 showNumbersId: 'showNtNums'
             });
+
             // show the loops
-            $('#l0').jmolToggle();
-            $('#l1').jmolToggle();
-            $(document).ajaxStop(function() {
-                jmolScript('center 1.0;zoom {1.1} 0;select 2.1;color black;');
+            $('#l0').ajaxStop(function() {
+                $('#l1').ajaxStop(function() {
+                    jmolScript('center 1.0;zoom {1.1} 0;select 2.1;color black;');
+                });
+                $('#l1').jmolToggle();
+                $('#l0').unbind('ajaxStop');
             });
+            $('#l0').jmolToggle();
+
         });
 
       </script>
