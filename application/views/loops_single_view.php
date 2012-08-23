@@ -131,14 +131,6 @@
       	    $('.jmolInline').first().jmolToggle();
       	}
 
-//           function appletLoaded() {
-//
-//             show_loop_in_jmol('<?=$id?>');
-//             jmol_neighborhood_button_click('neighborhood');
-//             jmol_show_nucleotide_numbers_click('showNtNums');
-//
-//         }
-
         $('#sortable').tablesorter();
 
         var offset_left = $('#left_content').offset().left + 530; // 530 = span9 width
@@ -146,10 +138,6 @@
         $('#jmol').css('position','fixed')
                   .css('left',offset_left)
                   .css('top',offset_top);
-
-
-      </script>
-    <script>
 
         $('.jmolTools-loop-pairs').click(function(){
 
@@ -180,18 +168,34 @@
                 .addClass(tempClass)
             ).append('<label for="l1">' + loop_ids[1] + ' (colored black)</label>');
 
+            // reset the state of the system
+            $.jmolTools.numModels = 0;
+            $.jmolTools.stereo = false;
+            $.jmolTools.neighborhood = false;
+            $.jmolTools.models = {};
+
+            // unbind all events
+            $('#stereo').unbind();
+            $('#neighborhood').unbind();
+            $('#showNtNums').unbind();
+
             // initialize the plugin on the temporary elements
             $('.'+tempClass).jmolTools({
                 showStereoId: 'stereo',
                 showNeighborhoodId: 'neighborhood',
                 showNumbersId: 'showNtNums'
             });
+
             // show the loops
-            $('#l0').jmolToggle();
-            $('#l1').jmolToggle();
-            $(document).ajaxStop(function() {
-                jmolScript('center 1.0;zoom {1.1} 0;select 2.1;color black;');
+            $('#l0').ajaxStop(function() {
+                $('#l1').ajaxStop(function() {
+                    jmolScript('center 1.0;zoom {1.1} 0;select 2.1;color black;');
+                });
+                $('#l1').jmolToggle();
+                $('#l0').unbind('ajaxStop');
             });
+            $('#l0').jmolToggle();
+
         });
 
     </script>
