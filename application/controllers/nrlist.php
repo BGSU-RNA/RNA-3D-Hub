@@ -53,7 +53,7 @@ class Nrlist extends CI_Controller {
 
 	public function view($id)
 	{
-//        $this->output->cache(1000000);
+        $this->output->cache(1000000);
 
 	    $this->load->model('Nrlist_model', '', TRUE);
 	    $data['title'] = $id;
