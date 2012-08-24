@@ -184,10 +184,14 @@ small .label {
 .motifview .md09 {background-color:rgb(176,176,176);}
 .motifview .md10 {background-color:rgb(184,184,184);}
 */
-.motifview .clicked, .motifview .jmolActive, .motifview .mdmatrix td:hover,
-.motif_compare_view .jmolActive {
+.motifview .clicked, .motifview .jmolActive, .motifview .mdmatrix td:hover {
     background-repeat: no-repeat;
     background-size: 50%;
+    background-position: 50%;
+}
+.motif_compare_view .jmolActive {
+    background-repeat: no-repeat;
+    background-size: contain;
     background-position: 50%;
 }
 .motifview .clicked {
@@ -252,7 +256,7 @@ small .label {
 }
 
 .nrlist_class_view #members_table {
-    table-layout: fixed;   
+    table-layout: fixed;
 }
 .nrlist_class_view #members_table th:nth-of-type(1) {
     width:40px;
