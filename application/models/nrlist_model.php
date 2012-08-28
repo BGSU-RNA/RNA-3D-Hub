@@ -168,7 +168,7 @@ class Nrlist_model extends CI_Model {
         }
         return $table;
     }
-    
+
     function get_compound_list($id)
     {
         $this->db->select('group_concat(compound separator ", ") as compounds', FALSE)
@@ -264,6 +264,51 @@ class Nrlist_model extends CI_Model {
             $counts[$row->release_id] = $row->num;
         }
         return $counts;
+    }
+
+    function get_newest_pdb_images()
+    {
+        // get two latest releases
+        $this->db->select()
+                 ->from('nr_releases')
+                 ->order_by('date', 'desc')
+                 ->limit(2);
+        $query = $this->db->get();
+        foreach ($query->result() as $row) {
+            $releases[] = $row->id;
+        }
+
+        // get their release difference
+        $this->db->select()
+                 ->from('nr_release_diff')
+                 ->where('nr_release_id1', $releases[0])
+                 ->where('nr_release_id2', $releases[1])
+                 ->where('resolution', 'all');
+        $query = $this->db->get();
+        foreach ($query->result() as $row) {
+            $new_files = $row->added_pdbs;
+        }
+        if ($new_files != '' ) {
+            $html = '<h4>New RNA-containing PDB files released this week:</h4>';
+            $new_files = explode(',', $new_files);
+            foreach ($new_files as $new_file) {
+                $new_file = trim($new_file);
+                $html .= $this->make_pdb_widget_link($new_file);
+            }
+        } else {
+            $html = '<strong>No new RNA-containing PDB files this week.</strong>';
+        }
+        return $html;
+    }
+
+    function get_total_pdb_count()
+    {
+        $this->db->select('structureId')
+                 ->from('pdb_info')
+                 ->distinct();
+        $query = $this->db->get();
+
+        return $query->num_rows();
     }
 
     function get_all_releases()

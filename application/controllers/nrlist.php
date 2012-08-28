@@ -6,12 +6,15 @@ class Nrlist extends CI_Controller {
 	    $this->load->model('Nrlist_model', '', TRUE);
         $result = $this->Nrlist_model->get_all_releases();
 
-        $this->table->set_heading('Release id', 'All changes', 'Date', 'PDB files');
+        $this->table->set_heading('Release id', 'All changes', 'Date', 'NR PDB files');
         $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table'>" );
         $this->table->set_template($tmpl);
         $data['table']   = $this->table->generate($result);
         $data['title']   = 'All Non-redundant List Releases';
         $data['baseurl'] = base_url();
+
+        $data['images'] = $this->Nrlist_model->get_newest_pdb_images();
+        $data['total_pdbs'] = $this->Nrlist_model->get_total_pdb_count();
 
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);

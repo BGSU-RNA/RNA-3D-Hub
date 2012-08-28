@@ -19,8 +19,16 @@ class Ajax_model extends CI_Model {
         $query = $this->db->get();
         if ( $query->num_rows() > 0 ) {
             $row = $query->row();
+
+            // don't report resolution for nmr structures
+            if (preg_match('/NMR/', $row->experimentalTechnique)) {
+                $resolution = '';
+            } else {
+                $resolution = "<u>Resolution:</u> {$row->resolution} &Aring<br>";
+            }
+
             $pdb_info = "<u>Title</u>: {$row->structureTitle}<br>" .
-                        "<u>Resolution</u>: {$row->resolution}&Aring<br>" .
+                        $resolution .
                         "<u>Method</u>: {$row->experimentalTechnique}<br>" .
                         "<u>Organism</u>: {$row->source}<br><br>" .
                         'Explore in ' .
@@ -28,8 +36,31 @@ class Ajax_model extends CI_Model {
                         ' or ' .
                         anchor_popup("pdb/loops/$pdb", 'RNA 3D Hub');
         } else {
-            $pdb_info = 'PDB file not found';
+            // check obsolete files
+            $this->db->select()
+                     ->from('pdb_obsolete')
+                     ->where('obsolete_id', $pdb);
+            $query = $this->db->get();
+            if ( $query->num_rows() > 0 ) {
+                $row = $query->row();
+
+                if ($row->replaced_by == '') {
+                    // pdb file is not replaced
+                    $pdb_info = 'Structure ' . anchor_popup("http://www.pdb.org/pdb/explore/explore.do?structureId=$pdb", $pdb) . " was obsoleted.";
+                } else {
+                    // pdb file is replaced by one or more new pdbs
+                    $replaced_by = explode(',', $row->replaced_by);
+                    $new_urls = '';
+                    foreach ($replaced_by as $new_file) {
+                        $new_urls .= anchor_popup("http://www.pdb.org/pdb/explore/explore.do?structureId=$new_file", $new_file) . ' ';
+                    }
+                    $pdb_info = "PDB file {$pdb} was replaced by {$new_urls}";
+                }
+            } else {
+                $pdb_info = 'PDB file not found';
+            }
         }
+
         return $pdb_info;
     }
 

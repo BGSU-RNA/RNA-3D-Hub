@@ -234,7 +234,9 @@ small .label {
 .motifview .special_style {
     margin-left:0px;
 }
-
+.nr_all_releases_view td {
+    text-align:center;
+}
 .motifs_compare_view input[type=radio], .nrlist_release_compare_view input[type=radio] {
     margin-right:10px;
 }
