@@ -170,6 +170,8 @@ small .label {
 .motifview .md09, .motif_compare_view .md09 {background-color:rgb(0%,50%,100%);}
 .motifview .md10, .motif_compare_view .md10 {background-color:rgb(0%,0%,100%);}
 .motif_compare_view .md_no_match {background-color:rgb(0%,0%,0%);}
+.motif_compare_view .md_not_loaded {background-color:grey;}
+
 
 /*
 .motifview .md00 {background-color:rgb(104,104,104);}

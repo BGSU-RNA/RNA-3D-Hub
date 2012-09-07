@@ -161,10 +161,22 @@ class Motif_model extends CI_Model {
                 $data = '';
                 $class = '';
                 // for asymmetric searches choose the real discrepancy over -1's
-                $disc = max($matrix[$loop1][$loop2], $matrix[$loop2][$loop1]);
-                $title = implode(', ', array("{$loop1}:{$loop2}",
-                                            ($disc == -1) ? 'no match' : number_format($disc, 4))
-                                );
+                // if both searches not loaded in the db yet, assign -2
+                if ( $matrix[$loop1][$loop2] == '' and $matrix[$loop2][$loop1] == '' ) {
+                    $disc = -2;
+                } else {
+                    $disc = max($matrix[$loop1][$loop2], $matrix[$loop2][$loop1]);
+                }
+
+                if ( $disc == -1 ) {
+                    $annotation = 'no match';
+                } elseif ( $disc == -2 ) {
+                    $annotation = 'discrepancy data not loaded yet';
+                } else {
+                    $annotation = number_format($disc, 4);
+                }
+
+                $title = implode(', ', array("{$loop1}:{$loop2}", $annotation));
 
                 if ($qa_status[$loop1][$loop2]) {
                     $class = '';
@@ -486,6 +498,8 @@ class Motif_model extends CI_Model {
             $class = 'md00';
         } elseif ( $disc == -1 ) {
             $class = 'md_no_match';
+        } elseif ( $disc == -2 ) {
+            $class = 'md_not_loaded';
         } elseif ( $disc < 0.1 ) {
             $class = 'md01';
         } elseif ( $disc < 0.2 ) {
