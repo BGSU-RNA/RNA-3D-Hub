@@ -38,6 +38,10 @@
     <link rel="stylesheet" href="<?php echo $baseurl;?>js/fancybox/jquery.fancybox.css?v=2.0.3" type="text/css" media="screen" />
     <script type="text/javascript" src="<?php echo $baseurl;?>js/fancybox/jquery.fancybox.pack.js?v=2.0.3"></script>
 
+    <!-- chosen -->
+    <script type="text/javascript" src="<?=$baseurl?>js/chosen/chosen.jquery.min.js"></script>
+    <link rel="stylesheet" href="<?=$baseurl?>js/chosen/chosen.css" type="text/css" media="screen" />
+
     <!-- cytoscapeweb -->
     <!-- JSON support for IE (needed to use JS API) -->
     <script type="text/javascript" src="<?php echo $baseurl;?>cytoscapeweb/js/min/json2.min.js"></script>

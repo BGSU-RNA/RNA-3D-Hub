@@ -325,10 +325,21 @@ small .label {
     overflow-x: none;
     overflow-y: auto;
 }
-.pdb_loops_view div.valid, .pdb_loops_view div.modified, .pdb_loops_view div.missing {
-    max-height:200px;
+.pdb_loops_view div.valid {
+    max-height:300px;
     overflow:auto;
     margin-bottom:15px;
+    overflow: -moz-scrollbars-vertical;
+    overflow-y: scroll;
+}
+.pdb_loops_view div.modified {
+    max-height:200px;
+    overflow:auto;
+    overflow: -moz-scrollbars-vertical;
+    overflow-y: scroll;
+}
+.pdb_loops_view table {
+    margin-bottom: 0px;
 }
 .pdb_loops_view input[type=checkbox] {
     margin-right:5px;
@@ -457,11 +468,12 @@ input[type=radio], input[type=checkbox] {
     width:125px;
 }
 .loops_paginated_view .loop_link, .motifs_polymorphs_view .loop_link, .loops_single_view .loop_link,
-.motifview .loop_link {
+.motifview .loop_link, .pdb_loops_view .loop_link {
     display:none;
 }
 .loops_paginated_view .loop:hover .loop_link, .motifs_polymorphs_view .loop:hover .loop_link,
-.loops_single_view .loop:hover .loop_link, .motifview .loop:hover .loop_link  {
+.loops_single_view .loop:hover .loop_link, .motifview .loop:hover .loop_link,
+.pdb_loops_view .loop:hover .loop_link {
     margin-left:2px;
     display:inline;
 }
@@ -535,3 +547,40 @@ body.home {
     border:none;
 }
 */
+.pdb_interactions_view .page-header a {
+    margin-right: 10px;
+}
+.pdb_interactions_view .page-header a.btn {
+    margin-top: 7px;
+}
+.pdb_interactions_view a {
+    text-decoration: none;
+}
+.pdb_interactions_view a.viewed {
+    color: #bfbfbf;
+}
+.pdb_interactions_view a.current {
+    color: #ff6600;
+}
+.pdb_interactions_view #jmol>label {
+    margin-right: 10px;
+}
+.pdb_loops_view .pills a {
+    border-radius: 5px;
+}
+.pdb_loops_view .pills .active a {
+    background-color: #08C;
+}
+
+/* PDB summary view */
+.pdb_summary_view .media-grid a {
+    margin-left: 10px;
+    margin-bottom: 5px;
+}
+.pdb_summary_view dl, .pdb_summary_view ul {
+    margin-bottom: 5px;
+}
+.pdb_summary_view .well {
+    padding-bottom: 5px;
+    padding-top: 10px;
+}

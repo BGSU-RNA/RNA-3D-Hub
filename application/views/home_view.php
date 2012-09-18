@@ -11,7 +11,7 @@
       <div class="row">
 
         <div class="span5">
-          <h2>RNA Loops</h2>
+          <h2>Structure Atlas</h2>
           <p>Hairpin, internal and three-way junction loops extracted from all RNA-containing PDB files. Automatic weekly updates.</p>
           <p><a class="btn primary" href="<?php echo $baseurl;?>loops">View details &raquo;</a></p>
         </div>
@@ -31,7 +31,7 @@
       </div>
 
       <footer>
-        &copy; BGSU RNA group, 2012<br>
+        <a href="http://rna.bgsu.edu">BGSU RNA group</a>, 2012<br>
       </footer>
 
     </div> <!-- /container -->

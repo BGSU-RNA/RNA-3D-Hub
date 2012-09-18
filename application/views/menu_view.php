@@ -9,15 +9,7 @@
           <a class="brand" href="<?php echo $baseurl;?>">RNA 3D Hub</a>
           <ul class="nav">
 
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle">Loop Atlas</a>
-                <ul class="dropdown-menu">
-                    <li><a href="<?php echo $baseurl;?>loops">Home</a></li>
-                    <li><a href="<?php echo $baseurl;?>pdb">Browse by PDB</a></li>
-                    <li class="divider"></li>
-                    <li><a href="<?php echo $baseurl;?>loops/benchmark/IL">Loop extraction benchmark</a></li>
-                </ul>
-            </li>
+            <li><a href="<?php echo $baseurl;?>pdb"><span class="label success">New!</span> RNA Structure Atlas</a></li>
 
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle">Motif Atlas</a>
@@ -32,6 +24,16 @@
             </li>
 
             <li class="dropdown">
+                <a href="#" class="dropdown-toggle">Loop Atlas</a>
+                <ul class="dropdown-menu">
+                    <li><a href="<?php echo $baseurl;?>loops">Home</a></li>
+                    <li><a href="<?php echo $baseurl;?>pdb">Browse by PDB</a></li>
+                    <li class="divider"></li>
+                    <li><a href="<?php echo $baseurl;?>loops/benchmark/IL">Loop extraction benchmark</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
                 <a href="#" class="dropdown-toggle">NR Lists</a>
                 <ul class="dropdown-menu">
                     <li><a href="<?php echo $baseurl;?>nrlist">Home</a></li>
@@ -41,7 +43,7 @@
                     <li><a href="<?php echo $baseurl;?>nrlist/release/current">View current release</a></li>
                 </ul>
             </li>
-
+<!--
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle">RNA PDBs</a>
                 <ul class="dropdown-menu">
@@ -52,17 +54,16 @@
                     <li><a href="<?php echo $baseurl;?>loops/graphs">Sfcheck and Mapman: Graphs</a></li>
                 </ul>
             </li>
+ -->
 
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle">Apps</a>
                 <ul class="dropdown-menu">
                     <li><a href="http://rna.bgsu.edu/WebFR3D">WebFR3D</a></li>
                     <li><a href="http://rna.bgsu.edu/WebFR3D">R3DAlign</a></li>
-                    <li><a href="http://rna.bgsu.edu/research/JAR3D">JAR3D (private &szlig;)</a></li>
+                    <li><a href="http://rna.bgsu.edu/JAR3D">JAR3D &szlig;</a></li>
                     <li class="divider"></li>
                     <li><a href="http://rna.bgsu.edu/FR3D">FR3D</a></li>
-                    <li class="divider"></li>
-                    <li><a href="http://rna.bgsu.edu">RNA BGSU Home</a></li>
                 </ul>
             </li>
 
@@ -71,6 +72,8 @@
                 <ul class="dropdown-menu">
                     <li><a href="https://twitter.com/#!/RNA3DHub">Twitter updates</a></li>
                     <li><a href="https://github.com/AntonPetrov/RNA-3D-Hub">GitHub</a></li>
+                    <li class="divider"></li>
+                    <li><a href="http://rna.bgsu.edu">RNA BGSU Home</a></li>
                 </ul>
             </li>
 

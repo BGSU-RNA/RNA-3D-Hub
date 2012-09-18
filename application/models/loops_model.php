@@ -87,7 +87,7 @@ class Loops_model extends CI_Model {
         $result = array();
         //general pdb info
         $result['pdb'] = substr($id,3,4);
-        $result['rna3dhub_link'] = anchor_popup('pdb/loops/' . $result['pdb'], 'RNA 3D Hub');
+        $result['rna3dhub_link'] = anchor_popup('pdb/' . $result['pdb'] . '/motifs', 'RNA 3D Hub');
         $result['pdb_link'] = anchor_popup('http://www.rcsb.org/pdb/explore.do?structureId=' . $result['pdb'], 'PDB');
         $this->db->select()
                  ->from('pdb_info')

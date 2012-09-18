@@ -34,7 +34,7 @@ class Ajax_model extends CI_Model {
                         'Explore in ' .
                         anchor_popup("http://www.pdb.org/pdb/explore/explore.do?structureId=$pdb", 'PDB') .
                         ' or ' .
-                        anchor_popup("pdb/loops/$pdb", 'RNA 3D Hub');
+                        anchor_popup("pdb/$pdb", 'RNA 3D Hub');
         } else {
             // check obsolete files
             $this->db->select()

@@ -42,7 +42,11 @@ $route['default_controller'] = "Home";
 $route['404_override'] = '';
 $route['logout'] = 'admin/logout';
 $route['home'] = 'Home';
-
+// individual pdb pages
+$route['pdb/(\w{4})$'] = "pdb/general_info/$1";
+$route['pdb/(\w{4})/loops$'] = "pdb/loops/$1";
+$route['pdb/(\w{4})/interactions/(fr3d)/(.+)'] = "pdb/interactions/$1/$2/$3";
+$route['pdb/(\w{4})/motifs'] = 'pdb/motifs/$1';
 
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

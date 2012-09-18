@@ -142,6 +142,8 @@ class Loops extends CI_Controller {
     {
             $this->load->model('Loops_model', '', TRUE);
 
+            $this->output->enable_profiler(TRUE);
+
             $table  = $this->Loops_model->get_similar_loops($id);
             $this->table->set_heading('#','loop id','Disc','Motif id','Conflict');
             $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table' id='sortable'>" );
