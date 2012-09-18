@@ -309,7 +309,12 @@ class Motifs_model extends CI_Model {
             } else {
                 $annotation = '';
             }
-            $signature  = $annotations[$row->motif_id]['bp_signature'];
+
+            if ( array_key_exists($row->motif_id, $annotations) and array_key_exists('bp_signature', $annotations[$row->motif_id])) {
+                $signature = $annotations[$row->motif_id]['bp_signature'];
+            } else {
+                $signature = '';
+            }
 
             $table[] = array($i,
                              $this->make_fancybox_link($row->motif_id, $motif_type, $id),
