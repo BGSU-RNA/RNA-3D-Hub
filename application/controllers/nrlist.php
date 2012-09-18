@@ -51,7 +51,7 @@ class Nrlist extends CI_Controller {
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_release_view', $data);
         $this->load->view('footer');
-        $this->output->enable_profiler(TRUE);
+//         $this->output->enable_profiler(TRUE);
 	}
 
 	public function view($id)

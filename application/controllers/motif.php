@@ -115,7 +115,7 @@ class Motif extends MY_Controller {
         $this->load->view('motif_view', $data);
         $this->load->view('footer');
 
-        $this->output->enable_profiler(TRUE);
+//         $this->output->enable_profiler(TRUE);
 	}
 
     public function compare($motif1, $motif2)
