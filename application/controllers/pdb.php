@@ -18,6 +18,9 @@ class Pdb extends CI_Controller {
     public function general_info($id)
     {
         // main pdb landing page with general info and links to specific pages
+
+        $this->output->cache(8640); # 6 days
+
         $this->load->model('Pdb_model', '', TRUE);
         $pdb_status = $this->is_valid_pdb($id, 'il');
         $data['valid'] = $pdb_status['valid'];
@@ -131,9 +134,9 @@ class Pdb extends CI_Controller {
 
 	public function motifs($id)
 	{
-//        $this->output->cache(1000000);
-	    $this->load->model('Pdb_model', '', TRUE);
+        $this->output->cache(8640); # 6 days
 
+	    $this->load->model('Pdb_model', '', TRUE);
         // check the pdb id
         $pdb_status = $this->is_valid_pdb($id, 'il');
         $data['valid'] = $pdb_status['valid'];

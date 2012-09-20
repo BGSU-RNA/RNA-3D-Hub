@@ -140,29 +140,31 @@ class Loops extends CI_Controller {
 
     function view($id)
     {
-            $this->load->model('Loops_model', '', TRUE);
+        $this->output->cache(8640); # 6 days
+
+        $this->load->model('Loops_model', '', TRUE);
 
 //             $this->output->enable_profiler(TRUE);
 
-            $table  = $this->Loops_model->get_similar_loops($id);
-            $this->table->set_heading('#','loop id','Disc','Motif id','Conflict');
-            $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table' id='sortable'>" );
-            $this->table->set_template($tmpl);
-            $data['table'] = $this->table->generate($table);
+        $table  = $this->Loops_model->get_similar_loops($id);
+        $this->table->set_heading('#','loop id','Disc','Motif id','Conflict');
+        $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table' id='sortable'>" );
+        $this->table->set_template($tmpl);
+        $data['table'] = $this->table->generate($table);
 
-            $data = array_merge($data, $this->Loops_model->get_loop_info($id));
-            $data = array_merge($data, $this->Loops_model->get_pdb_info($id));
-            $data = array_merge($data, $this->Loops_model->get_motif_info($id));
-            $data = array_merge($data, $this->Loops_model->get_protein_info($id));
+        $data = array_merge($data, $this->Loops_model->get_loop_info($id));
+        $data = array_merge($data, $this->Loops_model->get_pdb_info($id));
+        $data = array_merge($data, $this->Loops_model->get_motif_info($id));
+        $data = array_merge($data, $this->Loops_model->get_protein_info($id));
 
-            $data['title'] = 'Loop ' . $id;
-            $data['id']    = $id;
-            $data['baseurl'] = base_url();
-            $this->load->view('header_view', $data);
-            $this->load->view('menu_view', $data);
-            $this->load->view('loops_single_view', $data);
-            $this->load->view('footer');
-    }
+        $data['title'] = 'Loop ' . $id;
+        $data['id']    = $id;
+        $data['baseurl'] = base_url();
+        $this->load->view('header_view', $data);
+        $this->load->view('menu_view', $data);
+        $this->load->view('loops_single_view', $data);
+        $this->load->view('footer');
+}
 
     function benchmark($kind = NULL)
     {

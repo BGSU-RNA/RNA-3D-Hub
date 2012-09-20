@@ -15,3 +15,6 @@ application/cache/*
 */logs/!index.html
 */cache/*
 */cache/!index.html
+
+# folder action for removing cache in _dev
+remove_cache.workflow

@@ -21,8 +21,7 @@ class Motif extends MY_Controller {
 
 	public function view($motif_id)
 	{
-//         $this->output->cache(10);
-//         $this->output->cache(1000000);
+        $this->output->cache(8640); # 6 days
 
 	    $this->load->model('Motif_model', '', TRUE);
 	    $this->Motif_model->set_motif_id($motif_id);

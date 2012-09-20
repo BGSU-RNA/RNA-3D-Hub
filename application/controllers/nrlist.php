@@ -3,6 +3,8 @@ class Nrlist extends CI_Controller {
 
 	public function index()
 	{
+        $this->output->cache(8640); # 6 days
+
 	    $this->load->model('Nrlist_model', '', TRUE);
         $result = $this->Nrlist_model->get_all_releases();
 
@@ -24,7 +26,7 @@ class Nrlist extends CI_Controller {
 
 	public function release($id)
 	{
-        $this->output->cache(1000000);
+        $this->output->cache(8640); # 6 days
 
 	    $this->load->model('Nrlist_model', '', TRUE);
         if ($id == 'current') {
@@ -56,7 +58,7 @@ class Nrlist extends CI_Controller {
 
 	public function view($id)
 	{
-        $this->output->cache(1000000);
+        $this->output->cache(8640); # 6 days
 
 	    $this->load->model('Nrlist_model', '', TRUE);
 	    $data['title'] = $id;
