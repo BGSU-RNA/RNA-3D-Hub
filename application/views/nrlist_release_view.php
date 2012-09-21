@@ -9,70 +9,30 @@
 
         <div class="row">
           <div class="span16">
-
             <ul class="tabs" data-tabs="tabs">
-                <li><a href="#1_5A">1.5A</a></li>
-                <li><a href="#2_0A">2.0A</a></li>
-                <li><a href="#2_5A">2.5A</a></li>
-                <li><a href="#3_0A">3.0A</a></li>
-                <li><a href="#3_5A">3.5A</a></li>
-                <li class="active"><a href="#4_0A">4.0A</a></li>
-                <li><a href="#20_0A">20.0A</a></li>
-                <li><a href="#all">All</a></li>
-                <li><a href="#download">Download</a></li>
+                <li><a>Resolution cutoffs:</a></li>
+                <?php foreach(array('1.5A', '2.0A', '2.5A', '3.0A', '3.5A', '4.0A', '20.0A', 'all') as $res): ?>
+                  <?php if ($resolution == $res): ?>
+                    <li class="active"><a href="<?=$baseurl?>nrlist/release/<?=$release_id?>/<?=$res?>"><?=ucfirst($res)?></a></li>
+                  <?php else: ?>
+                    <li><a href="<?=$baseurl?>nrlist/release/<?=$release_id?>/<?=$res?>"><?=ucfirst($res)?></a></li>
+                  <?php endif; ?>
+                <?php endforeach; ?>
+                <li class="dropdown" data-dropdown="dropdown">
+                <a href="#" class="dropdown-toggle">Download</a>
+                  <ul class="dropdown-menu">
+                    <?php foreach(array('1.5A', '2.0A', '2.5A', '3.0A', '3.5A', '4.0A', '20.0A') as $res): ?>
+                      <li><a href="<?=$baseurl?>nrlist/download/<?=$release_id?>/<?=$res?>/csv"><?=$res?></a></li>
+                    <?php endforeach; ?>
+                    <li class="divider"></li>
+                    <li><a href="<?=$baseurl?>nrlist/download/<?=$release_id?>/all/csv">All</a></li>
+                  </ul>
+                </li>
             </ul>
 
-            <div class="tab-content" id="my-tab-content">
-                <div class="tab-pane" id="1_5A">
-                    <div >
-                        <?php echo $counts['1.5']; echo $class['1.5'];?>
-                    </div>
-                </div>
-                <div class="tab-pane" id="2_0A">
-                    <div >
-                        <?php echo $counts['2.0']; echo $class['2.0'];?>
-                    </div>
-                </div>
-                <div class="tab-pane" id="2_5A">
-                    <div >
-                        <?=$counts['2.5']?>
-                        <?php echo $class['2.5'];?>
-                    </div>
-                </div>
-                <div class="tab-pane" id="3_0A">
-                    <div >
-                        <?=$counts['3.0']?>
-                        <?php echo $class['3.0'];?>
-                    </div>
-                </div>
-                <div class="tab-pane" id="3_5A">
-                    <div >
-                        <?=$counts['3.5']?>
-                        <?php echo $class['3.5'];?>
-                    </div>
-                </div>
-                <div class="tab-pane active" id="4_0A">
-                    <div >
-                        <?=$counts['4.0']?>
-                        <?php echo $class['4.0'];?>
-                    </div>
-                </div>
-                <div class="tab-pane" id="20_0A">
-                    <div >
-                        <?=$counts['20.0']?>
-                        <?php echo $class['20.0'];?>
-                    </div>
-                </div>
-                <div class="tab-pane" id="all">
-                    <div >
-                        <?=$counts['all']?>
-                        <?php echo $class['all'];?>
-                    </div>
-                </div>
-                <div class="tab-pane" id="download">
-                    Coming soon.
-                </div>
-            </div>
+            <?=$counts?>
+
+            <?=$class?>
 
           </div>
 
@@ -83,16 +43,7 @@
 
     <script>
         $(function () {
-            $('.tabs').tabs()
-            $("#1_5Atable").tablesorter();
-            $("#2_0Atable").tablesorter();
-            $("#2_5Atable").tablesorter();
-            $("#3_0Atable").tablesorter();
-            $("#3_5Atable").tablesorter();
-            $("#4_0Atable").tablesorter();
-            $("#20_0Atable").tablesorter();
-            $("#allAtable").tablesorter();
+            $('table').tablesorter();
             $(".pdb").click(LookUpPDBInfo);
         })
-
     </script>

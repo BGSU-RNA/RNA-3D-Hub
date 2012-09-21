@@ -47,12 +47,9 @@
                     a separate publication.
                     </p>
                     <p>
-                    The older web interface for the non-redundant lists is available
-                    at <a href="http://rna.bgsu.edu/nrlist">http://rna.bgsu.edu/nrlist</a>.
-                    It is also updated weekly, but it has several features
-                    that are not yet present in RNA 3D Hub. For example, one can view
-                    circular interaction diagrams for all structures in each equivalence class
-                    and download the non-redundant lists in text format.
+                    The older web interface for the non-redundant lists is still available
+                    at <a href="http://rna.bgsu.edu/nrlist">http://rna.bgsu.edu/nrlist</a>, but
+                    it will be discontinued some time in 2013.
                     </p>
                 </div>
             </div>

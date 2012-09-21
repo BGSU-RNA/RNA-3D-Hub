@@ -437,29 +437,20 @@ class Nrlist_model extends CI_Model {
         }
     }
 
-    function get_release($id,$resolution)
+    function get_release($id, $resolution)
     {
+        $resolution = str_replace('A', '', $resolution);
         // get raw release data
-        $this->db->select('nr_pdbs.*,PDB.Files.resolution as resolution,PDB.Files.source as source,PDB.Files.title as title')
+        $this->db->select()
                  ->from('nr_pdbs')
-                 ->join('PDB.Files','nr_pdbs.id=PDB.Files.name')
                  ->where('release_id', $id)
                  ->like('class_id', "NR_{$resolution}", 'after');
-
-//         $this->db->select('nr_pdbs.*,PDB.Files.resolution as resolution,PDB.Files.source as source,PDB.Files.title as title')
-//                  ->from('nr_classes')
-//                  ->join('nr_pdbs','nr_classes.id=nr_pdbs.class_id')
-//                  ->join('PDB.Files','nr_pdbs.id=PDB.Files.name')
-//                  ->where('nr_classes.release_id', $id)
-//                  ->where('nr_pdbs.release_id', $id);
-// //                  ->where('nr_classes.resolution', $resolution);
-
-
         $query = $this->db->get();
 
         // reorganize by class and rep and pdb
         $class = array();
         foreach ($query->result() as $row) {
+            $pdbs[] = $row->id;
             if ($row->rep == 1) {
                 $reps[$row->class_id] = $row->id;
             }
@@ -467,16 +458,37 @@ class Nrlist_model extends CI_Model {
                 $class[$row->class_id] = array();
             }
             $class[$row->class_id][]     = $row->id;
-            $pdb[$row->id]['title']      = $row->title;
-            $pdb[$row->id]['resolution'] = $row->resolution;
-            $pdb[$row->id]['source']     = $row->source;
+        }
+        $pdbs = array_unique($pdbs);
+
+        // get general pdb info
+        $this->db->select('structureId, structureTitle, resolution, source')
+                 ->from('pdb_info')
+                 ->where_in('structureId', $pdbs )
+                 ->group_by('structureId');
+        $query = $this->db->get();
+        foreach($query->result() as $row) {
+            $pdb[$row->structureId]['title']      = $row->structureTitle;
+            $pdb[$row->structureId]['resolution'] = (is_null($row->resolution)) ? '' : number_format($row->resolution, 1) . ' &Aring';
+            $pdb[$row->structureId]['source']     = $row->source;
+        }
+
+        // check if any of the files became obsolete
+        $this->db->select()
+                 ->from('pdb_obsolete')
+                 ->where_in('obsolete_id', $pdbs);
+        $query = $this->db->get();
+        foreach($query->result() as $row) {
+            $pdb[$row->obsolete_id]['title'] = "OBSOLETE: replaced by <a class='pdb'>{$row->replaced_by}</a>";
+            $pdb[$row->obsolete_id]['resolution'] = '';
+            $pdb[$row->obsolete_id]['source']     = '';
         }
 
         // get annotations: updated/>2 parents etc
         $this->db->select()
                  ->from('nr_classes')
                  ->where('release_id',$id)
-                 ->like('id',"NR_{$resolution}",'after');
+                 ->where('resolution', $resolution);
         $query = $this->db->get();
         foreach ($query->result() as $row) {
             $reason[$row->id]  = $row->comment;
@@ -513,7 +525,6 @@ class Nrlist_model extends CI_Model {
             $pdb_id = $reps[$class_id];
             $table[] = array($i,
                              anchor(base_url("nrlist/view/".$class_id),$class_id),
-//                              $this->make_pdb_widget_link($pdb_id),
                              $this->add_annotation_label($class_id, $reason),
                              $pdb_id,
                              $pdb[$pdb_id]['title'],
@@ -522,7 +533,30 @@ class Nrlist_model extends CI_Model {
                              $this->add_pdb_class($class[$class_id]));
             $i++;
         }
-        return array('table'=>$table, 'counts'=>$counts_text);
+        return array('table' => $table, 'counts' => $counts_text);
+    }
+
+    function get_csv($release, $resolution)
+    {
+        $resolution = str_replace('A', '', $resolution);
+        $this->db->select('nr_pdbs.id as id, nr_pdbs.class_id as class_id, nr_pdbs.rep as rep')
+                 ->from('nr_pdbs')
+                 ->join('nr_classes', 'nr_pdbs.class_id = nr_classes.id')
+                 ->where('nr_pdbs.release_id', $release)
+                 ->where('nr_classes.release_id', $release)
+                 ->where('resolution', $resolution);
+        $query = $this->db->get();
+        foreach($query->result() as $row) {
+            if ( $row->rep == 1 ) {
+                $reps[$row->class_id] = $row->id;
+            }
+            $members[$row->class_id][] = $row->id;
+        }
+        $csv = '';
+        foreach($reps as $class_id => $rep) {
+            $csv .= '"' . implode('","', array($class_id, $rep, implode(',', $members[$class_id]))) . '"' . "\n";
+        }
+        return $csv;
     }
 
     function get_compare_radio_table()
@@ -547,6 +581,32 @@ class Nrlist_model extends CI_Model {
             $table[] = $this->beautify_description_date($row->description);
         }
         return $table;
+    }
+
+    function is_valid_release($id)
+    {
+        $this->db->select()
+                 ->from('nr_releases')
+                 ->where('id', $id)
+                 ->limit(1);
+        if ( $this->db->get()->num_rows() == 0 ) {
+            return False;
+        } else {
+            return True;
+        }
+    }
+
+    function is_valid_class($id)
+    {
+        $this->db->select()
+                 ->from('nr_classes')
+                 ->where('id', $id)
+                 ->limit(1);
+        if ( $this->db->get()->num_rows() == 0 ) {
+            return False;
+        } else {
+            return True;
+        }
     }
 
 }

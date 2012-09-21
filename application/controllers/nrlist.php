@@ -22,46 +22,72 @@ class Nrlist extends CI_Controller {
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_all_releases_view', $data);
         $this->load->view('footer');
+
+//         $this->output->enable_profiler(TRUE);
 	}
 
-	public function release($id)
+	public function release($id, $res='4.0A')
 	{
         $this->output->cache(8640); # 6 days
 
 	    $this->load->model('Nrlist_model', '', TRUE);
         if ($id == 'current') {
             $id = $this->Nrlist_model->get_latest_release();
+        } elseif ( !$this->Nrlist_model->is_valid_release($id) ) {
+            show_404();
         }
 
 	    $data['title']       = "NR list $id";
         $data['release_id']  = $id;
         $data['description'] = $this->Nrlist_model->get_release_description($id);
+        $data['resolution'] = $res;
 
-        $resolution = array('1.5','2.0','2.5','3.0','3.5','4.0','20.0','all');
-        foreach ($resolution as $res) {
-            $temp = $this->Nrlist_model->get_release($id,$res);
-            $data['counts'][$res] = $temp['counts'];
-            $table_id = str_replace('.','_',$res) . 'Atable';
-            $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table' id='{$table_id}'>" );
-            $this->table->set_template($tmpl);
-            $this->table->set_heading('#', 'Equivalence class', 'Status', 'PDB', 'Title', 'Resolution', 'Source', 'Represents');
-            $data['class'][$res] = $this->table->generate($temp['table']);
-        }
+        $temp = $this->Nrlist_model->get_release($id, $res);
+        $data['counts'] = $temp['counts'];
+        $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table'>" );
+        $this->table->set_template($tmpl);
+        $this->table->set_heading('#', 'Equivalence class', 'Status', 'PDB', 'Title', 'Resolution', 'Source', 'Represents');
+        $data['class'] = $this->table->generate($temp['table']);
 
         $data['baseurl'] = base_url();
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_release_view', $data);
         $this->load->view('footer');
+
 //         $this->output->enable_profiler(TRUE);
 	}
+
+    public function download($id, $res='all', $format='csv')
+    {
+        if ($format != 'csv') {
+            show_404();
+        }
+	    $this->load->model('Nrlist_model', '', TRUE);
+        if ($id == 'current') {
+            $id = $this->Nrlist_model->get_latest_release();
+        } elseif ( !$this->Nrlist_model->is_valid_release($id) ) {
+            echo 'Invalid release id';
+            return;
+        }
+
+        $data['csv'] = $this->Nrlist_model->get_csv($id, $res);
+
+        $filename = "nrlist_{$id}_{$res}.{$format}";
+        $this->output->set_header("Content-disposition: attachment; filename=$filename")
+                     ->set_content_type('text/csv');
+        $this->load->view('csv_view', $data);
+    }
 
 	public function view($id)
 	{
         $this->output->cache(8640); # 6 days
 
 	    $this->load->model('Nrlist_model', '', TRUE);
-	    $data['title'] = $id;
+
+        if ( !$this->Nrlist_model->is_valid_class($id) ) {
+            show_404();
+        }
 
 	    $releases = $this->Nrlist_model->get_releases_by_class($id);
         $tmpl = array( 'table_open'  => "<table class='bordered-table'>" );
@@ -90,6 +116,7 @@ class Nrlist extends CI_Controller {
         $this->table->set_heading('This class','Descendant classes','Release id','Intersection','Only in this class','Added to child');
         $data['children'] = $this->table->generate($history);
 
+	    $data['title'] = $id;
         $data['baseurl'] = base_url();
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
@@ -160,7 +187,6 @@ class Nrlist extends CI_Controller {
         $this->load->view('nrlist_release_history_view', $data);
         $this->load->view('footer');
     }
-
 
 }
 
