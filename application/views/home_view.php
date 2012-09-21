@@ -1,5 +1,7 @@
-  <body class="home">
-    <div class="container">
+<body>
+    <div class="container home">
+
+      <div class="content">
 
       <!-- Main hero unit for a primary marketing message or call to action -->
       <div class="hero-unit">
@@ -11,43 +13,23 @@
       <div class="row">
 
         <div class="span5">
-          <h2>Structure Atlas</h2>
-          <p>Hairpin, internal and three-way junction loops extracted from all RNA-containing PDB files. Automatic weekly updates.</p>
-          <p><a class="btn primary" href="<?php echo $baseurl;?>loops">View details &raquo;</a></p>
+          <h2>RNA Structure Atlas</h2>
+          <p>Structural annotations of all RNA-containing 3D structures. Pairwise interactions produced by <a href="http://rna.bgsu.edu/FR3D">FR3D</a>, hairpin, internal and three-way junction loops, motif annotations from the <a href="http://rna.bgsu.edu/rna3dhub/motifs">Motif Atlas</a>. Automatic updates.</p>
+          <p><a class="btn primary" href="<?php echo $baseurl;?>pdb">Explore</a></p>
         </div>
 
         <div class="span6">
           <h2>RNA 3D Motif Atlas</h2>
-          <p>Collection of recurrent RNA 3D motifs extracted from a non-redundant set of structures. Automatic updates coming soon!</p>
-          <p><a class="btn primary" href="<?php echo $baseurl;?>motifs">View details &raquo;</a></p>
+          <p>A representative collection of recurrent RNA 3D internal and hairpin loop motifs extracted from a non-redundant set of structures. Automatic updates coming soon!</p>
+          <p><a class="btn primary" href="<?php echo $baseurl;?>motifs">Explore</a></p>
         </div>
 
         <div class="span5">
-          <h2>Non-redundant Lists</h2>
-          <p>PDB files grouped into equivalence classes by molecule type and biological organism. Automatic weekly updates.</p>
-          <p><a class="btn primary" href="<?php echo $baseurl;?>nrlist">View details &raquo;</a></p>
+          <h2>Non-redundant Atlas</h2>
+          <p>PDB files grouped into equivalence classes by molecule type, organism, and resolution. Automatic weekly updates.</p>
+          <p><a class="btn primary" href="<?php echo $baseurl;?>nrlist">Explore</a></p>
        </div>
 
       </div>
 
-      <footer>
-        <a href="http://rna.bgsu.edu">BGSU RNA group</a>, 2012<br>
-      </footer>
-
-    </div> <!-- /container -->
-
-    <!-- Google Analytics Tracking -->
-    <script type="text/javascript">
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'UA-9081629-8']);
-      _gaq.push(['_trackPageview']);
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-    </script>
-    <!-- Google Analytics Tracking -->
-
-  </body>
-</html>
+    </div>

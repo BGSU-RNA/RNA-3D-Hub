@@ -23,18 +23,19 @@
                 </ul>
             </li>
 
+<!--
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle">Loop Atlas</a>
                 <ul class="dropdown-menu">
                     <li><a href="<?php echo $baseurl;?>loops">Home</a></li>
-                    <li><a href="<?php echo $baseurl;?>pdb">Browse by PDB</a></li>
                     <li class="divider"></li>
                     <li><a href="<?php echo $baseurl;?>loops/benchmark/IL">Loop extraction benchmark</a></li>
                 </ul>
             </li>
+ -->
 
             <li class="dropdown">
-                <a href="#" class="dropdown-toggle">NR Lists</a>
+                <a href="#" class="dropdown-toggle">NR Atlas</a>
                 <ul class="dropdown-menu">
                     <li><a href="<?php echo $baseurl;?>nrlist">Home</a></li>
                     <li><a href="<?php echo $baseurl;?>nrlist/release_history">Release history</a></li>
@@ -56,6 +57,8 @@
             </li>
  -->
 
+            <li><a href="<?php echo $baseurl;?>loops">Loop Atlas</a></li>
+
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle">Apps</a>
                 <ul class="dropdown-menu">
@@ -72,6 +75,9 @@
                 <ul class="dropdown-menu">
                     <li><a href="https://twitter.com/#!/RNA3DHub">Twitter updates</a></li>
                     <li><a href="https://github.com/AntonPetrov/RNA-3D-Hub">GitHub</a></li>
+                    <li class="divider"></li>
+                    <li><a href="http://pdb.org">PDB</a></li>
+                    <li><a href="http://ndbserver.rutgers.edu">NDB</a></li>
                     <li class="divider"></li>
                     <li><a href="http://rna.bgsu.edu">RNA BGSU Home</a></li>
                 </ul>
