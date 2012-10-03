@@ -38,9 +38,10 @@ class Rest extends MY_Controller {
         $query_type = $this->_parseInput($query);
 
         if ( $query_type ) {
-
-            echo $this->_database_lookup($query, $query_type);
-
+            $this->output->set_header("Access-Control-Allow-Origin: *");
+            $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
+            $data['csv'] = $this->_database_lookup($query, $query_type);
+            $this->load->view('csv_view', $data);
         } else {
             echo $this->messages['invalid'];
         }
