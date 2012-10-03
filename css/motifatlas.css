@@ -338,6 +338,9 @@ small .label {
     overflow: -moz-scrollbars-vertical;
     overflow-y: scroll;
 }
+.pdb_loops_view label {
+    width: auto;
+}
 .pdb_loops_view table {
     margin-bottom: 0px;
 }

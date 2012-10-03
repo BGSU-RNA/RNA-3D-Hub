@@ -10,8 +10,10 @@
                 <ul class="tabs" data-tabs="tabs">
                     <li class="active"><a href="#general">General information</a></li>
                     <li><a href="#similar">Similar loops</a></li>
+<!--
                     <li><a href="#history">Motif history</a></li>
                     <li><a href="#rnastar">RNASTAR</a></li>
+ -->
                 </ul>
             </div>
 
@@ -20,7 +22,7 @@
                 <div class="tab-pane active" id='general'>
 
                     <div class="row">
-                        <div class="span6">
+                        <div class="span4 well">
                             <h4>3D structure</h4>
                             <dl>
                                 <dt>PDB id</dt>
@@ -35,7 +37,7 @@
                                 <dd><?=$nr_classes?></dd>
                             </dl>
                         </div>
-                        <div class="span3">
+                        <div class="span3 well">
                             <h4>Loop</h4>
                             <dl>
                                 <dt>Sequence</dt>
@@ -50,7 +52,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="span3">
+                        <div class="span3 well">
                             <h4>Motif assignment</h4>
                             <dl>
                                 <dt>Current motif</dt>
@@ -63,7 +65,7 @@
                                 <dd><?=$motif_instances?></dd>
                             </dl>
                         </div>
-                        <div class="span6">
+                        <div class="span4 well">
                             <h4>Nearby proteins</h4>
                             <?php
                                 if (count($proteins) > 0) {
@@ -85,6 +87,7 @@
                     <?=$table?>
                 </div>
 
+<!--
                 <div class="tab-pane" id='history'>
                     Coming soon
                 </div>
@@ -92,17 +95,16 @@
                 <div class="tab-pane" id='rnastar'>
                     Coming soon
                 </div>
+ -->
 
             </div>
 
-            <div class="span6" id="jmol" >
-                <div class="block-div jmolheight">
-                    <script type="text/javascript">
-                        jmolInitialize(" /jmol");
-                        jmolSetAppletColor("#ffffff");
-                        jmolApplet(340, "javascript appletLoaded()");
-                    </script>
-                </div>
+            <div class="span6 well" id="jmol" >
+                <script type="text/javascript">
+                    jmolInitialize(" /jmol");
+                    jmolSetAppletColor("#f5f5f5");
+                    jmolApplet(340, "javascript appletLoaded()");
+                </script>
                 <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
                 <label><input type="checkbox" id="showNtNums">Nucleotide numbers</label>
                 <br><br>

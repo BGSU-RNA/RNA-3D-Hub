@@ -3,7 +3,8 @@ class Pdb extends CI_Controller {
 
 	public function index()
 	{
-        // list all pdb files
+        $this->output->cache(8640); # 6 days
+
         $this->load->model('Pdb_model', '', TRUE);
         $data['pdbs'] = $this->Pdb_model->get_all_pdbs();
         $data['recent'] = $this->Pdb_model->get_recent_rna_containing_structures(7);
