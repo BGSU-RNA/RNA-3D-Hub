@@ -63,7 +63,7 @@
                 <a href="#" class="dropdown-toggle">Apps</a>
                 <ul class="dropdown-menu">
                     <li><a href="http://rna.bgsu.edu/WebFR3D">WebFR3D</a></li>
-                    <li><a href="http://rna.bgsu.edu/WebFR3D">R3DAlign</a></li>
+                    <li><a href="http://rna.bgsu.edu/main/webapps/webr3dalign/">R3DAlign</a></li>
                     <li><a href="http://rna.bgsu.edu/JAR3D">JAR3D &szlig;</a></li>
                     <li class="divider"></li>
                     <li><a href="http://rna.bgsu.edu/FR3D">FR3D</a></li>
