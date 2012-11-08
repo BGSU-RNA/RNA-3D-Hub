@@ -62,6 +62,8 @@ class Rest extends MY_Controller {
                 return $this->Ajax_model->get_coordinates($query);
             case 'loop_pair':
                 return $this->Ajax_model->get_loop_pair_coordinates($query);
+            case 'unit_id':
+                return $this->Ajax_model->get_unit_id_coordinates($query);
             default: return $this->messages['error'];
         endswitch;
 
@@ -82,6 +84,8 @@ class Rest extends MY_Controller {
                 return 'loop_pair';
             } elseif ( $this->_is_short_nt_list($query) ) {
                 return 'short_nt_list';
+            } elseif ( $this->_is_unit_id() ) {
+                return 'unit_id';
             } else {
                 return FALSE;
             }
@@ -89,6 +93,22 @@ class Rest extends MY_Controller {
         } else {
             return FALSE;
         }
+    }
+
+    private function _is_unit_id()
+    {
+        // 1J5E_1_V_ARG_9, 3NJ6_2_A_HOH_82___6_555
+        foreach ($this->exploded_nts as $nt) {
+            $parts = explode('_', $nt);
+            $underscores = count($parts);
+            if ( $underscores >= 4 and $underscores <= 8 and
+                 $parts[1] != 'AU' and $parts[1] != 'BA1' ) {
+                return TRUE;
+            } else {
+                return FALSE;
+            }
+        }
+        return TRUE;
     }
 
     private function _is_loop_id($query)

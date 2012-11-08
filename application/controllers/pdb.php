@@ -113,11 +113,7 @@ class Pdb extends CI_Controller {
 
         // send out the results
         if ( $is_download ) {
-            $this->load->dbutil();
-            $data['csv'] = $this->dbutil->csv_from_result($result['query_object']);
-            // remove empty first line and last comma - no idea why they are there
-            $data['csv'] = preg_replace('/^\n/','', $data['csv']);
-            $data['csv'] = preg_replace('/,\n/',"\n", $data['csv']);
+            $data['csv'] = $result['csv'];
             $this->load->view('csv_view', $data);
         } else {
             $data['title'] = strtoupper($id) . ' ' . $interaction_type;

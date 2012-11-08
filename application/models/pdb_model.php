@@ -163,6 +163,32 @@ class Pdb_model extends CI_Model {
         }
     }
 
+    function _get_unit_ids($pdb_id)
+    {
+        // get correspondences between old and new ids
+        $this->db->select('old_id, unit_id')
+                 ->from('pdb_unit_id_correspondence')
+                 ->where('pdb', $pdb_id);
+        $query = $this->db->get();
+        $unit_ids = array();
+        foreach ( $query->result() as $row ) {
+            $unit_ids[$row->old_id] = $row->unit_id;
+        }
+
+        // if no new unit ids are found, fall back on old ids
+        if ( count($unit_ids) == 0 ) {
+            $this->db->select('id')
+                     ->from('pdb_coordinates')
+                     ->where('pdb', $pdb_id);
+            $query = $this->db->get();
+            foreach ( $query->result() as $row ) {
+                $unit_ids[$row->id] = $row->id;
+            }
+        }
+
+        return $unit_ids;
+    }
+
     function get_interactions($pdb_id, $interaction_type)
     {
         $url_parameters = array('basepairs', 'stacking', 'basephosphate', 'baseribose');
@@ -183,9 +209,11 @@ class Pdb_model extends CI_Model {
         } else {
             return array( 'data'   => array(),
                           'header' => array(),
-                          'query_object' => ''
+                          'csv'    => ''
                          );
         }
+
+        $unit_ids = $this->_get_unit_ids($pdb_id);
 
         $this->db->select('iPdbSig,jPdbSig,' . $db_field)
                  ->from('pdb_pairwise_interactions')
@@ -197,28 +225,38 @@ class Pdb_model extends CI_Model {
 
         $i = 1;
         $html = '';
+        $csv  = '';
         foreach ( $query->result() as $row ) {
             $output_fields = array();
+            $csv_fields    = array();
+
+            $csv_fields[0] = $unit_ids[$row->iPdbSig];
             foreach ($targets as $target) {
                 if ( isset($row->{$db_fields[$target]}) and ($row->{$db_fields[$target]} != '') ) {
                     $output_fields[] = $row->{$db_fields[$target]};
+                    $csv_fields[]    = $row->{$db_fields[$target]};
+                } else {
+                    $csv_fields[] = '';
                 }
             }
+            $csv_fields[] = $unit_ids[$row->jPdbSig];
+
             $html .= '<span>' .
-                      str_pad($row->iPdbSig, 20, ' ') .
+                      str_pad($unit_ids[$row->iPdbSig], 20, ' ') .
                     "</span>".
                     "<a class='jmolInline' id='s{$i}'>" .
                       str_pad(implode(', ', $output_fields), 20, ' ', STR_PAD_BOTH) .
                     "</a>" .
                     "<span>" .
-                    str_pad($row->jPdbSig, 20, ' ', STR_PAD_LEFT) .
+                    str_pad($unit_ids[$row->jPdbSig], 20, ' ', STR_PAD_LEFT) .
                     "</span>\n";
+            $csv .= '"' . implode('","', $csv_fields) . '"' . "\n";
             $i++;
         }
 
         return array( 'data'   => $html,
                       'header' => array_merge( $header, explode(',', $interaction_description) ),
-                      'query_object' => $query
+                      'csv'    => $csv
                      );
     }
 

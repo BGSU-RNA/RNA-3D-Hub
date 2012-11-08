@@ -339,6 +339,27 @@ class Ajax_model extends CI_Model {
         return $this->get_loop_coordinates($row->loop_id);
     }
 
+    function get_unit_id_coordinates($unit_ids)
+    {
+        $exploded = explode(',', $unit_ids);
+        $imploded = "'" . implode("','",$exploded) . "'";
+
+        $query_string = "distinct(old_id) from pdb_unit_id_correspondence where unit_id IN ($imploded) ORDER BY FIELD(unit_id, $imploded);";
+        $this->db->select($query_string, FALSE);
+        $query = $this->db->get();
+
+        if ($query->num_rows() == 0) {
+            return 'No unit id correspondence found';
+        } else {
+            $nt_ids = array();
+            foreach ($query->result() as $row) {
+                $nt_ids[] = $row->old_id;
+            }
+        }
+
+        return $this->get_nt_coordinates($nt_ids);
+    }
+
 }
 
 /* End of file ajax_model.php */
