@@ -3,7 +3,13 @@
       <div class="content">
         <div class="page-header">
           <h1><?=strtoupper($pdb_id)?>
-          <small><?=strtoupper($method)?> <?=$interaction_type?> pairwise interaction annotations</small>
+          <small><?=strtoupper($method)?> <?=$interaction_type?> pairwise interaction annotations
+            <?php if ($analyzed_structure == 'AU'): ?>
+            of file <?=strtoupper($pdb_id)?>.pdb
+            <?php elseif ($analyzed_structure == 'BA1'): ?>
+            of file <?=strtoupper($pdb_id)?>.pdb1
+            <?php endif; ?>
+          </small>
           <small><a class="btn pull-right success" href="<?=$current_url?>/csv">Download</a></small>
           </h1>
         </div>

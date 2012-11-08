@@ -260,6 +260,25 @@ class Pdb_model extends CI_Model {
                      );
     }
 
+    function get_analyzed_structure($pdb_id)
+    {
+        // determine where .pdb or .pdb1 file was analyzed by FR3D
+        $this->db->select('pdb_type')
+                 ->distinct()
+                 ->from('pdb_coordinates')
+                 ->where('pdb', $pdb_id);
+        $query = $this->db->get();
+        if ( $query->num_rows() == 1 ) {
+            return $query->row()->pdb_type;
+        } elseif ( $query->num_rows() > 1 ) {
+            // implement when more interactions are imported
+            return 'More than one pdb file';
+        } else {
+            return 'Error';
+        }
+
+    }
+
     function get_general_info($pdb_id)
     {
         $this->db->select()

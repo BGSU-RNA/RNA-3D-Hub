@@ -118,6 +118,7 @@ class Pdb extends CI_Controller {
         } else {
             $data['title'] = strtoupper($id) . ' ' . $interaction_type;
             $data['interaction_type'] = $interaction_type;
+            $data['analyzed_structure'] = $this->Pdb_model->get_analyzed_structure($id);
             $data['method'] = $method;
             $data['pdb_id'] = $id;
             $data['baseurl'] = base_url();
