@@ -11,7 +11,7 @@
         <div class="row">
           <div class="span12">
             <?php if (count($result) > 1): ?>
-                This new-style unit id is seen in both biological assembly and asymmetric unit.
+                This new-style unit id is present in both biological assembly and asymmetric unit.
             <?php elseif ($id_type == 'new' ): ?>
                 Here is the description of the new-style unit id.
             <?php elseif ($id_type == 'old' ): ?>
@@ -35,9 +35,12 @@
     <dd>
       <?=anchor("unitid/describe/{$unit_id['old_id']}", $unit_id['old_id'])?>
     </dd>
-    <dt>PDB</dt>
+    <dt>PDB <?=$unit_id['pdb_id']?></dt>
     <dd>
-      <?=anchor_popup("http://www.pdb.org/pdb/explore.do?structureId={$unit_id['pdb_id']}", $unit_id['pdb_id'])?>
+      View in
+      <?=anchor_popup("http://www.pdb.org/pdb/explore.do?structureId={$unit_id['pdb_id']}", 'PDB')?>
+      or
+      <?=anchor("pdb/{$unit_id['pdb_id']}", 'RNA 3D Hub')?>
     </dd>
     <dt>Model</dt>
     <dd><?=$unit_id['model']?></dd>

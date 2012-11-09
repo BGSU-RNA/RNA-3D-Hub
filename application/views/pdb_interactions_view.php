@@ -58,7 +58,9 @@
 
         $('pre').on('click', 'span', function(){
             // hide all previously displayed popovers
-            $('.popover-displayed').removeClass('popover-displayed').popover('hide').unbind();
+            $('.popover-displayed').removeClass('popover-displayed')
+                                   .popover('hide')
+                                   .unbind();
             var a = $(this);
             var unit_id = a.html().trim();
             var content = '<a href="http://rna.bgsu.edu/' +
@@ -67,7 +69,7 @@
             a.popover({
               offset: 10,
               content: function(){return content;},
-              title: function(){return unit_id;},
+              title: function(){return 'Unit id ' + unit_id;},
               delayOut: 1200,
               html: true,
               animate: false,
@@ -75,7 +77,6 @@
             });
             a.popover('show');
             a.addClass('popover-displayed');
-//             $('.popover .content').css('min-height','20px');
         });
 
         $('.jmolInline').click(function(){

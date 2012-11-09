@@ -566,7 +566,7 @@ body.home {
     color: #ff6600;
 }
 .pdb_interactions_view span {
-    border-bottom:1px dotted #ff6600;
+    border-bottom:1px dotted #0069D6;
 }
 .pdb_interactions_view #jmol>label {
     margin-right: 10px;
