@@ -369,7 +369,7 @@ small .label {
 }
 .popover .content {
     margin: 0;
-    min-height:100px;
+    min-height:20px;
     max-height:200px;
 }
 .popover .content p {
@@ -564,6 +564,9 @@ body.home {
 }
 .pdb_interactions_view a.current {
     color: #ff6600;
+}
+.pdb_interactions_view span {
+    border-bottom:1px dotted #ff6600;
 }
 .pdb_interactions_view #jmol>label {
     margin-right: 10px;

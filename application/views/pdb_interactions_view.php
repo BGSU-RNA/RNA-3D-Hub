@@ -56,7 +56,27 @@
         jmolSetDocument(0);
         jmolSetAppletColor("#f5f5f5");
 
-        $('.twipsy').twipsy();
+        $('pre').on('click', 'span', function(){
+            // hide all previously displayed popovers
+            $('.popover-displayed').removeClass('popover-displayed').popover('hide').unbind();
+            var a = $(this);
+            var unit_id = a.html().trim();
+            var content = '<a href="http://rna.bgsu.edu/' +
+                          get_rna3dhub_environment() +  '/unitid/describe/'
+                          + unit_id + '">Details</a>';
+            a.popover({
+              offset: 10,
+              content: function(){return content;},
+              title: function(){return unit_id;},
+              delayOut: 1200,
+              html: true,
+              animate: false,
+              placement:'right'
+            });
+            a.popover('show');
+            a.addClass('popover-displayed');
+//             $('.popover .content').css('min-height','20px');
+        });
 
         $('.jmolInline').click(function(){
             var jmolApp = $('#jmolApplet0');
