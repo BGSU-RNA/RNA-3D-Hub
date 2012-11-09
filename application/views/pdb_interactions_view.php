@@ -63,9 +63,11 @@
                                    .unbind();
             var a = $(this);
             var unit_id = a.html().trim();
+
             var content = '<a href="http://rna.bgsu.edu/' +
                           get_rna3dhub_environment() +  '/unitid/describe/'
-                          + unit_id + '">Details</a>';
+                          + unit_id + '">Details</a>' +
+                          '&nbsp;&nbsp;<?=anchor("unitid", "Nomenclature")?>';
             a.popover({
               offset: 10,
               content: function(){return content;},

@@ -3,10 +3,8 @@ class Unitid extends CI_Controller {
 
 	public function index()
 	{
-
         // redirect to Wordpress
-        echo 'redirecting...';
-
+        header('Location: http://rna.bgsu.edu/main/unit-ids/');
     }
 
     public function describe($unit_id)
