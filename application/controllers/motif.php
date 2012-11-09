@@ -19,13 +19,26 @@ class Motif extends MY_Controller {
         echo $this->Motif_model->save_annotation($params);
     }
 
-	public function view($motif_id)
+	public function view($motif_id, $format=NULL)
 	{
         $this->output->cache(8640); # 6 days
 
 	    $this->load->model('Motif_model', '', TRUE);
 	    $this->Motif_model->set_motif_id($motif_id);
 	    $release_id = $this->Motif_model->set_release_id();
+
+        // handle download requests
+        if ( !is_null($format) ) {
+            if ( $format == 'csv' ) {
+                $data['csv'] = $this->Motif_model->get_csv($motif_id);
+            } elseif ( $format == 'json' ) {
+                $data['csv'] = $this->Motif_model->get_json($motif_id);
+            } else {
+                show_404();
+            }
+            $this->load->view('csv_view', $data);
+            return;
+        }
 
         //annotations
         $data['annotation'] = $this->Motif_model->get_annotations($motif_id);
@@ -108,6 +121,7 @@ class Motif extends MY_Controller {
         $this->table->set_template($tmpl);
         $data['similar_motifs'] = $this->table->generate($this->Motif_model->get_similar_motifs($motif_id));
 
+        $data['current_url'] = current_url();
         $data['baseurl'] = base_url();
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);

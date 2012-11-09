@@ -19,6 +19,48 @@ class Motif_model extends CI_Model {
         parent::__construct();
     }
 
+    function _get_aligned_unit_ids($motif_id)
+    {
+        $this->db->select()
+                 ->from('ml_loop_positions')
+                 ->join('pdb_unit_id_correspondence',
+                        'ml_loop_positions.nt_id = pdb_unit_id_correspondence.old_id')
+                 ->where('motif_id', $motif_id)
+                 ->order_by('loop_id, position');
+        $query = $this->db->get();
+
+        foreach($query->result() as $row) {
+            // $data['IL_XXXX_YYY'][0] = unit_id
+            $data[$row->loop_id][] = $row->unit_id;
+        }
+
+        return $data;
+    }
+
+    function get_csv($motif_id)
+    {
+        $data = $this->_get_aligned_unit_ids($motif_id);
+
+        $csv = '';
+        foreach($data as $loop_id) {
+            $csv .= '"' . implode('","', $loop_id) . '"' . "\n";
+        }
+        return $csv;
+    }
+
+    function get_json($motif_id)
+    {
+        $alignment  = $this->_get_aligned_unit_ids($motif_id);
+        $array_keys = array_keys($alignment);
+        $data['num_instances']   = count($array_keys);
+        $data['num_nucleotides'] = count($alignment[array_pop($array_keys)]);
+        $data['alignment'] = $alignment;
+        $data['motif_id']  = $motif_id;
+        $data = array_merge($data, $this->get_annotations($motif_id));
+
+        return json_encode($data);
+    }
+
     function get_annotations($motif_id)
     {
         $this->db->select()

@@ -4,8 +4,21 @@
 
         <div class="page-header">
           <div class="row">
-            <div class="span14">
-              <h1>Motif <?=$title?><small>Release <?=$release_id?> <?=$release_id_label?></small></h1>
+            <div class="span16">
+              <h1>Motif <?=$title?>
+                <small>Release <?=$release_id?> <?=$release_id_label?></small>
+                <small class="pull-right">
+                  <ul class="tabs">
+                  <li class="dropdown" data-dropdown="dropdown">
+                    <a href="#" class="dropdown-toggle">Download</a>
+                    <ul class="dropdown-menu">
+                      <li><a href="<?=$current_url?>/csv" download="<?=$title?>.csv">Csv</a></li>
+                      <li><a href="<?=$current_url?>/json" download="<?=$title?>.json">Json</a></li>
+                    </ul>
+                  </li>
+                  </ul>
+                </small>
+              </h1>
             </div>
           </div>
         </div> <!-- end of page-header -->

@@ -56,6 +56,9 @@ small .label {
 	margin-bottom:10px;
 }
 */
+.motifview h1 li {
+    font-size: small;
+}
 .jmolheight {
     height:340px;
     width:350px;
