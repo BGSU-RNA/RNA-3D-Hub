@@ -9,6 +9,11 @@ function LookUpPDBInfo()
     var environment = window.location.href.split('/')[3]; // rna3dhub or rna3dhub_dev
 
     $.post('http://rna.bgsu.edu/' + environment + '/rest/getPdbInfo', { pdb: pdb[0] }, function(data) {
+        // hide all previously displayed popovers
+        $('.popover-displayed').removeClass('popover-displayed')
+                               .popover('hide')
+                               .unbind()
+                               .bind('click', LookUpPDBInfo);
         a.data('content',data);
         a.data('original-title',pdb);
         a.popover({
@@ -20,9 +25,15 @@ function LookUpPDBInfo()
           animate: true,
           placement:'above'
         });
+        a.addClass('popover-displayed');
         a.popover('show');
     });
 
+}
+
+function get_rna3dhub_environment()
+{
+    return window.location.href.split('/')[3]; // rna3dhub or rna3dhub_dev
 }
 
 // *****************************************************************************
