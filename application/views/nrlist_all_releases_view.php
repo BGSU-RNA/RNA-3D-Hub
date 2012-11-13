@@ -34,6 +34,16 @@
                     edited by Professors Leontis and Westhof.
                     </p>
                     <p>
+                    Please use the following citation when using this resource:
+                      <blockquote>
+                        <p>
+                          Leontis, N. B., & Zirbel, C. L. (2012).
+                          Nonredundant 3D Structure Datasets for RNA Knowledge Extraction and Benchmarking.
+                          In N. Leontis & E. Westhof (Eds.), (Vol. 27, pp. 281–298). Springer Berlin Heidelberg. doi:10.1007/978-3-642-25740-7_13
+                        </p>
+                      </blockquote>
+                    </p>
+                    <p>
                     PDB files with no full nucleotides are not included in the
                     non-redundant lists. For example, see PDB
                     <a href="http://www.rcsb.org/pdb/explore/explore.do?structureId=1DV4">1DV4</a>.
