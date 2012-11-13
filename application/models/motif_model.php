@@ -29,9 +29,22 @@ class Motif_model extends CI_Model {
                  ->order_by('loop_id, position');
         $query = $this->db->get();
 
+        // store the data temporarily in random order
         foreach($query->result() as $row) {
-            // $data['IL_XXXX_YYY'][0] = unit_id
-            $data[$row->loop_id][] = $row->unit_id;
+            // $temp['IL_XXXX_YYY'][0] = unit_id
+            $temp[$row->loop_id][] = $row->unit_id;
+        }
+
+        // get the right order
+        $this->db->select('loop_id')
+                 ->from('ml_loop_order')
+                 ->where('motif_id', $motif_id)
+                 ->where('release_id', $this->release_id)
+                 ->order_by('original_order');
+        $query = $this->db->get();
+
+        foreach($query->result() as $row) {
+            $data[$row->loop_id] = $temp[$row->loop_id];
         }
 
         return $data;
