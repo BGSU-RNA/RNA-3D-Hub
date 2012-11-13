@@ -60,35 +60,32 @@
             <li><a href="<?php echo $baseurl;?>loops">Loop Atlas</a></li>
 
             <li class="dropdown">
-                <a href="#" class="dropdown-toggle">Apps</a>
+                <a href="#" class="dropdown-toggle">Resources</a>
                 <ul class="dropdown-menu">
                     <li><a href="http://rna.bgsu.edu/WebFR3D">WebFR3D</a></li>
-                    <li><a href="http://rna.bgsu.edu/main/webapps/webr3dalign/">R3DAlign</a></li>
                     <li><a href="http://rna.bgsu.edu/JAR3D">JAR3D &szlig;</a></li>
-                    <li class="divider"></li>
+                    <li><a href="http://rna.bgsu.edu/main/webapps/webr3dalign/">R3DAlign</a></li>
                     <li><a href="http://rna.bgsu.edu/FR3D">FR3D</a></li>
+                    <li class="divider"></li>
+                    <li><a href="http://rna.bgsu.edu/FR3D/basepairs/">RNA Basepair Catalog</a></li>
+                    <li><a href="http://rna.bgsu.edu/Triples/">RNA Base Triple Database</a></li>
+                    <li><a href="http://rna.bgsu.edu/FR3D/BasePhosphates/">RNA Base Phosphate Catalog</a></li>
                 </ul>
             </li>
 
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle">Links</a>
                 <ul class="dropdown-menu">
-                    <li><a href="https://twitter.com/#!/RNA3DHub">Twitter updates</a></li>
-                    <li><a href="https://github.com/AntonPetrov/RNA-3D-Hub">GitHub</a></li>
+                    <li><a href="http://rna.bgsu.edu">RNA BGSU Home</a></li>
                     <li class="divider"></li>
                     <li><a href="http://pdb.org">PDB</a></li>
                     <li><a href="http://ndbserver.rutgers.edu">NDB</a></li>
                     <li class="divider"></li>
-                    <li><a href="http://rna.bgsu.edu">RNA BGSU Home</a></li>
+                    <li><a href="https://github.com/AntonPetrov/RNA-3D-Hub">GitHub</a></li>
+                    <li><a href="https://twitter.com/#!/RNA3DHub">Twitter updates</a></li>
                 </ul>
             </li>
 
-
-
-<!--
-            <li><a href="#about">About</a></li>
-            <li><a href="#contact">Contact</a></li>
- -->
           </ul>
             <ul class="nav secondary-nav">
             <?php
