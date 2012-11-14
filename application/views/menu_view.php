@@ -12,7 +12,7 @@
             <li><a href="<?php echo $baseurl;?>pdb"><span class="label success">New!</span> RNA Structure Atlas</a></li>
 
             <li class="dropdown">
-                <a href="#" class="dropdown-toggle">Motif Atlas</a>
+                <a href="#" class="dropdown-toggle">RNA 3D Motif Atlas</a>
                 <ul class="dropdown-menu">
                     <li><a href="<?php echo $baseurl;?>motifs">Home</a></li>
                     <li><a href="<?php echo $baseurl;?>motifs/release_history">Release history</a></li>
@@ -35,7 +35,7 @@
  -->
 
             <li class="dropdown">
-                <a href="#" class="dropdown-toggle">NR Atlas</a>
+                <a href="#" class="dropdown-toggle">Non-redundant Atlas</a>
                 <ul class="dropdown-menu">
                     <li><a href="<?php echo $baseurl;?>nrlist">Home</a></li>
                     <li><a href="<?php echo $baseurl;?>nrlist/release_history">Release history</a></li>
@@ -57,8 +57,6 @@
             </li>
  -->
 
-            <li><a href="<?php echo $baseurl;?>loops">Loop Atlas</a></li>
-
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle">Resources</a>
                 <ul class="dropdown-menu">
@@ -67,6 +65,7 @@
                     <li><a href="http://rna.bgsu.edu/main/webapps/webr3dalign/">R3DAlign</a></li>
                     <li><a href="http://rna.bgsu.edu/FR3D">FR3D</a></li>
                     <li class="divider"></li>
+                    <li><a href="<?php echo $baseurl;?>loops">Loop Atlas</a></li>
                     <li><a href="http://rna.bgsu.edu/FR3D/basepairs/">RNA Basepair Catalog</a></li>
                     <li><a href="http://rna.bgsu.edu/Triples/">RNA Base Triple Database</a></li>
                     <li><a href="http://rna.bgsu.edu/FR3D/BasePhosphates/">RNA Base Phosphate Catalog</a></li>
