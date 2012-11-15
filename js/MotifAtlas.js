@@ -16,8 +16,6 @@ function LookUpPDBInfo()
                                .bind('click', LookUpPDBInfo);
         a.data('content',data);
         a.data('original-title',pdb);
-        console.log($(window).scrollTop());
-        console.log(a.offset().top);
         a.popover({
           offset: 10,
           content: function(){return data;},
