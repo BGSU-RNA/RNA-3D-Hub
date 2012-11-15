@@ -16,6 +16,8 @@ function LookUpPDBInfo()
                                .bind('click', LookUpPDBInfo);
         a.data('content',data);
         a.data('original-title',pdb);
+        console.log($(window).scrollTop());
+        console.log(a.offset().top);
         a.popover({
           offset: 10,
           content: function(){return data;},
@@ -23,7 +25,7 @@ function LookUpPDBInfo()
           delayOut: 1200,
           html: true,
           animate: true,
-          placement: a.offset().top < 500 ? 'below' : 'above'
+          placement: a.offset().top - $(window).scrollTop() < 500 ? 'below' : 'above'
         });
         a.addClass('popover-displayed');
         a.popover('show');
