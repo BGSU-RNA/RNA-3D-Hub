@@ -300,6 +300,10 @@ class Pdb_model extends CI_Model {
                  $row->entityMacromoleculeType == 'DNA/RNA Hybrid' ) {
                 $data['rna_chains']++;
                 $organisms[] = $row->source;
+                $data['rna_compounds'][] = array("chain"    => $row->chainId,
+                                                 "compound" => $row->compound,
+                                                 "length"   => $row->chainLength,
+                                                 "organism" => $row->source);
             }
             // for all chains
             $compounds[] = $row->compound;
@@ -433,7 +437,7 @@ class Pdb_model extends CI_Model {
 
             foreach($query->result() as $row) {
                 if ( $row->id != $pdb_id ) {
-                    $pdbs[] = "<a class='pdb'>{$row->id}</a>";
+                    $pdbs[] = $row->id;
                 }
             }
         }
