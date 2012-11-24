@@ -406,6 +406,7 @@ class Pdb_model extends CI_Model {
 
     function get_related_structures($pdb_id)
     {
+        $pdb_id = strtoupper($pdb_id);
         $latest_nr_release = $this->get_latest_nr_release($pdb_id);
 
         // choose the equivalence class
@@ -426,6 +427,7 @@ class Pdb_model extends CI_Model {
         }
 
         $pdbs = array();
+        $representative = Null;
         if ( $equivalence_class_found ) {
             // choose all structures from the selected equivalence class
             $this->db->select()
