@@ -33,7 +33,9 @@ class Apiv1 extends CI_Controller {
 
         $this->output
             ->set_content_type('application/json')
-            ->set_output(json_encode($data));
+            ->set_output(json_encode(array('related_pdbs'   => $data['related_pdbs'],
+                                           'representative' => $data['representative'],
+                                           'eq_class'       => $data['eq_class'])));
     }
 
 }
