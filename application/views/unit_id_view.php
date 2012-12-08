@@ -14,7 +14,7 @@
             <?php if (count($result) > 1): ?>
                 This new-style unit id is present in both biological assembly and asymmetric unit.
             <?php elseif ($id_type == 'new' ): ?>
-                Here is the description of the new-style unit id.
+                New-style unit id description:
             <?php elseif ($id_type == 'old' ): ?>
                 This old-style id corresponds to this new-style id: <?=$result[0]['unit_id']?>.
             <?php endif; ?>
@@ -53,6 +53,10 @@
                 </dd>
                 <dt>Number</dt>
                 <dd><?=$unit_id['seq_id']?></dd>
+                <dt>Atom name</dt>
+                <dd><i>blank (all atoms)</i></dd>
+                <dt>Alternate id</dt>
+                <dd><i>blank (or 'A')</i></dd>
                 <dt>Insertion code</dt>
                 <dd>
                   <?php if ($unit_id['ins_code'] != ''): ?>
