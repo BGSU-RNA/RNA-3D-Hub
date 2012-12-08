@@ -167,7 +167,7 @@
                   None found
                 <?php else: ?>
                   <?php foreach($related_pdbs as $pdb): ?>
-                  <?=$pdb?>
+                  <a class="pdb" href="#"><?=$pdb?></a>
                   <?php endforeach; ?>
                   <br>
                   Structures from <a href="<?=$baseurl?>nrlist/view/<?=$eq_class?>"><?=$eq_class?></a>
