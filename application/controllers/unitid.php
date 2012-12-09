@@ -9,6 +9,8 @@ class Unitid extends CI_Controller {
 
     public function describe($unit_id)
     {
+        $unit_id = urldecode($unit_id);
+
         $this->load->model('Unitid_model', '', TRUE);
 
         $data = $this->Unitid_model->get_unit_id_info($unit_id);
