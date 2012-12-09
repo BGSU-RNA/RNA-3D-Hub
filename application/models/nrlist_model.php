@@ -268,6 +268,28 @@ class Nrlist_model extends CI_Model {
 
     function get_newest_pdb_images()
     {
+        $sql = "SELECT DISTINCT(`structureId`) FROM `pdb_info`" .
+               "WHERE `releaseDate` >= DATE_ADD('" .
+               date("Y-m-d H:i:s") . "', INTERVAL -1 WEEK);";
+        $query = $this->db->query($sql);
+
+        foreach ($query->result() as $row) {
+            $new_files[] = $row->structureId;
+        }
+        if ($new_files != '' ) {
+            $html = '<h4>New RNA-containing PDB files released this week:</h4>';
+            foreach ($new_files as $new_file) {
+                $new_file = trim($new_file);
+                $html .= $this->make_pdb_widget_link($new_file);
+            }
+        } else {
+            $html = '<strong>No new RNA-containing PDB files this week.</strong>';
+        }
+        return $html;
+    }
+
+    function get_newest_nr_class_members()
+    {
         // get two latest releases
         $this->db->select()
                  ->from('nr_releases')

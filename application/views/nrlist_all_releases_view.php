@@ -44,6 +44,7 @@
                       </blockquote>
                     </p>
                     <p>
+                    <span class="label notice">Notice</span>
                     PDB files with no full nucleotides are not included in the
                     non-redundant lists. For example, see PDB
                     <a href="http://www.rcsb.org/pdb/explore/explore.do?structureId=1DV4">1DV4</a>.
