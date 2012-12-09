@@ -241,11 +241,11 @@ class Pdb_model extends CI_Model {
             }
             $csv_fields[] = $unit_ids[$row->jPdbSig];
 
-            $html .= str_pad('<span>' . $unit_ids[$row->iPdbSig] . '</span>', 33, ' ') .
+            $html .= str_pad('<span>' . $unit_ids[$row->iPdbSig] . '</span>', 38, ' ') .
                     "<a class='jmolInline' id='s{$i}'>" .
-                      str_pad(implode(', ', $output_fields), 20, ' ', STR_PAD_BOTH) .
+                      str_pad(implode(', ', $output_fields), 10, ' ', STR_PAD_BOTH) .
                     "</a>" .
-                    str_pad('<span>' . $unit_ids[$row->jPdbSig] . '</span>', 33, ' ', STR_PAD_LEFT) .
+                    str_pad('<span>' . $unit_ids[$row->jPdbSig] . '</span>', 38, ' ', STR_PAD_LEFT) .
                     "\n";
             $csv .= '"' . implode('","', $csv_fields) . '"' . "\n";
             $i++;
