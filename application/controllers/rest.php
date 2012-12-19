@@ -97,11 +97,11 @@ class Rest extends MY_Controller {
 
     private function _is_unit_id()
     {
-        // 1J5E_1_V_ARG_9, 3NJ6_2_A_HOH_82___6_555
+        // 1S72|1|0|U|10, 3BNT|2|A|C|22||||4_665
         foreach ($this->exploded_nts as $nt) {
-            $parts = explode('_', $nt);
-            $underscores = count($parts);
-            if ( $underscores >= 4 and $underscores <= 8 and
+            $parts = explode('|', $nt);
+            $separators = count($parts);
+            if ( $separators >= 4 and $separators <= 9 and
                  $parts[1] != 'AU' and $parts[1] != 'BA1' ) {
                 return TRUE;
             } else {
