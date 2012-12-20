@@ -12,6 +12,19 @@ class Unitid_model extends CI_Model {
         parent::__construct();
     }
 
+    function look_up_unit_id($old_id)
+    {
+        $this->db->select('unit_id')
+                 ->from('pdb_unit_id_correspondence')
+                 ->where('old_id', $old_id);
+        $query = $this->db->get();
+        if ( $query->num_rows() > 0 ) {
+            return $query->row()->unit_id;
+        } else {
+            return 'unknown';
+        }
+    }
+
     function get_unit_id_info($unit_id)
     {
         $this->db->select()

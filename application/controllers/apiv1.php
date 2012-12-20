@@ -6,6 +6,12 @@ class Apiv1 extends CI_Controller {
         show_404();
 	}
 
+    public function look_up_unit_id($old_id)
+    {
+        $this->load->model('Unitid_model', '', TRUE);
+        echo $this->Unitid_model->look_up_unit_id($old_id);
+    }
+
     public function get_all_rna_pdb_ids()
     {
         $this->load->model('Pdb_model', '', TRUE);
