@@ -377,40 +377,74 @@ class Motif_model extends CI_Model {
     }
 
     // sequence variation
-    function get_3d_sequence_variation( $motif_id )
+    function get_sequence_variants($motif_id)
     {
         $latest_release = $this->get_latest_release_for_motif($motif_id);
+        $seq   = array();
 
-        // complete motif
-        $this->db->select('seq, count(seq) as num')
-                 ->from('ml_loops as t1')
-                 ->join('loops_all as t2', 't1.id = t2.id')
-                 ->where('motif_id', $motif_id)
-                 ->where('release_id',$latest_release)
-                 ->group_by('seq')
-                 ->order_by('count(seq)', 'DESC');
-        $query = $this->db->get();
-        $complete_motif = array();
-        foreach ($query->result() as $row) {
-            $complete_motif[] = array($row->seq, $row->num);
+        foreach($this->loops as $loop_id) {
+
+            $index = array();
+
+            // get indexes of bordering nucleotides for loop id
+            $this->db->select('pdb_coordinates.index')
+                     ->from('loop_positions')
+                     ->join('pdb_coordinates', 'loop_positions.nt_id=pdb_coordinates.id')
+                     ->join('ml_loop_positions', 'loop_positions.loop_id=ml_loop_positions.loop_id' .
+                                                 ' AND loop_positions.nt_id=ml_loop_positions.nt_id')
+                     ->where('ml_loop_positions.release_id', $latest_release)
+                     ->where('loop_positions.loop_id', $loop_id)
+                     ->where('loop_positions.border', 1)
+                     ->order_by('loop_positions.position');
+            $query = $this->db->get();
+
+            foreach($query->result() as $row) {
+                $index[] = $row->index;
+            }
+
+            list($loop_type, $pdb, $order) = explode('_', $loop_id);
+
+            if ( $loop_type == 'HL' ) {
+                $seq = array($this->get_strand_fragment($pdb, $index[0], $index[1]));
+                $seq_nwc[] = substr($seq[0], 1, -1);
+            } elseif ( $loop_type == 'IL' ) {
+                $seq = array($this->get_strand_fragment($pdb, $index[0], $index[1]),
+                             $this->get_strand_fragment($pdb, $index[2], $index[3]));
+                $seq_nwc[] = substr($seq[0], 1, -1) . '*' . substr($seq[1], 1, -1);
+            }
+            $seq_all[] = implode('*', $seq);
         }
 
-        // non-WC part
-        $this->db->select('nwc_seq, count(nwc_seq) as num')
-                 ->from('ml_loops as t1')
-                 ->join('loops_all as t2', 't1.id = t2.id')
-                 ->where('motif_id', $motif_id)
-                 ->where('release_id',$latest_release)
-                 ->group_by('nwc_seq')
-                 ->order_by('count(nwc_seq)', 'DESC');
-        $query = $this->db->get();
-        $nwc_motif = array();
-        foreach ($query->result() as $row) {
-            $nwc_motif[] = array($row->nwc_seq, $row->num);
+        $counts = array_count_values($seq_all);
+        foreach($counts as $seq => $count) {
+            $complete[] = array($seq, $count);
         }
 
-        return array('complete' => $complete_motif,
-                     'nwc' => $nwc_motif);
+        $counts = array_count_values($seq_nwc);
+        foreach($counts as $seq => $count) {
+            $nwc[] = array($seq, $count);
+        }
+
+        return array('complete' => $complete,
+                     'nwc'      => $nwc);
+
+    }
+
+    private function get_strand_fragment($pdb, $start, $stop)
+    {
+        $rna = array('A', 'C', 'G', 'U');
+
+        $this->db->select('unit')
+                 ->from('pdb_coordinates')
+                 ->where('pdb', $pdb)
+                 ->where_in('unit', $rna)
+                 ->where('index >=', $start)
+                 ->where('index <=', $stop);
+        $query = $this->db->get();
+        foreach($query->result() as $row) {
+            $nts[] = $row->unit;
+        }
+        return implode('', $nts);
     }
 
     function get_latest_release_for_motif($motif_id)
@@ -715,10 +749,10 @@ class Motif_model extends CI_Model {
                  ->where('release_id', $this->release_id)
                  ->where('motif_id', $this->motif_id)
                  ->order_by('original_order');
-        $result = $this->db->get()->result_array();
-        for ($i = 0; $i < count($result); $i++) {
-            $loops[$result[$i]['original_order']] = $result[$i]['loop_id'];
-            $similarity[$result[$i]['similarity_order']] = $result[$i]['loop_id'];
+        $query = $this->db->get();
+        foreach($query->result() as $row) {
+            $loops[$row->original_order] = $row->loop_id;
+            $similarity[$row->similarity_order] = $row->loop_id;
         }
         $this->loops = $loops;
         $this->num_loops = count($loops);
