@@ -240,6 +240,18 @@ class Loops_model extends CI_Model {
         return $result;
     }
 
+    function get_current_motif_release($motif_type)
+    {
+        $this->db->select()
+                 ->from('ml_releases')
+                 ->where('type', $motif_type)
+                 ->order_by('date', 'desc')
+                 ->limit(1);
+        $query = $this->db->get();
+        $row = array_shift($query->result());
+        return $row->id;
+    }
+
     function get_similar_loops($id)
     {
         $where = "loop_searches.disc > 0 AND (loop_searches.loop_id1='$id' OR loop_searches.loop_id2='$id')";
@@ -254,6 +266,7 @@ class Loops_model extends CI_Model {
         $table = array();
         $count = 0;
         $motif = $this->get_current_motif_id_from_loop_id($id);
+        $ml_release_id = $this->get_current_motif_release(substr($id, 0, 2));
 
         foreach ($query->result() as $row) {
             // establish what loop is the match of $id
@@ -272,7 +285,7 @@ class Loops_model extends CI_Model {
             $this->db->select()
                      ->from('ml_loops')
                      ->where('id',$match)
-                     ->where('release_id','0.6');
+                     ->where('release_id',$ml_release_id);
             $q = $this->db->get();
             if ($q->num_rows() > 0) {
                 $result = $q->row();
