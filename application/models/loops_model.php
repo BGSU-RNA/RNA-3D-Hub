@@ -316,7 +316,9 @@ class Loops_model extends CI_Model {
                             <label for='s{$count}'>$match</label>
                             <span class='loop_link'>" . anchor_popup("loops/view/$match", '&#10140;') . "</span>";
 
-            if ($result->motif_id == $motif['motif_id']) {
+            if ( $result == '' ) {
+                $motif_link = 'not annotated yet';
+            } elseif ($result->motif_id == $motif['motif_id'] ) {
                 $motif_link = '<span class="label success">' .
                               anchor_popup('motif/view/' . $result->motif_id, $result->motif_id)
                               . '</span>';
