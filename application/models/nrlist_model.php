@@ -273,10 +273,11 @@ class Nrlist_model extends CI_Model {
                date("Y-m-d H:i:s") . "', INTERVAL -1 WEEK);";
         $query = $this->db->query($sql);
 
+        $new_files = array();
         foreach ($query->result() as $row) {
             $new_files[] = $row->structureId;
         }
-        if ($new_files != '' ) {
+        if ( count($new_files) > 0 ) {
             $html = '<h4>New RNA-containing PDB files released this week:</h4>';
             foreach ($new_files as $new_file) {
                 $new_file = trim($new_file);
