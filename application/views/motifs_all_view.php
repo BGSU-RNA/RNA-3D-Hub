@@ -10,7 +10,6 @@
             <ul class="tabs" data-tabs="tabs">
                 <li class="active"><a href="#ils">Internal Loops</a></li>
                 <li><a href="#hls">Hairpin Loops</a></li>
-                <li><a href="#j3">3-way Junctions</a></li>
             </ul>
 
 
@@ -22,10 +21,6 @@
 
                 <div class="tab-pane" id="hls">
                     <?=$table['hls']?>
-                </div>
-
-                <div class="tab-pane" id="j3">
-                    Coming soon.
                 </div>
 
             </div>
