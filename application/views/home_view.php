@@ -21,7 +21,7 @@
              <li>Pairwise interactions produced by <a href="http://rna.bgsu.edu/FR3D">FR3D</a></li>
              <li>Hairpin, internal, and three-way junction loops</li>
              <li>Motif annotations from the <a href="http://rna.bgsu.edu/rna3dhub/motifs">Motif Atlas</a></li>
-             <li>Similar structures from the <a href="http://rna.bgsu.edu/rna3dhub/nrlist">Non-redundant Atlas</a></li>
+             <li>Similar structures from the <a href="http://rna.bgsu.edu/rna3dhub/nrlist">Non-redundant Lists</a></li>
              <li>Automatic updates</li>
           </ul>
           <p><a class="btn primary" href="<?php echo $baseurl;?>pdb">Explore</a></p>
@@ -35,7 +35,7 @@
         </div>
 
         <div class="span5">
-          <h2>Non-redundant Atlas</h2>
+          <h2>Non-redundant Lists</h2>
           <p>PDB files grouped into equivalence classes by molecule type, organism, and resolution.</p>
           <p>Automatic weekly updates.</p>
           <p><a class="btn primary" href="<?php echo $baseurl;?>nrlist">Explore</a></p>
