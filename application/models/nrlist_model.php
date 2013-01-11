@@ -142,9 +142,9 @@ class Nrlist_model extends CI_Model {
 
     function get_members($id)
     {
-        $this->db->select('PDB.Files.name as name,PDB.Files.title as title,PDB.Files.method as method,PDB.Files.source as source,PDB.Files.resolution as resolution,PDB.Files.date as date,PDB.Files.authors as authors')
+$this->db->select('DISTINCT(pdb_info.structureId) as name, pdb_info.structureTitle as title, pdb_info.experimentalTechnique as method, pdb_info.source as source, pdb_info.resolution as resolution, pdb_info.releaseDate as date, pdb_info.structureAuthor as authors')
                  ->from('nr_pdbs')
-                 ->join('PDB.Files','PDB.Files.name=nr_pdbs.id')
+                 ->join('pdb_info','pdb_info.structureId=nr_pdbs.id')
                  ->where('nr_pdbs.class_id',$id)
                  ->where('nr_pdbs.release_id',$this->last_seen_in)
                  ->order_by('nr_pdbs.rep','desc');
