@@ -471,6 +471,18 @@ class Nrlist_model extends CI_Model {
         }
     }
 
+    function get_source_organism_for_class($pdb_list)
+    {
+        $source = '';
+        foreach($pdb_list as $pdb_id) {
+            $source = $this->get_source_organism($pdb_id);
+            if ( $source != '' ) {
+                break;
+            }
+        }
+        return $source;
+    }
+
     function get_release($id, $resolution)
     {
         $resolution = str_replace('A', '', $resolution);
@@ -496,7 +508,7 @@ class Nrlist_model extends CI_Model {
         $pdbs = array_unique($pdbs);
 
         // get general pdb info
-        $this->db->select('structureId, structureTitle, resolution, source')
+        $this->db->select('structureId, structureTitle, resolution')
                  ->from('pdb_info')
                  ->where_in('structureId', $pdbs )
                  ->group_by('structureId');
@@ -504,7 +516,6 @@ class Nrlist_model extends CI_Model {
         foreach($query->result() as $row) {
             $pdb[$row->structureId]['title']      = $row->structureTitle;
             $pdb[$row->structureId]['resolution'] = (is_null($row->resolution)) ? '' : number_format($row->resolution, 1) . ' &Aring';
-            $pdb[$row->structureId]['source']     = $row->source;
         }
 
         // check if any of the files became obsolete
@@ -515,7 +526,6 @@ class Nrlist_model extends CI_Model {
         foreach($query->result() as $row) {
             $pdb[$row->obsolete_id]['title'] = "OBSOLETE: replaced by <a class='pdb'>{$row->replaced_by}</a>";
             $pdb[$row->obsolete_id]['resolution'] = '';
-            $pdb[$row->obsolete_id]['source']     = '';
         }
 
         // get annotations: updated/>2 parents etc
@@ -563,7 +573,7 @@ class Nrlist_model extends CI_Model {
                              $pdb_id,
                              $pdb[$pdb_id]['title'],
                              $pdb[$pdb_id]['resolution'],
-                             $pdb[$pdb_id]['source'],
+                             $this->get_source_organism_for_class($class[$class_id]),
                              $this->add_pdb_class($class[$class_id]));
             $i++;
         }
