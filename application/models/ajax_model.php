@@ -9,12 +9,22 @@ class Ajax_model extends CI_Model {
         parent::__construct();
     }
 
+    function get_source_organism($pdb_id)
+    {
+        $this->db->select()
+                 ->from('pdb_info')
+                 ->where('structureId', $pdb_id)
+                 ->like('entityMacromoleculeType', 'RNA')
+                 ->where("chainLength = (SELECT max(chainLength) FROM pdb_info WHERE structureId ='$pdb_id' AND entityMacromoleculeType LIKE '%RNA%')");
+        $query = $this->db->get()->result();
+        return $query[0]->source;
+    }
+
     function get_pdb_info($pdb)
     {
         $this->db->select()
                  ->from('pdb_info')
                  ->where('structureId', $pdb)
-                 ->order_by('char_length(source)', 'desc')
                  ->limit(1);
         $query = $this->db->get();
         if ( $query->num_rows() > 0 ) {
@@ -27,10 +37,11 @@ class Ajax_model extends CI_Model {
                 $resolution = "<u>Resolution:</u> {$row->resolution} &Aring<br>";
             }
 
+            $source = $this->get_source_organism($pdb);
             $pdb_info = "<u>Title</u>: {$row->structureTitle}<br>" .
                         $resolution .
                         "<u>Method</u>: {$row->experimentalTechnique}<br>" .
-                        "<u>Organism</u>: {$row->source}<br><br>" .
+                        "<u>Organism</u>: {$source}<br><br>" .
                         'Explore in ' .
                         anchor_popup("http://www.pdb.org/pdb/explore/explore.do?structureId=$pdb", 'PDB') .
                         ' or ' .
