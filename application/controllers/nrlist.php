@@ -46,7 +46,7 @@ class Nrlist extends CI_Controller {
         $data['counts'] = $temp['counts'];
         $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table'>" );
         $this->table->set_template($tmpl);
-        $this->table->set_heading('#', 'Equivalence class', 'Status', 'PDB', 'Title', 'Resolution', 'Source', 'Represents');
+        $this->table->set_heading('#', 'Equivalence class', 'Status', 'PDB', 'Title', 'Resolution', 'RNA source organism', 'Represents');
         $data['class'] = $this->table->generate($temp['table']);
 
         $data['baseurl'] = base_url();
@@ -104,7 +104,7 @@ class Nrlist extends CI_Controller {
         $members = $this->Nrlist_model->get_members($id);
         $tmpl = array( 'table_open'  => "<table class='zebra-striped bordered-table' id='members_table'>" );
         $this->table->set_template($tmpl);
-        $this->table->set_heading('#','PDB','Title','Source','Compounds','Method','Resolution','Date');
+        $this->table->set_heading('#','PDB','Title','RNA source organism','Compounds','Method','Resolution','Date');
         $data['members'] = $this->table->generate($members);
         $data['num_members'] = count($members);
 
