@@ -140,31 +140,42 @@ class Nrlist_model extends CI_Model {
         return "<span class='rcsb_image' title='{$pdb}|asr|xsmall|'></span><a class='pdb'>$pdb</a>";
     }
 
+    function get_source_organism($pdb_id)
+    {
+        $this->db->select()
+                 ->from('pdb_info')
+                 ->where('structureId', $pdb_id)
+                 ->like('entityMacromoleculeType', 'RNA')
+                 ->where("chainLength = (SELECT max(chainLength) FROM pdb_info WHERE structureId ='$pdb_id' AND entityMacromoleculeType LIKE '%RNA%')");
+        $query = $this->db->get()->result();
+        return $query[0]->source;
+    }
+
     function get_members($id)
     {
-$this->db->select('DISTINCT(pdb_info.structureId) as name, pdb_info.structureTitle as title, pdb_info.experimentalTechnique as method, pdb_info.source as source, pdb_info.resolution as resolution, pdb_info.releaseDate as date, pdb_info.structureAuthor as authors')
+        $this->db->select()
                  ->from('nr_pdbs')
                  ->join('pdb_info','pdb_info.structureId=nr_pdbs.id')
                  ->where('nr_pdbs.class_id',$id)
                  ->where('nr_pdbs.release_id',$this->last_seen_in)
+                 ->group_by('structureId')
                  ->order_by('nr_pdbs.rep','desc');
         $query = $this->db->get();
         $i = 0;
         foreach ($query->result() as $row) {
-            $pdb_id = $row->name;
-            $row->name = $this->make_pdb_widget_link($row->name);
-            if ($i==0) {
-                $row->name = $row->name . ' <strong>(rep)</strong>';
+            $link = $this->make_pdb_widget_link($row->structureId);
+            if ( $i==0 ) {
+                $link = $link . ' <strong>(rep)</strong>';
             }
             $i++;
             $table[] = array($i,
-                             $row->name,
-                             $row->title,
-                             $row->source,
-                             $this->get_compound_list($pdb_id),
-                             $row->method,
+                             $link,
+                             $row->structureTitle,
+                             $this->get_source_organism($row->structureId),
+                             $this->get_compound_list($row->structureId),
+                             $row->experimentalTechnique,
                              $row->resolution,
-                             $row->date);
+                             $row->releaseDate);
         }
         return $table;
     }
