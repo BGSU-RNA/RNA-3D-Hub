@@ -233,21 +233,26 @@ class Motif_model extends CI_Model {
 
                 $title = implode(', ', array("{$loop1}:{$loop2}", $annotation));
 
-                if ($qa_status[$loop1][$loop2]) {
+                if ($qa_status[$loop1][$loop2] or $qa_status[$loop2][$loop1]) {
+                    $error_code = max($qa_status[$loop1][$loop2], $qa_status[$loop2][$loop1]);
                     $class = '';
                     $data = 'x';
-                    if ( $qa_status[$loop1][$loop2] == 4 ) {
+                    if ( $error_code == 4 ) {
                         $title .= '<br>Extra basepair:<br>';
-                    } elseif ( $qa_status[$loop1][$loop2] == 5 ) {
+                    } elseif ( $error_code == 5 ) {
                         $title .= '<br>Extra near pair:<br>';
-                    } elseif ( $qa_status[$loop1][$loop2] == 6 ) {
+                    } elseif ( $error_code == 6 ) {
                         $title .= '<br>Intercalation:<br>';
-                    } elseif ( $qa_status[$loop1][$loop2] == 7 ) {
+                    } elseif ( $error_code == 7 ) {
                         $title .= '<br>Basepair conflict:<br>';
-                    } elseif ( $qa_status[$loop1][$loop2] == 8 ) {
+                    } elseif ( $error_code == 8 ) {
                         $title .= '<br>Basepair-basestacking mismatch:<br>';
                     }
-                    $title .= $qa_message[$loop1][$loop2];
+                    if ( $qa_message[$loop1][$loop2] ) {
+                        $title .= $qa_message[$loop1][$loop2];
+                    } elseif ( $qa_message[$loop2][$loop1] ) {
+                        $title .= $qa_message[$loop2][$loop1];
+                    }
                 }
 
                 $coord = "{$loop1}:{$loop2}";
