@@ -88,7 +88,7 @@ class Motifs extends CI_Controller {
 
         $data['img_loc']   = strtoupper($motif_type) . $id;
         $data['alt_view']  = base_url(array('motifs','release',$motif_type,$id));
-        $data['title']     = 'Motif Atlas Release ' . $id . ' (' . $motif_type . ')';
+        $data['title']     = 'Motif Atlas Release ' . $id . ' (' . strtoupper($motif_type) . ')';
         $data['baseurl']   = base_url();
 
         $this->load->view('header_view', $data);
