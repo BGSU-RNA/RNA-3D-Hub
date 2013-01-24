@@ -79,8 +79,6 @@ class Motifs extends CI_Controller {
 
     public function graph($motif_type,$id)
     {
-        $this->output->cache(1000000);
-
 	    $motif_type = strtolower($motif_type);
 	    $this->load->model('Motifs_model', '', TRUE);
 
