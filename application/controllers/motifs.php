@@ -77,6 +77,34 @@ class Motifs extends CI_Controller {
         $this->load->view('footer');
 	}
 
+	public function releaseinfo($motif_type,$id)
+	{
+	    $motif_type = strtolower($motif_type);
+	    $this->load->model('Motifs_model', '', TRUE);
+        if ($id == 'current') {
+            $id = $this->Motifs_model->get_latest_release($motif_type);
+        }
+        $result = $this->Motifs_model->get_release_advanced($motif_type,$id);
+
+        $tmpl = array( 'table_open'  => '<table class="zebra-striped condensed-table bordered-table" id="sort">' );
+        $this->table->set_template($tmpl);
+        $this->table->set_heading('#', 'Varna 2D', 'Motif id', 'Status', 'Instances', 'Name', 'Min length', 'Max', 'Diff');
+        $data['table']    = $this->table->generate($result['table']);
+
+        $data['status']   = $this->Motifs_model->get_release_status($motif_type,$id);
+        $data['counts']   = $result['counts'];
+        $data['title']    = 'Motif Atlas Release ' . $id;
+        $data['baseurl']  = base_url();
+        $data['alt_view'] = base_url(array('motifs','graph',$motif_type,$id));
+        $data['polymorph_url'] = base_url(array('motifs','polymorphs',$motif_type, $id));
+        $data['meta']['description'] = 'A list of RNA 3D motifs';
+
+        $this->load->view('header_view', $data);
+        $this->load->view('menu_view', $data);
+        $this->load->view('motifs_info_view', $data);
+        $this->load->view('footer');
+	}
+
     public function graph($motif_type,$id)
     {
 	    $motif_type = strtolower($motif_type);

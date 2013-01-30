@@ -331,6 +331,55 @@ class Motifs_model extends CI_Model {
         return array( 'table' => $table, 'counts' => $counts_text );
     }
 
+    function get_release_advanced($motif_type, $release_id)
+    {
+        $result = $this->get_release($motif_type, $release_id);
+
+        $table = array();
+        foreach ($result['table'] as $row) {
+
+            preg_match('/([IH]L_\d{5}\.\d+)/', $row[2], $matches);
+
+            $motif_id = $matches[0];
+
+            $distribution = $this->_get_motif_length_distribution($motif_id, $release_id);
+
+//         print_r($distribution);
+
+            $row[] = $distribution['min'];
+            $row[] = $distribution['max'];
+            $row[] = $distribution['diff'];
+
+            $table[] = $row;
+        }
+
+        $result['table'] = $table;
+        return $result;
+    }
+
+    function _get_motif_length_distribution($motif_id, $release_id)
+    {
+        $this->db->select('loops_all.length')
+                 ->from('ml_loops')
+                 ->join('loops_all', 'ml_loops.id=loops_all.id')
+                 ->where('ml_loops.release_id', $release_id)
+                 ->where('ml_loops.motif_id', $motif_id);
+        $query = $this->db->get();
+
+        foreach($query->result() as $row) {
+            $length[] = $row->length;
+        }
+
+// print_r($this->db->last_query());
+//         print_r($result);
+
+        $distribution['max'] = max($length);
+        $distribution['min'] = min($length);
+        $distribution['diff'] = $distribution['max'] - $distribution['min'];
+
+        return $distribution;
+    }
+
     function get_compare_radio_table()
     {
         foreach ($this->types as $motif_type) {
