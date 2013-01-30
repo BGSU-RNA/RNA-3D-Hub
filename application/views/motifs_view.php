@@ -40,21 +40,15 @@
 
     <script>
 
-        $("#sort").tablesorter();
+    // run when jmol is ready
+    function appletLoaded (){
+        // toggle the first checkbox
+        $('.jmolInline').first().jmolToggle();
+    }
 
-//        function appletLoaded() {
-//             var timeoutID = window.setTimeout(function(){
-//                 jmolInlineLoader.init({
-//                     chbxClass: 'jmolInline',
-//                     serverUrl: '<?=$baseurl?>ajax/get_exemplar_coordinates',
-//                     neighborhoodButtonId: 'neighborhood',
-//                     showNextButtonId: 'next',
-//                     showPreviousButtonId: 'prev',
-//                     showNucleotideNumbersId: 'showNtNums',
-//                     showStereoId: 'stereo'
-//                 });
-//             }, 200);
-//         }
+    $(function() {
+
+        $("#sort").tablesorter();
 
         // initialize jmolTools
         $('.jmolInline').jmolTools({
@@ -66,13 +60,7 @@
             showStereoId: 'stereo'
         });
 
-        // run when jmol is ready
-      	function appletLoaded (){
-      	    // toggle the first checkbox
-      	    $('.jmolInline').first().jmolToggle();
-      	}
-
-
+        // fix jmol positioning
         var offset_left = $('#left_content').offset().left + 530; // 530 = span9 width
         var offset_top  = $('#left_content').offset().top;
         $('#jmol').css('position','fixed')
@@ -84,5 +72,7 @@
             closeSpeed : 'fast',
             arrows     : true
         });
+
+    });
 
     </script>
