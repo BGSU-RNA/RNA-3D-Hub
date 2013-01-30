@@ -593,3 +593,22 @@ body.home {
     padding-bottom: 5px;
     padding-top: 10px;
 }
+
+/* Google search bootstrap fixes */
+.search_view input {
+    border: none;
+    color: black;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+}
+.search_view input:focus {
+    box-shadow: none;
+    border: none;
+    color: black;
+}
+.search_view table th, .search_view table td {
+    padding-top: 1px;
+    padding: none;
+    border-top: none;
+}

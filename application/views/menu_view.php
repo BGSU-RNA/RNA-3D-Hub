@@ -9,7 +9,7 @@
           <a class="brand" href="<?php echo $baseurl;?>">RNA 3D Hub</a>
           <ul class="nav">
 
-            <li><a href="<?php echo $baseurl;?>pdb"><span class="label success">New!</span> RNA Structure Atlas</a></li>
+            <li><a href="<?php echo $baseurl;?>pdb">RNA Structure Atlas</a></li>
 
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle">RNA 3D Motif Atlas</a>
@@ -84,6 +84,8 @@
                     <li><a href="https://twitter.com/#!/RNA3DHub">Twitter updates</a></li>
                 </ul>
             </li>
+
+            <li><a href="<?=$baseurl?>search"><span class="label success">New!</span> Search</a></li>
 
           </ul>
             <ul class="nav secondary-nav">
