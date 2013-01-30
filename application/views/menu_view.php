@@ -80,7 +80,7 @@
                     <li><a href="http://pdb.org">PDB</a></li>
                     <li><a href="http://ndbserver.rutgers.edu">NDB</a></li>
                     <li class="divider"></li>
-                    <li><a href="https://github.com/AntonPetrov/RNA-3D-Hub">GitHub</a></li>
+                    <li><a href="https://github.com/BGSU-RNA/RNA-3D-Hub">GitHub</a></li>
                     <li><a href="https://twitter.com/#!/RNA3DHub">Twitter updates</a></li>
                 </ul>
             </li>
