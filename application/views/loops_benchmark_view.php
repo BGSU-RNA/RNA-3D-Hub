@@ -11,11 +11,12 @@
                 <a href="<?=$baseurl?>loops/benchmark/IL">Internal loops</a>
                 <a href="<?=$baseurl?>loops/benchmark/HL">Hairpin loops</a>
                 <a href="<?=$baseurl?>loops/benchmark/J3">Three-way junctions</a>
+                &nbsp;&nbsp;
+                <a href="https://github.com/BGSU-RNA/loop-extraction-benchmark" target="_blank">View code on GitHub</a>
             </div>
         </div>
         <div class="row">
           <div class="span16 block scroll_table">
-            <h2></h2>
             <?=$table?>
           </div>
         </div>
@@ -26,8 +27,8 @@
                 <div class="block jmolheight">
                     <script type="text/javascript">
                         jmolInitialize("/jmol");
-                        jmolSetAppletColor("#ffffff");
-                        jmolApplet(340, "javascript appletLoaded()");
+                        jmolSetAppletColor("#f3f3f3");
+                        jmolApplet(400, "javascript appletLoaded()");
                     </script>
                 </div>
                 <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
@@ -38,6 +39,12 @@
            </div>
 
             <div class="span9 offset1" id='explanation'>
+                <p>
+                Complete agreement between methods is marked in green. Overlapping loops are in orange.
+                All comparisons are relative to the loops found by FR3D.
+                The table can be sorted by clicking on the column headers.
+                </p>
+
                 <div id='nts'></div>
             </div>
 

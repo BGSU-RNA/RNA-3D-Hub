@@ -168,8 +168,10 @@ class Loops extends CI_Controller {
 
     function benchmark($kind = NULL)
     {
+        $this->output->cache(10000);
+
         if ($kind == NULL) {
-            echo 'Overview and statistics. Coming soon';
+            redirect(site_url(array('loops', 'benchmark', 'IL')));
         } else {
             $this->load->model('Loops_benchmark_model', '', TRUE);
             $table  = $this->Loops_benchmark_model->get_benchmark_table($kind);
