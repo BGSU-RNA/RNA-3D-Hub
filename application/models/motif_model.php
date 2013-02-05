@@ -15,6 +15,7 @@ class Motif_model extends CI_Model {
         $this->disc       = array();
         $this->f_lwbp     = array();
         $this->similarity = array(); // loops in similarity order
+        $this->full_length = array();
         // Call the Model constructor
         parent::__construct();
     }
@@ -651,6 +652,7 @@ class Motif_model extends CI_Model {
         $this->get_loops();
         $this->get_discrepancies();
         $this->get_interactions();
+        $this->get_loop_lengths();
         $this->get_header();
         for ($i = 0; $i < $this->num_loops; $i++) {
             $rows[$i] = $this->generate_row($i+1);
@@ -659,9 +661,22 @@ class Motif_model extends CI_Model {
         return $rows;
     }
 
+    function get_loop_lengths()
+    {
+        // get lengths of complete loops to calculate the number of bulges.
+        $this->db->select('id,length')
+                 ->from('loops_all')
+                 ->where_in('id', $this->loops);
+        $query = $this->db->get();
+
+        foreach($query->result() as $row) {
+            $this->full_length[$row->id] = $row->length;
+        }
+    }
+
     function get_header()
     {
-        $header = array('#D', '#S', 'Loop id', 'PDB', 'Disc');
+        $header = array('#D', '#S', 'Loop id', 'PDB', 'Disc', 'Bulges');
         // 1, 2, ..., N
         for ($i = 1; $i < $this->num_nt; $i++) {
             $header[] = $i;
@@ -688,6 +703,8 @@ class Motif_model extends CI_Model {
             } elseif ( $key == 'PDB' ) {
                 $parts = explode("_", $this->loops[$id]);
                 $row[$i] = '<a class="pdb">' . $parts[1] . '</a>';
+            } elseif ( $key == 'Bulges' ) {
+                $row[$i] = $this->full_length[$this->loops[$id]] - count($this->full_nts[$this->loops[$id]]);
             } elseif ( is_int($key) ) {
                 $row[$i] = $this->nts[$this->loops[$id]][$key];
             } elseif ( $key == 'Disc' ) {
