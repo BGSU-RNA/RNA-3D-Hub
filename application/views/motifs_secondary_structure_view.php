@@ -62,7 +62,8 @@
                 </ol>
 
                 <p>
-                  Thermus thermophilus 2Ds are in preparataion.
+                  <a href="https://docs.google.com/file/d/0B1RoD7V_rQavYURtdjNoWEtrbFE/edit" target="_blank">Thermus thermophilus 16S and 23S</a>
+                  can be viewed only locally.
                 </p>
 
               </div>
