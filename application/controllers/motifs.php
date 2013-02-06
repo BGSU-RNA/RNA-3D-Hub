@@ -266,14 +266,15 @@ class Motifs extends CI_Controller {
 
         if (is_null($organism)) {
             $data['selected'] = 'all';
+            $data['title'] = '2Ds with RNA 3D Motifs';
         } elseif ( array_key_exists($organism, $data['all']) ) {
             $data['selected'] = $data['all'][$organism];
+            $data['title'] = $data['all'][$organism]['organism'] . ' ' . $data['all'][$organism]['type'];
         } else {
             echo ($organism);
             show_404();
         }
 
-        $data['title'] = '2Ds with RNA 3D Motifs';
         $data['baseurl'] = base_url();
 
         $this->load->view('header_view', $data);
