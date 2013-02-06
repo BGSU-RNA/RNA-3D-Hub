@@ -327,7 +327,7 @@ class Motif_model extends CI_Model {
             if (!array_key_exists($similar_motif, $done)) {
                 $compare_link = anchor_popup("motif/compare/$motif_id/$similar_motif", 'Compare');
                 $table[] = array($i,
-                                 $similarity_level,
+                                 number_format($similarity_level, 4),
                                  anchor_popup("motif/view/$similar_motif", $similar_motif),
                                  $compare_link);
                 $done[$similar_motif] = 0;
