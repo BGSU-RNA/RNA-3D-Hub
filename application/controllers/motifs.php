@@ -198,6 +198,91 @@ class Motifs extends CI_Controller {
         $this->load->view('footer');
     }
 
+    public function secondary_structures($organism = NULL)
+    {
+        $data['all'] = array(
+
+            'escherichia_coli_16s' => array(
+                'url'      => 'https://docs.google.com/file/d/0B1RoD7V_rQavZFVqNkMwZ0FFWVE/preview',
+                'organism' => 'Escherichia coli',
+                'type'     => '16S rRNA'
+            ),
+
+            'escherichia_coli_23s_5prime' => array(
+                'url'      => 'https://docs.google.com/file/d/0B1RoD7V_rQavekdrV1dTSUVLdWM/preview',
+                'organism' => 'Escherichia coli',
+                'type'     => "23S rRNA 5'-half"
+            ),
+
+            'escherichia_coli_23s_3prime' => array(
+                'url'      => 'https://docs.google.com/file/d/0B1RoD7V_rQavc1VWM081enVtYTg/preview',
+                'organism' => 'Escherichia coli',
+                'type'     => "23S rRNA 3'-half"
+            ),
+
+            'haloarcula_marismotrui_23s_5prime' => array(
+                'url'      => 'https://docs.google.com/file/d/0B1RoD7V_rQavdXhneE56bjJhLVk/preview',
+                'organism' => 'Haloarcula marismortui',
+                'type'     => "23S rRNA 5'-half"
+            ),
+
+            'haloarcula_marismotrui_23s_3prime' => array(
+                'url'      => 'https://docs.google.com/file/d/0B1RoD7V_rQavNWRnd1NQRFFJbk0/preview',
+                'organism' => 'Haloarcula marismortui',
+                'type'     => "23S rRNA 3'-half"
+            ),
+
+            'deinococcus_radiodurans_23S_5prime' => array(
+                'url'      => 'https://docs.google.com/file/d/0B1RoD7V_rQavTnp3dkpQMFJ5Rzg/preview',
+                'organism' => 'Deinococcus radiodurans',
+                'type'     => "23S rRNA 5'-half"
+            ),
+
+            'deinococcus_radiodurans_23S_3prime' => array(
+                'url'      => 'https://docs.google.com/file/d/0B1RoD7V_rQavc2FKREhFbXpxNjQ/preview',
+                'organism' => 'Deinococcus radiodurans',
+                'type'     => "23S rRNA 3'-half"
+            ),
+
+            'saccharomyces_cerevisiae_26s_5prime' => array(
+                'url'      => 'https://docs.google.com/file/d/0B1RoD7V_rQavUzR2eEZQclZ5eUU/preview',
+                'organism' => 'Saccharomyces cerevisiae',
+                'type'     => "26S rRNA 5'-half"
+            ),
+
+            'saccharomyces_cerevisiae_26s_3prime' => array(
+                'url'      => 'https://docs.google.com/file/d/0B1RoD7V_rQavNnhxbWtuUXdxam8/preview',
+                'organism' => 'Saccharomyces cerevisiae',
+                'type'     => "26S rRNA 3'-half"
+            ),
+
+//             'thermus_thermophilus_16S_23S' => array(
+//                 'url'      => 'https://docs.google.com/file/d/0B1RoD7V_rQavYURtdjNoWEtrbFE/preview',
+//                 'organism' => 'Thermus thermophilus',
+//                 'type'     => "16S and 23S rRNAs"
+//             ),
+
+        );
+
+        if (is_null($organism)) {
+            $data['selected'] = 'all';
+        } elseif ( array_key_exists($organism, $data['all']) ) {
+            $data['selected'] = $data['all'][$organism];
+        } else {
+            echo ($organism);
+            show_404();
+        }
+
+        $data['title'] = '2Ds with RNA 3D Motifs';
+        $data['baseurl'] = base_url();
+
+        $this->load->view('header_view', $data);
+        $this->load->view('menu_view', $data);
+        $this->load->view('motifs_secondary_structure_view', $data);
+        $this->load->view('footer');
+
+    }
+
 }
 
 /* End of file motifs.php */

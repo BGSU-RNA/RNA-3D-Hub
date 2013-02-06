@@ -17,6 +17,7 @@
                     <li><a href="<?php echo $baseurl;?>motifs">Home</a></li>
                     <li><a href="<?php echo $baseurl;?>motifs/release_history">Release history</a></li>
                     <li><a href="<?php echo $baseurl;?>motifs/compare_releases">Compare releases</a></li>
+                    <li><a href="<?php echo $baseurl;?>motifs/2ds">2D diagrams</a></li>
                     <li class="divider"></li>
                     <li><a href="<?php echo $baseurl;?>motifs/release/il/current">View current ILs</a></li>
                     <li><a href="<?php echo $baseurl;?>motifs/release/hl/current">View current HLs</a></li>

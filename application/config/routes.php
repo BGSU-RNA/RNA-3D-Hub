@@ -47,6 +47,9 @@ $route['pdb/(\w{4})$'] = "pdb/general_info/$1";
 $route['pdb/(\w{4})/loops$'] = "pdb/loops/$1";
 $route['pdb/(\w{4})/interactions/(fr3d)/(.+)'] = "pdb/interactions/$1/$2/$3";
 $route['pdb/(\w{4})/motifs'] = 'pdb/motifs/$1';
+// 2d diagrams
+$route['motifs/2ds'] = 'motifs/secondary_structures';
+$route['motifs/2ds/(\w+)'] = 'motifs/secondary_structures/$1';
 
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */
