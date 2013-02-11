@@ -23,6 +23,8 @@
     <script src="<?=$baseurl?>js/bootstrap-popover.js" type="text/javascript"></script>
     <script src="<?=$baseurl?>js/bootstrap-dropdown.js" type="text/javascript"></script>
     <script src="<?=$baseurl?>js/bootstrap-tabs.js" type="text/javascript"></script>
+    <script src="<?=$baseurl?>js/bootstrap-buttons.js" type="text/javascript"></script>
+    <script src="<?=$baseurl?>js/bootstrap-modal.js" type="text/javascript"></script>
     <script src="<?=$baseurl?>js/jquery.tablesorter.min.js" type="text/javascript"></script>
     <script src="<?=$baseurl?>js/dragtable.js" type="text/javascript"></script>
 
@@ -50,10 +52,11 @@
     <!-- Cytoscape Web JS API (needed to reference org.cytoscapeweb.Visualization) -->
     <script type="text/javascript" src="<?=$baseurl?>cytoscapeweb/js/min/cytoscapeweb.min.js"></script>
 
-
     <!-- Le styles -->
     <link href="<?=$baseurl?>css/bootstrap.min.css" rel="stylesheet">
     <link href="<?=$baseurl?>css/motifatlas.css" rel="stylesheet">
+    <link href='<?=$baseurl?>css/bootstrap-toggle-buttons.css' rel='stylesheet'>
+
 
     <!-- Le fav and touch icons -->
     <link rel="shortcut icon" href="images/favicon.ico">
