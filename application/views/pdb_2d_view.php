@@ -92,7 +92,13 @@
 
           <div id='rna-2d' class='rna2d span8'></div>
 
-          <div class="span6 well" id="jmol"></div>
+          <div id="jmol" class="span6 well">
+            <script type='text/javascript'>
+              jmolInitialize(" /jmol");
+              jmolSetDocument(0);
+              jmolSetAppletColor("#ffffff");
+            </script>
+          </div>
 
         </div>
       </div>
@@ -143,7 +149,7 @@
 
     </div>
 
-<script>
+<script type='text/javascript'>
     NTS = <?=$nts?>;
     INTERACTION_URL = "<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/basepairs/csv";
 </script>

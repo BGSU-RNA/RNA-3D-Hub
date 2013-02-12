@@ -60,9 +60,8 @@ $(document).ready(function() {
   };
 
   var brushShow = function(selection) {
-    $('#about-selection').hide();
-    return selection;
-    //return plot.jmol.showSelection(selection);
+    //$('#about-selection').hide();
+    return plot.jmol.showSelection(selection);
   };
 
   $('.toggle-control').on('click', function(e) {
@@ -96,10 +95,10 @@ $(document).ready(function() {
     .mouseout(normalizeNucleotide);
 
   plot.brush.enabled(true)
-    //.initial([[100, 36], [207, 132]])
     .update(brushShow);
 
   plot.jmol.overflow(function() { $("#overflow").show(); })
+    .windowSize(350)
     .windowBuild(generateJmol);
 
   d3.text(INTERACTION_URL, 'text/csv', function(err, text) {
