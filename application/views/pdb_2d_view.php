@@ -141,6 +141,8 @@
           </div>
         </div>
 
+    </div>
+
 <script>
     NTS = <?=$nts?>;
     INTERACTION_URL = "<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/basepairs/csv";
