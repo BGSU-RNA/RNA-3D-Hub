@@ -334,16 +334,19 @@ class Motifs_model extends CI_Model {
                 $signature = '';
             }
 
+            $length_distribution = $this->_get_motif_length_distribution($row->motif_id, $id);
+
             $table[] = array($i,
                              $this->make_fancybox_link($row->motif_id, $motif_type, $id),
                              "<input type='radio' class='jmolInline' id='"
                                 . str_replace('.','_',$row->motif_id)
                                 . "' data-coord='{$row->motif_id}' data-type='motif_id' name='ex'>"
-                                . anchor(base_url(array('motif','view',$row->motif_id)), $row->motif_id)
-                                . '<br>' . $signature,
-                             $this->add_annotation_label($row->motif_id, $reason),
-                             $row->instances,
-                             $annotation);
+                                . anchor_popup(base_url(array('motif','view',$row->motif_id)), $row->motif_id)
+                                . '<br>' . $signature
+                                . '<br>' . $this->add_annotation_label($row->motif_id, $reason)
+                                . '<br>' . $annotation,
+                             $length_distribution['min'],
+                             $row->instances);
             $i++;
         }
         return array( 'table' => $table, 'counts' => $counts_text );
