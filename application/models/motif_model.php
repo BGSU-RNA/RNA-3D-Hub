@@ -27,6 +27,7 @@ class Motif_model extends CI_Model {
                  ->join('pdb_unit_id_correspondence',
                         'ml_loop_positions.nt_id = pdb_unit_id_correspondence.old_id')
                  ->where('motif_id', $motif_id)
+                 ->where('release_id', $this->release_id)
                  ->order_by('loop_id, position');
         $query = $this->db->get();
 
