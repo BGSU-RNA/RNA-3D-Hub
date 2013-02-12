@@ -455,6 +455,15 @@ input[type=radio], input[type=checkbox] {
 .motifs_view .page-header a {
     margin-left: 5px;
 }
+.motifs_view .table_controls label {
+    width: auto;
+}
+.motifs_view .dataTables_filter {
+    display: inline-block;
+}
+.motifs_view .btn {
+    margin: 2px 5px 5px 0px;
+}
 /* motifs_view */
 
 

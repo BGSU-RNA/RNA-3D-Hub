@@ -22,8 +22,8 @@
         </div>
         <div class="row">
           <div class="span9" id='left_content'>
-
             <h2></h2>
+            <div class="table_controls"></div>
             <?php echo $counts; echo $table;?>
 
           </div>
@@ -49,6 +49,8 @@
         </div>
       </div>
 
+    <script type="text/javascript" src="<?=$baseurl?>js/jquery.dataTables.min.js"></script>
+
     <script>
 
     // run when jmol is ready
@@ -58,8 +60,6 @@
     }
 
     $(function() {
-
-        $("#sort").tablesorter();
 
         // initialize jmolTools
         $('.jmolInline').jmolTools({
@@ -82,6 +82,16 @@
             openSpeed  : 'fast',
             closeSpeed : 'fast',
             arrows     : true
+        });
+
+        $('#sort').dataTable({
+            "bPaginate": false,
+            "bLengthChange": false,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": false,
+            "sDom": '<"table_controls well"fi>t'
         });
 
     });
