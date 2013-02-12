@@ -835,13 +835,7 @@ class Motif_model extends CI_Model {
     // auxiliary functions
     function set_release_id()
     {
-        $this->db->select('release_id')
-                 ->from('ml_motifs')
-                 ->where('id',$this->motif_id)
-                 ->order_by('release_id','desc')
-                 ->limit(1);
-        $row = $this->db->get()->row();
-        $this->release_id = $row->release_id;
+        $this->release_id = $this->get_latest_release_for_motif($this->motif_id);
         return $this->release_id;
     }
 
