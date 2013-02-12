@@ -50,7 +50,7 @@
               <div id="control-groups">
                 <div id="interaction-controls">
                     <button type="button" id='cWW-toggle' class="btn btn-block
-                      toggle-control active" data-family='cWW'>cWW</button>
+                      cWW toggle-control active" data-family='cWW'>cWW</button>
 
                     <button type="button" id='tWW-toggle' class="btn btn-block
                       tWW toggle-control" data-family='tWW'>tWW</button>
