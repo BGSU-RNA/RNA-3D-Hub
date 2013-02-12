@@ -5,7 +5,7 @@
     <script type="text/javascript" src="<?=$baseurl?>js/rna2d.js"></script>
     <script type="text/javascript" src="<?=$baseurl?>js/rna2d-controls.js"></script>
 
-    <div class="container pdb_2d_view">
+    <div class="container pdb-2d-view">
 
       <div class="content">
         <div class="page-header">
