@@ -56,7 +56,7 @@ small .label {
 	margin-bottom:10px;
 }
 */
-.motifview h1 li {
+.motifview h1 li, .motifs_view h1 li {
     font-size: small;
 }
 .jmolheight {

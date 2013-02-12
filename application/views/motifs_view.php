@@ -5,6 +5,17 @@
           <h1>
             <?php echo $title;?>
             <small><?=$status?></small>
+            <small class="pull-right">
+              <ul class="tabs">
+              <li class="dropdown" data-dropdown="dropdown">
+                <a href="#" class="dropdown-toggle">Download</a>
+                <ul class="dropdown-menu">
+                  <li><a href="<?=$current_url?>/csv" download="<?=$title?>.csv">Csv</a></li>
+                  <li><a href="<?=$current_url?>/json" download="<?=$title?>.json">Json</a></li>
+                </ul>
+              </li>
+              </ul>
+            </small>
           </h1>
           <a href='<?=$alt_view?>'>Switch to graph view</a>
           <a href='<?=$polymorph_url?>'>Polymorphs</a>
@@ -62,7 +73,7 @@
 
         // fix jmol positioning
         var offset_left = $('#left_content').offset().left + 530; // 530 = span9 width
-        var offset_top  = $('#left_content').offset().top;
+        var offset_top  = $('#left_content').offset().top + 20;
         $('#jmol').css('position','fixed')
                   .css('left',offset_left)
                   .css('top',offset_top);

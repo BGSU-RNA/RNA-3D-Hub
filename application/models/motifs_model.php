@@ -18,6 +18,24 @@ class Motifs_model extends CI_Model {
         parent::__construct();
     }
 
+    function get_all_motifs($release_id, $motif_type)
+    {
+        if ( $release_id == 'current' ) {
+            $release_id = $this->get_latest_release($motif_type);
+        }
+
+        $this->db->select('id')
+                 ->from('ml_motifs')
+                 ->where('release_id', $release_id)
+                 ->where('type', $motif_type);
+        $query = $this->db->get();
+        $motif_ids = array();
+        foreach($query->result() as $row) {
+            $motif_ids[] = $row->id;
+        }
+        return $motif_ids;
+    }
+
     function db_get_all_releases($motif_type)
     {
         $this->db->select('ml_releases.*,count(ml_loops.id) AS loops, count(DISTINCT(motif_id)) AS motifs')

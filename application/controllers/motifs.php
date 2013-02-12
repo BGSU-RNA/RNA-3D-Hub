@@ -47,12 +47,56 @@ class Motifs extends CI_Controller {
         $this->load->view('footer');
     }
 
-	public function release($motif_type,$id)
+	public function release($motif_type, $id, $format=NULL)
 	{
 //         $this->output->cache(1000000);
-
-	    $motif_type = strtolower($motif_type);
 	    $this->load->model('Motifs_model', '', TRUE);
+
+        // download requests
+        if ( !is_null($format) ) {
+
+            if ( $format != 'csv' and $format != 'json' ) {
+                show_404();
+            }
+
+    	    $this->load->model('Motif_model', '', TRUE);
+
+    	    // get all motifs in that release
+            $motifs = $this->Motifs_model->get_all_motifs($id, $motif_type);
+
+            $download = array();
+
+            foreach($motifs as $i=>$motif_id) {
+
+                $this->Motif_model->set_motif_id($motif_id);
+                // set release id only once
+                if ( $i == 0 ) {
+                    $release_id = $this->Motif_model->set_release_id();
+                }
+
+                if ( $format == 'csv' ) {
+                    $this->output->set_header("Content-disposition: attachment; filename={$motif_id}.csv")
+                                 ->set_content_type('text/csv');
+                    $download[] = ">{$motif_id}\n" . $this->Motif_model->get_csv($motif_id);
+                } else {
+                    $this->output->set_header("Content-disposition: attachment; filename={$motif_id}.json")
+                                 ->set_content_type('application/json');
+                    $download[] = $this->Motif_model->get_json($motif_id);
+                }
+            }
+
+            if ( $format == 'csv' ) {
+                $data['csv'] = implode('', $download);
+            } else {
+                $data['csv'] = '[' . implode(",\n", $download) . ']';
+            }
+
+            $this->load->view('csv_view', $data);
+            return;
+        }
+
+        // not a download request
+	    $motif_type = strtolower($motif_type);
         if ($id == 'current') {
             $id = $this->Motifs_model->get_latest_release($motif_type);
         }
@@ -69,6 +113,7 @@ class Motifs extends CI_Controller {
         $data['baseurl']  = base_url();
         $data['alt_view'] = base_url(array('motifs','graph',$motif_type,$id));
         $data['polymorph_url'] = base_url(array('motifs','polymorphs',$motif_type, $id));
+        $data['current_url'] = current_url();
         $data['meta']['description'] = 'A list of RNA 3D motifs';
 
         $this->load->view('header_view', $data);
