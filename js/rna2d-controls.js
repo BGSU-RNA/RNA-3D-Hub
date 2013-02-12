@@ -35,6 +35,8 @@ $(document).ready(function() {
   };
 
   var highlightNucleotide = function() {
+    plot.nucleotides.highlightColor(function() { return 'black'; });
+    plot.pie.addLetters()([this]);
     d3.select(this).style('font-size', plot.nucleotides.fontSize() + 4);
     var inters = plot.nucleotides.interactions(this);
     inters.style('opacity', 1);
@@ -44,6 +46,7 @@ $(document).ready(function() {
     d3.select(this).style('font-size', plot.nucleotides.fontSize());
     var inters = plot.nucleotides.interactions(this);
     inters.style('opacity', 0.4);
+    plot.pie.clearLetters()();
   };
 
   var clickInteraction = function() {
