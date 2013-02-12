@@ -73,10 +73,15 @@ $(document).ready(function() {
     $btn.text(text);
   });
 
+  var convertNTID = function(id) { return id.replace(/\|/g, '_'); };
+
   var plot = Rna2D({view: 'circular', width: 550, height: 400, selection: '#rna-2d' });
 
   plot.frame.add(false);
-  plot.nucleotides(NTS);
+  plot.nucleotides(NTS)
+    .getID(function(d, i) { return convertNTID(d['id']); })
+    .mouseover(highlightNucleotide)
+    .mouseout(normalizeNucleotide);
 
   plot.brush.enabled(true)
     //.initial([[100, 36], [207, 132]])
@@ -91,7 +96,10 @@ $(document).ready(function() {
       return false;
     }
     var interactions = d3.csv.parse('"nt1","family","nt2"\n' + text);
-    plot.interactions(interactions);
+    plot.interactions(interactions)
+      .getNTs(function(d) { return [convertNTID(d.nt1), convertNTID(d.nt2)]; })
+      .mouseover(highlightInteraction)
+      .mouseout(normalizeInteraction);
     return plot();
   });
 
