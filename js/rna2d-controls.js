@@ -10,11 +10,19 @@ $(document).ready(function() {
   };
 
   var highlightInteraction = function() {
-    var nts = plot.interactions.nucleotides(this);
-    var family = plot.interactions.family(this);
-    nts.classed(family, true);
-    nts.style('font-size', plot.nucleotides.fontSize() + 4);
+    var nts = plot.interactions.nucleotides(this),
+        family = plot.interactions.family(this),
+        stroke = $('.pdb-2d-view #rna-2d .' + family).css('stroke');
+
     d3.select(this).style('opacity', 1);
+
+    if (plot.view() === 'circular') {
+      plot.nucleotides.highlightColor(function() { return stroke; });
+      plot.pie.addLetters()(nts[0]);
+    } else {
+      nts.style('font-size', plot.nucleotides.fontSize() + 4);
+      nts.classed(family, true);
+    }
   };
 
   var normalizeInteraction = function() {
@@ -23,6 +31,7 @@ $(document).ready(function() {
     nts.classed(family, false);
     nts.style('font-size', plot.nucleotides.fontSize());
     d3.select(this).style('opacity', 0.4);
+    plot.pie.clearLetters()();
   };
 
   var highlightNucleotide = function() {
