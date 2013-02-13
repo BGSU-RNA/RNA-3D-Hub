@@ -126,11 +126,11 @@
                                 </script>
                             </div>
                             <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
-                            <input type='button' id='all' class='btn' value="Show all">
-                            <input type='button' id='stereo' class='btn' value="Show stereo">
                             <input type='button' id='prev' class='btn' value='Previous'>
                             <input type='button' id='next' class='btn' value="Next">
-                            <input type='button' id='clear' class='btn' value="Clear">
+                            <input type='button' id='stereo' class='btn' value="Stereo">
+                            <input type='button' id='all' class='btn' value="Show all">
+                            <input type='button' id='clear' class='btn' value="Clear all">
                             <br>
                             <label><input type="checkbox" id="showNtNums">Nucleotide numbers</label>
                     </div>
