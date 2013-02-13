@@ -46,7 +46,7 @@ class Nrlist extends CI_Controller {
         $data['counts'] = $temp['counts'];
         $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table' id='sort'>" );
         $this->table->set_template($tmpl);
-        $this->table->set_heading('#', 'Equivalence class', 'Representative', 'Resolution', 'Class members');
+        $this->table->set_heading('#', 'Equivalence class', 'Representative', 'Resolution', 'Nts', 'Class members');
         $data['class'] = $this->table->generate($temp['table']);
 
         $data['baseurl'] = base_url();

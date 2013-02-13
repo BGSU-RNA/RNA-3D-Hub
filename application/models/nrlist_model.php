@@ -574,10 +574,21 @@ class Nrlist_model extends CI_Model {
                              '<strong>' . $pdb_id . '</strong>' .
                              '<br>' . $pdb[$pdb_id]['title'],
                              $pdb[$pdb_id]['resolution'],
+                             $this->get_chain_length($pdb_id),
                              $this->add_pdb_class($class[$class_id]));
             $i++;
         }
         return array('table' => $table, 'counts' => $counts_text);
+    }
+
+    function get_chain_length($pdb_id)
+    {
+        $this->db->select_max('chainLength')
+                 ->from('pdb_info')
+                 ->where('structureId', $pdb_id)
+                 ->like('entityMacromoleculeType', 'RNA');
+        $result = $this->db->get()->result_array();
+        return $result[0]['chainLength'];
     }
 
     function get_csv($release, $resolution)
