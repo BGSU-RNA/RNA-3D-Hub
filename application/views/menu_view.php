@@ -94,7 +94,7 @@
                 if ( ! $this->session->userdata('username') ) { //! isset($_SESSION['username'])) {
                     echo "<li class='pull-left'><a href='{$baseurl}admin'>Login</a></li>";
                 } else {
-                    echo "<li class='pull-left'><a href='{$baseurl}logout'>Logout {$this->session->userdata('username')}</a></li>";
+                    echo "<li class='pull-left'><a href='{$baseurl}logout'>Logout</a></li>";
 //                     echo "<li><a href='{$baseurl}logout'>Logout {$_SESSION['username']}</a></li>";
                 }
             ?>
