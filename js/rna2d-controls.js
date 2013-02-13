@@ -114,7 +114,8 @@ $(document).ready(function() {
       .getNTs(function(d) { return [convertNTID(d.nt1), convertNTID(d.nt2)]; })
       .mouseover(highlightInteraction)
       .mouseout(normalizeInteraction);
-    return plot;
+
+    return plot();
   });
 
   return true;
