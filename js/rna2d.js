@@ -372,7 +372,10 @@ Rna2D.components.interactions = function () {
       return {
         getFamily: function(d) { return d.family; },
         getNTs: function(d) { return [d.nt1, d.nt2]; },
-        visible: function(d) { return plot.interactions.getFamily()(d) == 'cWW'; },
+        visible: function(d) { 
+          var family = plot.interactions.getFamily()(d);
+          return family === 'cWW' || family === 'ncWW'; 
+        },
         mouseover: null,
         mouseout: null,
         click: null,
@@ -404,7 +407,7 @@ Rna2D.components.interactions = function () {
             nts.sort();
           }
           nts.push(family);
-          return nts.join(',');
+          return nts.join('-');
         },
         color: 'black'
       };
@@ -1005,7 +1008,7 @@ Rna2D.views.circular.connections = function(plot) {
           distance = Rna2D.utils.distance(from, to),
           angleDiff = startAngle(null, plot.nucleotides.indexOf(nts[0])) -
                       startAngle(null, plot.nucleotides.indexOf(nts[1])),
-          radius = Math.abs(angleDiff) * distance,
+          radius = innerArc.innerRadius()() * Math.tan(angleDiff/2),
           sweep  = 0;
 
       if (plot.nucleotides.indexOf(nts[0]) > plot.nucleotides.indexOf(nts[1])) {
