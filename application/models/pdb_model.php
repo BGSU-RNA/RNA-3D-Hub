@@ -471,6 +471,7 @@ class Pdb_model extends CI_Model {
                  ->order_by('pdb_unit_ordering.index', 'asc');
 
         $query = $this->db->get();
+        $nts = array();
         foreach($query->result() as $row) {
             $nts[] = $row;
         }
