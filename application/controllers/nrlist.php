@@ -44,9 +44,9 @@ class Nrlist extends CI_Controller {
 
         $temp = $this->Nrlist_model->get_release($id, $res);
         $data['counts'] = $temp['counts'];
-        $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table'>" );
+        $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table' id='sort'>" );
         $this->table->set_template($tmpl);
-        $this->table->set_heading('#', 'Equivalence class', 'Status', 'PDB', 'Title', 'Resolution', 'RNA source organism', 'Represents');
+        $this->table->set_heading('#', 'Equivalence class', 'Representative', 'Resolution', 'Class members');
         $data['class'] = $this->table->generate($temp['table']);
 
         $data['baseurl'] = base_url();

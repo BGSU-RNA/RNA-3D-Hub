@@ -295,26 +295,16 @@ small .label {
     width:150px;
 }
 
-.nrlist_release_view table {
-    table-layout: fixed;
+.nrlist_release_view label {
+    width: auto;
+    padding-top: 0px;
 }
-.nrlist_release_view th:nth-of-type(1) {
-    width:30px;
+.nrlist_release_view .dataTables_filter,
+.nrlist_release_view .dataTables_info {
+    display: inline;
 }
-.nrlist_release_view th:nth-of-type(2) {
-    width:120px;
-}
-.nrlist_release_view th:nth-of-type(3) {
-    width:120px;
-}
-.nrlist_release_view th:nth-of-type(4) {
-    width:60px;
-}
-.nrlist_release_view th:nth-of-type(6) {
-    width:90px;
-}
-.nrlist_release_view th:nth-of-type(8) {
-    width:250px;
+.nrlist_release_view .dataTables_info {
+    margin-left: 20px;
 }
 .overflow_400 {
     overflow:auto;
@@ -461,7 +451,7 @@ input[type=radio], input[type=checkbox] {
 .motifs_view .dataTables_filter {
     display: inline-block;
 }
-.motifs_view .btn {
+.motifs_view .btn, .motifview .btn {
     margin: 2px 5px 5px 0px;
 }
 /* motifs_view */

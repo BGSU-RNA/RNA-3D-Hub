@@ -41,9 +41,23 @@
         </div>
       </div>
 
+    <script type="text/javascript" src="<?=$baseurl?>js/jquery.dataTables.min.js"></script>
+
     <script>
-        $(function () {
-            $('table').tablesorter();
-            $(".pdb").click(LookUpPDBInfo);
-        })
+
+    $(function() {
+
+        $('#sort').dataTable({
+            "bPaginate": false,
+            "bLengthChange": false,
+            "bFilter": true,
+            "bSort": true,
+            "bInfo": true,
+            "bAutoWidth": false,
+            "sDom": '<"table_controls well"fi>t'
+        });
+
+        $(".pdb").click(LookUpPDBInfo);
+
+    });
     </script>

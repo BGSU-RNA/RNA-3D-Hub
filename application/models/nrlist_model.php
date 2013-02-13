@@ -568,12 +568,12 @@ class Nrlist_model extends CI_Model {
         foreach ($order as $class_id) {
             $pdb_id = $reps[$class_id];
             $table[] = array($i,
-                             anchor(base_url("nrlist/view/".$class_id),$class_id),
-                             $this->add_annotation_label($class_id, $reason),
-                             $pdb_id,
-                             $pdb[$pdb_id]['title'],
+                             anchor(base_url("nrlist/view/".$class_id),$class_id)
+                             . '<br>' . $this->add_annotation_label($class_id, $reason)
+                             . '<br>' . $this->get_source_organism_for_class($class[$class_id]),
+                             '<strong>' . $pdb_id . '</strong>' .
+                             '<br>' . $pdb[$pdb_id]['title'],
                              $pdb[$pdb_id]['resolution'],
-                             $this->get_source_organism_for_class($class[$class_id]),
                              $this->add_pdb_class($class[$class_id]));
             $i++;
         }
