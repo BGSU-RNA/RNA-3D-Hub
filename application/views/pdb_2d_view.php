@@ -103,7 +103,6 @@
         </div>
       </div>
 
-
         <div id="help-modal" class='modal hide fade' tabindex="-1" role="dialog">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="help-modal" aria-hidden="true">×</button>
@@ -152,4 +151,8 @@
 <script type='text/javascript'>
     NTS = <?=$nts?>;
     INTERACTION_URL = "<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/basepairs/csv";
+
+    if (!NTS.length) {
+        $("#rna-2d").append("<h3 align='center'>Could not generate 2D diagram</h3>");
+    }
 </script>
