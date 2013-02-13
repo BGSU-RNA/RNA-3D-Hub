@@ -17,7 +17,6 @@ $(document).ready(function() {
     d3.select(this).style('opacity', 1);
 
     if (plot.view() === 'circular') {
-      plot.nucleotides.highlightColor(function() { return stroke; });
       plot.pie.addLetters()(nts[0]);
     } else {
       nts.style('font-size', plot.nucleotides.fontSize() + 4);
@@ -35,7 +34,6 @@ $(document).ready(function() {
   };
 
   var highlightNucleotide = function() {
-    plot.nucleotides.highlightColor(function() { return 'black'; });
     plot.pie.addLetters()([this]);
     d3.select(this).style('font-size', plot.nucleotides.fontSize() + 4);
     var inters = plot.nucleotides.interactions(this);
