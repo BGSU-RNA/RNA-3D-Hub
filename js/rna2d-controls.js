@@ -107,7 +107,8 @@ $(document).ready(function() {
       console.log(err);
       console.log(text);
       if (plot.nucleotides().length) {
-        $("#message").append("<h2>No interactions found.</h2>");
+        $("#error-message").append("<p>No interactions found.<p>");
+        $("#error-message").show();
         $("#cWW-toggle").removeClass("active");
         $(".toggle-control").addClass('disabled');
       }

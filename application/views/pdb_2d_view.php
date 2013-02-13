@@ -93,7 +93,9 @@
           <div id='rna-2d' class='rna2d span8'></div>
 
           <div class="row span6">
-            <div id="message" class="span6"></div>
+            <div id="error-message" class="alert-message error hide fade in" data-alert='alert'>
+               <a class="close" href="#">×</a>
+            </div>
             <div id="jmol" class="span6">
               <script type='text/javascript'>
                 jmolInitialize(" /jmol");
@@ -153,7 +155,7 @@
 
 <script type='text/javascript'>
     NTS = <?=$nts?>;
-    INTERACTION_URL = "<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/basepairs/csv";
+    INTERACTION_URL = "<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/basepairs/tsv";
 
     if (!NTS.length) {
         $("#rna-2d").append("<h3 align='center'>Could not generate 2D diagram. " +
