@@ -182,14 +182,24 @@ class Pdb extends CI_Controller {
     public function two_d($pdb_id) 
     {
 	    $this->load->model('Pdb_model', '', TRUE);
-        $data['nts'] = json_encode($this->Pdb_model->get_ordered_nts($pdb_id));
+        $pdb_status = $this->is_valid_pdb($pdb_id, 'il');
+        $data['valid'] = $pdb_status['valid'];
         $data['title'] = "2D representation of $pdb_id";
         $data['baseurl'] = base_url();
         $data['method'] = 'fr3d';
         $data['pdb_id'] = $pdb_id;
+        $data['sub_heading'] = "2D representation";
+        $view = 'pdb_2d_view';
+
+        if ( $pdb_status['valid'] ) {
+            $data['nts'] = json_encode($this->Pdb_model->get_ordered_nts($pdb_id));
+        } else {
+            $data['message'] = $pdb_status['message'];
+            $view = 'pdb_invalid_view';
+        }
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
-        $this->load->view('pdb_2d_view', $data);
+        $this->load->view($view, $data);
         $this->load->view('footer');
     }
 
