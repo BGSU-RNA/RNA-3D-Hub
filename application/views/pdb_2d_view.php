@@ -92,12 +92,15 @@
 
           <div id='rna-2d' class='rna2d span8'></div>
 
-          <div id="jmol" class="span6 well">
-            <script type='text/javascript'>
-              jmolInitialize(" /jmol");
-              jmolSetDocument(0);
-              jmolSetAppletColor("#ffffff");
-            </script>
+          <div class="row span6">
+            <div id="message" class="span6"></div>
+            <div id="jmol" class="span6">
+              <script type='text/javascript'>
+                jmolInitialize(" /jmol");
+                jmolSetDocument(0);
+                jmolSetAppletColor("#ffffff");
+              </script>
+            </div>
           </div>
 
         </div>
@@ -153,6 +156,7 @@
     INTERACTION_URL = "<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/basepairs/csv";
 
     if (!NTS.length) {
-        $("#rna-2d").append("<h3 align='center'>Could not generate 2D diagram</h3>");
+        $("#rna-2d").append("<h3 align='center'>Could not generate 2D diagram. " +
+            "Check back later</h3>");
     }
 </script>
