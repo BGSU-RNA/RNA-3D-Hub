@@ -155,7 +155,7 @@
 
 <script type='text/javascript'>
     NTS = <?=$nts?>;
-    INTERACTION_URL = "<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/basepairs/tsv";
+    INTERACTION_URL = "<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/basepairs/csv";
 
     if (!NTS.length) {
         $("#rna-2d").append("<h3 align='center'>Could not generate 2D diagram. " +
