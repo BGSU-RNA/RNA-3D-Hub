@@ -102,16 +102,19 @@ $(document).ready(function() {
     .windowBuild(generateJmol);
 
   d3.text(INTERACTION_URL, 'text/csv', function(err, text) {
-    if (err) {
+    var interactions = [];
+    if (err || text.indexOf("This structure") !== -1) {
       console.log(err);
-      return false;
+      console.log(text);
+    } else {
+      interactions = d3.csv.parse('"nt1","family","nt2"\n' + text);
     }
-    var interactions = d3.csv.parse('"nt1","family","nt2"\n' + text);
+
     plot.interactions(interactions)
       .getNTs(function(d) { return [convertNTID(d.nt1), convertNTID(d.nt2)]; })
       .mouseover(highlightInteraction)
       .mouseout(normalizeInteraction);
-    return plot();
+    return plot;
   });
 
   return true;
