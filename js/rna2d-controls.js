@@ -106,6 +106,11 @@ $(document).ready(function() {
     if (err || text.indexOf("This structure") !== -1) {
       console.log(err);
       console.log(text);
+      if (plot.nucleotides().length) {
+        $("#message").append("<h2>No interactions found.</h2>");
+        $("#cWW-toggle").removeClass("active");
+        $(".toggle-control").addClass('disabled');
+      }
     } else {
       interactions = d3.csv.parse('"nt1","family","nt2"\n' + text);
     }
