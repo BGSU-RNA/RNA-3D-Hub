@@ -749,19 +749,18 @@ class Motif_model extends CI_Model {
                  ->from('pdb_pairwise_interactions')
                  ->where_in('iPdbSig', array_keys($this->nt_ids))
                  ->where_in('jPdbSig', array_keys($this->nt_ids));
-        $result = $this->db->get()->result_array();
-        for ($i = 0; $i < count($result); $i++) {
-            $nt_full1 = $result[$i]['iPdbSig'];
-            $nt_full2 = $result[$i]['jPdbSig'];
-            $nt1 = $this->nt_ids[$nt_full1];
-            $nt2 = $this->nt_ids[$nt_full2];
+        $query = $this->db->get();
+        foreach($query->result() as $row) {
+            $nt_full1 = $row->iPdbSig;
+            $nt_full2 = $row->jPdbSig;
 
-            if ($result[$i]['f_lwbp'] == $result[$i]['m_lwbp'] and
-                $result[$i]['m_lwbp'] == $result[$i]['r_lwbp']) {
-                $this->f_lwbp[$nt1][$nt2] = "<span class='label success'>{$result[$i]['f_lwbp']}</span>";
+            if ( array_key_exists($nt_full1,$this->nt_ids) and
+                 array_key_exists($nt_full2,$this->nt_ids) ) {
+                $nt1 = $this->nt_ids[$nt_full1];
+                $nt2 = $this->nt_ids[$nt_full2];
+
+                $this->f_lwbp[$nt1][$nt2] = $row->f_lwbp;
             }
-
-            $this->f_lwbp[$nt1][$nt2] = $result[$i]['f_lwbp'];
         }
     }
 
