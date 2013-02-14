@@ -49,12 +49,19 @@ $(document).ready(function() {
 
   var clickInteraction = function() {
     $('#about-selection').hide();
-    return plot.jmol.showGroup({ 'data-nts': normalizeID(this.getAttribute('nt1')) + ',' + normalizeID(this.getAttribute('nt2')) });
+    var data = d3.select(this).datum(),
+        selection = {};
+    selection[data.nt1] = true;
+    selection[data.nt2] = true;
+    return plot.jmol.showSelection(selection);
   };
 
   var clickNucleotide = function() {
     $('#about-selection').hide();
-    return plot.jmol.showGroup({ 'data-nts': normalizeID(this.id) });
+    var data = d3.select(this).datum(),
+        selection = {};
+    selection[data.id] = true;
+    return plot.jmol.showSelection(selection);
   };
 
   var brushShow = function(selection) {
@@ -91,6 +98,7 @@ $(document).ready(function() {
   plot.frame.add(false);
   plot.nucleotides(NTS)
     .getID(function(d, i) { return convertNTID(d['id']); })
+    .click(clickNucleotide)
     .mouseover(highlightNucleotide)
     .mouseout(normalizeNucleotide);
 
@@ -118,6 +126,7 @@ $(document).ready(function() {
 
     plot.interactions(interactions)
       .getNTs(function(d) { return [convertNTID(d.nt1), convertNTID(d.nt2)]; })
+      .click(clickInteraction)
       .mouseover(highlightInteraction)
       .mouseout(normalizeInteraction);
 
