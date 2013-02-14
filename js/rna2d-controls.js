@@ -58,7 +58,8 @@ $(document).ready(function() {
   };
 
   var brushShow = function(selection) {
-    return plot.jmol.showGroup({'data-nts': $.map(selection, normalizeID) });
+    var ids = $.map(selection, function(_, id) { return normalizeID(id); });
+    return plot.jmol.showSelection(ids);
   };
 
   $('.toggle-control').on('click', function(e) {
