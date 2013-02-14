@@ -109,7 +109,11 @@ class Motifs extends CI_Controller {
 
         $data['status']   = $this->Motifs_model->get_release_status($motif_type,$id);
         $data['counts']   = $result['counts'];
-        $data['title']    = 'Motif Atlas Release ' . $id;
+        if ( $motif_type == 'il' ) {
+            $data['title']    = 'Internal Loop Motif Atlas Release ' . $id;
+        } else {
+            $data['title']    = 'Hairpin Loop Motif Atlas Release ' . $id;
+        }
         $data['baseurl']  = base_url();
         $data['alt_view'] = base_url(array('motifs','graph',$motif_type,$id));
         $data['polymorph_url'] = base_url(array('motifs','polymorphs',$motif_type, $id));
