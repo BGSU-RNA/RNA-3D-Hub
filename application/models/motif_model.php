@@ -680,6 +680,7 @@ class Motif_model extends CI_Model {
         $header = array('#D', '#S', 'Loop id', 'PDB', 'Disc', 'Bulges');
         // 1, 2, ..., N
         for ($i = 1; $i < $this->num_nt; $i++) {
+            $header[] = ' ';
             $header[] = $i;
         }
         // 1-2, ..., 1-N, ..., N-1 - N
@@ -696,29 +697,33 @@ class Motif_model extends CI_Model {
         for ($i = 0; $i < count($this->header); $i++) {
             $key = $this->header[$i];
             if ( $key == '#D' ) {
-                $row[$i] = $id;
+                $row[] = $id;
             } elseif ( $key == '#S') {
-                $row[$i] = array_search($this->loops[$id], $this->similarity);
+                $row[] = array_search($this->loops[$id], $this->similarity);
             } elseif ( $key == 'Loop id' ) {
-                $row[$i] = array('class'=>'loop','data'=>$this->get_checkbox($id)); //$this->loops[$id];
+                $row[] = array('class'=>'loop','data'=>$this->get_checkbox($id)); //$this->loops[$id];
             } elseif ( $key == 'PDB' ) {
                 $parts = explode("_", $this->loops[$id]);
-                $row[$i] = '<a class="pdb">' . $parts[1] . '</a>';
+                $row[] = '<a class="pdb">' . $parts[1] . '</a>';
             } elseif ( $key == 'Bulges' ) {
-                $row[$i] = $this->full_length[$this->loops[$id]] - count($this->full_nts[$this->loops[$id]]);
+                $row[] = $this->full_length[$this->loops[$id]] - count($this->full_nts[$this->loops[$id]]);
             } elseif ( is_int($key) ) {
-                $row[$i] = $this->nts[$this->loops[$id]][$key];
+                $parts = explode(' ', $this->nts[$this->loops[$id]][$key]);
+                $row[] = $parts[1];
+                $row[] = $parts[0];
+            } elseif ( $key == ' ' ) {
+                // do nothing
             } elseif ( $key == 'Disc' ) {
-                $row[$i] = $this->disc[$this->loops[1]][$this->loops[$id]];
+                $row[] = $this->disc[$this->loops[1]][$this->loops[$id]];
             }
             else {
                 $parts = explode('-', $key);
                 $nt1 = $this->nts[$this->loops[$id]][$parts[0]];
                 $nt2 = $this->nts[$this->loops[$id]][$parts[1]];
                 if ( isset($this->f_lwbp[$nt1][$nt2]) ) {
-                    $row[$i] = $this->f_lwbp[$nt1][$nt2];
+                    $row[] = $this->f_lwbp[$nt1][$nt2];
                 } else {
-                    $row[$i] = '';
+                    $row[] = '';
                 }
             }
         }
