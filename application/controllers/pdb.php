@@ -183,6 +183,7 @@ class Pdb extends CI_Controller {
     {
 	    $this->load->model('Pdb_model', '', TRUE);
         $pdb_status = $this->is_valid_pdb($pdb_id, 'il');
+        $data['pdbs'] = $this->Pdb_model->get_all_pdbs();
         $data['valid'] = $pdb_status['valid'];
         $data['title'] = "2D representation of $pdb_id";
         $data['baseurl'] = base_url();
