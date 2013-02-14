@@ -37,8 +37,8 @@ class Pdb extends CI_Controller {
             $data['bst_counts'] = $this->Pdb_model->get_pairwise_info($id, 'f_stacks');
             $data['bph_counts'] = $this->Pdb_model->get_pairwise_info($id, 'f_bphs');
             $data['brb_counts'] = $this->Pdb_model->get_pairwise_info($id, 'f_brbs');
-            $data['pdbs'] = $this->Pdb_model->get_all_pdbs();
         } else {
+            $data['pdbs'] = $this->Pdb_model->get_all_pdbs();
             $data['message'] = $pdb_status['message'];
         }
 
