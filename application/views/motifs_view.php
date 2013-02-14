@@ -22,10 +22,8 @@
         </div>
         <div class="row">
           <div class="span9" id='left_content'>
-            <h2></h2>
             <div class="table_controls"></div>
-            <?php echo $counts; echo $table;?>
-
+            <?=$table?>
           </div>
 
           <div class="span6" id="jmol">
@@ -44,6 +42,9 @@
 
               <label><input type="checkbox" id="showNtNums">Nucleotide numbers</label>
 
+              <br><br>
+
+              <?=$counts?>
           </div>
 
         </div>
@@ -73,16 +74,10 @@
 
         // fix jmol positioning
         var offset_left = $('#left_content').offset().left + 530; // 530 = span9 width
-        var offset_top  = $('#left_content').offset().top + 20;
+        var offset_top  = $('#left_content').offset().top;
         $('#jmol').css('position','fixed')
                   .css('left',offset_left)
                   .css('top',offset_top);
-
-        $(".fancybox").fancybox({
-            openSpeed  : 'fast',
-            closeSpeed : 'fast',
-            arrows     : true
-        });
 
         $('#sort').dataTable({
             "bPaginate": false,

@@ -277,7 +277,7 @@ class Motifs_model extends CI_Model {
     function make_fancybox_link($id, $motif_type, $release_id)
     {
          $image = 'http://rna.bgsu.edu/img/MotifAtlas/' . strtoupper($motif_type) . $release_id . '/' . $id . '.png';
-         return "<ul class='media-grid'><a class='fancybox' rel='v' title='$id' href='$image'><img class='thumbnail' src='$image' alt='$id' class='varna' /></a></ul>";
+         return "<ul class='media-grid'><li><a href='#$id'><img class='thumbnail' src='$image' alt='$id' class='varna' /></a></li></ul>";
     }
 
     function get_release($motif_type,$id)
@@ -323,7 +323,7 @@ class Motifs_model extends CI_Model {
         foreach ($query->result() as $row) {
             if ( array_key_exists($row->motif_id, $annotations) &&
                  strlen($annotations[$row->motif_id]['common_name']) > 1 ) {
-                $annotation = $annotations[$row->motif_id]['common_name'];
+                $annotation = '<li>Name: ' . $annotations[$row->motif_id]['common_name'] . '</li>';
             } else {
                 $annotation = '';
             }
@@ -338,13 +338,16 @@ class Motifs_model extends CI_Model {
 
             $table[] = array($i,
                              $this->make_fancybox_link($row->motif_id, $motif_type, $id),
-                             "<input type='radio' class='jmolInline' id='"
+                             anchor_popup(base_url(array('motif','view',$row->motif_id)), $row->motif_id)
+                                . "<ul class='unstyled inputs-list'>"
+                                . "<li><label><input type='radio' class='jmolInline' id='"
                                 . str_replace('.','_',$row->motif_id)
                                 . "' data-coord='{$row->motif_id}' data-type='motif_id' name='ex'>"
-                                . anchor_popup(base_url(array('motif','view',$row->motif_id)), $row->motif_id)
-                                . '<br>' . $signature
-                                . '<br>' . $this->add_annotation_label($row->motif_id, $reason)
-                                . '<br>' . $annotation,
+                                . "<span>Exemplar</span></label></li>"
+                                . "<li>Basepair signature: $signature</li>"
+                                . '<li>History status: ' . $this->add_annotation_label($row->motif_id, $reason) . '</li>'
+                                . "$annotation"
+                                . '</ul>',
                              $length_distribution['min'],
                              $row->instances);
             $i++;

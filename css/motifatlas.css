@@ -445,8 +445,14 @@ input[type=radio], input[type=checkbox] {
 .motifs_view .page-header a {
     margin-left: 5px;
 }
-.motifs_view .table_controls label {
+.motifs_view label {
     width: auto;
+}
+.motifs_view ul {
+    margin-bottom: 5px;
+}
+.motifs_view a.fancybox {
+    margin-bottom: 0px;
 }
 .motifs_view .dataTables_filter {
     display: inline-block;

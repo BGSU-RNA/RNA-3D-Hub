@@ -104,7 +104,7 @@ class Motifs extends CI_Controller {
 
         $tmpl = array( 'table_open'  => '<table class="zebra-striped condensed-table bordered-table" id="sort">' );
         $this->table->set_template($tmpl);
-        $this->table->set_heading('#', 'Varna 2D', 'Motif id', 'Size (nts)', 'Instances');
+        $this->table->set_heading('#', 'Varna 2D', 'Motif', 'Nts', 'Size');
         $data['table']    = $this->table->generate($result['table']);
 
         $data['status']   = $this->Motifs_model->get_release_status($motif_type,$id);

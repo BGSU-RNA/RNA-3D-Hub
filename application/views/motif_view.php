@@ -27,7 +27,7 @@
             <div class="span4">
                 <div class="block-div resizable" id="annotation-panel">
                         <dl>
-                            <dt>Description:</dt>
+                            <dt>Name:</dt>
                             <?php if ($annotation['common_name']): ?>
                             <dd id="common_name" class="edit"><?=$annotation['common_name']?></dd>
                             <?php else: ?>
