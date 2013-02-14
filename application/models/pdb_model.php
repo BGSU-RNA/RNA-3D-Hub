@@ -453,6 +453,31 @@ class Pdb_model extends CI_Model {
                      'representative' => $representative);
     }
 
+    function get_ordered_nts($pdb_id)
+    {
+        $this->db->select()
+                 ->from('pdb_best_chains_and_models')
+                 ->where('pdb_id', $pdb_id);
+
+        $result = $this->db->get()->row();
+        $chains = explode(",", $result->best_chains);
+
+        $this->db->select('pdb_unit_id_correspondence.unit_id as id, pdb_coordinates.unit as sequence')
+                 ->from('pdb_unit_ordering')
+                 ->join('pdb_coordinates', 'pdb_coordinates.id = pdb_unit_ordering.nt_id')
+                 ->join('pdb_unit_id_correspondence', 'pdb_unit_id_correspondence.old_id = pdb_unit_ordering.nt_id')
+                 ->where('pdb_unit_ordering.pdb', $pdb_id)
+                 ->where_in('pdb_coordinates.chain', $chains)
+                 ->order_by('pdb_unit_ordering.index', 'asc');
+
+        $query = $this->db->get();
+        $nts = array();
+        foreach($query->result() as $row) {
+            $nts[] = $row;
+        }
+        return $nts;
+    }
+
 }
 
 /* End of file pdb_model.php */
