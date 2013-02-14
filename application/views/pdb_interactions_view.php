@@ -31,6 +31,7 @@
                     <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/all">All interactions</a></li>
                   </ul>
                 </li>
+                <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/2d">2D Diagram</a></li>
             </ul>
           </div>
         </div>
