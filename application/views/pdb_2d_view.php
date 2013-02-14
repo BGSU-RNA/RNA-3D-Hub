@@ -9,8 +9,17 @@
 
       <div class="content">
         <div class="page-header">
-          <h1><?=strtoupper($pdb_id)?>
-          <small>2D representation</small>
+          <h1>
+            <?=strtoupper($pdb_id)?>
+            <small>2D representation</small>
+            <small class="pull-right">
+            <select data-placeholder="Choose a structure" id="chosen">
+              <option value=""></option>
+                <?php foreach ($pdbs as $pdb): ?>
+                  <option value="<?=$pdb?>"><?=$pdb?></option>
+                <?php endforeach; ?>
+            </select>
+          </small>
           </h1>
         </div>
 
@@ -154,6 +163,10 @@
 <script type='text/javascript'>
     NTS = <?=$nts?>;
     INTERACTION_URL = "<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/basepairs/csv";
+
+    $('#chosen').chosen().change(function(){
+        window.location.href = "<?=$baseurl?>pdb/" + $(this).val();
+    });
 
     if (!NTS.length) {
         $("#rna-2d").append("<h3 align='center'>Could not generate 2D diagram. " +
