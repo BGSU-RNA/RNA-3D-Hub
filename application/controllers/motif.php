@@ -24,6 +24,12 @@ class Motif extends MY_Controller {
         $this->output->cache(8640); # 6 days
 
 	    $this->load->model('Motif_model', '', TRUE);
+
+	    if ( !$this->Motif_model->is_valid_motif_id($motif_id) ) {
+	        show_404();
+	        return;
+	    }
+
 	    $this->Motif_model->set_motif_id($motif_id);
 	    $release_id = $this->Motif_model->set_release_id();
 

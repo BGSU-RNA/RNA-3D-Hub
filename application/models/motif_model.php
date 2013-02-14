@@ -20,6 +20,19 @@ class Motif_model extends CI_Model {
         parent::__construct();
     }
 
+    function is_valid_motif_id($motif_id)
+    {
+        $this->db->select('id')
+                 ->from('ml_motifs')
+                 ->where('id', $motif_id)
+                 ->limit(1);
+        if ( $this->db->get()->num_rows() > 0 ) {
+            return TRUE;
+        } else {
+            return FALSE;
+        }
+    }
+
     function _get_aligned_unit_ids($motif_id)
     {
         $this->db->select()
