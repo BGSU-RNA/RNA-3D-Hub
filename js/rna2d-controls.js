@@ -58,7 +58,8 @@ $(document).ready(function() {
   };
 
   var brushShow = function(selection) {
-    var ids = $.map(selection, function(_, id) { return normalizeID(id); });
+    var ids = {};
+    $.each(selection, function(id, entry) { ids[normalizeID(id)] = entry; });
     return plot.jmol.showSelection(ids);
   };
 
