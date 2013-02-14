@@ -460,6 +460,9 @@ input[type=radio], input[type=checkbox] {
 .motifs_view .btn, .motifview .btn {
     margin: 2px 5px 5px 0px;
 }
+.motifs_view .content {
+    min-height: 700px;
+}
 /* motifs_view */
 
 
