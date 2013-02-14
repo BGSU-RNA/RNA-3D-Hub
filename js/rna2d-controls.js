@@ -49,17 +49,16 @@ $(document).ready(function() {
 
   var clickInteraction = function() {
     $('#about-selection').hide();
-    return plot.jmol.showGroup({ 'data-nts': this.getAttribute('nt1') + ',' + this.getAttribute('nt2') });
+    return plot.jmol.showGroup({ 'data-nts': normalizeID(this.getAttribute('nt1')) + ',' + normalizeID(this.getAttribute('nt2')) });
   };
 
   var clickNucleotide = function() {
     $('#about-selection').hide();
-    return plot.jmol.showGroup({ 'data-nts': this.id });
+    return plot.jmol.showGroup({ 'data-nts': normalizeID(this.id) });
   };
 
   var brushShow = function(selection) {
-    //$('#about-selection').hide();
-    return plot.jmol.showSelection(selection);
+    return plot.jmol.showGroup({'data-nts': $.map(selection, normalizeID) });
   };
 
   $('.toggle-control').on('click', function(e) {
@@ -83,6 +82,7 @@ $(document).ready(function() {
   });
 
   var convertNTID = function(id) { return id.replace(/\|/g, '_'); };
+  var normalizeID = function(id) { return id.replace(/_/g, '|'); };
 
   var plot = Rna2D({view: 'circular', width: 550, height: 400, selection: '#rna-2d' });
 
