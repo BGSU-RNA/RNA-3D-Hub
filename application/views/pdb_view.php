@@ -7,7 +7,7 @@
 
             <h1>RNA Structure Atlas</h1>
             <p>
-            makes the RNA 3D structural data deposited in the <a href="http://pdb.org">PDB</a>/<a href="ndbserver.rutgers.edu">NDB</a> more accessible and useful to RNA scientists by:
+            makes the RNA 3D structural data deposited in the <a href="http://pdb.org">PDB</a>/<a href="http://ndbserver.rutgers.edu">NDB</a> more accessible and useful to RNA scientists by:
             </p>
             <p>
             - organizing redundant structures into <a href="<?=$baseurl?>nrlist">non-redundant lists</a> of equivalence classes
