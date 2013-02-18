@@ -115,7 +115,7 @@
                 </div>
             </div>
             <div class="row span6">
-                <div id="about-selection" class="hide span6"></div>
+                <div id="about-selection" class="alert-message block-message info hide span6"></div>
             </div>
           </div>
 
