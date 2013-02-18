@@ -47,18 +47,21 @@ $(document).ready(function() {
     plot.pie.clearLetters()();
   };
 
+  var showAbout = function(text) {
+    $("#about-selection")
+      .empty()
+      .append('<p>' + text + '</p>')
+      .addClass('info')
+      .show();
+  };
+
   var clickInteraction = function() {
     $('#about-selection').hide();
     var data = d3.select(this).datum(),
         selection = {};
 
-    $('#about-selection')
-      .empty()
-      .append('<p>' + data.family + ' interaction between ' + ntLink(data.nt1) +
-              ' and ' + ntLink(data.nt2) + '</p>')
-      .show();
-
-    console.log($("#about-selection"));
+    showAbout(data.family + ' interaction between ' + ntLink(data.nt1) +
+              ' and ' + ntLink(data.nt2));
 
     selection[data.nt1] = true;
     selection[data.nt2] = true;
@@ -69,10 +72,7 @@ $(document).ready(function() {
     var data = d3.select(this).datum(),
         selection = {};
 
-    $('#about-selection')
-      .empty()
-      .append('<p> Nucleotide: ' + ntLink(data.id) + '</p>')
-      .show();
+    showAbout('Nucleotide: ' + ntLink(data.id));
 
     selection[data.id] = true;
     return plot.jmol.showSelection(selection);
