@@ -51,15 +51,29 @@ $(document).ready(function() {
     $('#about-selection').hide();
     var data = d3.select(this).datum(),
         selection = {};
+
+    $('#about-selection')
+      .empty()
+      .append('<p>' + data.family + ' interaction between ' + ntLink(data.nt1) +
+              ' and ' + ntLink(data.nt2) + '</p>')
+      .show();
+
+    console.log($("#about-selection"));
+
     selection[data.nt1] = true;
     selection[data.nt2] = true;
     return plot.jmol.showSelection(selection);
   };
 
   var clickNucleotide = function() {
-    $('#about-selection').hide();
     var data = d3.select(this).datum(),
         selection = {};
+
+    $('#about-selection')
+      .empty()
+      .append('<p> Nucleotide: ' + ntLink(data.id) + '</p>')
+      .show();
+
     selection[data.id] = true;
     return plot.jmol.showSelection(selection);
   };
@@ -92,6 +106,8 @@ $(document).ready(function() {
 
   var convertNTID = function(id) { return id.replace(/\|/g, '_'); };
   var normalizeID = function(id) { return id.replace(/_/g, '|'); };
+  var ntURL = function(id) { return 'http://rna.bgsu.edu/rna3dhub/unitid/describe/' + encodeURIComponent(id); };
+  var ntLink = function(id) { return '<a href="' + ntURL(id) + '">' + id + "</a>"; };
 
   var plot = Rna2D({view: 'circular', width: 550, height: 400, selection: '#rna-2d' });
 
