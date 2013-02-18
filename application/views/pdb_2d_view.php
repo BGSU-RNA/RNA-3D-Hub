@@ -133,30 +133,38 @@
               <a href='https://github.com/AntonPetrov/jmolTools'>jmolTools</a>.
             </p>
 
-            <a class="btn primary" href="http://rna.bgsu.edu/main/interacting-with-2d-structures" target="_blank">More details</a>
-            <h4>Interactivity</h4>
-
             <p>
-              In the default select mode,
-              click and drag to create a selection box. All nucleotides within
-              the selection box will be displayed in a jmol window to the right.
+              Shown here is a circular diagram generated using the 
+              <a href="http://rna.bgsu.edu/main/software/fr3d/">FR3D</a> annotations 
+              for <?=$pdb_id?>. The black circle represents the annotated chains.
             </p>
 
             <p>
-              The selection box is dragable and resizeable. Click inside and
-              drag to move it. Click on the border and drag to resize it.
-            </p>
-
-            <p>
-              In click mode, click on a interaction to display the interaction
-              in 3D. To switch to the click mode use the selection mode control.
-            </p>
-
-            <p>
-              Interactions are displayed as black bars connecting nucleotides,
+              Interactions are displayed as black arcs connecting nucleotides,
               by default only cWW interactions are displayed. To display other
-              interactions use the interaction controls.
+              interactions use the interaction controls to the right. Clicking 
+              on a interaction will toggle displaying all interactions of that 
+              family and ones near that family. So clicking on tWW shows all tWW 
+              and ntWW. 
             </p>
+
+            <p>
+              In the default select mode, click and drag to create a selection box. 
+              All nucleotides within the selection box will be displayed in a jmol 
+              window to the right. The selection box is dragable and resizeable. Click 
+              inside and drag to move it. Click on the border and drag to resize it.
+            </p>
+
+            <p>
+              In click mode, click on a interaction or nucleotide to display it
+              in 3D. In addition, some information about the clicked element will 
+              be displayed below the jmol window. To switch to the click mode use 
+              the selection mode control. Hovering over an interaction will 
+              highlight it and the nucleotides that form it. Hovering over a 
+              nucleotide will highlight it as well as all intereracations it forms.
+            </p>
+
+            <a class="btn primary" href="http://rna.bgsu.edu/main/interacting-with-2d-structures" target="_blank">More details</a>
           </div>
         </div>
 
