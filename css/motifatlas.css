@@ -844,3 +844,6 @@ body.home {
 .pdb-2d-view .block-controls #mode-toggle.active {
   padding-left: 12px;
 }
+.pdb-2d-view #about-selection {
+  padding-top: 10px;
+}
