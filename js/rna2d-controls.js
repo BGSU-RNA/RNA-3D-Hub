@@ -125,6 +125,7 @@ $(document).ready(function() {
     .update(brushShow);
 
   plot.jmol.overflow(function() { $("#overflow").show(); })
+    .stereoID('stereo')
     .windowSize(350)
     .windowBuild(generateJmol);
 
