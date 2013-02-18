@@ -844,3 +844,13 @@ body.home {
 .pdb-2d-view .block-controls #mode-toggle.active {
   padding-left: 12px;
 }
+
+/* Motif Atlas home page */
+.motifs_home_view .hero-unit {
+    padding: 30px;
+    margin-bottom: 10px;
+}
+.motifs_home_view .btn {
+    margin-right:10px;
+    margin-bottom: 5px;
+}

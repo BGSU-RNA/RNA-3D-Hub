@@ -18,6 +18,43 @@ class Motifs_model extends CI_Model {
         parent::__construct();
     }
 
+    function get_current_release_info()
+    {
+        $ils = $this->get_latest_release('il', 1);
+
+        $data['release_info']['il_release'] = $ils['id'];
+        $data['release_info']['hl_release'] = $this->get_latest_release('hl');
+        $data['release_info']['last_update'] = strtotime($ils['date']);
+        $data['release_info']['next_update'] = strtotime("{$ils['date']} + 4 weeks");
+
+        return $data;
+    }
+
+    function get_featured_motifs($motif_type)
+    {
+        $release_id = $this->get_latest_release($motif_type);
+
+        if ( $motif_type == 'il' ) {
+            $motifs = array('c-loop', 'sarcin', 'kink-turn', 'triple sheared', 'double sheared');
+        } else {
+            $motifs = array('T-loop', 'GNRA');
+        }
+        $data = array();
+
+        foreach($motifs as $motif) {
+            $this->db->select('*, count(ml_loops.id) as members')
+                     ->from('ml_motif_annotations')
+                     ->join('ml_loops', 'ml_motif_annotations.motif_id = ml_loops.motif_id')
+                     ->like('ml_motif_annotations.common_name', $motif)
+                     ->where('release_id', $release_id)
+                     ->group_by('ml_loops.motif_id')
+                     ->order_by('members', 'desc')
+                     ->limit(1);
+            $data[$motif] = $this->db->get()->row()->motif_id;
+        }
+        return $data;
+    }
+
     function get_all_motifs($release_id, $motif_type)
     {
         if ( $release_id == 'current' ) {
@@ -424,15 +461,19 @@ class Motifs_model extends CI_Model {
         return $table;
     }
 
-    function get_latest_release($motif_type)
+    function get_latest_release($motif_type, $date=NULL)
     {
         $this->db->select()
                  ->from('ml_releases')
                  ->where('type',$motif_type)
                  ->order_by('date','desc')
                  ->limit(1);
-        $result = $this->db->get()->result_array();
-        return $result[0]['id'];
+        $result = $this->db->get()->row();
+        if ( $date ) {
+            return array('id' => $result->id, 'date' => $result->date);
+        } else {
+            return $result->id;
+        }
     }
 
     function count_motifs($motif_type,$rel)
