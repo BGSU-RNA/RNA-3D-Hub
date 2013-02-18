@@ -3,6 +3,8 @@ class Motifs extends CI_Controller {
 
 	public function index()
 	{
+        $this->output->cache(8640); # 6 days
+
         $this->load->helper('url');
 	    $this->load->model('Motifs_model', '', TRUE);
         $result = $this->Motifs_model->get_all_releases();
@@ -49,7 +51,8 @@ class Motifs extends CI_Controller {
 
 	public function release($motif_type, $id, $format=NULL)
 	{
-//         $this->output->cache(1000000);
+        $this->output->cache(8640); # 6 days
+
 	    $this->load->model('Motifs_model', '', TRUE);
 
         // download requests
