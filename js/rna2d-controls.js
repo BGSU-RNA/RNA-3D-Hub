@@ -7,7 +7,7 @@ $(document).ready(function() {
       ' ' +
       '<button type="button" id="stereo" class="btn">Stereo</button>' +
       ' ' +
-      '<button type="button" class="btn" id="showNtNums">Numbers</button>';
+      '<label><input type="checkbox" id="showNtNums">Show Numbers</label>';
     $jmol.append(form);
   };
 
