@@ -1,11 +1,13 @@
 $(document).ready(function() {
 
+  $('#about-selection').hide();
+
   var generateJmol = function($jmol) {
-    var form = '<form class="form-inline">' +
-      '<button id="neighborhood" type="button" class="btn">Show neighborhood</button>' +
-      '<button id="stereo" type="button" class="btn">Stereo</button>' +
-      '<label class="checkbox"><input type="checkbox" id="showNtNums"> Numbers</label>' +
-      '</form>';
+    var form = '<button type="button" id="neighborhood" class="btn">Show neighborhood</button>' +
+      ' ' +
+      '<button type="button" id="stereo" class="btn">Stereo</button>' +
+      ' ' +
+      '<label><input type="checkbox" id="showNtNums">Show Numbers</label>';
     $jmol.append(form);
   };
 
@@ -47,19 +49,33 @@ $(document).ready(function() {
     plot.pie.clearLetters()();
   };
 
+  var showAbout = function(text) {
+    $("#about-selection")
+      .empty()
+      .append('<p>' + text + '</p>')
+      .addClass('info')
+      .show();
+  };
+
   var clickInteraction = function() {
     $('#about-selection').hide();
     var data = d3.select(this).datum(),
         selection = {};
+
+    showAbout(data.family + ' interaction between ' + ntLink(data.nt1) +
+              ' and ' + ntLink(data.nt2));
+
     selection[data.nt1] = true;
     selection[data.nt2] = true;
     return plot.jmol.showSelection(selection);
   };
 
   var clickNucleotide = function() {
-    $('#about-selection').hide();
     var data = d3.select(this).datum(),
         selection = {};
+
+    showAbout('Nucleotide: ' + ntLink(data.id));
+
     selection[data.id] = true;
     return plot.jmol.showSelection(selection);
   };
@@ -67,6 +83,7 @@ $(document).ready(function() {
   var brushShow = function(selection) {
     var ids = {};
     $.each(selection, function(id, entry) { ids[normalizeID(id)] = entry; });
+    $('#about-selection').hide();
     return plot.jmol.showSelection(ids);
   };
 
@@ -92,6 +109,8 @@ $(document).ready(function() {
 
   var convertNTID = function(id) { return id.replace(/\|/g, '_'); };
   var normalizeID = function(id) { return id.replace(/_/g, '|'); };
+  var ntURL = function(id) { return 'http://rna.bgsu.edu/rna3dhub/unitid/describe/' + encodeURIComponent(id); };
+  var ntLink = function(id) { return '<a target="_blank" href="' + ntURL(id) + '">' + id + "</a>"; };
 
   var plot = Rna2D({view: 'circular', width: 550, height: 400, selection: '#rna-2d' });
 
@@ -106,6 +125,7 @@ $(document).ready(function() {
     .update(brushShow);
 
   plot.jmol.overflow(function() { $("#overflow").show(); })
+    .stereoID('stereo')
     .windowSize(350)
     .windowBuild(generateJmol);
 

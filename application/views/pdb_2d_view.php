@@ -105,12 +105,17 @@
             <div id="error-message" class="alert-message error hide fade in" data-alert='alert'>
                <a class="close" href="#">×</a>
             </div>
-            <div id="jmol" class="span6">
-              <script type='text/javascript'>
-                jmolInitialize(" /jmol");
-                jmolSetDocument(0);
-                jmolSetAppletColor("#ffffff");
-              </script>
+            <div class="row span6">
+                <div id="jmol" class="span6">
+                  <script type='text/javascript'>
+                    jmolInitialize(" /jmol");
+                    jmolSetDocument(0);
+                    jmolSetAppletColor("#ffffff");
+                  </script>
+                </div>
+            </div>
+            <div class="row span6">
+                <div id="about-selection" class="alert-message block-message info hide span6"></div>
             </div>
           </div>
 
