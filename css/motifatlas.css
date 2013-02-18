@@ -847,3 +847,13 @@ body.home {
 .pdb-2d-view #about-selection {
   padding-top: 10px;
 }
+
+/* Motif Atlas home page */
+.motifs_home_view .hero-unit, .pdb_view .hero-unit {
+    padding: 30px;
+    margin-bottom: 10px;
+}
+.motifs_home_view .btn {
+    margin-right:10px;
+    margin-bottom: 5px;
+}

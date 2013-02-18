@@ -1,8 +1,10 @@
 <?php
 class Motifs extends CI_Controller {
 
-	public function index()
+	public function oldhome()
 	{
+        $this->output->cache(8640); # 6 days
+
         $this->load->helper('url');
 	    $this->load->model('Motifs_model', '', TRUE);
         $result = $this->Motifs_model->get_all_releases();
@@ -24,8 +26,22 @@ class Motifs extends CI_Controller {
         $this->load->view('menu_view', $data);
         $this->load->view('motifs_all_view', $data);
         $this->load->view('footer');
+	}
 
-//         $this->output->enable_profiler(TRUE);
+	public function index()
+	{
+	    $this->load->model('Motifs_model', '', TRUE);
+
+        $data['featured'] = $this->Motifs_model->get_featured_motifs('il');
+        $data = array_merge($data, $this->Motifs_model->get_current_release_info());
+
+        $data['title']   = 'RNA 3D Motif Atlas';
+        $data['baseurl'] = base_url();
+
+        $this->load->view('header_view', $data);
+        $this->load->view('menu_view', $data);
+        $this->load->view('motifs_home_view', $data);
+        $this->load->view('footer');
 	}
 
     public function polymorphs($motif_type, $release_id)
@@ -49,7 +65,8 @@ class Motifs extends CI_Controller {
 
 	public function release($motif_type, $id, $format=NULL)
 	{
-//         $this->output->cache(1000000);
+        $this->output->cache(8640); # 6 days
+
 	    $this->load->model('Motifs_model', '', TRUE);
 
         // download requests

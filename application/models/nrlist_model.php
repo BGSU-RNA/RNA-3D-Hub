@@ -508,7 +508,7 @@ class Nrlist_model extends CI_Model {
         $pdbs = array_unique($pdbs);
 
         // get general pdb info
-        $this->db->select('structureId, structureTitle, resolution')
+        $this->db->select('structureId, structureTitle, resolution, experimentalTechnique')
                  ->from('pdb_info')
                  ->where_in('structureId', $pdbs )
                  ->group_by('structureId');
@@ -516,6 +516,17 @@ class Nrlist_model extends CI_Model {
         foreach($query->result() as $row) {
             $pdb[$row->structureId]['title']      = $row->structureTitle;
             $pdb[$row->structureId]['resolution'] = (is_null($row->resolution)) ? '' : number_format($row->resolution, 1) . ' &Aring';
+            $pdb[$row->structureId]['experimentalTechnique'] = $row->experimentalTechnique;
+        }
+
+        // get best chains and models
+        $this->db->select()
+                 ->from('pdb_best_chains_and_models')
+                 ->where_in('pdb_id', $pdbs);
+        $query = $this->db->get();
+        foreach($query->result() as $row) {
+            $best_chains[$row->pdb_id] = $row->best_chains;
+            $best_models[$row->pdb_id] = $row->best_models;
         }
 
         // check if any of the files became obsolete
@@ -572,7 +583,12 @@ class Nrlist_model extends CI_Model {
                              . '<br>' . $this->add_annotation_label($class_id, $reason)
                              . '<br>' . $this->get_source_organism_for_class($class[$class_id]),
                              '<strong>' . $pdb_id . '</strong>' .
-                             '<br>' . $pdb[$pdb_id]['title'],
+                             '<ul>' .
+                             '<li>' . $pdb[$pdb_id]['title'] . '</li>' .
+                             '<li>' . $pdb[$pdb_id]['experimentalTechnique'] . '</li>' .
+                             '<li>Chain(s): ' . $best_chains[$pdb_id] .
+                             '; model(s): ' . $best_models[$pdb_id] . '</li>' .
+                             '</ul>',
                              $pdb[$pdb_id]['resolution'],
                              $this->get_chain_length($pdb_id),
                              $this->add_pdb_class($class[$class_id]));
