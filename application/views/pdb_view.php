@@ -7,19 +7,22 @@
 
             <h1>RNA Structure Atlas</h1>
             <p>
-            makes the RNA 3D structural data deposited in the <a href="http://pdb.org">PDB</a>/<a href="http://ndbserver.rutgers.edu">NDB</a> more accessible and useful to RNA scientists by:
-            </p>
-            <p>
-            - organizing redundant structures into <a href="<?=$baseurl?>nrlist">non-redundant lists</a> of equivalence classes
-            </p>
-            <p>
-            - extracting internal, hairpin and 3-way junction loops and annotating them with RNA 3D motifs found in the <a href="<?=$baseurl?>motifs?">RNA 3D Motif Atlas</a>
-            </p>
-            <p>
-            - providing annotations of base-pairing, -stacking, and -backbone interactions computed by <a href="http://rna.bgsu.edu/FR3D">FR3D</a>
+
             </p>
 
-            <br>
+            <p>
+            - provides annotations of base-pairing, -stacking, and -backbone interactions computed by <a href="http://rna.bgsu.edu/FR3D">FR3D</a>
+            </p>
+            <p>
+            - extracts internal, hairpin and 3-way junction loops and annotates them with motifs from the <a href="<?=$baseurl?>motifs?">RNA 3D Motif Atlas</a>
+            </p>
+            <p>
+            - organizes redundant structures into <a href="<?=$baseurl?>nrlist">non-redundant lists</a> of equivalence classes
+            </p>
+            <p>
+              Updated automatically every week.
+            </p>
+
 
             <select data-placeholder="Choose one of <?php echo count($pdbs); ?> RNA-containing 3D structures" tabindex="1" id="chosen" style="width:400px">
              <option value=""></option>

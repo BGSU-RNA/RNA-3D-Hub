@@ -846,7 +846,7 @@ body.home {
 }
 
 /* Motif Atlas home page */
-.motifs_home_view .hero-unit {
+.motifs_home_view .hero-unit, .pdb_view .hero-unit {
     padding: 30px;
     margin-bottom: 10px;
 }
