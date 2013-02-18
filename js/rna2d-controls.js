@@ -1,11 +1,13 @@
 $(document).ready(function() {
 
+  $('#about-selection').hide();
+
   var generateJmol = function($jmol) {
-    var form = '<form class="form-inline">' +
-      '<button id="neighborhood" type="button" class="btn">Show neighborhood</button>' +
-      '<button id="stereo" type="button" class="btn">Stereo</button>' +
-      '<label class="checkbox"><input type="checkbox" id="showNtNums"> Numbers</label>' +
-      '</form>';
+    var form = '<button type="button" id="neighborhood" class="btn">Show neighborhood</button>' +
+      ' ' +
+      '<button type="button" id="stereo" class="btn">Stereo</button>' +
+      ' ' +
+      '<button type="button" class="btn" id="showNtNums">Numbers</button>';
     $jmol.append(form);
   };
 
