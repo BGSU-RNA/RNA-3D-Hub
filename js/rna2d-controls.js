@@ -107,7 +107,7 @@ $(document).ready(function() {
   var convertNTID = function(id) { return id.replace(/\|/g, '_'); };
   var normalizeID = function(id) { return id.replace(/_/g, '|'); };
   var ntURL = function(id) { return 'http://rna.bgsu.edu/rna3dhub/unitid/describe/' + encodeURIComponent(id); };
-  var ntLink = function(id) { return '<a href="' + ntURL(id) + '">' + id + "</a>"; };
+  var ntLink = function(id) { return '<a target="_blank" href="' + ntURL(id) + '">' + id + "</a>"; };
 
   var plot = Rna2D({view: 'circular', width: 550, height: 400, selection: '#rna-2d' });
 
