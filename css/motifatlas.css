@@ -845,7 +845,10 @@ body.home {
   padding-left: 12px;
 }
 .pdb-2d-view #about-selection {
-  padding-top: 10px;
+  margin-top: 10px;
+}
+.pdb-2d-view .btn {
+  margin-left: 3px;
 }
 
 /* Motif Atlas home page */
