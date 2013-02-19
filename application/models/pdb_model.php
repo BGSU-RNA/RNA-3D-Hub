@@ -478,6 +478,20 @@ class Pdb_model extends CI_Model {
         return $nts;
     }
 
+    function get_airport($pdb_id) 
+    {
+        $table='pdb_airport';
+        if (! $this->db->table_exists($table)) {
+            return false;
+        }
+
+        $this->db->select('json_structure')
+                 ->from($table)
+                 ->where('id', $pdb_id);
+
+        $result = $this->db->get()->row();
+        return ($result) ? $result->json_structure : false;
+    }
 }
 
 /* End of file pdb_model.php */

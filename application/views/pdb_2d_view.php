@@ -47,9 +47,25 @@
         <!-- end navigation -->
 
         <div class="row">
+            <div class="span3 offset4">
+                <div id='view-buttons' class='btn-group' data-toggle='buttons-radio'>
+                    <?php if ($has_airport): ?>
+                    <button id='airport-view' class="btn view-control" data-view='airport'>
+                      Airport
+                    </button>
+                    <button id='circular-view' class="btn active view-control" data-view='circular'>
+                      Circular
+                    </button>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
             <div id='controls' class='span1 block-controls'>
 
-              <button data-controls-modal="help-modal" data-backdrop="true" data-keyboard="true" class="btn primary btn-block">Help</button>
+              <button data-controls-modal="help-modal" data-backdrop="true" 
+                data-keyboard="true" class="btn primary btn-block">Help</button>
 
               <!-- <h5>Mode</h5> -->
               <button type="button" id="mode-toggle" class="btn btn-block"
