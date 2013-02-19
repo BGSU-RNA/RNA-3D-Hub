@@ -191,7 +191,7 @@
 
 <script type='text/javascript'>
     NTS = <?=$nts?>;
-    INTERACTION_URL = "<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/basepairs/csv";
+    INTERACTION_URL = "http://rna.bgsu.edu/rna3dhub/pdb/<?=$pdb_id?>/interactions/fr3d/basepairs/csv";
 
     $('#chosen').chosen().change(function(){
         window.location.href = "<?=$baseurl?>pdb/" + $(this).val();
