@@ -7,7 +7,7 @@
         </div>
 
         <div class="row">
-          <div class="span9">
+          <div class="span16">
 
             <ul class="tabs" data-tabs="tabs">
                 <li class="active"><a href="#ils">Internal Loops</a></li>

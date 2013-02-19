@@ -245,12 +245,16 @@ class Motifs extends CI_Controller {
         $this->load->model('Motifs_model', '' , TRUE);
         $result = $this->Motifs_model->get_complete_release_history();
 
-        $this->table->set_heading('Release','Added groups','Removed groups','Updated groups','Added loops','Removed loops');
+        $this->table->set_heading('Release','Added groups','Removed groups',
+                                  'Updated groups','Added loops','Removed loops',
+                                  'All loops', 'Motifs', 'Date', 'Description');
         $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped' id='sort'>" );
         $this->table->set_template($tmpl);
         $data['table']['ils'] = $this->table->generate($result['IL']);
 
-        $this->table->set_heading('Release','Added groups','Removed groups','Updated groups','Added pdbs','Removed pdbs');
+        $this->table->set_heading('Release','Added groups','Removed groups',
+                                  'Updated groups','Added loops','Removed loops',
+                                  'All loops', 'Motifs', 'Date', 'Description');
         $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped' id='sort'>" );
         $this->table->set_template($tmpl);
         $data['table']['hls'] = $this->table->generate($result['HL']);

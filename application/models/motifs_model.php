@@ -75,7 +75,7 @@ class Motifs_model extends CI_Model {
 
     function db_get_all_releases($motif_type)
     {
-        $this->db->select('ml_releases.*,count(ml_loops.id) AS loops, count(DISTINCT(motif_id)) AS motifs')
+        $this->db->select('STRAIGHT_JOIN ml_releases.*,count(ml_loops.id) AS loops, count(DISTINCT(motif_id)) AS motifs', FALSE)
                  ->from('ml_releases')
                  ->join('ml_loops','ml_releases.id=ml_loops.release_id')
                  ->where('ml_releases.type',$motif_type)
@@ -250,6 +250,15 @@ class Motifs_model extends CI_Model {
     {
         foreach ($this->types as $motif_type) {
 
+            $query = $this->db_get_all_releases($motif_type);
+            foreach($query->result() as $row){
+                $data[$row->id]['loops'] = $row->loops;
+                $data[$row->id]['motifs'] = $row->motifs;
+                $data[$row->id]['description'] = $row->description;
+                $data[$row->id]['annotation'] = $row->annotation;
+                $data[$row->id]['date'] = $row->date;
+            }
+
             $releases = $this->get_release_precedence($motif_type);
 
             $this->db->select()
@@ -269,7 +278,11 @@ class Motifs_model extends CI_Model {
                         $this->make_release_label($row->num_removed_groups),
                         $this->make_release_label($row->num_updated_groups),
                         $this->make_release_label($row->num_added_loops),
-                        $this->make_release_label($row->num_removed_loops)
+                        $this->make_release_label($row->num_removed_loops),
+                        $data[$row->id]['loops'],
+                        $data[$row->id]['motifs'],
+                        date('m-d-Y', strtotime($data[$row->id]['date'])),
+                        $data[$row->id]['annotation']
                     );
                 }
             }
@@ -405,8 +418,6 @@ class Motifs_model extends CI_Model {
 
             $distribution = $this->_get_motif_length_distribution($motif_id, $release_id);
 
-//         print_r($distribution);
-
             $row[] = $distribution['min'];
             $row[] = $distribution['max'];
             $row[] = $distribution['diff'];
@@ -430,9 +441,6 @@ class Motifs_model extends CI_Model {
         foreach($query->result() as $row) {
             $length[] = $row->length;
         }
-
-// print_r($this->db->last_query());
-//         print_r($result);
 
         $distribution['max'] = max($length);
         $distribution['min'] = min($length);
