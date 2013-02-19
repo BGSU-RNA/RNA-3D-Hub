@@ -113,7 +113,7 @@ $(document).ready(function() {
 
     plot.view(view);
     if (view === 'airport') {
-      plot.height(756);
+      plot.height(687);
     } else {
       plot.height(400);
     }
