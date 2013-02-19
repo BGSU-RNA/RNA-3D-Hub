@@ -1,6 +1,9 @@
       <footer>
-        <p><a href="http://rna.bgsu.edu">BGSU RNA group</a>, <?php echo date("Y"); ?></p>
-        <p>Page generated in {elapsed_time} s</p>
+        <p>
+          <a href="http://rna.bgsu.edu">BGSU RNA group</a>, <?php echo date("Y"); ?>
+          <br>
+          <em>Page generated in {elapsed_time} s</em>
+        </p>
       </footer>
 
     </div> <!-- /container -->
