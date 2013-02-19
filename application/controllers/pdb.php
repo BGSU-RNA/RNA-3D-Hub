@@ -72,7 +72,9 @@ class Pdb extends CI_Controller {
             }
             $is_download = true;
             $filename = "{$id}_{$method}_{$interaction_type}.csv";
-            $this->output->set_header("Content-disposition: attachment; filename=$filename")
+            $this->output->set_header("Access-Control-Allow-Origin: *")
+                         ->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin")
+                         ->set_header("Content-disposition: attachment; filename=$filename")
                          ->set_content_type('text/csv');
         } else {
             $is_download = false;
@@ -179,7 +181,7 @@ class Pdb extends CI_Controller {
         $this->load->view('footer');
 	}
 
-    public function two_d($pdb_id) 
+    public function two_d($pdb_id)
     {
 	    $this->load->model('Pdb_model', '', TRUE);
         $pdb_status = $this->is_valid_pdb($pdb_id, 'il');
