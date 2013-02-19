@@ -132,7 +132,7 @@ $(document).ready(function() {
   var ntURL = function(id) { return 'http://rna.bgsu.edu/rna3dhub/unitid/describe/' + encodeURIComponent(id); };
   var ntLink = function(id) { return '<a target="_blank" href="' + ntURL(id) + '">' + id + "</a>"; };
 
-  var plot = Rna2D({view: 'circular', width: 550, height: 400, selection: '#rna-2d' });
+  var plot = Rna2D({view: 'circular', width: 500, height: 400, selection: '#rna-2d' });
 
   plot.frame.add(false);
   plot.nucleotides(NTS)
