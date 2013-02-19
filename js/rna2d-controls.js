@@ -107,6 +107,26 @@ $(document).ready(function() {
     $btn.text(text);
   });
 
+  $('.view-control').on('click', function(e) {
+    var $btn = $(e.target),
+        view = $btn.data('view');
+
+    plot.view(view);
+    if (view === 'airport') {
+      plot.height(756);
+    } else {
+      plot.height(400);
+    }
+
+    $('.view-control').removeClass('active');
+    $btn.addClass('active');
+
+    $('.toggle-control').removeClass('active');
+    $('#cWW-toggle').addClass('active');
+    plot();
+  });
+  
+
   var convertNTID = function(id) { return id.replace(/\|/g, '_'); };
   var normalizeID = function(id) { return id.replace(/_/g, '|'); };
   var ntURL = function(id) { return 'http://rna.bgsu.edu/rna3dhub/unitid/describe/' + encodeURIComponent(id); };
