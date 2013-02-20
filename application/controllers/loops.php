@@ -153,24 +153,29 @@ class Loops extends CI_Controller {
         $this->load->view('csv_view', $data);
     }
 
-    function view($id)
+    function view($id, $similar=NULL)
     {
         $this->output->cache(8640); # 6 days
 
         $this->load->model('Loops_model', '', TRUE);
 
-        $this->output->enable_profiler(TRUE);
+//         $this->output->enable_profiler(TRUE);
 
-        $table  = $this->Loops_model->get_similar_loops($id);
-        $this->table->set_heading('#','loop id','Disc','Motif id','Conflict');
-        $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table' id='sortable'>" );
-        $this->table->set_template($tmpl);
-        $data['table'] = $this->table->generate($table);
-
-        $data = array_merge($data, $this->Loops_model->get_loop_info($id));
-        $data = array_merge($data, $this->Loops_model->get_pdb_info($id));
-        $data = array_merge($data, $this->Loops_model->get_motif_info($id));
-        $data = array_merge($data, $this->Loops_model->get_protein_info($id));
+        $data = array();
+        if ( !is_null($similar) and $similar == 'similar' ) {
+            $table  = $this->Loops_model->get_similar_loops($id);
+            $this->table->set_heading('#','loop id','Disc','Motif id','Conflict');
+            $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table' id='sortable'>" );
+            $this->table->set_template($tmpl);
+            $data['table'] = $this->table->generate($table);
+            $data['show_similar'] = TRUE;
+        } else {
+            $data = array_merge($data, $this->Loops_model->get_loop_info($id));
+            $data = array_merge($data, $this->Loops_model->get_pdb_info($id));
+            $data = array_merge($data, $this->Loops_model->get_motif_info($id));
+            $data = array_merge($data, $this->Loops_model->get_protein_info($id));
+            $data['show_similar'] = FALSE;
+        }
 
         $data['title'] = 'Loop ' . $id;
         $data['id']    = $id;

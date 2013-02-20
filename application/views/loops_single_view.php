@@ -8,8 +8,14 @@
 
             <div class="span9">
                 <ul class="tabs" data-tabs="tabs">
+
+                <?php if ($show_similar): ?>
+                    <li><a href="<?php echo str_replace('similar', '', current_url());?>">General information</a></li>
+                    <li class="active"><a href="#">Similar loops</a></li>
+                <?php else: ?>
                     <li class="active"><a href="#general">General information</a></li>
-                    <li><a href="#similar">Similar loops</a></li>
+                    <li><a href="<?php echo current_url();?>/similar">Similar loops</a></li>
+                <?php endif; ?>
 <!--
                     <li><a href="#history">Motif history</a></li>
                     <li><a href="#rnastar">RNASTAR</a></li>
@@ -19,8 +25,14 @@
 
             <div class="tab-content span9" id='left_content'>
 
-                <div class="tab-pane active" id='general'>
+                <?php if ($show_similar): ?>
 
+                <div class="tab-pane" id='general'>
+                </div>
+
+                <?php else: ?>
+
+                <div class="tab-pane active" id='general'>
                     <div class="row">
                         <div class="span4 well">
                             <h4>3D structure</h4>
@@ -81,11 +93,20 @@
                             ?>
                         </div>
                     </div>
-                </div>
 
-                <div class="tab-pane" id='similar'>
+                </div>
+                <?php endif; ?>
+
+
+                <?php if ($show_similar): ?>
+                <div class="tab-pane active" id='similar'>
                     <?=$table?>
                 </div>
+                <?php else: ?>
+                <div class="tab-pane" id='similar'>
+                </div>
+                <?php endif; ?>
+
 
 <!--
                 <div class="tab-pane" id='history'>
