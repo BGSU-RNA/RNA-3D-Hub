@@ -11,6 +11,29 @@ class Loops_model extends CI_Model {
         parent::__construct();
     }
 
+    function get_loop_list($pdb_id)
+    {
+        $this->db->select('group_concat(unit_id) AS unit_ids, loops_all.id', FALSE)
+                 ->from('loops_all')
+                 ->join('loop_positions', 'loops_all.id=loop_positions.loop_id')
+                 ->join('pdb_unit_id_correspondence', 'loop_positions.nt_id=pdb_unit_id_correspondence.old_id')
+                 ->where('loops_all.pdb', $pdb_id)
+                 ->group_by('loops_all.id');
+        $query = $this->db->get();
+
+        if ( $query->num_rows() > 0 ) {
+            $data = array();
+            foreach($query->result() as $row) {
+                $data[] = '"' . implode('","', array($row->id, $row->unit_ids)) . '"';
+            }
+            $table = implode("\n", $data);
+        } else {
+            $table = 'No loops found';
+        }
+
+        return $table;
+    }
+
     function get_loop_info($id)
     {
         $result = array();

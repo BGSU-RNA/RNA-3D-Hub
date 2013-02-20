@@ -17,7 +17,7 @@
 
         <!-- navigation -->
         <div class="row">
-          <div class="span16">
+          <div class="span9">
             <ul class="tabs">
                 <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>">Summary</a></li>
                 <li class="active"><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/motifs">Motifs</a></li>
@@ -35,6 +35,7 @@
                 <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/2d">2D Diagram</a></li>
             </ul>
           </div>
+          <a class="btn primary pull-right" href="<?=$baseurl?>loops/download/<?=$pdb_id?>">Download loops</a>
         </div>
         <!-- end navigation -->
 
@@ -85,6 +86,7 @@
                         <?=$loops['J3']['invalid']?>
                     </div>
                 </div>
+
             </div> <!-- end of tab-content -->
 
           </div>

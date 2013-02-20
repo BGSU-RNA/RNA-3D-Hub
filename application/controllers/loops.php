@@ -138,13 +138,28 @@ class Loops extends CI_Controller {
         }
     }
 
+    function download($pdb_id)
+    {
+        $this->load->model('Loops_model', '', TRUE);
+
+        $data['csv'] = $this->Loops_model->get_loop_list($pdb_id);
+
+        $filename = "{$pdb_id}_loops.csv";
+        $this->output->set_header("Access-Control-Allow-Origin: *")
+                     ->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin")
+                     ->set_header("Content-disposition: attachment; filename=$filename")
+                     ->set_content_type('text/csv');
+
+        $this->load->view('csv_view', $data);
+    }
+
     function view($id)
     {
         $this->output->cache(8640); # 6 days
 
         $this->load->model('Loops_model', '', TRUE);
 
-//         $this->output->enable_profiler(TRUE);
+        $this->output->enable_profiler(TRUE);
 
         $table  = $this->Loops_model->get_similar_loops($id);
         $this->table->set_heading('#','loop id','Disc','Motif id','Conflict');
@@ -164,7 +179,7 @@ class Loops extends CI_Controller {
         $this->load->view('menu_view', $data);
         $this->load->view('loops_single_view', $data);
         $this->load->view('footer');
-}
+    }
 
     function benchmark($kind = NULL)
     {
