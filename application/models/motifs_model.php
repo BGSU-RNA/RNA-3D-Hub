@@ -200,16 +200,17 @@ class Motifs_model extends CI_Model {
         return $label;
     }
 
-    function make_release_label($num)
+    function make_release_label($num, $id1, $id2, $motif_type)
     {
+        $text = anchor(base_url(array('motifs','compare',$motif_type,$id1,$id2)), $num);
         if ($num == 0) {
-            return "<span class='label default'>$num</span>";
+            return "<span class='label default'>$text</span>";
         } elseif ($num <= 10) {
-            return "<span class='label notice'>$num</span>";
+            return "<span class='label notice'>$text</span>";
         } elseif ($num <= 100) {
-            return "<span class='label warning'>$num</span>";
+            return "<span class='label warning'>$text</span>";
         } else {
-            return "<span class='label important'>$num</span>";
+            return "<span class='label important'>$text</span>";
         }
     }
 
@@ -273,12 +274,12 @@ class Motifs_model extends CI_Model {
             foreach ($query->result() as $row) {
                 if ($row->release_id2 == $releases[$row->id]) {
                     $table[$motif_type][] = array(
-                        anchor(base_url(array('motifs','compare',$motif_type,$row->id,$releases[$row->id])), $row->id),
-                        $this->make_release_label($row->num_added_groups),
-                        $this->make_release_label($row->num_removed_groups),
-                        $this->make_release_label($row->num_updated_groups),
-                        $this->make_release_label($row->num_added_loops),
-                        $this->make_release_label($row->num_removed_loops),
+                        anchor(base_url(array('motifs','release',$motif_type,$row->id)), $row->id),
+                        $this->make_release_label($row->num_added_groups, $row->id, $releases[$row->id], $motif_type),
+                        $this->make_release_label($row->num_removed_groups, $row->id, $releases[$row->id], $motif_type),
+                        $this->make_release_label($row->num_updated_groups, $row->id, $releases[$row->id], $motif_type),
+                        $this->make_release_label($row->num_added_loops, $row->id, $releases[$row->id], $motif_type),
+                        $this->make_release_label($row->num_removed_loops, $row->id, $releases[$row->id], $motif_type),
                         $data[$row->id]['loops'],
                         $data[$row->id]['motifs'],
                         date('m-d-Y', strtotime($data[$row->id]['date'])),
@@ -286,6 +287,22 @@ class Motifs_model extends CI_Model {
                     );
                 }
             }
+
+            // show the first release that has nothing to compare it with
+            $table[$motif_type][] = array(
+                anchor(base_url(array('motifs','release',$motif_type,'0.1')), '0.1'),
+                0,
+                0,
+                0,
+                0,
+                0,
+                $data['0.1']['loops'],
+                $data['0.1']['motifs'],
+                date('m-d-Y', strtotime($data['0.1']['date'])),
+                $data['0.1']['annotation']
+            );
+
+
 
         }
         return $table;
