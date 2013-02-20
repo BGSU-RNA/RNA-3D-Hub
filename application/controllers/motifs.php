@@ -33,6 +33,7 @@ class Motifs extends CI_Controller {
 	    $this->load->model('Motifs_model', '', TRUE);
 
         $data['featured'] = $this->Motifs_model->get_featured_motifs('il');
+        $data['featured'] = array_merge($data['featured'], $this->Motifs_model->get_featured_motifs('hl'));
         $data = array_merge($data, $this->Motifs_model->get_current_release_info());
 
         $data['title']   = 'RNA 3D Motif Atlas';

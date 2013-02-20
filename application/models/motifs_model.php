@@ -50,7 +50,10 @@ class Motifs_model extends CI_Model {
                      ->group_by('ml_loops.motif_id')
                      ->order_by('members', 'desc')
                      ->limit(1);
-            $data[$motif] = $this->db->get()->row()->motif_id;
+            $query = $this->db->get();
+            if ( $query->num_rows() > 0 ) {
+                $data[$motif] = $query->row()->motif_id;
+            }
         }
         return $data;
     }
