@@ -151,40 +151,37 @@
           </div>
 
           <div class="modal-body">
-            <p>
-              <a href='https://github.com/blakesweeney/rna2d.js'>RNA2D.js</a>
-              is a tool to visualize and interact with RNA Secondary
-              structures. It is meant to create the standard airport diagrams and
-              provide a way to interact with them. Currently, we can easily
-              integrate the 2D visualization with the 3D visualization provided by
-              <a href='https://github.com/AntonPetrov/jmolTools'>jmolTools</a>.
-            </p>
 
             <p>
-              Shown here is a circular diagram generated using the 
+              Shown here is a <strong>circular diagram</strong> generated using the 
               <a href="http://rna.bgsu.edu/main/software/fr3d/">FR3D</a> annotations 
-              for <?=$pdb_id?>. The black circle represents the annotated chains.
+              for <?=$pdb_id?>. The black circle represents the annotated chains. For 
+              some structures an <strong>airport diagram</strong> is provided. To draw it click the 
+              airport button. Structures without one have a disabled button.
             </p>
 
+            <h4>Interactions</h4>
             <p>
               Interactions are displayed as arcs connecting nucleotides,
-              by default only cWW interactions are displayed. The dotted 
-              arcs are long range interactions, there include things like 
+              by default only cWW interactions are displayed. The 
+              <strong>dotted arcs</strong>
+              are long range interactions, there include things like 
               pseudoknots. To display other interactions use the interaction 
               controls to the right. Clicking on a interaction will toggle 
               displaying all interactions of that family and ones near that 
               family. So clicking on tWW shows all tWW and ntWW. 
             </p>
 
+            <h4>Modes</h4>
             <p>
-              In the default select mode, click and drag to create a selection box. 
+              In the default <strong>select mode</strong>, click and drag to create a selection box. 
               All nucleotides within the selection box will be displayed in a jmol 
               window to the right. The selection box is dragable and resizeable. Click 
               inside and drag to move it. Click on the border and drag to resize it.
             </p>
 
             <p>
-              In click mode, click on a interaction or nucleotide to display it
+              In <strong>click mode</strong>, click on a interaction or nucleotide to display it
               in 3D. In addition, some information about the clicked element will 
               be displayed below the jmol window. To switch to the click mode use 
               the selection mode control. Hovering over an interaction will 
