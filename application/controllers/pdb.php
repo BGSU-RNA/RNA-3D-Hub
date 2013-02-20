@@ -195,6 +195,7 @@ class Pdb extends CI_Controller {
 
         if ( $pdb_status['valid'] ) {
             $nts = $this->Pdb_model->get_airport($pdb_id);
+            $data['long_range'] = json_encode($this->Pdb_model->get_longrange_bp($pdb_id));
             if ($nts) {
                 $data['has_airport'] = TRUE;
                 $data['nts'] = $nts;

@@ -167,12 +167,13 @@
             </p>
 
             <p>
-              Interactions are displayed as black arcs connecting nucleotides,
-              by default only cWW interactions are displayed. To display other
-              interactions use the interaction controls to the right. Clicking 
-              on a interaction will toggle displaying all interactions of that 
-              family and ones near that family. So clicking on tWW shows all tWW 
-              and ntWW. 
+              Interactions are displayed as arcs connecting nucleotides,
+              by default only cWW interactions are displayed. The dotted 
+              arcs are long range interactions, there include things like 
+              pseudoknots. To display other interactions use the interaction 
+              controls to the right. Clicking on a interaction will toggle 
+              displaying all interactions of that family and ones near that 
+              family. So clicking on tWW shows all tWW and ntWW. 
             </p>
 
             <p>
@@ -197,6 +198,7 @@
 
 <script type='text/javascript'>
     NTS = <?=$nts?>;
+    LONG = <?=$long_range?>;
     INTERACTION_URL = "http://rna.bgsu.edu/rna3dhub/pdb/<?=$pdb_id?>/interactions/fr3d/basepairs/csv";
 
     $('#chosen').chosen().change(function(){
