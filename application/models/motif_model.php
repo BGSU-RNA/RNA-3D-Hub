@@ -339,11 +339,21 @@ class Motif_model extends CI_Model {
         $i = 1;
         foreach ($data as $similarity_level => $similar_motif) {
             if (!array_key_exists($similar_motif, $done)) {
+                $this->db->select('common_name')
+                         ->from('ml_motif_annotations')
+                         ->where('motif_id', $similar_motif);
+                $name = '';
+                $query = $this->db->get();
+                foreach($query->result() as $row){
+                    $name = $row->common_name;
+                }
+
                 $compare_link = anchor_popup("motif/compare/$motif_id/$similar_motif", 'Compare');
                 $table[] = array($i,
                                  number_format($similarity_level, 4),
                                  anchor_popup("motif/view/$similar_motif", $similar_motif),
-                                 $compare_link);
+                                 $compare_link,
+                                 $name);
                 $done[$similar_motif] = 0;
                 $i++;
             }
