@@ -446,11 +446,13 @@ class Motif_model extends CI_Model {
         }
 
         $counts = array_count_values($seq_all);
+        arsort($counts);
         foreach($counts as $seq => $count) {
             $complete[] = array($seq, $count);
         }
 
         $counts = array_count_values($seq_nwc);
+        arsort($counts);
         foreach($counts as $seq => $count) {
             $nwc[] = array($seq, $count);
         }
