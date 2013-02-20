@@ -7,7 +7,7 @@ $(document).ready(function() {
       ' ' +
       '<button type="button" id="stereo" class="btn">Stereo</button>' +
       ' ' +
-      '<label><input type="checkbox" id="showNtNums">Show Numbers</label>';
+      '<label><input type="checkbox" id="showNtNums">Show numbers</label>';
     $jmol.append(form);
   };
 
@@ -90,6 +90,20 @@ $(document).ready(function() {
     return plot.jmol.showSelection(selection);
   };
 
+  var clickMotif = function() {
+    var data = d3.select(this).datum(),
+      selection = {};
+
+    $('#' + plot.jmol.divID()).show();
+    showAbout('Loop: ' + loopLink(data.id));
+
+    for(var i = 0; i < data.nts.length; i++) {
+      selection[normalizeID(data.nts[i])] = true;
+    }
+
+    return plot.jmol.showSelection(selection);
+  };
+
   var brushShow = function(selection) {
     var ids = {};
     $('#' + plot.jmol.divID()).show();
@@ -97,6 +111,13 @@ $(document).ready(function() {
     $('#about-selection').hide();
     return plot.jmol.showSelection(ids);
   };
+
+  $('.motif-toggle').on('click', function(e) {
+    var $btn = $(e.target),
+      family = $btn.data('motif');
+    $btn.button('toggle');
+    plot.motifs.toggle(family);
+  });
 
   $('.toggle-control').on('click', function(e) {
     var $btn = $(e.target),
@@ -126,11 +147,14 @@ $(document).ready(function() {
 
     plot.brush.clear();
     $('#' + plot.jmol.divID()).hide();
+    $('#about-selection').hide();
 
     if (view === 'airport') {
       plot.height(11/8 * plot.width());
+      $("#motif-toggle").removeAttr("disabled").addClass('active');
     } else {
       plot.height(400);
+      $("#motif-toggle").attr("disabled", "disabled");
     }
 
     $('.view-control').removeClass('active');
@@ -146,8 +170,10 @@ $(document).ready(function() {
   var normalizeID = function(id) { return id.replace(/_/g, '|'); };
   var ntURL = function(id) { return 'http://rna.bgsu.edu/rna3dhub/unitid/describe/' + encodeURIComponent(id); };
   var ntLink = function(id) { return '<a target="_blank" href="' + ntURL(id) + '">' + id + "</a>"; };
+  var loopLink = function(id) { return '<a target="_blank" href="' + loopURL(id) + '">' + id + "</a>"; };
+  var loopURL = function(id) { return 'http://rna.bgsu.edu/rna3dhub/loops/view/' + id; };
 
-  var plot = Rna2D({view: 'circular', width: 500, height: 400, selection: '#rna-2d' });
+  var plot = Rna2D({view: 'circular', width: 500, height: 400, selection: '#rna-2d'});
 
   plot.frame.add(false);
   plot.nucleotides(NTS)
@@ -168,12 +194,17 @@ $(document).ready(function() {
   plot.interactions
     .getNTs(function(d) { return [convertNTID(d.nt1), convertNTID(d.nt2)]; })
     .classOf(function(d, i) {
-      var lr = d.long_range;
-      return plot.interactions.getFamily()(d) + ' ' + (lr ? "LR" : "");
-    });
+      return plot.interactions.getFamily()(d) + ' ' + (d.long_range ? "LR" : "");
+    })
+    .click(clickInteraction)
+    .mouseover(highlightInteraction)
+    .mouseout(normalizeInteraction);
+
+  plot.motifs
+    .click(clickMotif)
+    .mouseover('highlight');
 
   d3.text(INTERACTION_URL, 'text/csv', function(err, text) {
-    var interactions = [];
     if (err || text.indexOf("This structure") !== -1) {
       console.log(err);
       console.log(text);
@@ -185,7 +216,7 @@ $(document).ready(function() {
       }
 
     } else {
-      interactions = d3.csv.parse('"nt1","family","nt2"\n' + text);
+      var interactions = d3.csv.parse('"nt1","family","nt2"\n' + text);
       var idBuilder = plot.interactions.getID(),
           lr = {};
 
@@ -208,15 +239,26 @@ $(document).ready(function() {
         }
       }());
 
+      plot.interactions(interactions);
+
+      d3.text(LOOP_URL, "text/csv", function(err, text) {
+        if (err || text.indexOf("No loops") !== -1) {
+          console.error(err);
+          console.error(text);
+        }
+
+        var motifs = d3.csv.parse('"id","nts"\n' + text);
+
+        (function() {
+          for(var i = 0; i < motifs.length; i++) {
+            motifs[i].nts = $.map(motifs[i].nts.split(","), convertNTID);
+          }
+        }());
+
+        plot.motifs(motifs);
+
+        return plot();
+      });
     }
-
-    plot.interactions(interactions)
-      .click(clickInteraction)
-      .mouseover(highlightInteraction)
-      .mouseout(normalizeInteraction);
-
-    return plot();
   });
-
-  return true;
 });

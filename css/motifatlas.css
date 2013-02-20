@@ -691,6 +691,10 @@ body.home {
   fill: #49AFCD;
   stroke: #1f6377;
 }
+.pdb-2d-view #rna-2d .J3 {
+  fill: #CDAC4A;
+  stroke: #D2A41A;
+}
 .pdb-2d-view #rna-2d .frame {
   fill: #fff;
   fill-opacity: 0;
@@ -852,6 +856,15 @@ body.home {
 }
 .pdb-2d-view .btn {
   margin-left: 3px;
+}
+.pdb-2d-view #motif-controls {
+  padding-bottom: 10px;
+}
+.pdb-2d-view #motif-toggle {
+  padding-left: 9px;
+}
+.pdb-2d-view .block-message a {
+  text-decoration: underline;
 }
 
 /* Motif Atlas home page */

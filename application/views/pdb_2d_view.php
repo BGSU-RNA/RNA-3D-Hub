@@ -78,6 +78,11 @@
                 autocomplete="off" data-normal-text="Select"
                 data-loading-text="Click">Select</button>
 
+                <div id="motif-controls">
+                    <button type="button" id='motif-toggle' class="btn btn-block IL 
+                        motif-toggle active" disabled='disabled' data-motif='*'>Motifs</button>
+                </div>
+
               <div id="control-groups">
                 <div id="interaction-controls">
                     <button type="button" id='cWW-toggle' class="btn btn-block
@@ -117,6 +122,7 @@
                       tHH toggle-control" data-family='tHH'>tHH</button>
 
                 </div>
+
               </div>
 
             </div>
@@ -172,12 +178,18 @@
               family. So clicking on tWW shows all tWW and ntWW. 
             </p>
 
+            <h4>Motifs</h4>
+            <p>
+                In airport mode motifs are displayed by default. To hide them click the motif button.
+                Internal loops are shown in a green box, hairpins in blue and 3-way junctions in yellow.
+                Currently we only extract 3-way junctions, in the future this may change.
+            </p>
+
             <h4>Modes</h4>
             <p>
               In the default <strong>select mode</strong>, click and drag to create a selection box. 
               All nucleotides within the selection box will be displayed in a jmol 
-              window to the right. The selection box is dragable and resizeable. Click 
-              inside and drag to move it. Click on the border and drag to resize it.
+              window to the right. The selection box is dragable and resizeable. 
             </p>
 
             <p>
@@ -197,6 +209,7 @@
     NTS = <?=$nts?>;
     LONG = <?=$long_range?>;
     INTERACTION_URL = "http://rna.bgsu.edu/rna3dhub/pdb/<?=$pdb_id?>/interactions/fr3d/basepairs/csv";
+    LOOP_URL = "http://rna.bgsu.edu/rna3dhub_dev/loops/download/<?=$pdb_id?>";
 
     $('#chosen').chosen().change(function(){
         window.location.href = "<?=$baseurl?>pdb/" + $(this).val();
