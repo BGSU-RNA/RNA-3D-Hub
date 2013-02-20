@@ -68,7 +68,13 @@
                 <?php foreach($featured as $name=>$motif): ?>
                 <li>
                   <a href="<?=$baseurl?>motif/view/<?=$motif?>" target="_blank">
-                    <img src="http://rna.bgsu.edu/img/MotifAtlas/IL<?=$release_info['il_release']?>/<?=$motif?>.png" class="thumbnail span2" alt="Motif <?=$motif?>">
+                    <img src="http://rna.bgsu.edu/img/MotifAtlas/<?php
+                        if ( strstr($motif, 'IL') ) {
+                            echo 'IL' . $release_info['il_release'];
+                        } else {
+                            echo 'HL' . $release_info['hl_release'];
+                        }
+                    ?>/<?=$motif?>.png" class="thumbnail span2" alt="Motif <?=$motif?>">
                     <?=ucfirst($name);?>
                   </a>
                 </li>
