@@ -54,7 +54,9 @@
                       Airport
                     </button>
                     <?php else: ?>
-                    <button id='airport-view' disabled="disabled" class="btn disabled view-control" data-view='airport'>
+                    <button id='airport-view' disabled="disabled" 
+                        class="btn hasTooltip disabled view-control" data-view='airport'
+                        title="No airport diagram is available yet">
                       Airport
                     </button>
                     <?php endif; ?>
