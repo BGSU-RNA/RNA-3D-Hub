@@ -95,9 +95,9 @@
                             <?php echo $table;?>
                         </div>
 
-                        <div class="tab-pane block-div" id='variants'>
+                        <div class="tab-pane" id='variants'>
                             <h4>3D structures</h4>
-                            <div class="row block-div span11">
+                            <div class="row span11">
                                 <div class="span5">
                                     <h5>Complete motif including flanking bases</h5>
                                     <?=$sequence_variation['complete']?>
@@ -117,18 +117,18 @@
                         </div>
 
                         <div class="tab-pane" id='similar'>
-                            <div class="span10">
+                            <div>
                                 <?=$similar_motifs?>
                             </div>
                         </div>
 
                         <div class="tab-pane" id='history'>
                             <h4>Release history</h4>
-                            <div "class=row">
+                            <div>
                                 <?=$motif_release_history?>
                             </div>
                             <h4>Parent motifs</h4>
-                            <div "class=row">
+                            <div>
                                 <?=$history['parents']?>
                             </div>
                             <h4>Children motifs</h4>
