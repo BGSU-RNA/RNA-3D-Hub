@@ -53,10 +53,14 @@
                     <button id='airport-view' class="btn view-control" data-view='airport'>
                       Airport
                     </button>
+                    <?php else: ?>
+                    <button id='airport-view' disabled="disabled" class="btn disabled view-control" data-view='airport'>
+                      Airport
+                    </button>
+                    <?php endif; ?>
                     <button id='circular-view' class="btn active view-control" data-view='circular'>
                       Circular
                     </button>
-                    <?php endif; ?>
                 </div>
             </div>
         </div>
