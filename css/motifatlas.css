@@ -627,6 +627,9 @@ body.home {
   stroke: black;
   opacity: 0.4;
 }
+.pdb-2d-view #rna-2d .LR {
+  stroke-dasharray: 5,5;
+}
 .pdb-2d-view #rna-2d .cWW,
 .pdb-2d-view #rna-2d .ncWW {
   stroke: #000000;
