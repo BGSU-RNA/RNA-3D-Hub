@@ -35,7 +35,7 @@ class Motifs_model extends CI_Model {
         $release_id = $this->get_latest_release($motif_type);
 
         if ( $motif_type == 'il' ) {
-            $motifs = array('c-loop', 'sarcin', 'kink-turn', 'triple sheared', 'double sheared');
+            $motifs = array('kink-turn', 'c-loop', 'sarcin', 'triple sheared', 'double sheared');
         } else {
             $motifs = array('T-loop', 'GNRA');
         }
