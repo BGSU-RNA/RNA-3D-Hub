@@ -36,17 +36,25 @@ $(document).ready(function() {
   };
 
   var highlightNucleotide = function() {
-    plot.pie.addLetters()([this]);
-    d3.select(this).style('font-size', plot.nucleotides.fontSize() + 4);
+    if (plot.view() == 'circular') {
+      plot.pie.addLetters()([this]);
+    } else {
+      d3.select(this).style('font-size', plot.nucleotides.fontSize() + 4)
+        .style('fill', 'red');
+    }
     var inters = plot.nucleotides.interactions(this);
     inters.style('opacity', 1);
   };
 
   var normalizeNucleotide = function() {
-    d3.select(this).style('font-size', plot.nucleotides.fontSize());
     var inters = plot.nucleotides.interactions(this);
     inters.style('opacity', 0.4);
-    plot.pie.clearLetters()();
+    if (plot.view() === 'circular') {
+      plot.pie.clearLetters()();
+    } else {
+      d3.select(this).style('font-size', plot.nucleotides.fontSize())
+        .style('fill', null);
+    }
   };
 
   var showAbout = function(text) {
