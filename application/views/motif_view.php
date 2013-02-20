@@ -50,31 +50,28 @@
                         </dl>
 
                         <ul class='media-grid'>
-                            <a href='#'>
+                            <a href='#' class="hint" rel='twipsy' title='
+                                2D diagram abbreviations:<br>
+                                    Y: pyrimidines (C or U)<br>
+                                    R: purines (G or A)<br>
+                                    W: weak (A or U)<br>
+                                    S: strong (G or C)<br>
+                                    K: keto (G or U)<br>
+                                    M: amino (A or C)<br>
+                                    D: not C<br>
+                                    V: not U<br>
+                                    H: not G<br>
+                                    B: not A<br>
+                                    A: only A<br>
+                                    G: only G<br>
+                                    C: only C<br>
+                                    U: only U<br>
+                                    N: any nucleotide'>
                                 <img class="span3 thumbnail"
                                      src="http://rna.bgsu.edu/img/MotifAtlas/<?php echo substr($title,0,2) . $release_id;?>/<?=$title?>.png"
                                      alt='2D diagram'>
                             </a>
                         </ul>
-
-                        <div id='varna-help' rel='twipsy' title='
-                        2D diagram abbreviations:<br>
-                            Y: pyrimidines (C or U)<br>
-                            R: purines (G or A)<br>
-                            W: weak (A or U)<br>
-                            S: strong (G or C)<br>
-                            K: keto (G or U)<br>
-                            M: amino (A or C)<br>
-                            D: not C<br>
-                            V: not U<br>
-                            H: not G<br>
-                            B: not A<br>
-                            A: only A<br>
-                            G: only G<br>
-                            C: only C<br>
-                            U: only U<br>
-                            N: any nucleotide'>
-                        </div>
                 </div>
             </div>
             <div class="span12">
@@ -90,6 +87,11 @@
                     <div class="tab-content">
 
                         <div class="tab-pane active" id='int'>
+                          <span class="muted">
+                              #D - ordering by discrepancy relative to the exemplar,
+                              #S - ordering by similarity (same as in the heat map).
+                          </span>
+
                             <?php echo $table;?>
                         </div>
 
@@ -203,7 +205,7 @@
 
       <script>
 
-        $('.mdmatrix td, #mdmatrix-help, #varna-help').twipsy({
+        $('.mdmatrix td, #mdmatrix-help, .hint').twipsy({
             html: true
         });
         $(".pdb").click(LookUpPDBInfo);
