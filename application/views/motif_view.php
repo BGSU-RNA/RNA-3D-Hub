@@ -240,14 +240,6 @@
       	    });
       	}
 
-
-
-        // greyscale
-        function greyscale() {
-        }
-
-//         $('#insertions').on('click', greyscale);
-
         // only add this code if the user is logged in
         <?php if ($this->session->userdata('username')): ?>
         (function () {
@@ -334,9 +326,11 @@
 
         (function() {
             var resizable = $('.motifview .interactions');
+            var h = Math.min($('#sort').find('tr').length * 34, 300);
             if ( resizable.height() > 300 ) {
-                resizable.height( Math.min( $('#sort').find('tr').length * 34, 300 ) );
+                resizable.height(h);
             }
+            $('#variants, #similar, #history').css('max-height', resizable.height());
         })();
 
 
