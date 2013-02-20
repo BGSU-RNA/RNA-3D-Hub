@@ -153,6 +153,7 @@ $(document).ready(function() {
   plot.frame.add(false);
   plot.nucleotides(NTS)
     .getID(function(d, i) { return convertNTID(d['id']); })
+    .fontSize(8)
     .click(clickNucleotide)
     .mouseover(highlightNucleotide)
     .mouseout(normalizeNucleotide);
