@@ -56,6 +56,25 @@
                                      alt='2D diagram'>
                             </a>
                         </ul>
+
+                        <div id='varna-help' rel='twipsy' title='
+                        2D diagram abbreviations:<br>
+                            Y: pyrimidines (C or U)<br>
+                            R: purines (G or A)<br>
+                            W: weak (A or U)<br>
+                            S: strong (G or C)<br>
+                            K: keto (G or U)<br>
+                            M: amino (A or C)<br>
+                            D: not C<br>
+                            V: not U<br>
+                            H: not G<br>
+                            B: not A<br>
+                            A: only A<br>
+                            G: only G<br>
+                            C: only C<br>
+                            U: only U<br>
+                            N: any nucleotide'>
+                        </div>
                 </div>
             </div>
             <div class="span12">
@@ -184,7 +203,7 @@
 
       <script>
 
-        $('.mdmatrix td, #mdmatrix-help').twipsy({
+        $('.mdmatrix td, #mdmatrix-help, #varna-help').twipsy({
             html: true
         });
         $(".pdb").click(LookUpPDBInfo);
