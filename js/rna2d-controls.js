@@ -124,7 +124,6 @@ $(document).ready(function() {
 
     plot.view(view);
 
-    // TODO: Clear brush and jmol when switching views
     plot.brush.clear();
     $('#' + plot.jmol.divID()).hide();
 
@@ -166,6 +165,13 @@ $(document).ready(function() {
     .windowSize(350)
     .windowBuild(generateJmol);
 
+  plot.interactions
+    .getNTs(function(d) { return [convertNTID(d.nt1), convertNTID(d.nt2)]; })
+    .classOf(function(d, i) {
+      var lr = d.long_range;
+      return plot.interactions.getFamily()(d) + ' ' + (lr ? "LR" : "");
+    });
+
   d3.text(INTERACTION_URL, 'text/csv', function(err, text) {
     var interactions = [];
     if (err || text.indexOf("This structure") !== -1) {
@@ -177,12 +183,34 @@ $(document).ready(function() {
         $("#cWW-toggle").removeClass("active");
         $(".toggle-control").addClass('disabled');
       }
+
     } else {
       interactions = d3.csv.parse('"nt1","family","nt2"\n' + text);
+      var idBuilder = plot.interactions.getID(),
+          lr = {};
+
+      (function() {
+        for(var i = 0; i < LONG.length; i++) {
+          var cur = LONG[i], 
+              id = idBuilder(cur);
+          lr[id] = cur.crossing;
+        }
+      }());
+
+      (function() {
+        for(var i = 0; i < interactions.length; i++) {
+          var cur = interactions[i],
+              id = idBuilder(cur);
+          if (lr[id]) {
+            cur['long_range'] = true;
+            cur['crossing'] = lr[id];
+          }
+        }
+      }());
+
     }
 
     plot.interactions(interactions)
-      .getNTs(function(d) { return [convertNTID(d.nt1), convertNTID(d.nt2)]; })
       .click(clickInteraction)
       .mouseover(highlightInteraction)
       .mouseout(normalizeInteraction);
