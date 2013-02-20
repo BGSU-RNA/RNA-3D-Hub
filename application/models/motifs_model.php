@@ -135,7 +135,8 @@ class Motifs_model extends CI_Model {
                 </label>
             </li>";
         }
-        return $output . '</ul>';
+        $compare_link = anchor_popup(base_url(array('motif', 'compare', $motifs[0], $motifs[1])), 'Compare');
+        return $output . "<li>$compare_link</li></ul>";
     }
 
     function get_change_counts_by_release($motif_type)
