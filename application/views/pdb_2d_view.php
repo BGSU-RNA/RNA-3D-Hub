@@ -209,7 +209,7 @@
     NTS = <?=$nts?>;
     LONG = <?=$long_range?>;
     INTERACTION_URL = "http://rna.bgsu.edu/rna3dhub/pdb/<?=$pdb_id?>/interactions/fr3d/basepairs/csv";
-    LOOP_URL = "http://rna.bgsu.edu/rna3dhub_dev/loops/download/<?=$pdb_id?>";
+    LOOP_URL = "http://rna.bgsu.edu/rna3dhub/loops/download/<?=$pdb_id?>";
 
     $('#chosen').chosen().change(function(){
         window.location.href = "<?=$baseurl?>pdb/" + $(this).val();
