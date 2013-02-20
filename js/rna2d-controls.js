@@ -62,6 +62,7 @@ $(document).ready(function() {
     var data = d3.select(this).datum(),
         selection = {};
 
+    $('#' + plot.jmol.divID()).show();
     showAbout(data.family + ' interaction between ' + ntLink(data.nt1) +
               ' and ' + ntLink(data.nt2));
 
@@ -74,6 +75,7 @@ $(document).ready(function() {
     var data = d3.select(this).datum(),
         selection = {};
 
+    $('#' + plot.jmol.divID()).show();
     showAbout('Nucleotide: ' + ntLink(data.id));
 
     selection[data.id] = true;
@@ -82,6 +84,7 @@ $(document).ready(function() {
 
   var brushShow = function(selection) {
     var ids = {};
+    $('#' + plot.jmol.divID()).show();
     $.each(selection, function(id, entry) { ids[normalizeID(id)] = entry; });
     $('#about-selection').hide();
     return plot.jmol.showSelection(ids);
@@ -112,6 +115,11 @@ $(document).ready(function() {
         view = $btn.data('view');
 
     plot.view(view);
+
+    // TODO: Clear brush and jmol when switching views
+    plot.brush.clear();
+    $('#' + plot.jmol.divID()).hide();
+
     if (view === 'airport') {
       plot.height(11/8 * plot.width());
     } else {
