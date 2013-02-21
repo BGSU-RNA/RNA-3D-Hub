@@ -478,6 +478,43 @@ class Pdb_model extends CI_Model {
         return $nts;
     }
 
+    function get_airport($pdb_id) 
+    {
+        $table='pdb_airport';
+        if (! $this->db->table_exists($table)) {
+            return false;
+        }
+
+        $this->db->select('json_structure')
+                 ->from($table)
+                 ->where('id', $pdb_id);
+
+        $result = $this->db->get()->row();
+        return ($result) ? $result->json_structure : false;
+    }
+
+    function get_longrange_bp($pdb)
+    {
+        $this->db->select('C1.unit_id as nt1, C2.unit_id as nt2, f_lwbp as family, f_crossing as crossing')
+                 ->from('pdb_pairwise_interactions')
+                 ->join('pdb_unit_id_correspondence as C1', 'C1.old_id = pdb_pairwise_interactions.iPdbSig')
+                 ->join('pdb_unit_id_correspondence as C2', 'C2.old_id = pdb_pairwise_interactions.jPdbSig')
+                 ->where('pdb_id', $pdb)
+                 ->where('f_crossing > 3')
+                 ->where('f_lwbp is not null');
+
+        $query = $this->db->get();
+
+        if (!$query->num_rows()) {
+            return array();
+        }
+
+        foreach($query->result() as $row) {
+            $longrange[] = $row;
+        }
+
+        return $longrange;
+    }
 }
 
 /* End of file pdb_model.php */

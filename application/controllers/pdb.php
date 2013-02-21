@@ -192,10 +192,18 @@ class Pdb extends CI_Controller {
         $data['method'] = 'fr3d';
         $data['pdb_id'] = $pdb_id;
         $data['sub_heading'] = "2D representation";
+        $data['has_airport'] = FALSE;
         $view = 'pdb_2d_view';
 
         if ( $pdb_status['valid'] ) {
-            $data['nts'] = json_encode($this->Pdb_model->get_ordered_nts($pdb_id));
+            $nts = $this->Pdb_model->get_airport($pdb_id);
+            $data['long_range'] = json_encode($this->Pdb_model->get_longrange_bp($pdb_id));
+            if ($nts) {
+                $data['has_airport'] = TRUE;
+                $data['nts'] = $nts;
+            } else {
+                $data['nts'] = json_encode($this->Pdb_model->get_ordered_nts($pdb_id));
+            }
         } else {
             $data['message'] = $pdb_status['message'];
             $view = 'pdb_invalid_view';
