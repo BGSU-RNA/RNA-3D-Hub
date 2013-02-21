@@ -77,6 +77,16 @@
                 <a href="#" class="dropdown-toggle">Links</a>
                 <ul class="dropdown-menu">
                     <li><a href="http://rna.bgsu.edu">RNA BGSU Home</a></li>
+                    <?php
+                        $current = current_url();
+                        if ( !strstr($current, 'rna3dhub_dev') ){
+                            $link = str_replace('/rna3dhub/', '/rna3dhub_dev/', $current);
+                            echo '<li>' . anchor($link, 'Dev site') . '</li>';
+                        } else {
+                            $link = str_replace('/rna3dhub_dev/', '/rna3dhub/', $current);
+                            echo '<li>' . anchor($link, 'Production') . '</li>';
+                        }
+                    ?>
                     <li class="divider"></li>
                     <li><a href="http://pdb.org">PDB</a></li>
                     <li><a href="http://ndbserver.rutgers.edu">NDB</a></li>
