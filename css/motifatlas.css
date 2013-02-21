@@ -154,15 +154,27 @@ small .label {
 .motif_compare_view .highlight {
     color: red;
 }
-.motif_compare_view .identical {
-    -webkit-animation: rotating 10s linear infinite;
+.motif_compare_view .identical{
+-webkit-animation:rotating 1s linear infinite alternate;
+   -moz-animation:rotating 1s linear infinite alternate;
+    -ms-animation:rotating 1s linear infinite alternate;
+     -o-animation:rotating 1s linear infinite alternate;
+        animation:rotating 1s linear infinite alternate;
 }
 @-webkit-keyframes rotating {
     from{
-        -webkit-transform: rotate(0deg);
+        transform: rotate(-3deg);
+        -ms-transform: rotate(-3deg); /* IE 9 */
+        -webkit-transform: rotate(-3deg); /* Safari and Chrome */
+        -o-transform: rotate(-3deg); /* Opera */
+        -moz-transform: rotate(-3deg); /* Firefox */
     }
     to{
-        -webkit-transform: rotate(360deg);
+        transform: rotate(3deg);
+        -ms-transform: rotate(3deg); /* IE 9 */
+        -webkit-transform: rotate(3deg); /* Safari and Chrome */
+        -o-transform: rotate(3deg); /* Opera */
+        -moz-transform: rotate(3deg); /* Firefox */
     }
 }
 .block-div {
