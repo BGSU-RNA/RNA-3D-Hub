@@ -7,10 +7,10 @@
             <div class="span14">
               <h1>
                 <?php
-                    echo anchor_popup("motif/view/$motif1", $motif1) . ' vs. ' .
-                         anchor_popup("motif/view/$motif2", $motif2);
+                    echo anchor_popup("motif/view/$motif1", $motif1) . ' (1) vs. ' .
+                         anchor_popup("motif/view/$motif2", $motif2) . ' (2)';
                 ?>
-                <small>explore geometric similarity between two motifs</small>
+                <small>compare two motifs</small>
               </h1>
             </div>
           </div>
@@ -24,6 +24,8 @@
                 within the geometric discrepancy of 1.0 Å/nucleotide, then the cell is colored black.
                 If the match between two motif instances has been disqualified, then the corresponding
                 cell is marked with an "x" and the reason for disqualification is displayed on hover.
+                If two motif instances have identical sequences, then the corresponding cell will
+                rotate around its center.
                 </p>
             </div>
         </div>

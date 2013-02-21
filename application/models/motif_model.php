@@ -150,6 +150,15 @@ class Motif_model extends CI_Model {
             $motifs[$row->motif_id][$row->loop_id] = 1;
         }
 
+        // get loop sequences
+        $this->db->select('id, seq')
+                 ->from('loops_all')
+                 ->where_in('id', $loop_ids);
+        $query = $this->db->get();
+        foreach($query->result() as $row) {
+            $seqs[$row->id] = $row->seq;
+        }
+
         // get mutual discrepancies
         $this->db->select('loop_searches.loop_id1 as loop1,
                            loop_searches.loop_id2 as loop2,
@@ -268,6 +277,11 @@ class Motif_model extends CI_Model {
                     } elseif ( $qa_message[$loop2][$loop1] ) {
                         $title .= $qa_message[$loop2][$loop1];
                     }
+                }
+
+                if ( $seqs[$loop1] == $seqs[$loop2] ) {
+                    $title .= '<br>Attention: identical sequences';
+                    $class .= 'identical';
                 }
 
                 $coord = "{$loop1}:{$loop2}";
