@@ -7,7 +7,7 @@ $(document).ready(function() {
       ' ' +
       '<button type="button" id="stereo" class="btn">Stereo</button>' +
       ' ' +
-      '<label><input type="checkbox" id="showNtNums">Show Numbers</label>';
+      '<label><input type="checkbox" id="showNtNums">Show numbers</label>';
     $jmol.append(form);
   };
 
@@ -36,17 +36,25 @@ $(document).ready(function() {
   };
 
   var highlightNucleotide = function() {
-    plot.pie.addLetters()([this]);
-    d3.select(this).style('font-size', plot.nucleotides.fontSize() + 4);
+    if (plot.view() == 'circular') {
+      plot.pie.addLetters()([this]);
+    } else {
+      d3.select(this).style('font-size', plot.nucleotides.fontSize() + 4)
+        .style('fill', 'red');
+    }
     var inters = plot.nucleotides.interactions(this);
     inters.style('opacity', 1);
   };
 
   var normalizeNucleotide = function() {
-    d3.select(this).style('font-size', plot.nucleotides.fontSize());
     var inters = plot.nucleotides.interactions(this);
     inters.style('opacity', 0.4);
-    plot.pie.clearLetters()();
+    if (plot.view() === 'circular') {
+      plot.pie.clearLetters()();
+    } else {
+      d3.select(this).style('font-size', plot.nucleotides.fontSize())
+        .style('fill', null);
+    }
   };
 
   var showAbout = function(text) {
@@ -62,6 +70,7 @@ $(document).ready(function() {
     var data = d3.select(this).datum(),
         selection = {};
 
+    $('#' + plot.jmol.divID()).show();
     showAbout(data.family + ' interaction between ' + ntLink(data.nt1) +
               ' and ' + ntLink(data.nt2));
 
@@ -74,18 +83,41 @@ $(document).ready(function() {
     var data = d3.select(this).datum(),
         selection = {};
 
+    $('#' + plot.jmol.divID()).show();
     showAbout('Nucleotide: ' + ntLink(data.id));
 
     selection[data.id] = true;
     return plot.jmol.showSelection(selection);
   };
 
+  var clickMotif = function() {
+    var data = d3.select(this).datum(),
+      selection = {};
+
+    $('#' + plot.jmol.divID()).show();
+    showAbout('Loop: ' + loopLink(data.id));
+
+    for(var i = 0; i < data.nts.length; i++) {
+      selection[normalizeID(data.nts[i])] = true;
+    }
+
+    return plot.jmol.showSelection(selection);
+  };
+
   var brushShow = function(selection) {
     var ids = {};
+    $('#' + plot.jmol.divID()).show();
     $.each(selection, function(id, entry) { ids[normalizeID(id)] = entry; });
     $('#about-selection').hide();
     return plot.jmol.showSelection(ids);
   };
+
+  $('.motif-toggle').on('click', function(e) {
+    var $btn = $(e.target),
+      family = $btn.data('motif');
+    $btn.button('toggle');
+    plot.motifs.toggle(family);
+  });
 
   $('.toggle-control').on('click', function(e) {
     var $btn = $(e.target),
@@ -107,16 +139,46 @@ $(document).ready(function() {
     $btn.text(text);
   });
 
+  $('.view-control').on('click', function(e) {
+    var $btn = $(e.target),
+        view = $btn.data('view');
+
+    plot.view(view);
+
+    plot.brush.clear();
+    $('#' + plot.jmol.divID()).hide();
+    $('#about-selection').hide();
+
+    if (view === 'airport') {
+      plot.height(11/8 * plot.width());
+      $("#motif-toggle").removeAttr("disabled").addClass('active');
+    } else {
+      plot.height(400);
+      $("#motif-toggle").attr("disabled", "disabled");
+    }
+
+    $('.view-control').removeClass('active');
+    $btn.addClass('active');
+
+    $('.toggle-control').removeClass('active');
+    $('#cWW-toggle').addClass('active');
+    plot();
+  });
+  
+
   var convertNTID = function(id) { return id.replace(/\|/g, '_'); };
   var normalizeID = function(id) { return id.replace(/_/g, '|'); };
   var ntURL = function(id) { return 'http://rna.bgsu.edu/rna3dhub/unitid/describe/' + encodeURIComponent(id); };
   var ntLink = function(id) { return '<a target="_blank" href="' + ntURL(id) + '">' + id + "</a>"; };
+  var loopLink = function(id) { return '<a target="_blank" href="' + loopURL(id) + '">' + id + "</a>"; };
+  var loopURL = function(id) { return 'http://rna.bgsu.edu/rna3dhub/loops/view/' + id; };
 
-  var plot = Rna2D({view: 'circular', width: 550, height: 400, selection: '#rna-2d' });
+  var plot = Rna2D({view: 'circular', width: 500, height: 400, selection: '#rna-2d'});
 
   plot.frame.add(false);
   plot.nucleotides(NTS)
     .getID(function(d, i) { return convertNTID(d['id']); })
+    .fontSize(8)
     .click(clickNucleotide)
     .mouseover(highlightNucleotide)
     .mouseout(normalizeNucleotide);
@@ -129,8 +191,20 @@ $(document).ready(function() {
     .windowSize(350)
     .windowBuild(generateJmol);
 
+  plot.interactions
+    .getNTs(function(d) { return [convertNTID(d.nt1), convertNTID(d.nt2)]; })
+    .classOf(function(d, i) {
+      return plot.interactions.getFamily()(d) + ' ' + (d.long_range ? "LR" : "");
+    })
+    .click(clickInteraction)
+    .mouseover(highlightInteraction)
+    .mouseout(normalizeInteraction);
+
+  plot.motifs
+    .click(clickMotif)
+    .mouseover('highlight');
+
   d3.text(INTERACTION_URL, 'text/csv', function(err, text) {
-    var interactions = [];
     if (err || text.indexOf("This structure") !== -1) {
       console.log(err);
       console.log(text);
@@ -140,18 +214,51 @@ $(document).ready(function() {
         $("#cWW-toggle").removeClass("active");
         $(".toggle-control").addClass('disabled');
       }
+
     } else {
-      interactions = d3.csv.parse('"nt1","family","nt2"\n' + text);
+      var interactions = d3.csv.parse('"nt1","family","nt2"\n' + text);
+      var idBuilder = plot.interactions.getID(),
+          lr = {};
+
+      (function() {
+        for(var i = 0; i < LONG.length; i++) {
+          var cur = LONG[i], 
+              id = idBuilder(cur);
+          lr[id] = cur.crossing;
+        }
+      }());
+
+      (function() {
+        for(var i = 0; i < interactions.length; i++) {
+          var cur = interactions[i],
+              id = idBuilder(cur);
+          if (lr[id]) {
+            cur['long_range'] = true;
+            cur['crossing'] = lr[id];
+          }
+        }
+      }());
+
+      plot.interactions(interactions);
+
+      d3.text(LOOP_URL, "text/csv", function(err, text) {
+        if (err || text.indexOf("No loops") !== -1) {
+          console.error(err);
+          console.error(text);
+        }
+
+        var motifs = d3.csv.parse('"id","nts"\n' + text);
+
+        (function() {
+          for(var i = 0; i < motifs.length; i++) {
+            motifs[i].nts = $.map(motifs[i].nts.split(","), convertNTID);
+          }
+        }());
+
+        plot.motifs(motifs);
+
+        return plot();
+      });
     }
-
-    plot.interactions(interactions)
-      .getNTs(function(d) { return [convertNTID(d.nt1), convertNTID(d.nt2)]; })
-      .click(clickInteraction)
-      .mouseover(highlightInteraction)
-      .mouseout(normalizeInteraction);
-
-    return plot();
   });
-
-  return true;
 });

@@ -47,14 +47,41 @@
         <!-- end navigation -->
 
         <div class="row">
+            <div class="span3 offset4">
+                <div id='view-buttons' class='btn-group' data-toggle='buttons-radio'>
+                    <?php if ($has_airport): ?>
+                    <button id='airport-view' class="btn view-control" data-view='airport'>
+                      Airport
+                    </button>
+                    <?php else: ?>
+                    <button id='airport-view' disabled="disabled" 
+                        class="btn hasTooltip disabled view-control" data-view='airport'
+                        title="No airport diagram is available yet">
+                      Airport
+                    </button>
+                    <?php endif; ?>
+                    <button id='circular-view' class="btn active view-control" data-view='circular'>
+                      Circular
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
             <div id='controls' class='span1 block-controls'>
 
-              <button data-controls-modal="help-modal" data-backdrop="true" data-keyboard="true" class="btn primary btn-block">Help</button>
+              <button data-controls-modal="help-modal" data-backdrop="true" 
+                data-keyboard="true" class="btn primary btn-block">Help</button>
 
               <!-- <h5>Mode</h5> -->
               <button type="button" id="mode-toggle" class="btn btn-block"
                 autocomplete="off" data-normal-text="Select"
                 data-loading-text="Click">Select</button>
+
+                <div id="motif-controls">
+                    <button type="button" id='motif-toggle' class="btn btn-block IL 
+                        motif-toggle active" disabled='disabled' data-motif='*'>Motifs</button>
+                </div>
 
               <div id="control-groups">
                 <div id="interaction-controls">
@@ -95,6 +122,7 @@
                       tHH toggle-control" data-family='tHH'>tHH</button>
 
                 </div>
+
               </div>
 
             </div>
@@ -129,39 +157,43 @@
           </div>
 
           <div class="modal-body">
-            <p>
-              <a href='https://github.com/blakesweeney/rna2d.js'>RNA2D.js</a>
-              is a tool to visualize and interact with RNA Secondary
-              structures. It is meant to create the standard airport diagrams and
-              provide a way to interact with them. Currently, we can easily
-              integrate the 2D visualization with the 3D visualization provided by
-              <a href='https://github.com/AntonPetrov/jmolTools'>jmolTools</a>.
-            </p>
 
             <p>
-              Shown here is a circular diagram generated using the 
+              Shown here is a <strong>circular diagram</strong> generated using the 
               <a href="http://rna.bgsu.edu/main/software/fr3d/">FR3D</a> annotations 
-              for <?=$pdb_id?>. The black circle represents the annotated chains.
+              for <?=$pdb_id?>. The black circle represents the annotated chains. For 
+              some structures an <strong>airport diagram</strong> is provided. To draw it click the 
+              airport button. Structures without one have a disabled button.
             </p>
 
+            <h4>Interactions</h4>
             <p>
-              Interactions are displayed as black arcs connecting nucleotides,
-              by default only cWW interactions are displayed. To display other
-              interactions use the interaction controls to the right. Clicking 
-              on a interaction will toggle displaying all interactions of that 
-              family and ones near that family. So clicking on tWW shows all tWW 
-              and ntWW. 
+              Interactions are displayed as arcs connecting nucleotides,
+              by default only cWW interactions are displayed. The 
+              <strong>dotted arcs</strong>
+              are long range interactions, there include things like 
+              pseudoknots. To display other interactions use the interaction 
+              controls to the right. Clicking on a interaction will toggle 
+              displaying all interactions of that family and ones near that 
+              family. So clicking on tWW shows all tWW and ntWW. 
             </p>
 
+            <h4>Motifs</h4>
             <p>
-              In the default select mode, click and drag to create a selection box. 
+                In airport mode motifs are displayed by default. To hide them click the motif button.
+                Internal loops are shown in a green box, hairpins in blue and 3-way junctions in yellow.
+                Currently we only extract 3-way junctions, in the future this may change.
+            </p>
+
+            <h4>Modes</h4>
+            <p>
+              In the default <strong>select mode</strong>, click and drag to create a selection box. 
               All nucleotides within the selection box will be displayed in a jmol 
-              window to the right. The selection box is dragable and resizeable. Click 
-              inside and drag to move it. Click on the border and drag to resize it.
+              window to the right. The selection box is dragable and resizeable. 
             </p>
 
             <p>
-              In click mode, click on a interaction or nucleotide to display it
+              In <strong>click mode</strong>, click on a interaction or nucleotide to display it
               in 3D. In addition, some information about the clicked element will 
               be displayed below the jmol window. To switch to the click mode use 
               the selection mode control. Hovering over an interaction will 
@@ -175,7 +207,9 @@
 
 <script type='text/javascript'>
     NTS = <?=$nts?>;
-    INTERACTION_URL = "<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/basepairs/csv";
+    LONG = <?=$long_range?>;
+    INTERACTION_URL = "http://rna.bgsu.edu/rna3dhub/pdb/<?=$pdb_id?>/interactions/fr3d/basepairs/csv";
+    LOOP_URL = "http://rna.bgsu.edu/rna3dhub/loops/download/<?=$pdb_id?>";
 
     $('#chosen').chosen().change(function(){
         window.location.href = "<?=$baseurl?>pdb/" + $(this).val();
