@@ -44,6 +44,7 @@
     <script type="text/javascript" src="<?=$baseurl?>js/chosen/chosen.jquery.min.js"></script>
     <link rel="stylesheet" href="<?=$baseurl?>js/chosen/chosen.css" type="text/css" media="screen" />
 
+    <?php if (strstr(current_url(), 'graph')): ?>
     <!-- cytoscapeweb -->
     <!-- JSON support for IE (needed to use JS API) -->
     <script type="text/javascript" src="<?=$baseurl?>cytoscapeweb/js/min/json2.min.js"></script>
@@ -51,6 +52,7 @@
     <script type="text/javascript" src="<?=$baseurl?>cytoscapeweb/js/min/AC_OETags.min.js"></script>
     <!-- Cytoscape Web JS API (needed to reference org.cytoscapeweb.Visualization) -->
     <script type="text/javascript" src="<?=$baseurl?>cytoscapeweb/js/min/cytoscapeweb.min.js"></script>
+    <?php endif; ?>
 
     <!-- Le styles -->
     <link href="<?=$baseurl?>css/bootstrap.min.css" rel="stylesheet">
