@@ -13,7 +13,7 @@
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
     <script src="<?=$baseurl?>jmol/jmol.js"></script>
 <!--     <script src="http://rna.bgsu.edu/Motifs/jmolInlineLoader/jmolInlineLoader.js"></script> -->
     <script src="http://rna.bgsu.edu/Motifs/jmolTools/jquery.jmolTools.js"></script>
