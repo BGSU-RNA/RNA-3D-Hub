@@ -499,6 +499,7 @@ class Motif_model extends CI_Model {
                  ->from('ml_releases')
                  ->join('ml_motifs', 'ml_releases.id = ml_motifs.release_id')
                  ->where('ml_motifs.id',$motif_id)
+                 ->where('ml_releases.type', substr($motif_id, 0, 2))
                  ->order_by('date','desc')
                  ->limit(1);
         $result = $this->db->get()->result_array();
