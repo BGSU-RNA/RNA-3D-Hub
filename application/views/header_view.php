@@ -27,7 +27,6 @@
     <script src="<?=$baseurl?>js/bootstrap-modal.js" type="text/javascript"></script>
     <script src="<?=$baseurl?>js/bootstrap-alerts.js" type="text/javascript"></script>
     <script src="<?=$baseurl?>js/jquery.tablesorter.min.js" type="text/javascript"></script>
-    <script src="<?=$baseurl?>js/dragtable.js" type="text/javascript"></script>
 
     <script src="<?=$baseurl?>js/MotifAtlas.js" type="text/javascript"></script>
     <script src="<?=$baseurl?>js/rcsbPdbImageLib.min.js" type="text/javascript"> </script>

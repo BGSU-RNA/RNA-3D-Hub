@@ -9,6 +9,7 @@
         <div class="row">
           <div class="span16 block scroll_table">
             <h2></h2>
+            <script src="<?=$baseurl?>js/dragtable.js" type="text/javascript"></script>
             <?=$table?>
           </div>
         </div>
