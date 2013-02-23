@@ -147,7 +147,7 @@ class Rest extends MY_Controller {
     {
         // 1EKA_AU_1_A_1_G_,1EKA_AU_1_A_2_A_
         $this->exploded_nts = explode(',', $query);
-        $pattern = '/^[A-Z0-9]{4}_[A-Z0-9]{2,3}_\d+_[A-Z0-9]{1}_\d{1,5}_[A-Z0-9]_[A-Z0-9]{0,1}$/i';
+        $pattern = '/^[A-Z0-9]{4}_[A-Z0-9]{2,3}_\d+_[A-Z0-9]{1}_-?\d{1,5}_[A-Z0-9]_[A-Z0-9]{0,1}$/i';
 
         foreach ($this->exploded_nts as $nt) {
             if ( ! preg_match($pattern, $nt) ) {
