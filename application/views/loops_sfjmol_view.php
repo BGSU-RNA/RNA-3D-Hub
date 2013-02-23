@@ -84,6 +84,5 @@ EOT;
             $("input[type='radio']").click(update_min_max);
             $("input[type='radio']").first().attr('checked','checked');
             $("#minmax").click(color_by_property);
-//     		$(".fancybox").fancybox();
         })
     </script>

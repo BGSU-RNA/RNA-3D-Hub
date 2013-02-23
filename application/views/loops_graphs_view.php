@@ -17,9 +17,3 @@
         </div>
 
       </div>
-
-    <script>
-        $(function () {
-    		$(".fancybox").fancybox();
-        })
-    </script>

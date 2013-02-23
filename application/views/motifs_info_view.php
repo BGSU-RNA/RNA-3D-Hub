@@ -24,10 +24,4 @@
 
         $("#sort").tablesorter();
 
-        $(".fancybox").fancybox({
-            openSpeed  : 'fast',
-            closeSpeed : 'fast',
-            arrows     : true
-        });
-
     </script>

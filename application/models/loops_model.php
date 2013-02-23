@@ -521,7 +521,7 @@ class Loops_model extends CI_Model {
         foreach ($graphs as $graph) {
             $text .= <<<EOT
               <li>
-                <a href="{$url}/{$graph}" class='fancybox' rel='g'>
+                <a href="{$url}/{$graph}" rel='g'>
                   <img class="thumbnail span4" src="$url/{$graph}" alt="">
                   $graph
                 </a>

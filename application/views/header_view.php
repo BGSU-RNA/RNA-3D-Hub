@@ -36,10 +36,6 @@
     <script src="<?=$baseurl?>js/jquery.jeditable.mini.js" type="text/javascript"</script>
     <?php endif; ?>
 
-    <!-- fancybox -->
-    <link rel="stylesheet" href="<?=$baseurl?>js/fancybox/jquery.fancybox.css?v=2.0.3" type="text/css" media="screen" />
-    <script type="text/javascript" src="<?=$baseurl?>js/fancybox/jquery.fancybox.pack.js?v=2.0.3"></script>
-
     <!-- chosen -->
     <script type="text/javascript" src="<?=$baseurl?>js/chosen/chosen.jquery.min.js"></script>
     <link rel="stylesheet" href="<?=$baseurl?>js/chosen/chosen.css" type="text/css" media="screen" />
