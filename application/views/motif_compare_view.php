@@ -106,7 +106,7 @@
 
             // destroy all previously created temporary elements
             var tempClass = 'jmolTools-temp-elems';
-            $('#checkboxes').children().remove();
+            $('#checkboxes').html('').children().remove();
 
             // reset the state of the system
             $.jmolTools.numModels = 0;
@@ -123,6 +123,7 @@
                 .attr('id', 'l0')
                 .addClass(tempClass)
             ).append('<label for="l0">' + loop_ids[0] + '</label>')
+             .append(', <a href="<?=$baseurl?>loops/view/' + loop_ids[0] + '" target="_blank">Go to loop</a>')
              .append('<br>')
               // get loop2 from the alignment of loop1 and loop2
              .append($('<input type="checkbox">')
@@ -130,6 +131,7 @@
                 .attr('id', 'l1')
                 .addClass(tempClass)
             ).append('<label for="l1">' + loop_ids[1] + ' (colored black)</label>')
+             .append(', <a href="<?=$baseurl?>loops/view/' + loop_ids[1] + '" target="_blank">Go to loop</a>')
              .append($('<div>')
                 .addClass('alert-message block-message warning')
                 .html($this.data('original-title'))
