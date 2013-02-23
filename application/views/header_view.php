@@ -15,7 +15,6 @@
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
     <script src="<?=$baseurl?>jmol/jmol.js"></script>
-<!--     <script src="http://rna.bgsu.edu/Motifs/jmolInlineLoader/jmolInlineLoader.js"></script> -->
     <script src="http://rna.bgsu.edu/Motifs/jmolTools/jquery.jmolTools.js"></script>
     <script src="http://rna.bgsu.edu/Motifs/jmolInlineLoader/jmolInlineLoader.js"></script>
 
@@ -54,7 +53,6 @@
     <link href="<?=$baseurl?>css/bootstrap.min.css" rel="stylesheet">
     <link href="<?=$baseurl?>css/motifatlas.css" rel="stylesheet">
     <link href='<?=$baseurl?>css/bootstrap-toggle-buttons.css' rel='stylesheet'>
-
 
     <!-- Le fav and touch icons -->
     <link rel="shortcut icon" href="images/favicon.ico">
