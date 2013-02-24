@@ -248,7 +248,7 @@ class Motif_model extends CI_Model {
                 }
 
                 if ( $disc == -1 ) {
-                    $annotation = 'no match';
+                    $annotation = 'no match at discrepancy < 1.0';
                 } elseif ( $disc == -2 ) {
                     $annotation = 'discrepancy data not loaded yet';
                 } else {
