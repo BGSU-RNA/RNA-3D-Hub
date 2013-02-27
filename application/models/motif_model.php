@@ -191,10 +191,10 @@ class Motif_model extends CI_Model {
 
             $class = 'annotation';
 
-            if (array_key_exists($order[$motif1][$i], $motifs[$motif1]) and
-                array_key_exists($order[$motif1][$i], $motifs[$motif2])) {
+            if (array_key_exists($loop2, $motifs[$motif1]) and
+                array_key_exists($loop2, $motifs[$motif2])) {
                 $data = '1&2';
-                $title = "Loop $loop1 is present in both $motif1 and $motif2";
+                $title = "Loop $loop2 is present in both $motif1 and $motif2";
             } else {
                 $data = '2';
                 $class .= ' highlight';
@@ -219,10 +219,10 @@ class Motif_model extends CI_Model {
 
                 // first cell of each row with row info
                 if ($j == 0) {
-                    if (array_key_exists($loop2, $motifs[$motif1]) and
-                        array_key_exists($loop2, $motifs[$motif2])) {
+                    if (array_key_exists($loop1, $motifs[$motif1]) and
+                        array_key_exists($loop1, $motifs[$motif2])) {
                         $data = '1&2';
-                        $title = "Loop $loop2 is present in both $motif1 and $motif2";
+                        $title = "Loop $loop1 is present in both $motif1 and $motif2";
                     } else {
                         $class .= ' highlight';
                         $data = '1';
