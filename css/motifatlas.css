@@ -38,9 +38,6 @@ small .label {
 }
 
 /* Pairwise interactions horizontal scrolling div */
-.motifview #variants {
-    min-height:300px;
-}
 .motifview .interactions th, .motifview .interactions td {
 	white-space: nowrap;
 	text-align:right;
