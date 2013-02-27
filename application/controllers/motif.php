@@ -110,7 +110,7 @@ class Motif extends MY_Controller {
         $history_tables = $this->Motif_model->get_history($motif_id);
         if ( count($history_tables['parents']) > 0 ) {
             $tmpl = array( 'table_open'  => '<table class="condensed-table bordered-table">' );
-            $this->table->set_heading(array('Parent class','Common motif instances',"Only in $motif_id",'Only in the parent class'));
+            $this->table->set_heading(array('Parent motif','Common motif instances',"Only in $motif_id",'Only in the parent motif'));
             $this->table->set_template($tmpl);
             $data['history']['parents'] = $this->table->generate($history_tables['parents']);
         } else {
@@ -118,7 +118,7 @@ class Motif extends MY_Controller {
         }
         if ( count($history_tables['children']) > 0 ) {
             $tmpl = array( 'table_open'  => '<table class="condensed-table bordered-table">' );
-            $this->table->set_heading(array('Child class','Common motif instances',"Only in $motif_id",'Only in the child class'));
+            $this->table->set_heading(array('Child motif','Common motif instances',"Only in $motif_id",'Only in the child motif'));
             $this->table->set_template($tmpl);
             $data['history']['children'] = $this->table->generate($history_tables['children']);
         } else {
