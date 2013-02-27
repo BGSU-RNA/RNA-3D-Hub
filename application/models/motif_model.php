@@ -575,7 +575,8 @@ class Motif_model extends CI_Model {
         for ($i = 0; $i < count($result); $i++) {
 
             $table[] = array(
-                                anchor_popup("motif/view/{$result[$i]['motif_id2']}", $result[$i]['motif_id2']),
+                                anchor_popup("motif/view/{$result[$i]['motif_id2']}", $result[$i]['motif_id2']) .
+                                '<br>' . anchor_popup("motif/compare/{$result[$i]['motif_id2']}/{$result[$i]['motif_id1']}", 'Compare'),
                                 $this->make_loop_links($result[$i]['intersection']),
                                 $this->make_loop_links($result[$i]['one_minus_two']),
                                 $this->make_loop_links($result[$i]['two_minus_one'])
