@@ -93,11 +93,11 @@ class Motifs extends CI_Controller {
                 }
 
                 if ( $format == 'csv' ) {
-                    $this->output->set_header("Content-disposition: attachment; filename={$motif_id}.csv")
+                    $this->output->set_header("Content-disposition: attachment; filename={$motif_type}_{$release_id}.csv")
                                  ->set_content_type('text/csv');
                     $download[] = ">{$motif_id}\n" . $this->Motif_model->get_csv($motif_id);
                 } else {
-                    $this->output->set_header("Content-disposition: attachment; filename={$motif_id}.json")
+                    $this->output->set_header("Content-disposition: attachment; filename={$motif_type}_{$release_id}.json")
                                  ->set_content_type('application/json');
                     $download[] = $this->Motif_model->get_json($motif_id);
                 }
