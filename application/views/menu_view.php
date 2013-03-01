@@ -77,6 +77,7 @@
                 <a href="#" class="dropdown-toggle">Links</a>
                 <ul class="dropdown-menu">
                     <li><a href="http://rna.bgsu.edu">RNA BGSU Home</a></li>
+                    <li><a href="http://rna.bgsu.edu/main/rna-3d-hub-help/">Help</a></li>
                     <?php
                         $current = current_url();
                         if ( !strstr($current, 'rna3dhub_dev') ){
