@@ -52,15 +52,15 @@
                     <p>
                     Unique and stable ids are assigned to all non-redundant
                     equivalence classes of structure files. Non-redundnant lists are
-                    updated automatically on a regular schedule, and
+                    updated automatically every week, and
                     a versioning system is implemented to provide independent
                     access to data snapshots. Full description will appear in
                     a separate publication.
                     </p>
                     <p>
-                    The older web interface for the non-redundant lists is still available
-                    at <a href="http://rna.bgsu.edu/nrlist">http://rna.bgsu.edu/nrlist</a>, but
-                    it will be discontinued some time in 2013.
+                    The <a href="http://rna.bgsu.edu/nrlist">old web interface</a>
+                    is no longer developed or supported. It is still available
+                    at <a href="http://rna.bgsu.edu/nrlist">http://rna.bgsu.edu/nrlist/oldsite.html</a>.
                     </p>
                 </div>
             </div>
