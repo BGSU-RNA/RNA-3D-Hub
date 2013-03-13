@@ -60,7 +60,7 @@
                     <p>
                     The <a href="http://rna.bgsu.edu/nrlist">old web interface</a>
                     is no longer developed or supported. It is still available
-                    at <a href="http://rna.bgsu.edu/nrlist">http://rna.bgsu.edu/nrlist/oldsite.html</a>.
+                    at <a href="http://rna.bgsu.edu/nrlist/oldsite.html">http://rna.bgsu.edu/nrlist/oldsite.html</a>.
                     </p>
                 </div>
             </div>
