@@ -42,7 +42,7 @@
             <a class="btn" href="<?=$baseurl?>motifs/2ds">Ribosomal 2D diagrams</a>
             <a class="btn" href="<?=$baseurl?>motifs/release_history">Release history</a>
             <a class="btn" href="<?=$baseurl?>motifs/compare_releases">Compare releases</a>
-            <a class="btn" href="#">Help</a>
+            <a class="btn" href="http://rna.bgsu.edu/main/rna-3d-hub-help/" target="_blank">Help</a>
             <a class="btn" href="<?=$baseurl?>search">Search</a>
             </div>
 
