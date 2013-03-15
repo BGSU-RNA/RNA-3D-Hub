@@ -11,6 +11,19 @@ class Loops_model extends CI_Model {
         parent::__construct();
     }
 
+    function is_valid_loop_id($id)
+    {
+        $this->db->select()
+                 ->from('loops_all')
+                 ->where('id', $id);
+        $query = $this->db->get();
+        if ( $query->num_rows() > 0 ) {
+            return TRUE;
+        } else {
+            return FALSE;
+        }
+    }
+
     function get_loop_list($pdb_id)
     {
         $this->db->select('group_concat(unit_id) AS unit_ids, loops_all.id', FALSE)

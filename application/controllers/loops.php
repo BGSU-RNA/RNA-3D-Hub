@@ -159,7 +159,9 @@ class Loops extends CI_Controller {
 
         $this->load->model('Loops_model', '', TRUE);
 
-//         $this->output->enable_profiler(TRUE);
+        if ( !$this->Loops_model->is_valid_loop_id($id) ) {
+            show_404();
+        }
 
         $data = array();
         if ( !is_null($similar) and $similar == 'similar' ) {
