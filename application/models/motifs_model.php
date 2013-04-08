@@ -318,8 +318,10 @@ class Motifs_model extends CI_Model {
             return 'success';
         } elseif ($comment == 'New id, no parents') {
             return 'notice';
-        } else {
+        } elseif ($comment == '> 2 parents') {
             return 'important';
+        } else {
+            return 'warning';
         }
     }
 
