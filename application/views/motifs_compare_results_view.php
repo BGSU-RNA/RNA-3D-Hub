@@ -54,7 +54,7 @@
             <p>
             <?php
               if ( count($pdbs_removed) > 0 ) {
-                  echo "<strong>Obsolete:</strong>";
+                  echo "<strong>Obsolete: </strong>";
                   foreach($pdbs_removed as $key => $value) {
                       $removed[] = "<a href='#' class='pdb'>$key</a> &rarr; " .
                                    "<a href='#' class='pdb'>$value</a>";
