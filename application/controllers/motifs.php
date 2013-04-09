@@ -224,16 +224,34 @@ class Motifs extends CI_Controller {
 
 	public function compare($motif_type, $rel1 = NULL, $rel2 = NULL)
 	{
-        if ($rel1 == NULL and $rel2 == NULL) {
-            $rel1 = $this->input->post('release1');
-            $rel2 = $this->input->post('release2');
-        }
 	    $motif_type = strtolower($motif_type);
-
         $this->load->model('Motifs_model', '' , TRUE);
-        $data = $this->Motifs_model->get_release_diff($motif_type,$rel1,$rel2);
 
+        if ($rel1 == NULL and $rel2 == NULL) {
+            list($rel1, $rel2) = $this->Motifs_model->order_releases($this->input->post('release1'),
+                                                                     $this->input->post('release2'),
+                                                                     $motif_type);
+        }
+
+        // compare PDB files between two releases
+        $pdbs1 = $this->Motifs_model->get_pdb_files_from_motif_release($motif_type, $rel1);
+        $pdbs2 = $this->Motifs_model->get_pdb_files_from_motif_release($motif_type, $rel2);
+
+        $data['pdbs1'] = count($pdbs1);
+        $data['pdbs2'] = count($pdbs2);
+
+        $data['pdbs_identical'] = $this->Motifs_model->get_identical_pdbs($pdbs1, $pdbs2);
+        // pdbs_replaced, pdbs_added
+        $data = array_merge($data, $this->Motifs_model->get_new_and_replaced_pdbs($pdbs1, $pdbs2));
+        $data['pdbs_removed']   = $this->Motifs_model->get_removed_pdbs($pdbs1, $pdbs2);
+
+        // get motif differences
+        $data = array_merge($data, $this->Motifs_model->get_release_diff($motif_type,$rel1,$rel2));
+
+        $data['rel1'] = $rel1;
+        $data['rel2'] = $rel2;
         $data['title'] = "{$rel1} | {$rel2}";
+        $data['motif_type'] = $motif_type;
         $data['baseurl'] = base_url();
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);

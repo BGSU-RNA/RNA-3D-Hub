@@ -538,13 +538,13 @@ class Motifs_model extends CI_Model {
                      ->where('release_id1',$rel2)
                      ->where('release_id2',$rel1);
             $query = $this->db->get();
-            $data['rel1'] = $rel2;
-            $data['rel2'] = $rel1;
-            $rel1 = $data['rel1'];
-            $rel2 = $data['rel2'];
+            $data['rel1_diff'] = $rel2;
+            $data['rel2_diff'] = $rel1;
+            $rel1 = $data['rel1_diff'];
+            $rel2 = $data['rel2_diff'];
         } else {
-            $data['rel1'] = $rel1;
-            $data['rel2'] = $rel2;
+            $data['rel1_diff'] = $rel1;
+            $data['rel2_diff'] = $rel2;
         }
 
         $counts1 = $this->count_motifs($motif_type,$rel1);
@@ -583,6 +583,109 @@ class Motifs_model extends CI_Model {
         return $data;
     }
 
+    function get_pdb_files_from_motif_release($motif_type, $release_id)
+    {
+        // get all loops in the release
+        $this->db->select('id')
+                 ->from('ml_loops')
+                 ->where('release_id', $release_id)
+                 ->like('id', $motif_type, 'after');
+        $query = $this->db->get();
+
+        // extract pdb substring
+        $pdbs = array();
+        foreach($query->result() as $row) {
+            $pdbs[] = substr($row->id, 3, 4);
+        }
+
+        return array_unique($pdbs);
+    }
+
+    function get_identical_pdbs($pdbs1, $pdbs2)
+    {
+        return array_intersect($pdbs1, $pdbs2);
+    }
+
+    function get_new_and_replaced_pdbs($pdbs1, $pdbs2)
+    {
+        $only_old = array_diff($pdbs1, $pdbs2);
+        $only_new = array_diff($pdbs2, $pdbs1);
+
+        $replaced = array();
+        $added    = array();
+
+        foreach($only_new as $new_id) {
+
+            foreach($only_old as $old_id) {
+                // find a class where the new id is a rep, and the old one is not
+                $this->db->select()
+                         ->from('nr_pdbs as t1')
+                         ->join('nr_pdbs as t2', 't1.class_id = t2.class_id AND ' .
+                                                 't1.release_id=t2.release_id')
+                         ->where('t1.id', $new_id)
+                         ->where('t2.id', $old_id)
+                         ->where('t1.rep', 1)
+                         ->where('t2.rep', 0)
+                         ->like('t1.class_id', 'NR_4.0_', 'after')
+                         ->limit(1);
+                $query = $this->db->get();
+
+                if ( $query->num_rows() > 0 ) {
+                    $replaced[$old_id] = $new_id;
+                    break;
+                }
+            }
+
+            // if the new id didn't replace any old rep, then it's brand new
+            if ( !in_array($new_id, $replaced) ) {
+                $added[] = $new_id;
+            }
+        }
+
+        return array('pdbs_replaced' => $replaced, 'pdbs_added' => $added);
+
+    }
+
+    function get_removed_pdbs($pdbs1, $pdbs2)
+    {
+        // check if any of the old pdbs became obsolete
+
+        $only_old = array_diff($pdbs1, $pdbs2);
+        $removed = array();
+
+        if ( count($only_old) == 0 ) {
+            return $removed;
+        }
+
+        $this->db->select()
+                 ->from('pdb_obsolete')
+                 ->where_in('obsolete_id', $only_old);
+        $query = $this->db->get();
+
+        foreach($query->result() as $row) {
+            if ( $row->replaced_by == '' ) {
+                $row->replaced_by = 'None';
+            }
+            $removed[$row->obsolete_id] = $row->replaced_by;
+        }
+
+        return $removed;
+    }
+
+    function order_releases($rel1, $rel2, $motif_type)
+    {
+        $this->db->select()
+                 ->from('ml_releases')
+                 ->where("type = '$motif_type' AND (id = '$rel1' OR id = '$rel2')")
+                 ->order_by('date', 'asc');
+        $query = $this->db->get();
+        $releases = array();
+        foreach($query->result() as $row) {
+            $releases[] = $row->id;
+        }
+
+        return $releases;
+    }
 
 }
 
