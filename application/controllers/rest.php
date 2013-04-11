@@ -166,4 +166,12 @@ class Rest extends MY_Controller {
         return FALSE;
     }
 
+    function getMotifFlowJSON($motif_type, $release_id1, $release_id2)
+    {
+        $this->load->model('Motifs_model', '', TRUE);
+        $this->output->set_header("Access-Control-Allow-Origin: *");
+        $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
+        echo $this->Motifs_model->getSankeyDataJSON($release_id1, $release_id2, $motif_type);
+    }
+
 }

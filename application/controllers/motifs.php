@@ -228,10 +228,12 @@ class Motifs extends CI_Controller {
         $this->load->model('Motifs_model', '' , TRUE);
 
         if ($rel1 == NULL and $rel2 == NULL) {
-            list($rel1, $rel2) = $this->Motifs_model->order_releases($this->input->post('release1'),
-                                                                     $this->input->post('release2'),
-                                                                     $motif_type);
+            $rel1 = $this->input->post('release1');
+            $rel2 = $this->input->post('release2');
         }
+
+        // order the releases
+        list($rel1, $rel2) = $this->Motifs_model->order_releases($rel1, $rel2, $motif_type);
 
         // compare PDB files between two releases
         $pdbs1 = $this->Motifs_model->get_pdb_files_from_motif_release($motif_type, $rel1);
@@ -245,8 +247,24 @@ class Motifs extends CI_Controller {
         $data = array_merge($data, $this->Motifs_model->get_new_and_replaced_pdbs($pdbs1, $pdbs2));
         $data['pdbs_removed']   = $this->Motifs_model->get_removed_pdbs($pdbs1, $pdbs2);
 
-        // get motif differences
-        $data = array_merge($data, $this->Motifs_model->get_release_diff($motif_type,$rel1,$rel2));
+        // get identical motifs table
+        $data['same_groups'] = $this->_get_motif_summary_table($rel1, $rel2, $motif_type, 'same_groups');
+
+        // get updated motifs table
+        $data['updated_groups'] = $this->_get_motif_summary_table($rel1, $rel2, $motif_type, 'updated_groups');
+
+        // get added motifs table
+        $data['added_groups'] = $this->_get_motif_summary_table($rel1, $rel2, $motif_type, 'added_groups');
+
+        // get removed motifs table
+        $data['removed_groups'] = $this->_get_motif_summary_table($rel1, $rel2, $motif_type, 'removed_groups');
+
+        // get counts for identical, updated, added, and removed groups
+        $data = array_merge($data, $this->Motifs_model->get_release_difference_summary($rel1, $rel2, $motif_type));
+
+        // get motif counts
+        $data['num_motifs_release1'] = $this->Motifs_model->get_motif_counts($rel1, $motif_type);
+        $data['num_motifs_release2'] = $this->Motifs_model->get_motif_counts($rel2, $motif_type);
 
         $data['rel1'] = $rel1;
         $data['rel2'] = $rel2;
@@ -258,6 +276,15 @@ class Motifs extends CI_Controller {
         $this->load->view('motifs_compare_results_view', $data);
         $this->load->view('footer');
 	}
+
+    private function _get_motif_summary_table($rel1, $rel2, $motif_type, $target)
+    {
+        $this->table->set_heading('#','Motif id','Instances','Description');
+        $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table sortable'" );
+        $this->table->set_template($tmpl);
+
+        return $this->table->generate($this->Motifs_model->get_motif_summary_table($rel1, $rel2, $motif_type, $target));
+    }
 
     public function release_history()
     {

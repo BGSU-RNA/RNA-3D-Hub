@@ -507,82 +507,6 @@ class Motifs_model extends CI_Model {
         }
     }
 
-    function count_motifs($motif_type,$rel)
-    {
-        $this->db->select('count(id) as ids')
-                 ->from('ml_motifs')
-                 ->where('release_id', $rel)
-                 ->where('type',$motif_type);
-        $query = $this->db->get();
-
-        foreach ($query->result() as $row) {
-            $counts = $row->ids;
-        }
-        return $counts;
-    }
-
-    function get_release_diff($motif_type,$rel1, $rel2)
-    {
-        $attributes = array('class' => 'unstyled');
-
-        $this->db->select()
-                 ->from('ml_release_diff')
-                 ->where('type',$motif_type)
-                 ->where('release_id1',$rel1)
-                 ->where('release_id2',$rel2);
-        $query = $this->db->get();
-        if ($query->num_rows == 0) {
-            $this->db->select()
-                     ->from('ml_release_diff')
-                     ->where('type',$motif_type)
-                     ->where('release_id1',$rel2)
-                     ->where('release_id2',$rel1);
-            $query = $this->db->get();
-            $data['rel1_diff'] = $rel2;
-            $data['rel2_diff'] = $rel1;
-            $rel1 = $data['rel1_diff'];
-            $rel2 = $data['rel2_diff'];
-        } else {
-            $data['rel1_diff'] = $rel1;
-            $data['rel2_diff'] = $rel2;
-        }
-
-        $counts1 = $this->count_motifs($motif_type,$rel1);
-        $counts2 = $this->count_motifs($motif_type,$rel2);
-
-        foreach ($query->result() as $row) {
-
-            $data['uls']['num_motifs1'] = $counts1;
-            $data['uls']['num_motifs2'] = $counts2;
-
-            if ($row->num_same_groups > 0) {
-                $data['uls']['ul_intersection'] = ul(array_map("add_url", split(', ',$row->same_groups)),$attributes);
-            } else {
-                $data['uls']['ul_intersection'] = '';
-            }
-            if ($row->num_updated_groups > 0) {
-                $data['uls']['ul_updated'] = ul(array_map("add_url", split(', ',$row->updated_groups)),$attributes);
-            } else {
-                $data['uls']['ul_updated'] = '';
-            }
-            if ($row->num_added_groups > 0) {
-                $data['uls']['ul_only_in_1'] = ul(array_map("add_url", split(', ',$row->added_groups)),$attributes);
-            } else {
-                $data['uls']['ul_only_in_1'] = '';
-            }
-            if ($row->num_removed_groups > 0) {
-                $data['uls']['ul_only_in_2'] = ul(array_map("add_url", split(', ',$row->removed_groups)),$attributes);
-            } else {
-                $data['uls']['ul_only_in_2'] = '';
-            }
-            $data['uls']['num_intersection'] = $row->num_same_groups;
-            $data['uls']['num_updated']      = $row->num_updated_groups;
-            $data['uls']['num_only_in_1']    = $row->num_added_groups;
-            $data['uls']['num_only_in_2']    = $row->num_removed_groups;
-        }
-        return $data;
-    }
-
     function get_pdb_files_from_motif_release($motif_type, $release_id)
     {
         // get all loops in the release
@@ -685,6 +609,195 @@ class Motifs_model extends CI_Model {
         }
 
         return $releases;
+    }
+
+    function _get_motif_instances($motif_id)
+    {
+        $loops = array();
+
+        $this->db->select('id')
+                 ->from('ml_loops')
+                 ->where('motif_id', $motif_id)
+                 ->group_by('id');
+        $query = $this->db->get();
+
+        foreach($query->result() as $row){
+            $loops[] = $row->id;
+        }
+
+        return $loops;
+    }
+
+    function getSankeyDataJSON($rel1, $rel2, $motif_type)
+    {
+        // get motif ids from the two releases
+        $this->db->select()
+                 ->from('ml_release_diff')
+                 ->where('release_id1', $rel2)
+                 ->where('release_id2', $rel1)
+                 ->where('type', $motif_type);
+        $query = $this->db->get()->result();
+        $row = $query[0];
+
+        $removed_groups = explode(', ', $row->removed_groups);
+        $removed_loops  = explode(', ', $row->removed_loops);
+        $added_groups   = explode(', ', $row->added_groups);
+        $added_loops    = explode(', ', $row->added_loops);
+        $updated_groups = explode(', ', $row->updated_groups);
+
+        // get motif instances
+        $node_type = array(); // used for coloring nodes
+
+        $nodes1 = array();
+        $nodes1['New loops'] = $added_loops;
+        $node_type['New loops'] = 'new';
+        foreach($removed_groups as $motif){
+            $nodes1[$motif] = $this->_get_motif_instances($motif);
+            $node_type[$motif] = 'removed';
+        }
+
+        $nodes2 = array();
+        $nodes2['Removed loops'] = $removed_loops;
+        $node_type['Removed loops'] = 'old';
+        foreach($added_groups as $motif){
+            $nodes2[$motif] = $this->_get_motif_instances($motif);
+            $node_type[$motif] = 'added';
+        }
+
+        // separately process updated groups
+        foreach($updated_groups as $motif){
+            $version = substr($motif, 9); // everything after "XL_XXXXX."
+            $next_motif = substr($motif, 0, 9) . ($version + 1);
+
+            $node_type[$motif] = 'updated';
+            $node_type[$next_motif] = 'updated';
+
+            $nodes1[$motif] = $this->_get_motif_instances($motif);
+            $nodes2[$next_motif] = $this->_get_motif_instances($next_motif);
+        }
+
+        // assign node ids
+        $nodes = array();
+        $i = 0;
+        foreach($nodes1 as $motif => $loops){
+            $ids[$motif] = $i;
+            $nodes[] = array('name' => $motif, 'type' => $node_type[$motif]);
+            $i += 1;
+        }
+        foreach($nodes2 as $motif => $loops){
+            $ids[$motif] = $i;
+            $nodes[] = array('name' => $motif, 'type' => $node_type[$motif]);
+            $i += 1;
+        }
+
+        // compare all nodes
+        foreach($nodes1 as $motif1 => $loops1){
+            foreach($nodes2 as $motif2 => $loops2){
+                $common = array_intersect($loops1, $loops2);
+                if ( $common ) {
+                    $links[] = array('source' => $ids[$motif1],
+                                     'target' => $ids[$motif2],
+                                     'value'  => count($common) / count($loops1),
+                                     'loops'  => implode(', ', $common));
+                }
+            }
+        }
+
+        return json_encode(array('nodes' => $nodes, 'links' => $links));
+    }
+
+    function _get_instance_counts($motifs, $release)
+    {
+        $this->db->select('motif_id, count(id) as instances')
+                 ->from('ml_loops')
+                 ->where_in('motif_id', $motifs)
+                 ->where('release_id', $release)
+                 ->order_by('count(id)', 'desc')
+                 ->group_by('motif_id');
+        $query = $this->db->get();
+
+        $counts = array();
+        foreach($query->result() as $row){
+            $counts[] = array('motif_id' => $row->motif_id, 'instances' => $row->instances);
+        }
+
+        return $counts;
+    }
+
+    function _get_common_names($motifs)
+    {
+        $this->db->select('motif_id, common_name')
+                 ->from('ml_motif_annotations')
+                 ->where_in('motif_id', $motifs);
+        $query = $this->db->get();
+
+        $common_names = array();
+        foreach($query->result() as $row){
+            $common_names[$row->motif_id] = $row->common_name;
+        }
+
+        return $common_names;
+    }
+
+    function get_motif_counts($release, $motif_type)
+    {
+        $this->db->select()
+                 ->from('ml_motifs')
+                 ->where('release_id', $release)
+                 ->where('type', $motif_type);
+        $query = $this->db->get();
+
+        return $query->num_rows();
+    }
+
+    function _get_release_difference_data($rel1, $rel2, $motif_type)
+    {
+        $this->db->select()
+                 ->from('ml_release_diff')
+                 ->where("type = '$motif_type' AND " .
+                         "(release_id1 = '$rel1' AND release_id2 = '$rel2')")
+                 ->or_where("release_id2 = '$rel1' AND release_id1 = '$rel2'");
+        $query = $this->db->get()->result();
+        return $query[0];
+    }
+
+    function get_release_difference_summary($rel1, $rel2, $motif_type)
+    {
+        $diff = $this->_get_release_difference_data($rel1, $rel2, $motif_type);
+
+        return array('num_added_groups'   => $diff->num_added_groups,
+                     'num_removed_groups' => $diff->num_removed_groups,
+                     'num_updated_groups' => $diff->num_updated_groups,
+                     'num_same_groups'    => $diff->num_same_groups);
+    }
+
+    function get_motif_summary_table($rel1, $rel2, $motif_type, $target)
+    {
+        $diff = $this->_get_release_difference_data($rel1, $rel2, $motif_type);
+
+        // $target is the column: added_groups, removed_groups, updated_groups, same_groups
+        $motifs = explode(', ', $diff->$target);
+
+        // get counts
+        $counts = $this->_get_instance_counts($motifs, $rel1);
+        if ( count($counts) == 0 ) {
+            $counts = $this->_get_instance_counts($motifs, $rel2);
+        }
+
+        // get common_names
+        $common_names = $this->_get_common_names($motifs);
+
+        $table = array();
+        $i = 1;
+        foreach($counts as $count){
+            $table[] = array($i,
+                             anchor_popup("motif/view/{$count['motif_id']}", $count['motif_id']),
+                             $count['instances'],
+                             $common_names[$count['motif_id']]);
+            $i += 1;
+        }
+
+        return $table;
     }
 
 }
