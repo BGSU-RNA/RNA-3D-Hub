@@ -628,6 +628,28 @@ class Motifs_model extends CI_Model {
         return $loops;
     }
 
+    function _verify_updated_motifs($updated, $rel)
+    {
+        // check that the correct version is used
+        $handles = array();
+        foreach($updated as $motif){
+            $handles[] = substr($motif, 3, 5); // XL_@@@@@
+        }
+
+        $this->db->select('id')
+                 ->from('ml_motifs')
+                 ->where_in('handle', $handles)
+                 ->where('release_id', $rel);
+        $query = $this->db->get();
+
+        $updated_new = array();
+        foreach($query->result() as $row){
+            $updated_new[] = $row->id;
+        }
+
+        return $updated_new;
+    }
+
     function getSankeyDataJSON($rel1, $rel2, $motif_type)
     {
         // get motif ids from the two releases
@@ -663,6 +685,9 @@ class Motifs_model extends CI_Model {
             $nodes2[$motif] = $this->_get_motif_instances($motif);
             $node_type[$motif] = 'added';
         }
+
+        // make sure that $updated corresponds to $rel1
+        $updated_groups = $this->_verify_updated_motifs($updated_groups, $rel1);
 
         // separately process updated groups
         foreach($updated_groups as $motif){
