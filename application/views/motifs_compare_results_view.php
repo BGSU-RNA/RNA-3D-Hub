@@ -100,7 +100,9 @@
           <div class="span8">
             <h3>Redistribution of motif instances</h3>
 
-            <div id="chart"></div>
+            <div id="chart" class="sankey_chart">
+            <span id="placeholder">Loading the Sankey diagram...</span>
+            </div>
           </div>
 
           <div class="span8">
@@ -222,6 +224,8 @@ var sankey = d3.sankey()
 var path = sankey.link();
 
 d3.json("<?=$baseurl?>rest/getMotifFlowJSON/il/<?=$rel1?>/<?=$rel2?>", function(energy) {
+
+  $('#placeholder').remove();
 
   sankey
       .nodes(energy.nodes)

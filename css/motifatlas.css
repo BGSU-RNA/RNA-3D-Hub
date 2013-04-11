@@ -931,3 +931,7 @@ body.home {
 .motifs_compare_results_view .help {
     font-size: smaller;
 }
+.motifs_compare_results_view .sankey_chart {
+    overflow: auto;
+    height: 505px;
+}
