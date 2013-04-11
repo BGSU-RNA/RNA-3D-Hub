@@ -779,9 +779,9 @@ class Motifs_model extends CI_Model {
     {
         $this->db->select()
                  ->from('ml_release_diff')
-                 ->where("type = '$motif_type' AND " .
-                         "(release_id1 = '$rel1' AND release_id2 = '$rel2')")
-                 ->or_where("release_id2 = '$rel1' AND release_id1 = '$rel2'");
+                 ->where("(release_id1 = '$rel1' AND release_id2 = '$rel2') OR " .
+                         "(release_id2 = '$rel1' AND release_id1 = '$rel2')")
+                 ->where('type', $motif_type);
         $query = $this->db->get()->result();
         return $query[0];
     }
