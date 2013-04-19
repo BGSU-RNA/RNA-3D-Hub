@@ -9,6 +9,27 @@ class Ajax_model extends CI_Model {
         parent::__construct();
     }
 
+    function count_nucleotides($pdb_id)
+    {
+        // count nucleotides in all chains
+        return $this->db->select('id')
+                        ->from('pdb_coordinates')
+                        ->where('pdb', $pdb_id)
+                        ->where_in('unit', array('A','C','G','U'))
+                        ->count_all_results();
+    }
+
+    function count_basepairs($pdb_id)
+    {
+        $f_lwbp = array('cHH','cHS','cHW','cSH','cSS','cSW','cWH','cWS','cWW','tHH',
+                        'tHS','tHW','tSH','tSS','tSW','tWH','tWS','tWW');
+        return $this->db->select('f_lwbp')
+                        ->from('pdb_pairwise_interactions')
+                        ->where('pdb_id', $pdb_id)
+                        ->where_in('f_lwbp', $f_lwbp)
+                        ->count_all_results() / 2;
+    }
+
     function get_source_organism($pdb_id)
     {
         $this->db->select()
@@ -38,10 +59,16 @@ class Ajax_model extends CI_Model {
             }
 
             $source = $this->get_source_organism($pdb);
+
+            $basepairs = $this->count_basepairs($pdb);
+            $nucleotides = $this->count_nucleotides($pdb);
+            $bpnt = number_format($basepairs/$nucleotides, 4);
+
             $pdb_info = "<u>Title</u>: {$row->structureTitle}<br>" .
                         $resolution .
                         "<u>Method</u>: {$row->experimentalTechnique}<br>" .
-                        "<u>Organism</u>: {$source}<br><br>" .
+                        "<u>Organism</u>: {$source}<br>" .
+                        "<i>$nucleotides nucleotides, $basepairs basepairs, $bpnt basepairs/nucleotide</i><br><br>" .
                         'Explore in ' .
                         anchor_popup("http://www.pdb.org/pdb/explore/explore.do?structureId=$pdb", 'PDB') .
                         ' or ' .
