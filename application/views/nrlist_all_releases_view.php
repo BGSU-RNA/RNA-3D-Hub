@@ -58,8 +58,7 @@
                     a separate publication.
                     </p>
                     <p>
-                    The <a href="http://rna.bgsu.edu/nrlist">old web interface</a>
-                    is no longer developed or supported. It is still available
+                    The old web interface is no longer developed or supported. It can be accessed
                     at <a href="http://rna.bgsu.edu/nrlist/oldsite.html">http://rna.bgsu.edu/nrlist/oldsite.html</a>.
                     </p>
                 </div>
