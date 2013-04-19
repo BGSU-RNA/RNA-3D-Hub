@@ -32,7 +32,7 @@
 
     <!-- jEditable -->
     <?php if ($this->session->userdata('username')): ?>
-    <script src="<?=$baseurl?>js/jquery.jeditable.mini.js" type="text/javascript"</script>
+    <script src="<?=$baseurl?>js/jquery.jeditable.mini.js" type="text/javascript"></script>
     <?php endif; ?>
 
     <!-- chosen -->
