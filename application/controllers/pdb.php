@@ -25,7 +25,7 @@ class Pdb extends CI_Controller {
         $this->load->model('Pdb_model', '', TRUE);
         $pdb_status = $this->is_valid_pdb($id, 'il');
         $data['valid'] = $pdb_status['valid'];
-
+        $data['pdbs'] = $this->Pdb_model->get_all_pdbs();
         if ( $pdb_status['valid'] ) {
             $data = array_merge($data, $this->Pdb_model->get_general_info($id));
             $data = array_merge($data, $this->Pdb_model->get_nrlist_info($id));
@@ -38,7 +38,6 @@ class Pdb extends CI_Controller {
             $data['bph_counts'] = $this->Pdb_model->get_pairwise_info($id, 'f_bphs');
             $data['brb_counts'] = $this->Pdb_model->get_pairwise_info($id, 'f_brbs');
         } else {
-            $data['pdbs'] = $this->Pdb_model->get_all_pdbs();
             $data['message'] = $pdb_status['message'];
         }
 
