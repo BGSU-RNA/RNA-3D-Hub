@@ -142,13 +142,18 @@ class Nrlist_model extends CI_Model {
 
     function get_source_organism($pdb_id)
     {
-        $this->db->select()
+        $this->db->select('source')
                  ->from('pdb_info')
                  ->where('structureId', $pdb_id)
                  ->like('entityMacromoleculeType', 'RNA')
                  ->where("chainLength = (SELECT max(chainLength) FROM pdb_info WHERE structureId ='$pdb_id' AND entityMacromoleculeType LIKE '%RNA%')");
-        $query = $this->db->get()->result();
-        return $query[0]->source;
+        $query = $this->db->get();
+        if ( $query->num_rows() > 0 ) {
+            $result = $query->result();
+            return $result[0]->source;
+        } else {
+            return '';
+        }
     }
 
     function get_members($id)
@@ -582,7 +587,7 @@ class Nrlist_model extends CI_Model {
                              anchor(base_url("nrlist/view/".$class_id),$class_id)
                              . '<br>' . $this->add_annotation_label($class_id, $reason)
                              . '<br>' . $this->get_source_organism_for_class($class[$class_id]),
-                             '<strong>' . $pdb_id . '</strong>' .
+                             '<strong class="pdb">' . $pdb_id . '</strong>' .
                              '<ul>' .
                              '<li>' . $pdb[$pdb_id]['title'] . '</li>' .
                              '<li>' . $pdb[$pdb_id]['experimentalTechnique'] . '</li>' .
