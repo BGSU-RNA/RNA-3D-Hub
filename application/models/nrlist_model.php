@@ -595,21 +595,24 @@ class Nrlist_model extends CI_Model {
                              '; model(s): ' . $best_models[$pdb_id] . '</li>' .
                              '</ul>',
                              $pdb[$pdb_id]['resolution'],
-                             $this->get_chain_length($pdb_id),
+                             $this->count_all_nucleotides($pdb_id),
                              $this->add_pdb_class($class[$class_id]));
             $i++;
         }
         return array('table' => $table, 'counts' => $counts_text);
     }
 
-    function get_chain_length($pdb_id)
+    function count_all_nucleotides($pdb_id)
     {
-        $this->db->select_max('chainLength')
-                 ->from('pdb_info')
-                 ->where('structureId', $pdb_id)
-                 ->like('entityMacromoleculeType', 'RNA');
-        $result = $this->db->get()->result_array();
-        return $result[0]['chainLength'];
+        $this->db->select('count(*) as length')
+                 ->from('pdb_coordinates')
+                 ->where('pdb', $pdb_id)
+                 ->where_in('unit', array('A','C','G','U'))
+                 ->order_by('count(*)', 'DESC')
+                 ->limit(1);
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result[0]->length;
     }
 
     function get_csv($release, $resolution)
