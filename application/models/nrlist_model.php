@@ -142,13 +142,18 @@ class Nrlist_model extends CI_Model {
 
     function get_source_organism($pdb_id)
     {
-        $this->db->select()
+        $this->db->select('source')
                  ->from('pdb_info')
                  ->where('structureId', $pdb_id)
                  ->like('entityMacromoleculeType', 'RNA')
                  ->where("chainLength = (SELECT max(chainLength) FROM pdb_info WHERE structureId ='$pdb_id' AND entityMacromoleculeType LIKE '%RNA%')");
-        $query = $this->db->get()->result();
-        return $query[0]->source;
+        $query = $this->db->get();
+        if ( $query->num_rows() > 0 ) {
+            $result = $query->result();
+            return $result[0]->source;
+        } else {
+            return '';
+        }
     }
 
     function get_members($id)
@@ -582,7 +587,7 @@ class Nrlist_model extends CI_Model {
                              anchor(base_url("nrlist/view/".$class_id),$class_id)
                              . '<br>' . $this->add_annotation_label($class_id, $reason)
                              . '<br>' . $this->get_source_organism_for_class($class[$class_id]),
-                             '<strong>' . $pdb_id . '</strong>' .
+                             '<strong class="pdb">' . $pdb_id . '</strong>' .
                              '<ul>' .
                              '<li>' . $pdb[$pdb_id]['title'] . '</li>' .
                              '<li>' . $pdb[$pdb_id]['experimentalTechnique'] . '</li>' .
@@ -590,21 +595,24 @@ class Nrlist_model extends CI_Model {
                              '; model(s): ' . $best_models[$pdb_id] . '</li>' .
                              '</ul>',
                              $pdb[$pdb_id]['resolution'],
-                             $this->get_chain_length($pdb_id),
+                             $this->count_all_nucleotides($pdb_id),
                              $this->add_pdb_class($class[$class_id]));
             $i++;
         }
         return array('table' => $table, 'counts' => $counts_text);
     }
 
-    function get_chain_length($pdb_id)
+    function count_all_nucleotides($pdb_id)
     {
-        $this->db->select_max('chainLength')
-                 ->from('pdb_info')
-                 ->where('structureId', $pdb_id)
-                 ->like('entityMacromoleculeType', 'RNA');
-        $result = $this->db->get()->result_array();
-        return $result[0]['chainLength'];
+        $this->db->select('count(*) as length')
+                 ->from('pdb_coordinates')
+                 ->where('pdb', $pdb_id)
+                 ->where_in('unit', array('A','C','G','U'))
+                 ->order_by('count(*)', 'DESC')
+                 ->limit(1);
+        $query = $this->db->get();
+        $result = $query->result();
+        return $result[0]->length;
     }
 
     function get_csv($release, $resolution)
