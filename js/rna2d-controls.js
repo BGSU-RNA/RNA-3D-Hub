@@ -36,7 +36,7 @@ $(document).ready(function() {
   };
 
   var highlightNucleotide = function() {
-    if (plot.view() == 'circular') {
+    if (plot.view() === 'circular') {
       plot.views.circular.addLetters()([this]);
     } else {
       d3.select(this).style('font-size', plot.views.airport.fontSize() + 4)
@@ -92,12 +92,13 @@ $(document).ready(function() {
 
   var clickMotif = function() {
     var data = d3.select(this).datum(),
-      selection = {};
+      selection = {},
+      i = 0;
 
     $('#' + plot.jmol.divID()).show();
     showAbout('Loop: ' + loopLink(data.id));
 
-    for(var i = 0; i < data.nts.length; i++) {
+    for(i = 0; i < data.nts.length; i++) {
       selection[normalizeID(data.nts[i])] = true;
     }
 
@@ -177,10 +178,10 @@ $(document).ready(function() {
 
   plot.frame.add(false);
 
-  plot.views.airport.fontSize(8)
+  plot.views.airport.fontSize(8);
 
   plot.nucleotides(NTS)
-    .getID(function(d, i) { return convertNTID(d['id']); })
+    .getID(function(d, i) { return convertNTID(d.id); })
     .click(clickNucleotide)
     .mouseover(highlightNucleotide)
     .mouseout(normalizeNucleotide);
@@ -223,7 +224,8 @@ $(document).ready(function() {
           lr = {};
 
       (function() {
-        for(var i = 0; i < LONG.length; i++) {
+        var i;
+        for(i = 0; i < LONG.length; i++) {
           var cur = LONG[i], 
               id = idBuilder(cur);
           lr[id] = cur.crossing;
@@ -231,12 +233,13 @@ $(document).ready(function() {
       }());
 
       (function() {
-        for(var i = 0; i < interactions.length; i++) {
+        var i;
+        for(i = 0; i < interactions.length; i++) {
           var cur = interactions[i],
               id = idBuilder(cur);
           if (lr[id]) {
-            cur['long_range'] = true;
-            cur['crossing'] = lr[id];
+            cur.long_range = true;
+            cur.crossing = lr[id];
           }
         }
       }());
@@ -252,7 +255,8 @@ $(document).ready(function() {
         var motifs = d3.csv.parse('"id","nts"\n' + text);
 
         (function() {
-          for(var i = 0; i < motifs.length; i++) {
+          var i;
+          for(i = 0; i < motifs.length; i++) {
             motifs[i].nts = $.map(motifs[i].nts.split(","), convertNTID);
           }
         }());
