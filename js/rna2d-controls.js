@@ -186,7 +186,7 @@ $(document).ready(function() {
     .mouseover(highlightNucleotide)
     .mouseout(normalizeNucleotide);
 
-  plot.brush.enabled(true)
+  plot.brush.enabled(false)
     .update(brushShow);
 
   plot.jmol.overflow(function() { $("#overflow").show(); })

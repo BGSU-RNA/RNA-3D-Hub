@@ -75,9 +75,9 @@
                 data-keyboard="true" class="btn primary btn-block">Help</button>
 
               <!-- <h5>Mode</h5> -->
-              <button type="button" id="mode-toggle" class="btn btn-block"
-                autocomplete="off" data-normal-text="Select"
-                data-loading-text="Click">Select</button>
+              <button type="button" id="mode-toggle" class="btn btn-block active"
+                autocomplete="off" data-normal-text="Click"
+                data-loading-text="Select">Click</button>
 
                 <div id="motif-controls">
                     <button type="button" id='motif-toggle' class="btn btn-block IL 
