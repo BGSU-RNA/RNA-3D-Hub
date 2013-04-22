@@ -150,11 +150,12 @@ $(document).ready(function() {
     $('#' + plot.jmol.divID()).hide();
     $('#about-selection').hide();
 
+    plot.width(500);
     if (view === 'airport') {
       plot.height(11/8 * plot.width());
       $("#motif-toggle").removeAttr("disabled").addClass('active');
     } else {
-      plot.height(400);
+      plot.width(500);
       $("#motif-toggle").attr("disabled", "disabled");
     }
 
