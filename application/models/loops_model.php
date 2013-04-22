@@ -196,10 +196,36 @@ class Loops_model extends CI_Model {
 
     }
 
+    function get_most_recent_motif_assignment($loop_id)
+    {
+        $loop_type = substr($loop_id, 0, 2);
+        $this->db->select('ml_loops.motif_id as motif_id, ml_releases.id as release_id')
+                 ->from('ml_loops')
+                 ->join('ml_releases', 'ml_releases.id=ml_loops.release_id')
+                 ->where('ml_loops.id', $loop_id)
+                 ->where('ml_releases.type', $loop_type)
+                 ->order_by('ml_releases.date', 'desc');
+        $query = $this->db->get();
+        if ( $query->num_rows() == 0 ) {
+            return NULL;
+        } else {
+            $result = $query->result();
+            return array('motif_id'   => $result[0]->motif_id,
+                         'release_id' => $result[0]->release_id);
+        }
+    }
+
     function get_motif_info($id)
     {
         $result = array();
         $motif = $this->get_current_motif_id_from_loop_id($id);
+
+        $old_release = FALSE;
+        // try to get motif assignment from previous releases
+        if ($motif == NULL) {
+            $motif = $this->get_most_recent_motif_assignment($id);
+            $old_release = TRUE;
+        }
 
         if ($motif != NULL) {
             $result['motif_id'] = $motif['motif_id'];
@@ -223,6 +249,9 @@ class Loops_model extends CI_Model {
                      ->where('motif_id', $motif['motif_id']);
             $query = $this->db->get();
             $result['motif_instances'] = $query->num_rows();
+            if ( $old_release ) {
+                $result['motif_url'] = $result['motif_url'] . " (release {$motif['release_id']})";
+            }
         } else {
             $result['motif_id'] = "This loop hasn't been annotated with motifs yet";
             $result['motif_url'] = "This loop hasn't been annotated with motifs yet";

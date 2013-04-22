@@ -67,7 +67,7 @@
                         <div class="span3 well">
                             <h4>Motif assignment</h4>
                             <dl>
-                                <dt>Current motif</dt>
+                                <dt>Motif group</dt>
                                 <dd><?=$motif_url?></dd>
                                 <dt>Common name</dt>
                                 <dd><?=$motif_common_name?></dd>
