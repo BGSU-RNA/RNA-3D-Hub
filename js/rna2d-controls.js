@@ -19,9 +19,9 @@ $(document).ready(function() {
     d3.select(this).style('opacity', 1);
 
     if (plot.view() === 'circular') {
-      plot.pie.addLetters()(nts[0]);
+      plot.views.circular.addLetters()(nts[0]);
     } else {
-      nts.style('font-size', plot.nucleotides.fontSize() + 4);
+      nts.style('font-size', plot.views.airport.fontSize() + 4);
       nts.classed(family, true);
     }
   };
@@ -30,16 +30,16 @@ $(document).ready(function() {
     var nts = plot.interactions.nucleotides(this);
     var family = plot.interactions.family(this);
     nts.classed(family, false);
-    nts.style('font-size', plot.nucleotides.fontSize());
+    nts.style('font-size', plot.views.airport.fontSize());
     d3.select(this).style('opacity', 0.4);
-    plot.pie.clearLetters()();
+    plot.views.circular.clearLetters()();
   };
 
   var highlightNucleotide = function() {
     if (plot.view() == 'circular') {
-      plot.pie.addLetters()([this]);
+      plot.views.circular.addLetters()([this]);
     } else {
-      d3.select(this).style('font-size', plot.nucleotides.fontSize() + 4)
+      d3.select(this).style('font-size', plot.views.airport.fontSize() + 4)
         .style('fill', 'red');
     }
     var inters = plot.nucleotides.interactions(this);
@@ -50,9 +50,9 @@ $(document).ready(function() {
     var inters = plot.nucleotides.interactions(this);
     inters.style('opacity', 0.4);
     if (plot.view() === 'circular') {
-      plot.pie.clearLetters()();
+      plot.views.circular.clearLetters()();
     } else {
-      d3.select(this).style('font-size', plot.nucleotides.fontSize())
+      d3.select(this).style('font-size', plot.views.airport.fontSize())
         .style('fill', null);
     }
   };
@@ -176,9 +176,11 @@ $(document).ready(function() {
   var plot = Rna2D({view: 'circular', width: 500, height: 400, selection: '#rna-2d'});
 
   plot.frame.add(false);
+
+  plot.views.airport.fontSize(8)
+
   plot.nucleotides(NTS)
     .getID(function(d, i) { return convertNTID(d['id']); })
-    .fontSize(8)
     .click(clickNucleotide)
     .mouseover(highlightNucleotide)
     .mouseout(normalizeNucleotide);
