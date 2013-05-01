@@ -2,8 +2,8 @@
     <!-- RNA2D -->
     <script type="text/javascript" src="<?=$baseurl?>js/sizzle.js"></script>
     <script type="text/javascript" src="<?=$baseurl?>js/d3.js"></script>
-    <script type="text/javascript" src="<?=$baseurl?>js/underscore.min.js"></script>
     <script type="text/javascript" src="<?=$baseurl?>js/rna2d.js"></script>
+    <script type="text/javascript" src="<?=$baseurl?>js/jquery.rna2d.js"></script>
     <script type="text/javascript" src="<?=$baseurl?>js/rna2d-controls.js"></script>
 
     <div class="container pdb-2d-view">
