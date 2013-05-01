@@ -81,8 +81,12 @@
                 data-loading-text="Select">Click</button>
 
                 <div id="motif-controls">
-                    <button type="button" id='motif-toggle' class="btn btn-block IL 
-                        motif-toggle active" disabled='disabled' data-motif='*'>Motifs</button>
+                    <button id='il-toggle' type="button" class="btn btn-block
+                        motif-toggle active" disabled='disabled' data-toggle='button' data-motif='IL'>IL</button>
+                    <button id='hl-toggle' type="button" class="btn btn-block
+                        motif-toggle active" disabled='disabled' data-toggle='button' data-motif='HL'>HL</button>
+                    <button id='j3-toggle' type="button" class="btn btn-block
+                        motif-toggle active" disabled='disabled' data-toggle='button' data-motif='J3'>J3</button>
                 </div>
 
               <div id="control-groups">
