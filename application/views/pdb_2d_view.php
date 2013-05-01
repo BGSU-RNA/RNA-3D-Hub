@@ -5,7 +5,6 @@
     <script type="text/javascript" src="<?=$baseurl?>js/rna2d.js"></script>
     <script type="text/javascript" src="<?=$baseurl?>js/jquery.rna2d.js"></script>
     <script type="text/javascript" src="<?=$baseurl?>js/rna2d-controls.js"></script>
-    <script type="text/javascript" src="<?=$baseurl?>js/bootstrap-button-37d0a30.js"></script>
 
     <div class="container pdb-2d-view">
 
@@ -77,7 +76,7 @@
 
               <!-- <h5>Mode</h5> -->
               <button type="button" id="mode-toggle" class="btn btn-block active"
-                autocomplete="off" data-normal-text="Click"
+                autocomplete="off" data-normal-text="Click" data-toggle="button"
                 data-loading-text="Select">Click</button>
 
                 <div id="motif-controls">

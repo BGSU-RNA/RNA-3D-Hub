@@ -1,3 +1,4 @@
+BTN = null; 
 $(document).ready(function() {
   'use strict';
 /*globals Rna2D, d3, document, $, NTS, INTERACTION_URL, LONG, LOOP_URL */
@@ -165,6 +166,11 @@ $(document).ready(function() {
     }, controls: {
       brush: {
         selector: '#mode-toggle',
+        callback: function(e) {
+          var $btn = $(e.target),
+              newText = ($btn.text() === $btn.data('loading-text') ? 'normal-text' : 'loading-text');
+          $btn.text($btn.data(newText));
+        }
       },
       interactions: {
         selector: '.toggle-control',
