@@ -11,6 +11,12 @@ $(document).ready(function() {
       loopLink = function(id) { return '<a target="_blank" href="' + loopURL(id) + '">' + id + "</a>"; },
       plot = Rna2D({view: 'circular', width: 500, height: 687.5, selection: '#rna-2d'});
 
+  if (NTS[0].hasOwnProperty('x')) {
+    plot.view('airport');
+    $(".motif-toggle").removeAttr("disabled").addClass('active');
+    $("#airport-view").click();
+  }
+
   $('#about-selection').hide();
 
   var generateJmol = function($jmol) {
