@@ -19,15 +19,6 @@ $(document).ready(function() {
 
   $('#about-selection').hide();
 
-  var generateJmol = function($jmol) {
-    var form = '<button type="button" id="neighborhood" class="btn">Show neighborhood</button>' +
-      ' ' +
-      '<button type="button" id="stereo" class="btn">Stereo</button>' +
-      ' ' +
-      '<label><input type="checkbox" id="showNtNums">Show numbers</label>';
-    $jmol.append(form);
-  };
-
   var showAbout = function(text) {
     $("#about-selection")
       .empty()
@@ -41,7 +32,6 @@ $(document).ready(function() {
     var data = d3.select(this).datum(),
         selection = {};
 
-    $('#' + plot.jmol.divID()).show();
     showAbout(data.family + ' interaction between ' + ntLink(data.nt1) +
               ' and ' + ntLink(data.nt2));
 
@@ -54,7 +44,6 @@ $(document).ready(function() {
     var data = d3.select(this).datum(),
         selection = {};
 
-    $('#' + plot.jmol.divID()).show();
     showAbout('Nucleotide: ' + ntLink(data.id));
 
     selection[data.id] = true;
@@ -66,7 +55,6 @@ $(document).ready(function() {
       selection = {},
       i = 0;
 
-    $('#' + plot.jmol.divID()).show();
     showAbout('Loop: ' + loopLink(data.id));
 
     $.each(data.nts, function(i, nt) { selection[normalizeID(nt)] = true; });
@@ -75,7 +63,6 @@ $(document).ready(function() {
   };
 
   var brushShow = function(selection) {
-    $('#' + plot.jmol.divID()).show();
     $('#about-selection').hide();
     return plot.jmol.showSelection(selection);
   };
@@ -97,8 +84,7 @@ $(document).ready(function() {
 
   plot.jmol.overflow(function() { $("#overflow").show(); })
     .stereoID('stereo')
-    .windowSize(350)
-    .windowBuild(generateJmol);
+    .windowSize(350);
 
   // TODO: Use interaction.highlightColor to select the color based upon css for
   // the interaction
@@ -195,7 +181,6 @@ $(document).ready(function() {
               view = $btn.data('view');
 
           plot.brush.clear();
-          $('#' + plot.jmol.divID()).hide();
           $('#about-selection').hide();
 
           if (view === 'airport') {
