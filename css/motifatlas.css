@@ -889,6 +889,12 @@ body.home {
 .pdb-2d-view .block-message a {
   text-decoration: underline;
 }
+.pdb-2d-view #jmol {
+  padding: 15px;
+}
+.pdb-2d-view #related-structures a {
+  font-weight: normal;
+}
 
 /* Motif Atlas home page */
 .motifs_home_view .hero-unit, .pdb_view .hero-unit {
