@@ -1,4 +1,3 @@
-BTN = null; 
 $(document).ready(function() {
   'use strict';
 /*globals Rna2D, d3, document, $, NTS, INTERACTION_URL, LONG, LOOP_URL */
@@ -37,6 +36,7 @@ $(document).ready(function() {
 
     selection[data.nt1] = true;
     selection[data.nt2] = true;
+    console.log(selection);
     return plot.jmol.showSelection(selection);
   };
 
@@ -47,6 +47,8 @@ $(document).ready(function() {
     showAbout('Nucleotide: ' + ntLink(data.id));
 
     selection[data.id] = true;
+    console.log(selection);
+
     return plot.jmol.showSelection(selection);
   };
 
@@ -59,11 +61,14 @@ $(document).ready(function() {
 
     $.each(data.nts, function(i, nt) { selection[normalizeID(nt)] = true; });
 
+    console.log(selection);
+
     return plot.jmol.showSelection(selection);
   };
 
   var brushShow = function(selection) {
     $('#about-selection').hide();
+    console.log(selection);
     return plot.jmol.showSelection(selection);
   };
 
