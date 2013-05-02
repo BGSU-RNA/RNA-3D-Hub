@@ -159,11 +159,9 @@
                     <?php if (count($related_pdbs) == 0): ?>
                       <strong>None found</strong>
                     <?php else: ?>
-                        <p>
                       <?php foreach($related_pdbs as $pdb): ?>
                         <a href="<?=$baseurl?>pdb/<?=$pdb?>/2d"><?=$pdb?></a>
                       <?php endforeach; ?>
-                        </p>
                       <br>
                     <?php endif; ?>
                 </div>
