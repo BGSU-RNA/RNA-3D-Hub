@@ -81,9 +81,6 @@ $(document).ready(function() {
     .click(clickNucleotide)
     .mouseover('highlight');
 
-  plot.interactions
-    .getNTs(function(d) { return [convertNTID(d.nt1), convertNTID(d.nt2)]; });
-
   plot.brush.enabled(false)
     .update(brushShow);
 
