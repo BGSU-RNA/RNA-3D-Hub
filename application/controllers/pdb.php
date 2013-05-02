@@ -194,6 +194,15 @@ class Pdb extends CI_Controller {
         $data['has_airport'] = FALSE;
         $view = 'pdb_2d_view';
 
+        $data['related_pdbs'] = array();
+        $related = $this->Pdb_model->get_related_structures($pdb_id);
+        $related = $related['related_pdbs'];
+        foreach($related as $pdb) {
+            if (strcasecmp($pdb_id, $pdb)) {
+                $data['related_pdbs'][] = $pdb;
+            }
+        };
+
         if ( $pdb_status['valid'] ) {
             $nts = $this->Pdb_model->get_airport($pdb_id);
             $data['long_range'] = json_encode($this->Pdb_model->get_longrange_bp($pdb_id));

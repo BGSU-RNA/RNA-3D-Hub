@@ -140,15 +140,31 @@
             </div>
             <div class="row span6">
                 <div id="jmol" class="span6">
-                  <script type='text/javascript'>
-                    jmolInitialize(" /jmol");
-                    jmolSetDocument(0);
-                    jmolSetAppletColor("#ffffff");
-                  </script>
+                    <script type='text/javascript'>
+                        jmolInitialize(" /jmol");
+                        jmolSetAppletColor("#ffffff");
+                        jmolApplet(340, "javascript appletLoaded()");
+                    </script>
+                    <button type="button" id="neighborhood" class="btn">Show neighborhood</button>
+                    <button type="button" id="stereo" class="btn">Stereo</button>
+                    <label><input type="checkbox" id="showNtNums">Show numbers</label>
                 </div>
             </div>
             <div class="row span6">
                 <div id="about-selection" class="alert-message block-message info hide span6"></div>
+            </div>
+            <div class="row span6">
+                <div id="related-structures" class="well span5">
+                    <h4>Related Structures</h4>
+                    <?php if (count($related_pdbs) == 0): ?>
+                      None found
+                    <?php else: ?>
+                      <?php foreach($related_pdbs as $pdb): ?>
+                        <a href="<?=$baseurl?>pdb/<?=$pdb?>/2d"><?=$pdb?></a>
+                      <?php endforeach; ?>
+                      <br>
+                    <?php endif; ?>
+                </div>
             </div>
           </div>
 
