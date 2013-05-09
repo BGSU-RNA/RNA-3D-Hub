@@ -67,7 +67,7 @@ $(document).ready(function() {
   plot.views.airport.fontSize(8);
 
   plot.nucleotides(NTS)
-    .getID(function(d, i) { return convertNTID(d.id); })
+    .encodeID(convertNTID)
     .click(clickNucleotide)
     .mouseover('highlight');
 
@@ -82,7 +82,6 @@ $(document).ready(function() {
   // the interaction
 
   plot.interactions
-    .getNTs(function(d) { return [convertNTID(d.nt1), convertNTID(d.nt2)]; })
     .classOf(function(d, i) {
       var klass = [plot.interactions.getFamily()(d)];
       return (d.long_range ? klass.concat("LR") : klass);
@@ -133,7 +132,7 @@ $(document).ready(function() {
 
     var motifs = d3.csv.parse('"id","nts"\n' + text);
     return $.map(motifs, function(data, i) {
-      data.nts = $.map(data.nts.split(','), convertNTID);
+      data.nts = data.nts.split(',');
       return data;
     });
   };
