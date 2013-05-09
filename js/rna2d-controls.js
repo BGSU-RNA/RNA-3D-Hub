@@ -3,7 +3,6 @@ $(document).ready(function() {
 /*globals Rna2D, d3, document, $, NTS, INTERACTION_URL, LONG, LOOP_URL */
 
   var convertNTID = function(id) { return id.replace(/\|/g, '_'); },
-      normalizeID = function(id) { return id.replace(/_/g, '|'); },
       ntURL = function(id) { return 'http://rna.bgsu.edu/rna3dhub/unitid/describe/' + encodeURIComponent(id); },
       ntLink = function(id) { return '<a target="_blank" href="' + ntURL(id) + '">' + id + "</a>"; },
       loopURL = function(id) { return 'http://rna.bgsu.edu/rna3dhub/loops/view/' + id; },
@@ -26,42 +25,33 @@ $(document).ready(function() {
       .show();
   };
 
-  var clickInteraction = function() {
+  var clickInteraction = function(data, i) {
     $('#about-selection').hide();
-    var data = d3.select(this).datum(),
-        selection = {};
+    var selection = {};
 
     showAbout(data.family + ' interaction between ' + ntLink(data.nt1) +
               ' and ' + ntLink(data.nt2));
 
     selection[data.nt1] = true;
     selection[data.nt2] = true;
-    console.log(selection);
+
     return plot.jmol.showSelection(selection);
   };
 
-  var clickNucleotide = function() {
-    var data = d3.select(this).datum(),
-        selection = {};
+  var clickNucleotide = function(data, i) {
+    var selection = {};
 
     showAbout('Nucleotide: ' + ntLink(data.id));
-
     selection[data.id] = true;
-    console.log(selection);
 
     return plot.jmol.showSelection(selection);
   };
 
-  var clickMotif = function() {
-    var data = d3.select(this).datum(),
-      selection = {},
-      i = 0;
+  var clickMotif = function(data, i) {
+    var selection = {};
 
     showAbout('Loop: ' + loopLink(data.id));
-
-    $.each(data.nts, function(i, nt) { selection[normalizeID(nt)] = true; });
-
-    console.log(selection);
+    $.each(data.nts, function(i, nt) { selection[nt] = true; });
 
     return plot.jmol.showSelection(selection);
   };
