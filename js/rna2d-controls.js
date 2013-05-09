@@ -26,7 +26,6 @@ $(document).ready(function() {
   };
 
   var clickInteraction = function(data, i) {
-    $('#about-selection').hide();
     var selection = {};
 
     showAbout(data.family + ' interaction between ' + ntLink(data.nt1) +
