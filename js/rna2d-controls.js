@@ -26,39 +26,24 @@ $(document).ready(function() {
   };
 
   var clickInteraction = function(data, i) {
-    var selection = {};
-
     showAbout(data.family + ' interaction between ' + ntLink(data.nt1) +
               ' and ' + ntLink(data.nt2));
-
-    selection[data.nt1] = true;
-    selection[data.nt2] = true;
-
-    return plot.jmol.showSelection(selection);
+    return plot.interactions.jmol(data, i);
   };
 
   var clickNucleotide = function(data, i) {
-    var selection = {};
-
     showAbout('Nucleotide: ' + ntLink(data.id));
-    selection[data.id] = true;
-
-    return plot.jmol.showSelection(selection);
+    return plot.nucleotides.jmol(data, i);
   };
 
   var clickMotif = function(data, i) {
-    var selection = {};
-
     showAbout('Loop: ' + loopLink(data.id));
-    $.each(data.nts, function(i, nt) { selection[nt] = true; });
-
-    return plot.jmol.showSelection(selection);
+    return plot.motifs.jmol(data, i);
   };
 
-  var brushShow = function(selection) {
+  var brushShow = function(nts) {
     $('#about-selection').hide();
-    console.log(selection);
-    return plot.jmol.showSelection(selection);
+    return plot.brush.jmol(nts);
   };
 
   plot.frame.add(false);
