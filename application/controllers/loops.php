@@ -182,6 +182,10 @@ class Loops extends CI_Controller {
         $data['title'] = 'Loop ' . $id;
         $data['id']    = $id;
         $data['baseurl'] = base_url();
+
+        $data['location'] = implode(', ', $this->Loops_model->get_location($id));
+        $data['nucleotides'] = implode(", ", $this->Loops_model->get_nucleotides($id));
+
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('loops_single_view', $data);

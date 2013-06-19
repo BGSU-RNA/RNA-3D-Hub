@@ -815,6 +815,50 @@ EOT;
         return $result;
     }
 
+    function get_nucleotides($id)
+    {
+        $this->db->select()
+                 ->from('loops_all')
+                 ->where('id',$id);
+
+        $query = $this->db->get();
+
+        $nts = array();
+        if ($query->num_rows() > 0) {
+            $loop = $query->row();
+            $old = explode(",", $loop->nt_ids);
+            $this->db->select('unit_id')
+                     ->from('pdb_unit_id_correspondence')
+                     ->where_in('old_id', $old);
+
+            $query = $this->db->get();
+            foreach($query->result() as $row) {
+                $nts[] = $row->unit_id;
+            }
+        }
+
+        return $nts;
+    }
+
+    function get_location($id)
+    {
+        $location = 'None Annotated';
+
+        $this->db->select('loop_locations.name')
+                 ->from('loop_location_annotation')
+                 ->join('loop_locations', 'loop_location_annotation.loop_location_id = loop_locations.id')
+                 ->where('loop_location_annotation.loop_id', $id);
+
+        $query = $this->db->get();
+        if ($query->num_rows() > 0) {
+            $location = array();
+            foreach ($query->result() as $row) {
+                $location[] = $row->name;
+            }
+        }
+
+        return $location;
+    }
 }
 
 /* End of file loops_model.php */

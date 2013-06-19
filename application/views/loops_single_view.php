@@ -54,15 +54,20 @@
                             <dl>
                                 <dt>Sequence</dt>
                                 <dd><?=$sequence?></dd>
+                                <dt>Nucleotides</dt>
+                                <dd><?= $nucleotides ?></dd>
                                 <dt>Length</dt>
                                 <dd><?=$length?> nucleotides</dd>
                                 <dt>Bulged bases</dt>
                                 <dd><?=$bulges?></dd>
                                 <dt>QA status</dt>
                                 <dd><?=$qa?></dd>
+                                <dt>Location</dt>
+                                <dd><?=$location ?></dd>
                             </dl>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="span3 well">
                             <h4>Motif assignment</h4>
