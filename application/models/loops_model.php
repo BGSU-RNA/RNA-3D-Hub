@@ -817,7 +817,7 @@ EOT;
 
     function get_nucleotides($id)
     {
-        $this->db->select()
+        $this->db->select('nt_ids')
                  ->from('loops_all')
                  ->where('id',$id);
 
@@ -829,7 +829,10 @@ EOT;
             $old = explode(",", $loop->nt_ids);
             $this->db->select('unit_id')
                      ->from('pdb_unit_id_correspondence')
-                     ->where_in('old_id', $old);
+                     ->join('loop_positions', 'loop_positions.nt_id = pdb_unit_id_correspondence.old_id')
+                     ->where_in('old_id', $old)
+                     ->where('loop_id', $id)
+                     ->order_by('loop_positions.position');
 
             $query = $this->db->get();
             foreach($query->result() as $row) {
