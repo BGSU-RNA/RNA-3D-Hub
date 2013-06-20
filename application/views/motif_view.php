@@ -82,6 +82,7 @@
                         <li class="active"><a href="#int">Pairwise interactions</a></li>
                         <li><a href="#variants">Sequence variants</a></li>
                         <li><a href="#similar">Similar motifs</a></li>
+                        <li><a href="#locations">Observed Locations</a></li>
                         <li><a href="#history">History</a></li>
                     </ul>
 
@@ -123,6 +124,14 @@
                                 <?=$similar_motifs?>
                             </div>
                         </div>
+
+
+                        <div class="tab-pane" id='locations'>
+                            <div class='span7'>
+                                <?=$locations?>
+                            </div>
+                        </div>
+
 
                         <div class="tab-pane" id='history'>
                             <h4>Release history</h4>

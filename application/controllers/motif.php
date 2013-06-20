@@ -131,6 +131,12 @@ class Motif extends MY_Controller {
         $this->table->set_template($tmpl);
         $data['similar_motifs'] = $this->table->generate($this->Motif_model->get_similar_motifs($motif_id));
 
+        // Locations
+        $tmpl = array( 'table_open'  => '<table class="condensed-table zebra-striped">' );
+        $this->table->set_heading(array('Location', 'Loops'));
+        $this->table->set_template($tmpl);
+        $data['locations'] = $this->table->generate($this->Motif_model->get_locations($motif_id));
+
         $data['current_url'] = current_url();
         $data['baseurl'] = base_url();
         $this->load->view('header_view', $data);

@@ -904,6 +904,25 @@ class Motif_model extends CI_Model {
         }
     }
 
+    function get_locations($motif_id)
+    {
+        $this->db->select('loop_locations.name, group_concat(ml_loops.id) AS `loop_ids`', FALSE)
+                ->from('ml_loops')
+                ->join('loop_location_annotation', 'loop_location_annotation.loop_id = ml_loops.id')
+                ->join('loop_locations', 'loop_locations.id = loop_location_annotation.loop_location_id')
+                ->where('ml_loops.motif_id', $motif_id)
+                ->where('ml_loops.release_id', $this->release_id)
+                ->group_by('loop_locations.name');
+
+        $table = array();
+        //$query = $this->db->get();
+        //foreach($query->result() as $row) {
+            //$table[] = array($row->name, $row->loop_ids);
+        //}
+
+        return $this->db->get();
+    }
+
 }
 
 /* End of file motif_model.php */
