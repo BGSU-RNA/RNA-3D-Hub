@@ -186,6 +186,10 @@ class Loops extends CI_Controller {
         $data['location'] = implode(', ', $this->Loops_model->get_location($id));
         $data['nucleotides'] = implode(", ", $this->Loops_model->get_nucleotides($id));
 
+        if ($data['location'] == '') {
+            $data['location'] = 'None annotated';
+        }
+
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('loops_single_view', $data);
