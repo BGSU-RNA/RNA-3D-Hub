@@ -170,4 +170,15 @@ $(document).ready(function() {
     }
   });
 
+  // When using the all toggle we should toggle the other buttons.
+  $("#all-toggle").on('click', function(event) {
+    var $btn = $(this),
+        active = $btn.hasClass('active');
+    if (active) {
+      $btn.siblings().removeClass('active');
+    } else {
+      $btn.siblings().addClass('active');
+    }
+  });
+
 });

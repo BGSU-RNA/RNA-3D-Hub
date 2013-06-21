@@ -90,6 +90,9 @@
 
               <div id="control-groups">
                 <div id="interaction-controls">
+                    <button type="button" id="all-toggle" class="btn btn-block
+                      toggle-control" data-toggle='button' data-family='all'>All</button>
+
                     <button type="button" id='cWW-toggle' class="btn btn-block
                       cWW toggle-control active" data-toggle='button' data-family='cWW'>cWW</button>
 
