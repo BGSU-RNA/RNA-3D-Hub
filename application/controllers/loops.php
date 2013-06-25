@@ -184,7 +184,7 @@ class Loops extends CI_Controller {
         $data['baseurl'] = base_url();
 
         $data['location'] = implode(', ', $this->Loops_model->get_location($id));
-        $data['nucleotides'] = implode(", ", $this->Loops_model->get_nucleotides($id));
+        $data['nucleotides'] = $this->Loops_model->get_loop_name($id);
 
         if ($data['location'] == '') {
             $data['location'] = 'None annotated';
