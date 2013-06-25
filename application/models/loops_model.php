@@ -862,6 +862,19 @@ EOT;
 
         return $location;
     }
+
+    function get_loop_name($id) 
+    {
+        $this->db->select('loop_name')
+                 ->from('loops_all')
+                 ->where('id',$id);
+        $query = $this->db->get();
+        if ($query->num_rows() == 1) {
+            $results = $query->result();
+            return $results[0]->loop_name; 
+        }
+        return '';
+    }
 }
 
 /* End of file loops_model.php */
