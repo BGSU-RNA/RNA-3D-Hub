@@ -16,6 +16,7 @@ class Motif_model extends CI_Model {
         $this->f_lwbp     = array();
         $this->similarity = array(); // loops in similarity order
         $this->full_length = array();
+        $this->chainbreak = -1;
         // Call the Model constructor
         parent::__construct();
     }
@@ -695,6 +696,7 @@ class Motif_model extends CI_Model {
         $this->get_discrepancies();
         $this->get_interactions();
         $this->get_loop_lengths();
+        $this->get_chainbreak();
         $this->get_header();
         for ($i = 0; $i < $this->num_loops; $i++) {
             $rows[$i] = $this->generate_row($i+1);
@@ -721,9 +723,12 @@ class Motif_model extends CI_Model {
         $header = array('#D', '#S', 'Loop id', 'PDB', 'Disc', 'Bulges');
         // 1, 2, ..., N
         for ($i = 1; $i < $this->num_nt; $i++) {
-            $header[] = ' ';
-            $header[] = $i;
-        }
+			if ($i == $this->chainbreak + 1) { // insert a column after chainbreak
+				$header[] = 'break';
+			}
+			$header[] = ' ';
+			$header[] = $i;
+		}
         // 1-2, ..., 1-N, ..., N-1 - N
         for ($i = 1; $i < $this->num_nt; $i++) {
             for ($j = $i; $j < $this->num_nt; $j++) {
@@ -732,6 +737,40 @@ class Motif_model extends CI_Model {
         }
         $this->header = $header;
     }
+
+	function get_chainbreak()
+	{
+		// if a hairpin, do nothing
+		if ( substr($this->motif_id, 0, 2) == 'HL' ) {
+			return;
+		}
+
+		// get an internal loop from this motif
+		$this->db->select('id')
+		         ->from('ml_loops')
+		         ->where('motif_id', $this->motif_id)
+		         ->limit(1);
+        $query = $this->db->get();
+        $result = $query->row();
+    	$loop_id = $result->id;
+
+    	// get chain breaks
+    	$this->db->select('ml_loop_positions.position')
+    	         ->from('loop_positions')
+    	         ->join('ml_loop_positions', 'loop_positions.loop_id = ml_loop_positions.loop_id AND ' .
+    	                                     'loop_positions.nt_id = ml_loop_positions.nt_id')
+    	         ->where('loop_positions.loop_id', $loop_id)
+    	         ->where('loop_positions.border', 1)
+    	         ->where('ml_loop_positions.motif_id', $this->motif_id)
+    	         ->where('ml_loop_positions.release_id', $this->release_id)
+    	         ->order_by('ml_loop_positions.position', 'ASC');
+        $result = $this->db->get()->result_array();
+
+        // take second row
+		if ( count($result) > 0 ) {
+	        $this->chainbreak = $result[1]['position'];
+        }
+	}
 
     function generate_row($id)
     {
@@ -748,6 +787,8 @@ class Motif_model extends CI_Model {
                 $row[] = '<a class="pdb">' . $parts[1] . '</a>';
             } elseif ( $key == 'Bulges' ) {
                 $row[] = $this->full_length[$this->loops[$id]] - count($this->full_nts[$this->loops[$id]]);
+            } elseif ( $key == 'break' ) {
+            	$row[] = '*';
             } elseif ( is_int($key) ) {
                 $parts = explode(' ', $this->nts[$this->loops[$id]][$key]);
                 $row[] = $parts[1];

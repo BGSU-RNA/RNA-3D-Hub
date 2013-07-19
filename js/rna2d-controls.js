@@ -78,7 +78,26 @@ $(document).ready(function() {
     .mouseover('highlight');
 
   plot.views.circular
-    .center(function() { return { x: plot.width() / 2, y: plot.height() / 4 }; });
+    .center(function() { return { x: plot.width() / 2, y: plot.height() / 4 }; })
+    .addLetters(function(nts) {
+        var positionOf = plot.views.circular.letterPosition(),
+            highlightColor = plot.nucleotides.highlightColor();
+
+        plot.vis.selectAll(plot.views.circular.letterClass())
+          .data(nts).enter().append('svg:text')
+          .attr('id', plot.views.circular.letterID())
+          .attr('class', plot.views.circular.letterClass())
+          .attr('x', function(d) { return positionOf(d).x; })
+          .attr('y', function(d) { return positionOf(d).y; })
+          .attr('font-size', plot.views.circular.letterSize())
+          .attr('pointer-events', 'none')
+          .text(function(d) { 
+            return d.getAttribute('data-sequence') + d.getAttribute('id').split('_')[4];
+          })
+          .attr('fill', function(d) { return highlightColor(d); });
+
+        return plot;
+    });
 
 
   var interactionParser = function(text) {
@@ -167,6 +186,17 @@ $(document).ready(function() {
         }
       }
 
+    }
+  });
+
+  // When using the all toggle we should toggle the other buttons.
+  $("#all-toggle").on('click', function(event) {
+    var $btn = $(this),
+        active = $btn.hasClass('active');
+    if (active) {
+      $btn.siblings().removeClass('active');
+    } else {
+      $btn.siblings().addClass('active');
     }
   });
 
