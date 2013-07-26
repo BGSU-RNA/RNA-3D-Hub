@@ -84,7 +84,8 @@ $(document).ready(function() {
     .mouseover('highlight');
 
   plot.views.circular
-    .center(function() { return { x: plot.width() / 2, y: plot.height() / 4 }; })
+    .center(function() { return { x: plot.width() / 2, y: plot.height() / 2 }; })
+    .radius(function() { return plot.width() / 2 - 50; })
     .addLetters(function(nts) {
         var positionOf = plot.views.circular.letterPosition(),
             highlightColor = plot.nucleotides.highlightColor();
