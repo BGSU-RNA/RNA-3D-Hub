@@ -1,6 +1,12 @@
 $(document).ready(function() {
   'use strict';
-/*globals Rna2D, d3, document, $, NTS, INTERACTION_URL, LONG, LOOP_URL */
+/*globals Rna2D, d3, document, $, NTS, INTERACTION_URL, LONG, LOOP_URL, location */
+
+  function getURLParameter(name) {
+      return decodeURI(
+          (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search)||[null,null])[1]
+      );
+  }
 
   var convertNTID = function(id) { return id.replace(/\|/g, '_'); },
       ntURL = function(id) { return 'http://rna.bgsu.edu/rna3dhub/unitid/describe/' + encodeURIComponent(id); },
@@ -9,7 +15,7 @@ $(document).ready(function() {
       loopLink = function(id) { return '<a target="_blank" href="' + loopURL(id) + '">' + id + "</a>"; },
       plot = Rna2D({view: 'circular', width: 500, height: 687.5, selection: '#rna-2d'});
 
-  if (NTS[0].hasOwnProperty('x')) {
+  if (NTS[0].hasOwnProperty('x') && getURLParameter('view') !== 'circular') {
     plot.view('airport');
     $(".motif-toggle").removeAttr("disabled").addClass('active');
     $("#airport-view").click();
