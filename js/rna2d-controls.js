@@ -157,14 +157,6 @@ $(document).ready(function() {
       url: LOOP_URL,
       parser: loopParser
     }, controls: {
-      brush: {
-        selector: '#mode-toggle',
-        callback: function(e) {
-          var $btn = $(e.target),
-              newText = ($btn.text() === $btn.data('loading-text') ? 'normal-text' : 'loading-text');
-          $btn.text($btn.data(newText));
-        }
-      },
       interactions: {
         selector: '.toggle-control',
         near: true,
