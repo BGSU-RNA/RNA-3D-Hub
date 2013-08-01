@@ -462,7 +462,7 @@ class Pdb_model extends CI_Model {
         $result = $this->db->get()->row();
         $chains = explode(",", $result->best_chains);
 
-        $this->db->select('pdb_unit_id_correspondence.unit_id as id, pdb_coordinates.unit as sequence')
+        $this->db->select('pdb_unit_id_correspondence.unit_id as id, pdb_coordinates.chain as chain, pdb_coordinates.unit as sequence')
                  ->from('pdb_unit_ordering')
                  ->join('pdb_coordinates', 'pdb_coordinates.id = pdb_unit_ordering.nt_id')
                  ->join('pdb_unit_id_correspondence', 'pdb_unit_id_correspondence.old_id = pdb_unit_ordering.nt_id')
@@ -471,14 +471,20 @@ class Pdb_model extends CI_Model {
                  ->order_by('pdb_unit_ordering.index', 'asc');
 
         $query = $this->db->get();
-        $nts = array();
-        foreach($query->result() as $row) {
-            $nts[] = $row;
+        $chain_data = array();
+        foreach($chains as $chain) {
+            $chain_data[$chain] = array('id' => 'chain-' + $chain,
+                                        'nts' => array());
         }
-        return $nts;
+
+        foreach($query->result() as $row) {
+            $chain_data[$row->chain]['nts'][] = array('id' => $row->id,
+                                                      'sequence' => $row->sequence);
+        }
+        return array_values($chain_data);
     }
 
-    function get_airport($pdb_id) 
+    function get_airport($pdb_id)
     {
         $table='pdb_airport';
         if (! $this->db->table_exists($table)) {

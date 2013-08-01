@@ -34,37 +34,39 @@ $(document).ready(function() {
   var clickInteraction = function(data, i) {
     showAbout(data.family + ' interaction between ' + ntLink(data.nt1) +
               ' and ' + ntLink(data.nt2));
-    return plot.interactions.jmol(data, i);
+    return plot.jmolTools.interactions()(data, i);
   };
 
   var clickNucleotide = function(data, i) {
     showAbout('Nucleotide: ' + ntLink(data.id));
-    return plot.nucleotides.jmol(data, i);
+    return plot.jmolTools.nucleotides()(data, i);
   };
 
   var clickMotif = function(data, i) {
     showAbout('Loop: ' + loopLink(data.id));
-    return plot.motifs.jmol(data, i);
+    return plot.jmolTools.motifs()(data, i);
   };
 
   var brushShow = function(nts) {
     $('#about-selection').hide();
-    return plot.brush.jmol(nts);
+    return plot.jmolTools.brush()(nts);
   };
 
-  plot.frame.add(false);
+  plot.frame.render(false);
 
-  plot.views.airport.fontSize(8);
+  plot.airport.fontSize(8);
 
-  plot.nucleotides(NTS)
+  plot.chains(NTS);
+
+  plot.nucleotides
     .encodeID(convertNTID)
     .click(clickNucleotide)
     .mouseover('highlight');
 
-  plot.brush.enabled(false)
-    .update(brushShow);
+  plot.brush.update(brushShow);
 
-  plot.jmol.overflow(function() { $("#overflow").show(); })
+  plot.jmolTools
+    .overflow(function() { $("#overflow").show(); })
     .stereoID('stereo')
     .windowSize(350);
 
@@ -83,29 +85,9 @@ $(document).ready(function() {
     .click(clickMotif)
     .mouseover('highlight');
 
-  plot.views.circular
-    .center(function() { return { x: plot.width() / 2, y: plot.height() / 2 }; })
-    .radius(function() { return plot.width() / 2 - 50; })
-    .addLetters(function(nts) {
-        var positionOf = plot.views.circular.letterPosition(),
-            highlightColor = plot.nucleotides.highlightColor();
-
-        plot.vis.selectAll(plot.views.circular.letterClass())
-          .data(nts).enter().append('svg:text')
-          .attr('id', plot.views.circular.letterID())
-          .attr('class', plot.views.circular.letterClass())
-          .attr('x', function(d) { return positionOf(d).x; })
-          .attr('y', function(d) { return positionOf(d).y; })
-          .attr('font-size', plot.views.circular.letterSize())
-          .attr('pointer-events', 'none')
-          .text(function(d) { 
-            return d.getAttribute('data-sequence') + d.getAttribute('id').split('_')[4];
-          })
-          .attr('fill', function(d) { return highlightColor(d); });
-
-        return plot;
-    });
-
+  plot.circular
+    .center(function() { return { x: plot.width() / 2, y: plot.height() / 3 }; })
+    .radius(function() { return plot.width() / 2 - 50; });
 
   var interactionParser = function(text) {
     if (text.indexOf("This structure") !== -1) {
