@@ -241,7 +241,7 @@
         window.location.href = "<?=$baseurl?>pdb/" + $(this).val();
     });
 
-    if (!NTS.length) {
+    if (!NTS[0].nts.length) {
         $("#rna-2d").append("<h3 align='center'>Could not generate 2D diagram. " +
             "Check back later</h3>");
     }
