@@ -76,11 +76,11 @@
 
                 <div id="motif-controls">
                     <button id='il-toggle' type="button" class="btn btn-block
-                        motif-toggle active" disabled='disabled' data-toggle='button' data-motif='IL'>IL</button>
+                        motif-toggle active" disabled='disabled' data-toggle='button' data-toggable='IL'>IL</button>
                     <button id='hl-toggle' type="button" class="btn btn-block
-                        motif-toggle active" disabled='disabled' data-toggle='button' data-motif='HL'>HL</button>
+                        motif-toggle active" disabled='disabled' data-toggle='button' data-toggable='HL'>HL</button>
                     <button id='j3-toggle' type="button" class="btn btn-block
-                        motif-toggle active" disabled='disabled' data-toggle='button' data-motif='J3'>J3</button>
+                        motif-toggle active" disabled='disabled' data-toggle='button' data-toggable='J3'>J3</button>
                 </div>
 
               <div id="control-groups">
@@ -93,7 +93,7 @@
                     </button>
 
                     <button type="button" id='cWW-toggle' class="btn btn-block
-                      cWW toggle-control active" data-toggle='button' data-family='cWW'>cWW</button>
+                      cWW toggle-control active" data-toggle='button' data-toggable='cWW'>cWW</button>
 
                     <button type="button" id='tWW-toggle' class="btn btn-block
                       tWW toggle-control" data-toggle='button' data-toggable='tWW'>tWW</button>
