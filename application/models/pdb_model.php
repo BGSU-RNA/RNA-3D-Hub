@@ -293,7 +293,7 @@ class Pdb_model extends CI_Model {
                 $data['releaseDate'] = $row->releaseDate;
                 $data['structureAuthor'] = $row->structureAuthor;
                 $data['pdb_url'] = "http://www.pdb.org/pdb/explore/explore.do?structureId={$pdb_id}";
-                $data['ndb_url'] = "http://ndbserver.rutgers.edu/servlet/IDSearch.NDBSearch1?id={$row->ndbId}";
+                $data['ndb_url'] = "http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget={$row->ndbId}";
             }
             // only for RNA chains
             if ( $row->entityMacromoleculeType == 'Polyribonucleotide (RNA)' or
