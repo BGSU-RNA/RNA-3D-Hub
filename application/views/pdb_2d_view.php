@@ -128,6 +128,12 @@
                     <button type="button" id="tHH-toggle" class="btn btn-block
                       tHH toggle-control" data-toggle='button' data-toggable='tHH'>tHH</button>
 
+                    <button type="button" id="lr-toggle" class="btn btn-block
+                      toggle-control" data-toggle='button'
+                      data-toggable='LR'>
+                      LR
+                    </button>
+
                 </div>
 
               </div>
