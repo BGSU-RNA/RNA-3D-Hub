@@ -74,60 +74,59 @@
               <button data-controls-modal="help-modal" data-backdrop="true" 
                 data-keyboard="true" class="btn primary btn-block">Help</button>
 
-              <!-- <h5>Mode</h5> -->
-              <button type="button" id="mode-toggle" class="btn btn-block active"
-                autocomplete="off" data-normal-text="Click" data-toggle="button"
-                data-loading-text="Select">Click</button>
-
                 <div id="motif-controls">
                     <button id='il-toggle' type="button" class="btn btn-block
-                        motif-toggle active" disabled='disabled' data-toggle='button' data-motif='IL'>IL</button>
+                        motif-toggle active" disabled='disabled' data-toggle='button' data-toggable='IL'>IL</button>
                     <button id='hl-toggle' type="button" class="btn btn-block
-                        motif-toggle active" disabled='disabled' data-toggle='button' data-motif='HL'>HL</button>
+                        motif-toggle active" disabled='disabled' data-toggle='button' data-toggable='HL'>HL</button>
                     <button id='j3-toggle' type="button" class="btn btn-block
-                        motif-toggle active" disabled='disabled' data-toggle='button' data-motif='J3'>J3</button>
+                        motif-toggle active" disabled='disabled' data-toggle='button' data-toggable='J3'>J3</button>
                 </div>
 
               <div id="control-groups">
                 <div id="interaction-controls">
                     <button type="button" id="all-toggle" class="btn btn-block
-                      toggle-control" data-toggle='button' data-family='all'>All</button>
+                      toggle-control" data-toggle='button' 
+                      data-toggable='tWW,cWS,tWS,cWH,tWH,cSH,tSH,cSS,tSS,cHH,tHH'
+                      data-activate='cWW'>
+                      All
+                    </button>
 
                     <button type="button" id='cWW-toggle' class="btn btn-block
-                      cWW toggle-control active" data-toggle='button' data-family='cWW'>cWW</button>
+                      cWW toggle-control active" data-toggle='button' data-toggable='cWW'>cWW</button>
 
                     <button type="button" id='tWW-toggle' class="btn btn-block
-                      tWW toggle-control" data-toggle='button' data-family='tWW'>tWW</button>
+                      tWW toggle-control" data-toggle='button' data-toggable='tWW'>tWW</button>
 
                     <button type="button" id="cWS-toggle" class="btn btn-block
-                      cWS toggle-control" data-toggle='button' data-family='cWS'>cWS</button>
+                      cWS toggle-control" data-toggle='button' data-toggable='cWS'>cWS</button>
 
                     <button type="button" id="tWS-toggle" class="btn btn-block
-                      tWS toggle-control" data-toggle='button' data-family='tWS'>tWS</button>
+                      tWS toggle-control" data-toggle='button' data-toggable='tWS'>tWS</button>
 
                     <button type="button" id="cWH-toggle" class="btn btn-block
-                      cWH toggle-control" data-toggle='button' data-family='cWH'>cWH</button>
+                      cWH toggle-control" data-toggle='button' data-toggable='cWH'>cWH</button>
 
                     <button type="button" id="tWH-toggle" class="btn btn-block
-                      tWH toggle-control" data-toggle='button' data-family='tWH'>tWH</button>
+                      tWH toggle-control" data-toggle='button' data-toggable='tWH'>tWH</button>
 
                     <button type="button" id="cSH-toggle" class="btn btn-block
-                      cSH toggle-control" data-toggle='button' data-family='cSH'>cSH</button>
+                      cSH toggle-control" data-toggle='button' data-toggable='cSH'>cSH</button>
 
                     <button type="button" id="tSH-toggle" class="btn btn-block
-                      tSH toggle-control" data-toggle='button' data-family='tSH'>tSH</button>
+                      tSH toggle-control" data-toggle='button' data-toggable='tSH'>tSH</button>
 
                     <button type="button" id="cSS-toggle" class="btn btn-block
-                      cSS toggle-control" data-toggle='button' data-family='cSS'>cSS</button>
+                      cSS toggle-control" data-toggle='button' data-toggable='cSS'>cSS</button>
 
                     <button type="button" id="tSS-toggle" class="btn btn-block
-                      tSS toggle-control" data-toggle='button' data-family='tSS'>tSS</button>
+                      tSS toggle-control" data-toggle='button' data-toggable='tSS'>tSS</button>
 
                     <button type="button" id="cHH-toggle" class="btn btn-block
-                      cHH toggle-control" data-toggle='button' data-family='cHH'>cHH</button>
+                      cHH toggle-control" data-toggle='button' data-toggable='cHH'>cHH</button>
 
                     <button type="button" id="tHH-toggle" class="btn btn-block
-                      tHH toggle-control" data-toggle='button' data-family='tHH'>tHH</button>
+                      tHH toggle-control" data-toggle='button' data-toggable='tHH'>tHH</button>
 
                 </div>
 
@@ -135,40 +134,47 @@
 
             </div>
 
-          <div id='rna-2d' class='rna2d span8'></div>
+          <div id='rna-2d' class='rna2d span8'>
+            &nbsp;
+          </div>
 
-          <div class="row span6">
-            <div id="error-message" class="alert-message error hide fade in" data-alert='alert'>
-               <a class="close" href="#">×</a>
-            </div> 
-            <div class="row span6">
-                <div id="jmol" class="well span6">
-                    <script type='text/javascript'>
-                        jmolInitialize(" /jmol");
-                        jmolSetAppletColor("#ffffff");
-                        jmolApplet(340, "javascript appletLoaded()");
-                    </script>
-                    <button type="button" id="neighborhood" class="btn">Show neighborhood</button>
-                    <button type="button" id="stereo" class="btn">Stereo</button>
-                    <label><input type="checkbox" id="showNtNums">Show numbers</label>
+            <div class="right-side row span6">
+
+              <div class="row span6">
+                <div id="error-message" class="alert-message error hide fade in" data-alert='alert'>
+                   <a class="close" href="#">×</a>
+                </div> 
+
+                <div class="row span6">
+                    <div id="jmol" class="well span6">
+                        <script type='text/javascript'>
+                            jmolInitialize(" /jmol");
+                            jmolSetAppletColor("#ffffff");
+                            jmolApplet(340, "javascript appletLoaded()");
+                        </script>
+                        <button type="button" id="neighborhood" class="btn">Show neighborhood</button>
+                        <button type="button" id="stereo" class="btn">Stereo</button>
+                        <label><input type="checkbox" id="showNtNums">Show numbers</label>
+                    </div>
+                </div>
+                <div class="row span6">
+                    <div id="about-selection" class="alert-message block-message info hide span6"></div>
+                </div>
+                <div class="row span6">
+                    <div id="related-structures" class="alert-message block-message info span6">
+                        <h4>Related 2D Diagrams</h4>
+                        <?php if (count($related_pdbs) == 0): ?>
+                          <strong>None found</strong>
+                        <?php else: ?>
+                          <?php foreach($related_pdbs as $pdb): ?>
+                            <a href="<?=$baseurl?>pdb/<?=$pdb?>/2d"><?=$pdb?></a>
+                          <?php endforeach; ?>
+                          <br>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
-            <div class="row span6">
-                <div id="about-selection" class="alert-message block-message info hide span6"></div>
-            </div>
-            <div class="row span6">
-                <div id="related-structures" class="alert-message block-message info span6">
-                    <h4>Related 2D Diagrams</h4>
-                    <?php if (count($related_pdbs) == 0): ?>
-                      <strong>None found</strong>
-                    <?php else: ?>
-                      <?php foreach($related_pdbs as $pdb): ?>
-                        <a href="<?=$baseurl?>pdb/<?=$pdb?>/2d"><?=$pdb?></a>
-                      <?php endforeach; ?>
-                      <br>
-                    <?php endif; ?>
-                </div>
-            </div>
+
           </div>
 
         </div>
@@ -239,7 +245,7 @@
         window.location.href = "<?=$baseurl?>pdb/" + $(this).val();
     });
 
-    if (!NTS.length) {
+    if (!NTS[0].nts.length) {
         $("#rna-2d").append("<h3 align='center'>Could not generate 2D diagram. " +
             "Check back later</h3>");
     }
