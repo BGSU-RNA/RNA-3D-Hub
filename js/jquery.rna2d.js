@@ -7,7 +7,7 @@
         options = {
           "jmol": true,
           "failed_fetch": Object,
-          "nucleotides": {
+          "chains": {
             "url": false,
             "parser": function(text) { },
           },
@@ -27,13 +27,13 @@
             "motifs": {
               "selector": ".motif-toggle",
               'callback': Object,
-              'data': 'type'
+              'defaultVisible': ['IL', 'HL', 'J3']
             },
             "interactions": {
               "selector": ".interaction-toggle",
               'callback': Object,
-              'data': 'family',
-              'near': true
+              'near': true,
+              'defaultVisible': ['cWW', 'ncWW']
             },
             "views": {
               "selector": ".view-toggle",
@@ -69,10 +69,10 @@
     };
 
     // If we are given urls then fire off requests for each element.
-    var requests = $.map(['nucleotides', 'interactions', 'motifs'], function(type, i) {
+    var requests = $.map(['chains', 'interactions', 'motifs'], function(type, i) {
       if (options[type].url) {
         return $.ajax({
-          url: options[type].url, 
+          url: options[type].url,
           success: setter(type, options[type].parser),
           dataType: "text"
         });
@@ -101,30 +101,86 @@
     });
   };
 
-  // Interaction controls.
-  $.fn.rna2d.interactions = function(options) {
-    var plot = options.plot;
+  var visibleControl = function(type) {
 
-    $(options.selector).on('click', function(event) {
-      var family = $(this).data(options.data);
-      plot.interactions.toggle(family);
-      if (options.near) {
-        plot.interactions.toggle('n' + family);
-      }
-      options.callback(event);
-    });
+    return function(options) {
+      var plot = options.plot,
+          currentlyVisible = {};
+
+      $.each(options.defaultVisible, function(_, value) {
+        currentlyVisible[value] = true;
+      });
+
+      $(options.selector).on('click', function(event) {
+        var $btn = $(this);
+
+        plot[type].visible(function(d, i) {
+          var klasses = plot[type].classOf()(d, i),
+              visible = false;
+
+          if (currentlyVisible.all) {
+            return true;
+          }
+
+          $.each(klasses, function(_, value) {
+            if (currentlyVisible[value]) {
+              visible = true;
+            }
+          });
+
+          return visible;
+        });
+
+        function getKlassess(name) {
+          var data = $btn.data(name);
+          data = (data ? data.split(',') : []);
+          if (options.near) {
+            $.each(data, function(_, k) {
+              data.push('n' + k);
+            });
+          }
+          return data;
+        }
+
+        var toggleKlasses = getKlassess('toggable');
+
+        if (!$btn.hasClass('active')) {
+          toggleKlasses = toggleKlasses.concat(getKlassess('activate'));
+
+          $.each(toggleKlasses, function(_, value) {
+
+            $(options.selector)
+              .filter("[data-toggable=" + value + "]")
+              .filter(":not(#" + $btn.attr('id') + ")")
+              .addClass('active');
+
+            currentlyVisible[value] = true;
+          });
+        } else {
+          toggleKlasses = toggleKlasses.concat(getKlassess('deactivate'));
+
+          $.each(toggleKlasses, function(_, value) {
+
+            $(options.selector)
+              .filter("[data-toggable*=" + value + "]")
+              .filter(":not(#" + $btn.attr('id') + ")")
+              .removeClass('active');
+
+            currentlyVisible[value] = false;
+          });
+        }
+
+        plot[type].updateVisibility();
+        options.callback(event);
+      });
+    };
   };
+
+  // Interaction controls.
+  $.fn.rna2d.interactions = visibleControl('interactions');
 
   // Motif controls.
-  $.fn.rna2d.motifs = function(options) {
-    var plot = options.plot;
-
-    $(options.selector).on('click', function(event) {
-      var type = $(this).data(options.data);
-      plot.motifs.toggle(type);
-      options.callback(event);
-    });
-  };
+  $.fn.rna2d.motifs = visibleControl('motifs');
 
   // View controls.
   $.fn.rna2d.views = function(options) {
