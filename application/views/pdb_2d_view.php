@@ -140,7 +140,7 @@
 
             </div>
 
-          <div id='rna-2d' class='rna2d span8'>
+          <div id='rna-2d' class='rna2d span8' data-pdb='<?=$pdb?>'>
             &nbsp;
           </div>
 
