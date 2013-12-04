@@ -13,7 +13,13 @@ $(document).ready(function() {
       ntLink = function(id) { return '<a target="_blank" href="' + ntURL(id) + '">' + id + "</a>"; },
       loopURL = function(id) { return 'http://rna.bgsu.edu/rna3dhub/loops/view/' + id; },
       loopLink = function(id) { return '<a target="_blank" href="' + loopURL(id) + '">' + id + "</a>"; },
-      plot = Rna2D({view: 'circular', width: 500, height: 687.5, selection: '#rna-2d'});
+      plot = Rna2D({view: 'circular', width: 500, height: 687.5, selection: '#rna-2d'}),
+      ntData = {},
+      pdb = $("#rna-2d").data('pdb');
+
+  $.get("http://rna.bgsu.edu/api/v1/pdb/" + pdb + "/nucleotides", function (data) {
+    $.each(data, function(_, nt) { ntData[nt.id] = nt; });
+  });
 
   if (NTS[0].nts[0].hasOwnProperty('x') && getURLParameter('view') !== 'circular') {
     plot.view('airport');
@@ -167,6 +173,34 @@ $(document).ready(function() {
         }
       }
 
+    }
+  });
+
+  var colorBy = function(name) {
+    var scale = d3.scale.threshold()
+      .domain([0.1, 0.25, 0.5])
+      .range(["#2B83BA", "#ABDDA4", "#FDAE61", "#D7191C"]);
+
+    plot.nucleotides.color(function (d, i) {
+      var data = ntData[d.id];
+      return (data ? scale(data[name]) : 'black');
+    });
+    plot.nucleotides.colorize();
+  };
+
+  var normalColor = function() {
+    plot.nucleotides.color('black');
+    plot.nucleotides.doColor();
+  };
+
+  $(".nt-color").on('click', function(event) {
+    var $btn = $(event.target);
+    $btn.button('toggle');
+    if ($btn.hasClass('active')) {
+      var variable = $btn.data('attr');
+      colorBy(variable);
+    } else {
+      normalColor();
     }
   });
 

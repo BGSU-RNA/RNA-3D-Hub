@@ -74,14 +74,19 @@
               <button data-controls-modal="help-modal" data-backdrop="true" 
                 data-keyboard="true" class="btn primary btn-block">Help</button>
 
-                <div id="motif-controls">
-                    <button id='il-toggle' type="button" class="btn btn-block
+              <div id="motif-controls">
+                  <button id='il-toggle' type="button" class="btn btn-block
                         motif-toggle active" disabled='disabled' data-toggle='button' data-toggable='IL'>IL</button>
                     <button id='hl-toggle' type="button" class="btn btn-block
                         motif-toggle active" disabled='disabled' data-toggle='button' data-toggable='HL'>HL</button>
                     <button id='j3-toggle' type="button" class="btn btn-block
                         motif-toggle active" disabled='disabled' data-toggle='button' data-toggable='J3'>J3</button>
-                </div>
+              </div>
+
+              <div id='nucleotide-controls'>
+                <button type='button' id='rsr-controls' class='btn btn-block nt-color' 
+                  data-toggle='button' data-attr='real_space_r'>RsR</button>
+              </div>
 
               <div id="control-groups">
                 <div id="interaction-controls">
@@ -140,7 +145,7 @@
 
             </div>
 
-          <div id='rna-2d' class='rna2d span8' data-pdb='<?=$pdb?>'>
+          <div id='rna-2d' class='rna2d span8' data-pdb='<?=$pdb_id?>'>
             &nbsp;
           </div>
 
