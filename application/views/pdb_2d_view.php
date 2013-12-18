@@ -156,6 +156,16 @@
                    <a class="close" href="#">×</a>
                 </div> 
 
+
+                <div class="row span6">
+                    <form class="form-search">
+                        <fieldset>
+                            <input id='nt-selection-box' type="text" placeholder="Nucleotide selection...">
+                            <button id="nt-selection-button" type="button" class="btn">Display</button>
+                        </fieldset>
+                    </form>
+                </div>
+
                 <div class="row span6">
                     <div id="jmol" class="well span6">
                         <script type='text/javascript'>
@@ -168,9 +178,11 @@
                         <label><input type="checkbox" id="showNtNums">Show numbers</label>
                     </div>
                 </div>
+
                 <div class="row span6">
                     <div id="about-selection" class="alert-message block-message info hide span6"></div>
                 </div>
+
                 <div class="row span6">
                     <div id="related-structures" class="alert-message block-message info span6">
                         <h4>Related 2D Diagrams</h4>

@@ -204,4 +204,92 @@ $(document).ready(function() {
     }
   });
 
+  function extractRange(selector) {
+      var pattern = /^\s*(\w+)\s*[:\-]\s*(\w+)\s*$/,
+        pointPattern = /^([A-Za-z]?)(\d+)$/,
+        found = [],
+        matches = pattern.exec(selector);
+
+    if (!matches) {
+      return false;
+    }
+
+    found = $.map(matches.slice(1, 3), function(part, _) {
+      var match = pointPattern.exec(part),
+          obj = {};
+
+      if (!match) {
+        return null;
+      }
+
+      return {
+        chain: match[1] || "A",
+        number: parseInt(match[2], 10)
+      };
+    });
+
+    if (found.length !== 2) {
+      return null;
+    }
+
+    if (found[0].chain !== found[1].chain) {
+      return false;
+    }
+
+    return found;
+  }
+
+  function groupRanges(ranges) {
+    var grouped = {};
+    $.each(ranges, function(_, range) {
+      var chain = range[0].chain,
+          numbers = [range[0].number, range[1].number];
+      if (!grouped.hasOwnProperty(chain)) {
+        grouped[chain] = [];
+      }
+      grouped[chain].push(numbers);
+    });
+    return grouped;
+  }
+
+  function isMatch(grouped, data) {
+    var chain = plot.nucleotides.getChain()(data),
+        number = plot.nucleotides.getNumber()(data);
+    if (grouped[chain]) {
+      var ranges = grouped[chain],
+          match = false;
+      $.each(ranges, function(_, range) {
+        if (number >= range[0] && number <= range[1]) {
+          match = true;
+        }
+      });
+      return match;
+    }
+    return false;
+  }
+
+  $("#nt-selection-button").on('click', function(event) {
+    var $box = $("#nt-selection-box"),
+        contents = $box.val(),
+        parts = contents.split(/[;,]/),
+        matched = [],
+        ranges = [];
+
+    $.each(parts, function(_, r) {
+      ranges.push(extractRange(r));
+    });
+
+    var grouped = groupRanges(ranges);
+
+    plot.nucleotides.color(function(d, i) {
+      if (isMatch(grouped, d)) {
+        matched.push(d);
+        return 'red';
+      }
+      return 'black';
+    });
+
+    plot.nucleotides.colorize();
+    plot.brush.update()(matched);
+  });
 });
