@@ -85,6 +85,8 @@ class Motif_model extends CI_Model {
         $data['num_nucleotides'] = count($alignment[array_pop($array_keys)]);
         $data['alignment'] = $alignment;
         $data['motif_id']  = $motif_id;
+        $this->get_chainbreak();
+        $data['chainbreak'] = $this->chainbreak;
         $data = array_merge($data, $this->get_annotations($motif_id));
 
         return json_encode($data);
