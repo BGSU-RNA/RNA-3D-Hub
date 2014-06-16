@@ -97,7 +97,7 @@
                 </ul>
             </li>
 
-            <li><a href="<?=$baseurl?>search"><span class="label success">New!</span> Search</a></li>
+            <li><a href="<?php echo $baseurl?>search"><span class="label success">New!</span> Search</a></li>
 
           </ul>
             <ul class="nav secondary-nav">
