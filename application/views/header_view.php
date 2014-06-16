@@ -5,7 +5,7 @@
     <title><?php echo $title;?></title>
 
     <?php if (isset($meta)): ?>
-    <meta name="description" content="<?=$meta['description']?>">
+    <meta name="description" content="<?php echo $meta['description']?>">
     <?php endif; ?>
 
     <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
@@ -14,45 +14,45 @@
     <![endif]-->
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
-    <script src="<?=$baseurl?>jmol/jmol.js"></script>
+    <script src="<?php echo $baseurl?>jmol/jmol.js"></script>
     <script src="http://rna.bgsu.edu/Motifs/jmolTools/jquery.jmolTools.js"></script>
     <script src="http://rna.bgsu.edu/Motifs/jmolInlineLoader/jmolInlineLoader.js"></script>
 
-    <script src="<?=$baseurl?>js/bootstrap-twipsy.js" type="text/javascript"></script>
-    <script src="<?=$baseurl?>js/bootstrap-popover.js" type="text/javascript"></script>
-    <script src="<?=$baseurl?>js/bootstrap-dropdown.js" type="text/javascript"></script>
-    <script src="<?=$baseurl?>js/bootstrap-tabs.js" type="text/javascript"></script>
-    <script src="<?=$baseurl?>js/bootstrap-buttons.js" type="text/javascript"></script>
-    <script src="<?=$baseurl?>js/bootstrap-modal.js" type="text/javascript"></script>
-    <script src="<?=$baseurl?>js/bootstrap-alerts.js" type="text/javascript"></script>
-    <script src="<?=$baseurl?>js/jquery.tablesorter.min.js" type="text/javascript"></script>
+    <script src="<?php echo $baseurl?>js/bootstrap-twipsy.js" type="text/javascript"></script>
+    <script src="<?php echo $baseurl?>js/bootstrap-popover.js" type="text/javascript"></script>
+    <script src="<?php echo $baseurl?>js/bootstrap-dropdown.js" type="text/javascript"></script>
+    <script src="<?php echo $baseurl?>js/bootstrap-tabs.js" type="text/javascript"></script>
+    <script src="<?php echo $baseurl?>js/bootstrap-buttons.js" type="text/javascript"></script>
+    <script src="<?php echo $baseurl?>js/bootstrap-modal.js" type="text/javascript"></script>
+    <script src="<?php echo $baseurl?>js/bootstrap-alerts.js" type="text/javascript"></script>
+    <script src="<?php echo $baseurl?>js/jquery.tablesorter.min.js" type="text/javascript"></script>
 
-    <script src="<?=$baseurl?>js/MotifAtlas.js" type="text/javascript"></script>
-    <script src="<?=$baseurl?>js/rcsbPdbImageLib.min.js" type="text/javascript"> </script>
+    <script src="<?php echo $baseurl?>js/MotifAtlas.js" type="text/javascript"></script>
+    <script src="<?php echo $baseurl?>js/rcsbPdbImageLib.min.js" type="text/javascript"> </script>
 
     <!-- jEditable -->
     <?php if ($this->session->userdata('username')): ?>
-    <script src="<?=$baseurl?>js/jquery.jeditable.mini.js" type="text/javascript"></script>
+    <script src="<?php echo $baseurl?>js/jquery.jeditable.mini.js" type="text/javascript"></script>
     <?php endif; ?>
 
     <!-- chosen -->
-    <script type="text/javascript" src="<?=$baseurl?>js/chosen/chosen.jquery.min.js"></script>
-    <link rel="stylesheet" href="<?=$baseurl?>js/chosen/chosen.css" type="text/css" media="screen" />
+    <script type="text/javascript" src="<?php echo $baseurl?>js/chosen/chosen.jquery.min.js"></script>
+    <link rel="stylesheet" href="<?php echo $baseurl?>js/chosen/chosen.css" type="text/css" media="screen" />
 
     <?php if (strstr(current_url(), 'graph')): ?>
     <!-- cytoscapeweb -->
     <!-- JSON support for IE (needed to use JS API) -->
-    <script type="text/javascript" src="<?=$baseurl?>cytoscapeweb/js/min/json2.min.js"></script>
+    <script type="text/javascript" src="<?php echo $baseurl?>cytoscapeweb/js/min/json2.min.js"></script>
     <!-- Flash embedding utility (needed to embed Cytoscape Web) -->
-    <script type="text/javascript" src="<?=$baseurl?>cytoscapeweb/js/min/AC_OETags.min.js"></script>
+    <script type="text/javascript" src="<?php echo $baseurl?>cytoscapeweb/js/min/AC_OETags.min.js"></script>
     <!-- Cytoscape Web JS API (needed to reference org.cytoscapeweb.Visualization) -->
-    <script type="text/javascript" src="<?=$baseurl?>cytoscapeweb/js/min/cytoscapeweb.min.js"></script>
+    <script type="text/javascript" src="<?php echo $baseurl?>cytoscapeweb/js/min/cytoscapeweb.min.js"></script>
     <?php endif; ?>
 
     <!-- Le styles -->
-    <link href="<?=$baseurl?>css/bootstrap.min.css" rel="stylesheet">
-    <link href="<?=$baseurl?>css/motifatlas.css" rel="stylesheet">
-    <link href='<?=$baseurl?>css/bootstrap-toggle-buttons.css' rel='stylesheet'>
+    <link href="<?php echo $baseurl?>css/bootstrap.min.css" rel="stylesheet">
+    <link href="<?php echo $baseurl?>css/motifatlas.css" rel="stylesheet">
+    <link href='<?php echo $baseurl?>css/bootstrap-toggle-buttons.css' rel='stylesheet'>
 
     <!-- Le fav and touch icons -->
     <link rel="shortcut icon" href="images/favicon.ico">
