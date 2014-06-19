@@ -648,7 +648,7 @@ body.home {
 .pdb-2d-view #rna-2d .interaction {
   stroke-width: 1.5;
   stroke: black;
-  opacity: 0.4;
+  opacity: 0.7;
 }
 .pdb-2d-view #rna-2d .LR {
   stroke-dasharray: 5,5;

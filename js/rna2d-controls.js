@@ -13,7 +13,13 @@ $(document).ready(function() {
       ntLink = function(id) { return '<a target="_blank" href="' + ntURL(id) + '">' + id + "</a>"; },
       loopURL = function(id) { return 'http://rna.bgsu.edu/rna3dhub/loops/view/' + id; },
       loopLink = function(id) { return '<a target="_blank" href="' + loopURL(id) + '">' + id + "</a>"; },
-      plot = Rna2D({view: 'circular', width: 500, height: 687.5, selection: '#rna-2d'});
+      plot = Rna2D({view: 'circular', width: 500, height: 687.5, selection: '#rna-2d'}),
+      ntData = {},
+      pdb = $("#rna-2d").data('pdb');
+
+  $.get("http://rna.bgsu.edu/api/v1/pdb/" + pdb + "/nucleotides", function (data) {
+    $.each(data, function(_, nt) { ntData[nt.id] = nt; });
+  });
 
   if (NTS[0].nts[0].hasOwnProperty('x') && getURLParameter('view') !== 'circular') {
     plot.view('airport');
@@ -170,4 +176,120 @@ $(document).ready(function() {
     }
   });
 
+  var colorBy = function(name) {
+    var scale = d3.scale.threshold()
+      .domain([0.1, 0.25, 0.5])
+      .range(["#2B83BA", "#ABDDA4", "#FDAE61", "#D7191C"]);
+
+    plot.nucleotides.color(function (d, i) {
+      var data = ntData[d.id];
+      return (data ? scale(data[name]) : 'black');
+    });
+    plot.nucleotides.colorize();
+  };
+
+  var normalColor = function() {
+    plot.nucleotides.color('black');
+    plot.nucleotides.doColor();
+  };
+
+  $(".nt-color").on('click', function(event) {
+    var $btn = $(event.target);
+    $btn.button('toggle');
+    if ($btn.hasClass('active')) {
+      var variable = $btn.data('attr');
+      colorBy(variable);
+    } else {
+      normalColor();
+    }
+  });
+
+  function extractRange(selector) {
+      var pattern = /^\s*(\w+)\s*[:\-]\s*(\w+)\s*$/,
+        pointPattern = /^([A-Za-z]?)(\d+)$/,
+        found = [],
+        matches = pattern.exec(selector);
+
+    if (!matches) {
+      return false;
+    }
+
+    found = $.map(matches.slice(1, 3), function(part, _) {
+      var match = pointPattern.exec(part),
+          obj = {};
+
+      if (!match) {
+        return null;
+      }
+
+      return {
+        chain: match[1] || "A",
+        number: parseInt(match[2], 10)
+      };
+    });
+
+    if (found.length !== 2) {
+      return null;
+    }
+
+    if (found[0].chain !== found[1].chain) {
+      return false;
+    }
+
+    return found;
+  }
+
+  function groupRanges(ranges) {
+    var grouped = {};
+    $.each(ranges, function(_, range) {
+      var chain = range[0].chain,
+          numbers = [range[0].number, range[1].number];
+      if (!grouped.hasOwnProperty(chain)) {
+        grouped[chain] = [];
+      }
+      grouped[chain].push(numbers);
+    });
+    return grouped;
+  }
+
+  function isMatch(grouped, data) {
+    var chain = plot.nucleotides.getChain()(data),
+        number = plot.nucleotides.getNumber()(data);
+    if (grouped[chain]) {
+      var ranges = grouped[chain],
+          match = false;
+      $.each(ranges, function(_, range) {
+        if (number >= range[0] && number <= range[1]) {
+          match = true;
+        }
+      });
+      return match;
+    }
+    return false;
+  }
+
+  $("#nt-selection-button").on('click', function(event) {
+    var $box = $("#nt-selection-box"),
+        contents = $box.val(),
+        parts = contents.split(/[;,]/),
+        matched = [],
+        ranges = [];
+
+    $.each(parts, function(_, r) {
+      ranges.push(extractRange(r));
+    });
+
+    var grouped = groupRanges(ranges);
+
+    plot.nucleotides.color(function(d, i) {
+      if (isMatch(grouped, d)) {
+        matched.push(d);
+        return 'red';
+      }
+      return 'black';
+    });
+
+    plot.nucleotides.colorize();
+    plot.brush.update()(matched);
+  });
 });

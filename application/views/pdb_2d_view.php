@@ -74,14 +74,19 @@
               <button data-controls-modal="help-modal" data-backdrop="true" 
                 data-keyboard="true" class="btn primary btn-block">Help</button>
 
-                <div id="motif-controls">
-                    <button id='il-toggle' type="button" class="btn btn-block
+              <div id="motif-controls">
+                  <button id='il-toggle' type="button" class="btn btn-block
                         motif-toggle active" disabled='disabled' data-toggle='button' data-toggable='IL'>IL</button>
                     <button id='hl-toggle' type="button" class="btn btn-block
                         motif-toggle active" disabled='disabled' data-toggle='button' data-toggable='HL'>HL</button>
                     <button id='j3-toggle' type="button" class="btn btn-block
                         motif-toggle active" disabled='disabled' data-toggle='button' data-toggable='J3'>J3</button>
-                </div>
+              </div>
+
+              <div id='nucleotide-controls'>
+                <button type='button' id='rsr-controls' class='btn btn-block nt-color' 
+                  data-toggle='button' data-attr='real_space_r'>RsR</button>
+              </div>
 
               <div id="control-groups">
                 <div id="interaction-controls">
@@ -128,13 +133,19 @@
                     <button type="button" id="tHH-toggle" class="btn btn-block
                       tHH toggle-control" data-toggle='button' data-toggable='tHH'>tHH</button>
 
+                    <button type="button" id="lr-toggle" class="btn btn-block
+                      toggle-control" data-toggle='button'
+                      data-toggable='LR'>
+                      LR
+                    </button>
+
                 </div>
 
               </div>
 
             </div>
 
-          <div id='rna-2d' class='rna2d span8'>
+          <div id='rna-2d' class='rna2d span8' data-pdb='<?=$pdb_id?>'>
             &nbsp;
           </div>
 
@@ -144,6 +155,16 @@
                 <div id="error-message" class="alert-message error hide fade in" data-alert='alert'>
                    <a class="close" href="#">×</a>
                 </div> 
+
+
+                <div class="row span6">
+                    <form class="form-search">
+                        <fieldset>
+                            <input id='nt-selection-box' type="text" placeholder="Nucleotide selection...">
+                            <button id="nt-selection-button" type="button" class="btn">Display</button>
+                        </fieldset>
+                    </form>
+                </div>
 
                 <div class="row span6">
                     <div id="jmol" class="well span6">
@@ -157,9 +178,11 @@
                         <label><input type="checkbox" id="showNtNums">Show numbers</label>
                     </div>
                 </div>
+
                 <div class="row span6">
                     <div id="about-selection" class="alert-message block-message info hide span6"></div>
                 </div>
+
                 <div class="row span6">
                     <div id="related-structures" class="alert-message block-message info span6">
                         <h4>Related 2D Diagrams</h4>
