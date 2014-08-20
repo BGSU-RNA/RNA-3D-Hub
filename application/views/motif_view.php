@@ -161,7 +161,7 @@
                             <?php echo $matrix;?>
 
                             <?php if ($matrix != ''): ?>
-                            Legend:
+                            Mutual discrepancy heat map legend:
                             <div id='mdmatrix-help' rel='twipsy' title='
                             Clicking
                             <ul>
