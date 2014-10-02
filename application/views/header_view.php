@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title><?php echo $title;?></title>
+    <title><?=$title;?></title>
 
     <?php if (isset($meta)): ?>
     <meta name="description" content="<?=$meta['description']?>">
@@ -14,9 +14,9 @@
     <![endif]-->
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
-    <script src="<?=$baseurl?>jmol/jmol.js"></script>
-    <script src="http://rna.bgsu.edu/Motifs/jmolTools/jquery.jmolTools.js"></script>
-    <script src="http://rna.bgsu.edu/Motifs/jmolInlineLoader/jmolInlineLoader.js"></script>
+    <script src="<?=$baseurl?>js/jmol/Jmol.js"></script>
+    <script src="<?=$baseurl?>js/jquery.jmolTools.js"></script>
+    <script src="<?=$baseurl?>js/jmolInlineLoader.js"></script>
 
     <script src="<?=$baseurl?>js/bootstrap-twipsy.js" type="text/javascript"></script>
     <script src="<?=$baseurl?>js/bootstrap-popover.js" type="text/javascript"></script>

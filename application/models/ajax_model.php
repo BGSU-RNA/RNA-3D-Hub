@@ -71,6 +71,8 @@ class Ajax_model extends CI_Model {
                         "<i>$nucleotides nucleotides, $basepairs basepairs, $bpnt basepairs/nucleotide</i><br><br>" .
                         'Explore in ' .
                         anchor_popup("http://www.pdb.org/pdb/explore/explore.do?structureId=$pdb", 'PDB') .
+                        ',  ' .
+                        anchor_popup("http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget=$pdb", 'NDB') .
                         ' or ' .
                         anchor_popup("pdb/$pdb", 'RNA 3D Hub');
         } else {

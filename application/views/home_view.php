@@ -5,8 +5,7 @@
 
       <!-- Main hero unit for a primary marketing message or call to action -->
       <div class="hero-unit">
-        <h1>RNA 3D Hub<small>Public &szlig; release</small></h1>
-        <h3>The single-stop destination for RNA structural annotations</h3>
+        <h1>RNA 3D Hub</h1>
         <br>
         <a href="http://rna.bgsu.edu/main/introduction-to-rna-3d-hub/" class="btn success large">Introduction</a>
 

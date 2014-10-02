@@ -887,6 +887,7 @@ Rna2D.components.Nucleotides = function(plot) {
     encodeID: function(id) { return id; },
     getSequence: function(d) { return d.sequence; },
     getNumber: function(d) { return d.id.split('|')[4]; },
+    getChain: function(d) { return d.id.split('|')[2]; },
     highlight: Object,
     normalize: Object,
     toggleLetters: Object,
