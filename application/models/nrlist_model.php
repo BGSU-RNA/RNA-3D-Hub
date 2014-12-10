@@ -62,22 +62,22 @@ class Nrlist_model extends CI_Model {
             $data['uls'][$labels[$row->resolution]]['num_motifs2'] = $counts2[$row->resolution];
 
             if ($row->num_same_groups > 0) {
-                $data['uls'][$labels[$row->resolution]]['ul_intersection'] = ul(array_map("add_url", split(', ',$row->same_groups)),$attributes);
+                $data['uls'][$labels[$row->resolution]]['ul_intersection'] = ul(array_map("add_url", explode(', ',$row->same_groups)),$attributes);
             } else {
                 $data['uls'][$labels[$row->resolution]]['ul_intersection'] = '';
             }
             if ($row->num_updated_groups > 0) {
-                $data['uls'][$labels[$row->resolution]]['ul_updated'] = ul(array_map("add_url", split(', ',$row->updated_groups)),$attributes);
+                $data['uls'][$labels[$row->resolution]]['ul_updated'] = ul(array_map("add_url", explode(', ',$row->updated_groups)),$attributes);
             } else {
                 $data['uls'][$labels[$row->resolution]]['ul_updated'] = '';
             }
             if ($row->num_added_groups > 0) {
-                $data['uls'][$labels[$row->resolution]]['ul_only_in_1'] = ul(array_map("add_url", split(', ',$row->added_groups)),$attributes);
+                $data['uls'][$labels[$row->resolution]]['ul_only_in_1'] = ul(array_map("add_url", explode(', ',$row->added_groups)),$attributes);
             } else {
                 $data['uls'][$labels[$row->resolution]]['ul_only_in_1'] = '';
             }
             if ($row->num_removed_groups > 0) {
-                $data['uls'][$labels[$row->resolution]]['ul_only_in_2'] = ul(array_map("add_url", split(', ',$row->removed_groups)),$attributes);
+                $data['uls'][$labels[$row->resolution]]['ul_only_in_2'] = ul(array_map("add_url", explode(', ',$row->removed_groups)),$attributes);
             } else {
                 $data['uls'][$labels[$row->resolution]]['ul_only_in_2'] = '';
             }
@@ -201,7 +201,7 @@ class Nrlist_model extends CI_Model {
     function add_pdb_class($list)
     {
         if (!is_array($list)) {
-            $s = split(',', $list);
+            $s = explode(',', $list);
         } else {
             $s = $list;
         }
