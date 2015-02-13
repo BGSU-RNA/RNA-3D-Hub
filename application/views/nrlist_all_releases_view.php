@@ -18,7 +18,13 @@
           <div class="span7">
             <div class="row">
                 <div class="span7">
-                    <?=$images?>
+
+                  <p>
+                    We are <a href="http://rna.bgsu.edu/main/upgrading-rna-3d-hub/">upgrading RNA 3D Hub</a>
+                    to include new RNA 3D structures distributed in <a href="http://wwpdb.org/news/news.php?year=2014#10-December-2014">mmCIF format</a>.
+                    Follow us on <a href="https://twitter.com/rna3dhub">Twitter</a> to hear when the updated version becomes available.
+                  </p>
+
                 </div>
             </div>
             <br><br>
