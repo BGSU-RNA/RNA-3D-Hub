@@ -49,11 +49,29 @@
 
           <div class="span6" id="jmol" >
               <div class="block jmolheight">
-                  <script type="text/javascript">
-                      jmolInitialize(" /jmol");
-                      jmolSetAppletColor("#f5f5f5");
-                      jmolApplet(340);
-                  </script>
+<script>
+    var Info = {
+        width: 340,
+        height: 340,
+        debug: false,
+        color: '#f5f5f5',
+        addSelectionOptions: false,
+        use: 'HTML5',
+        j2sPath: '<?=$baseurl?>/js/jsmol/j2s/',
+        disableInitialConsole: true
+    };
+
+    var jmolApplet0 = Jmol.getApplet('jmolApplet0', Info);
+
+    // these are conveniences that mimic behavior of Jmol.js
+    function jmolCheckbox(script1, script0,text,ischecked) {Jmol.jmolCheckbox(jmolApplet0,script1, script0, text, ischecked)};
+    function jmolButton(script, text) {Jmol.jmolButton(jmolApplet0, script,text)};
+    function jmolHtml(s) { document.write(s) };
+    function jmolBr() { jmolHtml("<br />") };
+    function jmolMenu(a) {Jmol.jmolMenu(jmolApplet0, a)};
+    function jmolScript(cmd) {Jmol.script(jmolApplet0, cmd)};
+    function jmolScriptWait(cmd) {Jmol.scriptWait(jmolApplet0, cmd)};
+</script>
               </div>
               <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
               <input type='button' id='showNtNums' class='btn' value="Show numbers">
@@ -117,7 +135,7 @@
         function show_motif_exemplar_in_jmol(id) {
             $.post('http://rna.bgsu.edu/' + get_rna3dhub_environment() + '/ajax/get_exemplar_coordinates', { motif_id: id }, function(data) {
                 jmolScript('zap;');
-                jmolLoadInlineScript(data);
+                jmolScriptWait("load DATA \"append structure\"\n" + data + 'end "append structure";')
                 apply_jmol_styling();
             });
         }
