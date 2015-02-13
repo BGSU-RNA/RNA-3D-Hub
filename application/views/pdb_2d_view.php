@@ -157,7 +157,7 @@
                 </div> 
 
 
-                <div class="row span6">
+<!--                 <div class="row span6">
                     <form class="form-search">
                         <fieldset>
                             <input id='nt-selection-box' type="text" placeholder="Nucleotide selection...">
@@ -165,7 +165,7 @@
                         </fieldset>
                     </form>
                 </div>
-
+ -->
                 <div class="row span6">
                     <div id="jmol" class="well span6 width-320-px">
 <script>
