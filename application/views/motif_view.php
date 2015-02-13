@@ -81,7 +81,7 @@
                     <ul class="tabs" data-tabs="tabs">
                         <li class="active"><a href="#int">Pairwise interactions</a></li>
                         <li><a href="#variants">Sequence variants</a></li>
-                        <li><a href="#similar">Similar motifs</a></li>
+                        <!-- <li><a href="#similar">Similar motifs</a></li> -->
                         <li><a href="#history">History</a></li>
                     </ul>
 
