@@ -730,13 +730,6 @@ Rna2D.components.jmolTools = function(plot) {
     var $app = $('#' + this.appID()),
         $div = $('#' + this.divID());
 
-    // launch jmol if necessary
-    if ($app.length === 0 ) {
-      $div.html(jmolApplet(this.windowSize(), "", 0));
-      this.windowBuild()($div);
-      $div.show();
-    }
-
     // reset the state of the system
     jmolScript('zap;');
     $.jmolTools.numModels = 0;
