@@ -199,11 +199,11 @@
                 </div>
 
                 <div class="row span6">
-                    <div id="about-selection" class="alert-message block-message info hide span6"></div>
+                    <div id="about-selection" class="alert-message block-message info hide span6 width-320-px"></div>
                 </div>
 
                 <div class="row span6">
-                    <div id="related-structures" class="alert-message block-message info span6">
+                    <div id="related-structures" class="alert-message block-message info span6 width-320-px">
                         <h4>Related 2D Diagrams</h4>
                         <?php if (count($related_pdbs) == 0): ?>
                           <strong>None found</strong>
