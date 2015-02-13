@@ -155,7 +155,7 @@ class Loops extends CI_Controller {
 
     function view($id, $similar=NULL)
     {
-        $this->output->cache(8640); # 6 days
+        $this->output->cache(262974); # 6 months
 
         $this->load->model('Loops_model', '', TRUE);
 
@@ -190,7 +190,7 @@ class Loops extends CI_Controller {
 
     function benchmark($kind = NULL)
     {
-        $this->output->cache(10000);
+        $this->output->cache(262974); # 6 months
 
         if ($kind == NULL) {
             redirect(site_url(array('loops', 'benchmark', 'IL')));
