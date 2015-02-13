@@ -142,11 +142,46 @@
                 <div class="row">
                     <div class="span6" id="jmolBlock">
                             <div class="block-div jmolheight">
-                                <script type="text/javascript">
-                                    jmolInitialize(" /jmol");
-                                    jmolSetAppletColor("#ffffff");
-                                    jmolApplet(340, "javascript appletLoaded()");
-                                </script>
+<script>
+    jmol_isReady = function(applet) {
+        // initialize the plugin
+        $('.jmolInline').jmolTools({
+            showStereoId: 'stereo',
+            showNeighborhoodId: 'neighborhood',
+            showNumbersId: 'showNtNums',
+            showNextId: 'next',
+            showPrevId: 'prev',
+            showAllId: 'all',
+            clearId: 'clear',
+            insertionsId: 'insertions'                
+        });
+        // run the plugin
+        $('.jmolInline').first().jmolToggle();
+    };
+
+    var Info = {
+        width: 340,
+        height: 340,
+        debug: false,
+        color: 'white',
+        addSelectionOptions: false,
+        use: 'HTML5',
+        j2sPath: '<?=$baseurl?>/js/jsmol/j2s/',
+        readyFunction: jmol_isReady,
+        disableInitialConsole: true
+    };
+
+    var jmolApplet0 = Jmol.getApplet('jmolApplet0', Info);
+
+    // these are conveniences that mimic behavior of Jmol.js
+    function jmolCheckbox(script1, script0,text,ischecked) {Jmol.jmolCheckbox(jmolApplet0,script1, script0, text, ischecked)};
+    function jmolButton(script, text) {Jmol.jmolButton(jmolApplet0, script,text)};
+    function jmolHtml(s) { document.write(s) };
+    function jmolBr() { jmolHtml("<br />") };
+    function jmolMenu(a) {Jmol.jmolMenu(jmolApplet0, a)};
+    function jmolScript(cmd) {Jmol.script(jmolApplet0, cmd)};
+    function jmolScriptWait(cmd) {Jmol.scriptWait(jmolApplet0, cmd)};
+</script>
                             </div>
                             <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
                             <input type='button' id='prev' class='btn' value='Previous'>
@@ -212,35 +247,6 @@
         });
         $(".pdb").click(LookUpPDBInfo);
         $("#sort").tablesorter();
-
-        // initialize jmolTools
-        $('.jmolInline').jmolTools({
-            showStereoId: 'stereo',
-            showNeighborhoodId: 'neighborhood',
-            showNumbersId: 'showNtNums',
-            showNextId: 'next',
-            showPrevId: 'prev',
-            showAllId: 'all',
-            clearId: 'clear',
-            insertionsId: 'insertions'
-        });
-
-        // run when jmol is ready
-      	function appletLoaded (){
-      	    // toggle the first checkbox
-      	    $('.jmolInline').first().jmolToggle();
-
-      	    // mark it on the mutual discrepancy matrix
-      	    var id = $('.jmolInline').first().attr('id');
-      	    $('.md00').each(function(ind, elem) {
-                $elem = $(elem);
-                if ( $elem.data('pair').indexOf(id) == 0 ) {
-                    $elem.addClass('jmolActive');
-                    $.jmolTools.clickedCell = $elem;
-                    return;
-                }
-      	    });
-      	}
 
         // only add this code if the user is logged in
         <?php if ($this->session->userdata('username')): ?>
