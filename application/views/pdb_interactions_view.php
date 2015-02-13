@@ -45,17 +45,43 @@
           </div>
           <!-- end annotations -->
 
-          <div class="span6 well" id="jmol"></div>
+          <div class="span6 well" id="jmol">
+          <script>
+        var Info = {
+            width: 340,
+            height: 340,
+            debug: false,
+            color: '#f5f5f5',
+            addSelectionOptions: false,
+            use: 'HTML5',
+            j2sPath: '<?=$baseurl?>/js/jsmol/j2s/',
+            disableInitialConsole: true,
+            readyFunction: function(){
+              $('pre a').first().click();
+            }
+        };
+
+        var jmolApplet0 = Jmol.getApplet('jmolApplet0', Info);
+
+        // these are conveniences that mimic behavior of Jmol.js
+        function jmolCheckbox(script1, script0,text,ischecked) {Jmol.jmolCheckbox(jmolApplet0,script1, script0, text, ischecked)};
+        function jmolButton(script, text) {Jmol.jmolButton(jmolApplet0, script,text)};
+        function jmolHtml(s) { document.write(s) };
+        function jmolBr() { jmolHtml("<br />") };
+        function jmolMenu(a) {Jmol.jmolMenu(jmolApplet0, a)};
+        function jmolScript(cmd) {Jmol.script(jmolApplet0, cmd)};
+        function jmolScriptWait(cmd) {Jmol.scriptWait(jmolApplet0, cmd)};
+            
+</script>
+<label><input type="checkbox" id="showNtNums">Nucleotide numbers</label>
+<input type="button" class="btn" id="neighborhood" value="Show neighborhood">
+          </div>
 
         </div>
       </div>
 
 
     <script>
-
-        jmolInitialize("/jmol");
-        jmolSetDocument(0);
-        jmolSetAppletColor("#f5f5f5");
 
         $('pre').on('click', 'span', function(){
             // hide all previously displayed popovers
@@ -86,14 +112,6 @@
             var jmolApp = $('#jmolApplet0');
             var jmolDiv = $('#jmol');
             $this = $(this);
-
-            // launch jmol if necessary
-            if (jmolApp.length == 0 ) {
-                jmolDiv.html( jmolApplet(300, "", 0) )
-                       .append('<label><input type="checkbox" id="showNtNums">Nucleotide numbers</label>')
-                       .append('<input type="button" class="btn" id="neighborhood" value="Show neighborhood">')
-                       .show();
-            }
 
             // clear jmol window
             jmolScript('zap;');
@@ -128,8 +146,7 @@
         var offset_top  = $('#left_content').offset().top;
         $('#jmol').css('position','fixed')
                   .css('left',offset_left)
-                  .css('top',offset_top)
-                  .hide();
+                  .css('top',offset_top);
 
 
       </script>
