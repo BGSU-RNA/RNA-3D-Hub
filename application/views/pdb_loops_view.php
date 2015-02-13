@@ -95,11 +95,43 @@
           <?php if ($counts['IL'] != 0 or $counts['HL'] != 0 or $counts['J3'] != 0): ?>
 
           <div class="span6 well" id="jmol" >
-                <script type="text/javascript">
-                    jmolInitialize(" /jmol");
-                    jmolSetAppletColor("#f5f5f5");
-                    jmolApplet(340, "javascript appletLoaded()");
-                </script>
+<script>
+    jmol_isReady = function(applet) {
+        // initialize the plugin
+        $('.jmolInline').jmolTools({
+            showStereoId: 'stereo',
+            showNeighborhoodId: 'neighborhood',
+            showNumbersId: 'showNtNums',
+            showNextId: 'next',
+            showPrevId: 'prev'
+        });
+        // run the plugin
+        $('.jmolInline').first().jmolToggle();
+    };
+
+    var Info = {
+        width: 340,
+        height: 340,
+        debug: false,
+        color: '#f5f5f5',
+        addSelectionOptions: false,
+        use: 'HTML5',
+        j2sPath: '<?=$baseurl?>/js/jsmol/j2s/',
+        readyFunction: jmol_isReady,
+        disableInitialConsole: true,
+    };
+
+    var jmolApplet0 = Jmol.getApplet('jmolApplet0', Info);
+
+    // these are conveniences that mimic behavior of Jmol.js
+    function jmolCheckbox(script1, script0,text,ischecked) {Jmol.jmolCheckbox(jmolApplet0,script1, script0, text, ischecked)};
+    function jmolButton(script, text) {Jmol.jmolButton(jmolApplet0, script,text)};
+    function jmolHtml(s) { document.write(s) };
+    function jmolBr() { jmolHtml("<br />") };
+    function jmolMenu(a) {Jmol.jmolMenu(jmolApplet0, a)};
+    function jmolScript(cmd) {Jmol.script(jmolApplet0, cmd)};
+    function jmolScriptWait(cmd) {Jmol.scriptWait(jmolApplet0, cmd)};
+</script>
                 <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
                 <input type='button' id='prev' class='btn' value='Previous'>
                 <input type='button' id='next' class='btn' value="Next">
@@ -125,17 +157,6 @@
         $('.twipsy').twipsy();
 
         $('table').tablesorter();
-
-      	function appletLoaded (){
-            jmolInlineLoader.init({
-                chbxClass: 'jmolInline',
-                serverUrl: '<?=$baseurl?>ajax/get_loop_coordinates',
-                neighborhoodButtonId: 'neighborhood',
-                showNextButtonId: 'next',
-                showPreviousButtonId: 'prev',
-                showNucleotideNumbersId: 'showNtNums'
-            });
-      	}
 
         $('#chosen').chosen().change(function(){
             window.location.href = "<?=$baseurl?>pdb/" + $(this).val() + '/motifs';
