@@ -14,7 +14,6 @@
                     <li class="active"><a href="#">Similar loops</a></li>
                 <?php else: ?>
                     <li class="active"><a href="#general">General information</a></li>
-                    <li><a href="<?php echo current_url();?>/similar">Similar loops</a></li>
                 <?php endif; ?>
 <!--
                     <li><a href="#history">Motif history</a></li>
