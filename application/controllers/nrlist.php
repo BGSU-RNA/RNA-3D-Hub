@@ -94,8 +94,8 @@ class Nrlist extends CI_Controller {
         $this->table->set_template($tmpl);
         $data['releases'] = $this->table->generate($releases);
 
-        list($type, $resolution, $temp) = split('_', $id);
-        list($handle, $version) = split('.', $temp);
+        list($type, $resolution, $temp) = explode('_', $id);
+        list($handle, $version) = explode('.', $temp);
 	    $data['resolution'] = $resolution;
 	    $data['version']    = $version;
 
