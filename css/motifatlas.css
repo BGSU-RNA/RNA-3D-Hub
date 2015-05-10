@@ -896,6 +896,10 @@ body.home {
   font-weight: normal;
 }
 
+.pdb-2d-view .width-320-px {
+  width: 320px;
+}
+
 /* Motif Atlas home page */
 .motifs_home_view .hero-unit, .pdb_view .hero-unit {
     padding: 30px;

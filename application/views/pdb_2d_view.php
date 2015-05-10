@@ -157,7 +157,7 @@
                 </div> 
 
 
-                <div class="row span6">
+<!--                 <div class="row span6">
                     <form class="form-search">
                         <fieldset>
                             <input id='nt-selection-box' type="text" placeholder="Nucleotide selection...">
@@ -165,14 +165,33 @@
                         </fieldset>
                     </form>
                 </div>
-
+ -->
                 <div class="row span6">
-                    <div id="jmol" class="well span6">
-                        <script type='text/javascript'>
-                            jmolInitialize(" /jmol");
-                            jmolSetAppletColor("#ffffff");
-                            jmolApplet(340, "javascript appletLoaded()");
-                        </script>
+                    <div id="jmol" class="well span6 width-320-px">
+<script>
+    var Info = {
+        width: 320,
+        height: 320,
+        debug: false,
+        color: 'white',
+        addSelectionOptions: false,
+        use: 'HTML5',
+        j2sPath: '<?=$baseurl?>/js/jsmol/j2s/',
+        disableInitialConsole: true
+    };
+
+    var jmolApplet0 = Jmol.getApplet('jmolApplet0', Info);
+
+    // these are conveniences that mimic behavior of Jmol.js
+    function jmolCheckbox(script1, script0,text,ischecked) {Jmol.jmolCheckbox(jmolApplet0,script1, script0, text, ischecked)};
+    function jmolButton(script, text) {Jmol.jmolButton(jmolApplet0, script,text)};
+    function jmolHtml(s) { document.write(s) };
+    function jmolBr() { jmolHtml("<br />") };
+    function jmolMenu(a) {Jmol.jmolMenu(jmolApplet0, a)};
+    function jmolScript(cmd) {Jmol.script(jmolApplet0, cmd)};
+    function jmolScriptWait(cmd) {Jmol.scriptWait(jmolApplet0, cmd)};
+</script>
+
                         <button type="button" id="neighborhood" class="btn">Show neighborhood</button>
                         <button type="button" id="stereo" class="btn">Stereo</button>
                         <label><input type="checkbox" id="showNtNums">Show numbers</label>
@@ -180,11 +199,11 @@
                 </div>
 
                 <div class="row span6">
-                    <div id="about-selection" class="alert-message block-message info hide span6"></div>
+                    <div id="about-selection" class="alert-message block-message info hide span6 width-320-px"></div>
                 </div>
 
                 <div class="row span6">
-                    <div id="related-structures" class="alert-message block-message info span6">
+                    <div id="related-structures" class="alert-message block-message info span6 width-320-px">
                         <h4>Related 2D Diagrams</h4>
                         <?php if (count($related_pdbs) == 0): ?>
                           <strong>None found</strong>

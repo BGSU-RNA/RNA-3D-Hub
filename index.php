@@ -19,6 +19,19 @@
  *
  */
 	define('ENVIRONMENT', 'development');
+
+/*
+ *---------------------------------------------------------------
+ * TIME ZONE
+ *---------------------------------------------------------------
+ *
+ * Required on PHP > 5.2
+ */
+if( ! ini_get('date.timezone') )
+{
+   date_default_timezone_set('America/Detroit');
+}
+
 /*
  *---------------------------------------------------------------
  * ERROR REPORTING

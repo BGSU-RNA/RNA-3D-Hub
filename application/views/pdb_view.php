@@ -20,9 +20,10 @@
             - organizes redundant structures into <a href="<?=$baseurl?>nrlist">non-redundant lists</a> of equivalence classes
             </p>
             <p>
-              Updated automatically every week.
+              We are <a href="http://rna.bgsu.edu/main/upgrading-rna-3d-hub/">upgrading RNA 3D Hub</a>
+              to include new RNA 3D structures distributed in <a href="http://wwpdb.org/news/news.php?year=2014#10-December-2014">mmCIF format</a>.
+              Follow us on <a href="https://twitter.com/rna3dhub">Twitter</a> to hear when the updated version becomes available.
             </p>
-
 
             <select data-placeholder="Choose one of <?php echo count($pdbs); ?> RNA-containing 3D structures" tabindex="1" id="chosen" style="width:400px">
              <option value=""></option>

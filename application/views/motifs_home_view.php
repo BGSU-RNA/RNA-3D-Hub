@@ -10,7 +10,12 @@
             <p>
             is a comprehensive and representative collection of internal and hairpin loop RNA 3D motifs
             extracted from the <a href="<?=$baseurl?>nrlist">Non-redundant lists</a> of RNA 3D structures.
-            Automatically updated every 4 weeks.
+            </p>
+
+            <p>
+              We are <a href="http://rna.bgsu.edu/main/upgrading-rna-3d-hub/">upgrading RNA 3D Hub</a>
+              to include new RNA 3D structures distributed in <a href="http://wwpdb.org/news/news.php?year=2014#10-December-2014">mmCIF format</a>.
+              Follow us on <a href="https://twitter.com/rna3dhub">Twitter</a> to hear when the updated version becomes available.
             </p>
 
             <a class="btn primary large" href="<?=$baseurl?>motifs/release/il/current">Internal loops</a>
@@ -27,8 +32,8 @@
             <br>
 
             <em>
-            Last update: <?=date('d-m-Y', $release_info['last_update'])?>;
-            next update: <?=date('d-m-Y', $release_info['next_update'])?>
+            Last update: <?=date('d-m-Y', $release_info['last_update'])?>
+<!--             next update: <?=date('d-m-Y', $release_info['next_update'])?> -->
             </em>
 
         </div>
