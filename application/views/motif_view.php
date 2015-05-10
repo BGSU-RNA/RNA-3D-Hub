@@ -68,11 +68,11 @@
                                     U: only U<br>
                                     N: any nucleotide'>
                                 <img class="span3 thumbnail"
-                                     src="http://rna.bgsu.edu/img/MotifAtlas/<?php echo substr($title,0,2) . $release_id;?>/<?=$title?>.png"
+                                     src="<?=$this->config->item('home_url')?>/img/MotifAtlas/<?php echo substr($title,0,2) . $release_id;?>/<?=$title?>.png"
                                      alt='2D diagram'>
                             </a>
                         </ul>
-                        <a href="http://rna.bgsu.edu/main/rna-3d-hub-help/" target="_blank">Help</a>
+                        <a href="<?=$this->config->item('home_url')?>/main/rna-3d-hub-help/" target="_blank">Help</a>
                 </div>
             </div>
             <div class="span12">
@@ -91,7 +91,7 @@
                           <span class="muted">
                               #D - ordering by discrepancy relative to the exemplar,
                               #S - ordering by similarity (same as in the heat map).
-                              <a href="http://rna.bgsu.edu/main/rna-3d-hub-help/" target="_blank">More</a>
+                              <a href="<?=$this->config->item('home_url')?>/main/rna-3d-hub-help/" target="_blank">More</a>
                           </span>
 
                             <?php echo $table;?>

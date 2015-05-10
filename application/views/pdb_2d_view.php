@@ -213,7 +213,7 @@
 
             <p>
               Shown here is a <strong>circular diagram</strong> generated using the 
-              <a href="http://rna.bgsu.edu/main/software/fr3d/">FR3D</a> annotations 
+              <a href="<?=$this->config->item('home_url')?>/main/software/fr3d/">FR3D</a> annotations 
               for <?=$pdb_id?>. The black circle represents the annotated chains. For 
               some structures an <strong>airport diagram</strong> is provided. To draw it click the 
               airport button. Structures without one have a disabled button.
@@ -254,15 +254,15 @@
               nucleotide will highlight it as well as all intereracations it forms.
             </p>
 
-            <a class="btn primary" href="http://rna.bgsu.edu/main/interacting-with-2d-structures" target="_blank">More details</a>
+            <a class="btn primary" href="<?=$this->config->item('home_url')?>/main/interacting-with-2d-structures" target="_blank">More details</a>
           </div>
         </div>
 
 <script type='text/javascript'>
     NTS = <?=$nts?>;
     LONG = <?=$long_range?>;
-    INTERACTION_URL = "http://rna.bgsu.edu/rna3dhub/pdb/<?=$pdb_id?>/interactions/fr3d/basepairs/csv";
-    LOOP_URL = "http://rna.bgsu.edu/rna3dhub/loops/download/<?=$pdb_id?>";
+    INTERACTION_URL = "<?=$this->config->item('home_url')?>/rna3dhub/pdb/<?=$pdb_id?>/interactions/fr3d/basepairs/csv";
+    LOOP_URL = "<?=$this->config->item('home_url')?>/rna3dhub/loops/download/<?=$pdb_id?>";
 
     $('#chosen').chosen().change(function(){
         window.location.href = "<?=$baseurl?>pdb/" + $(this).val();

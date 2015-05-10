@@ -42,7 +42,7 @@
             <a class="btn" href="<?=$baseurl?>motifs/2ds">Ribosomal 2D diagrams</a>
             <a class="btn" href="<?=$baseurl?>motifs/release_history">Release history</a>
             <a class="btn" href="<?=$baseurl?>motifs/compare_releases">Compare releases</a>
-            <a class="btn" href="http://rna.bgsu.edu/main/rna-3d-hub-help/" target="_blank">Help</a>
+            <a class="btn" href="<?=$this->config->item('home_url')?>/main/rna-3d-hub-help/" target="_blank">Help</a>
             <a class="btn" href="<?=$baseurl?>search">Search</a>
             </div>
 
@@ -51,7 +51,7 @@
             </p>
 
             <p>
-              <strong>Method.</strong> To create the Motif Atlas we extract RNA 3D motif instances from the current <a href="http://rna.bgsu.edu/rna3dhub/nrlist">non-redundant list</a> using <a href="http://rna.bgsu.edu/FR3D">FR3D</a>, a program for symbolic and geometric searching of RNA 3D structures. Next, we use a clustering approach based on maximum cliques to obtain a representative collection of RNA 3D motifs. Unique and stable ids are assigned to all motifs and motif instances.
+              <strong>Method.</strong> To create the Motif Atlas we extract RNA 3D motif instances from the current <a href="<?=$this->config->item('home_url')?>/rna3dhub/nrlist">non-redundant list</a> using <a href="<?=$this->config->item('home_url')?>/FR3D">FR3D</a>, a program for symbolic and geometric searching of RNA 3D structures. Next, we use a clustering approach based on maximum cliques to obtain a representative collection of RNA 3D motifs. Unique and stable ids are assigned to all motifs and motif instances.
             </p>
 
                 <strong>Citation.</strong> The paper describing RNA 3D Motif Atlas has been <a href="http://rnajournal.cshlp.org/content/19/10/1327.full" target="_blank">published in RNA</a>. If you use this resource, please cite:
@@ -75,7 +75,7 @@
                 <?php foreach($featured as $name=>$motif): ?>
                 <li>
                   <a href="<?=$baseurl?>motif/view/<?=$motif?>" target="_blank">
-                    <img src="http://rna.bgsu.edu/img/MotifAtlas/<?php
+                    <img src="<?=$this->config->item('home_url')?>/img/MotifAtlas/<?php
                         if ( strstr($motif, 'IL') ) {
                             echo 'IL' . $release_info['il_release'];
                         } else {

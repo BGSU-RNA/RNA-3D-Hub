@@ -73,7 +73,7 @@
             <p class="help">
               <span class="label notice">Help</span>
               Every Motif Atlas release is based on
-              <a href="http://rna.bgsu.edu/rna3dhub/nrlist" target="_blank">a non-redundant list of PDB files</a>.
+              <a href="<?=$this->config->item('home_url')?>/rna3dhub/nrlist" target="_blank">a non-redundant list of PDB files</a>.
               When comparing two releases, it's important to know how
               the input data changed.
             </p>

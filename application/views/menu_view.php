@@ -61,23 +61,23 @@
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle">Resources</a>
                 <ul class="dropdown-menu">
-                    <li><a href="http://rna.bgsu.edu/WebFR3D">WebFR3D</a></li>
-                    <li><a href="http://rna.bgsu.edu/JAR3D">JAR3D &szlig;</a></li>
-                    <li><a href="http://rna.bgsu.edu/r3dalign/">R3DAlign</a></li>
-                    <li><a href="http://rna.bgsu.edu/FR3D">FR3D</a></li>
+                    <li><a href="<?=$this->config->item('home_url')?>/WebFR3D">WebFR3D</a></li>
+                    <li><a href="<?=$this->config->item('home_url')?>/JAR3D">JAR3D &szlig;</a></li>
+                    <li><a href="<?=$this->config->item('home_url')?>/r3dalign/">R3DAlign</a></li>
+                    <li><a href="<?=$this->config->item('home_url')?>/FR3D">FR3D</a></li>
                     <li class="divider"></li>
                     <li><a href="<?php echo $baseurl;?>loops">Loop Atlas</a></li>
-                    <li><a href="http://rna.bgsu.edu/FR3D/basepairs/">RNA Basepair Catalog</a></li>
-                    <li><a href="http://rna.bgsu.edu/Triples/">RNA Base Triple Database</a></li>
-                    <li><a href="http://rna.bgsu.edu/FR3D/BasePhosphates/">RNA Base Phosphate Catalog</a></li>
+                    <li><a href="<?=$this->config->item('home_url')?>/FR3D/basepairs/">RNA Basepair Catalog</a></li>
+                    <li><a href="<?=$this->config->item('home_url')?>/Triples/">RNA Base Triple Database</a></li>
+                    <li><a href="<?=$this->config->item('home_url')?>/FR3D/BasePhosphates/">RNA Base Phosphate Catalog</a></li>
                 </ul>
             </li>
 
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle">Links</a>
                 <ul class="dropdown-menu">
-                    <li><a href="http://rna.bgsu.edu">RNA BGSU Home</a></li>
-                    <li><a href="http://rna.bgsu.edu/main/rna-3d-hub-help/">Help</a></li>
+                    <li><a href="<?=$this->config->item('home_url')?>">RNA BGSU Home</a></li>
+                    <li><a href="<?=$this->config->item('home_url')?>/main/rna-3d-hub-help/">Help</a></li>
                     <?php
                         $current = current_url();
                         if ( !strstr($current, 'rna3dhub_dev') ){

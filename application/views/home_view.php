@@ -7,7 +7,7 @@
       <div class="hero-unit">
         <h1>RNA 3D Hub</h1>
         <br>
-        <a href="http://rna.bgsu.edu/main/introduction-to-rna-3d-hub/" class="btn success large">Introduction</a>
+        <a href="<?=$this->config->item('home_url')?>/main/introduction-to-rna-3d-hub/" class="btn success large">Introduction</a>
 
       </div>
 
@@ -17,10 +17,10 @@
           <h2>RNA Structure Atlas</h2>
           Structural annotations of all RNA-containing 3D structures including:
           <ul>
-             <li>Pairwise interactions produced by <a href="http://rna.bgsu.edu/FR3D">FR3D</a></li>
+             <li>Pairwise interactions produced by <a href="<?=$this->config->item('home_url')?>/FR3D">FR3D</a></li>
              <li>Hairpin, internal, and three-way junction loops</li>
-             <li>Motif annotations from the <a href="http://rna.bgsu.edu/rna3dhub/motifs">Motif Atlas</a></li>
-             <li>Similar structures from the <a href="http://rna.bgsu.edu/rna3dhub/nrlist">Non-redundant Lists</a></li>
+             <li>Motif annotations from the <a href="<?=$this->config->item('home_url')?>/rna3dhub/motifs">Motif Atlas</a></li>
+             <li>Similar structures from the <a href="<?=$this->config->item('home_url')?>/rna3dhub/nrlist">Non-redundant Lists</a></li>
           </ul>
           <p>Automatic weekly updates.</p>
           <p><a class="btn primary" href="<?php echo $baseurl;?>pdb">Explore</a></p>

@@ -59,7 +59,7 @@
                     </p>
                     <p>
                     The old web interface is no longer developed or supported. It can be accessed
-                    at <a href="http://rna.bgsu.edu/nrlist/oldsite.html">http://rna.bgsu.edu/nrlist/oldsite.html</a>.
+                    at <a href="<?=$this->config->item('home_url')?>/nrlist/oldsite.html"><?=$this->config->item('home_url')?>/nrlist/oldsite.html</a>.
                     </p>
                 </div>
             </div>
