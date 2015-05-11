@@ -91,7 +91,7 @@
             var a = $(this);
             var unit_id = a.html().trim();
 
-            var content = '<a href="<?=$base_url?>/unitid/describe/'
+            var content = '<a href="<?=$baseurl?>/unitid/describe/'
                           + unit_id + '">Details</a>' +
                           '&nbsp;&nbsp;<?=anchor("unitid", "Nomenclature")?>';
             a.popover({
