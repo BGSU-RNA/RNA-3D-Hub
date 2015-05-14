@@ -34,7 +34,7 @@
                   If you experience problems with the embedded document, try
                   <a href="<?php echo str_replace('preview', 'edit', $selected['url']); ?>" target="_blank">downloading</a>
                   the pdf and opening it on your computer. Please don't hesitate to
-                  <a href="http://rna.bgsu.edu/main/contact-us">contact us</a>
+                  <a href="<?=$this->config->item('home_url')?>/main/contact-us">contact us</a>
                   with questions or feedback.
                 </p>
 
@@ -84,7 +84,7 @@
                 </p>
 
                 <p>
-                  We used <a href="http://rna.bgsu.edu/rna3dhub/nrlist">Non-redundant lists</a>
+                  We used <a href="<?=$this->config->item('home_url')?>/rna3dhub/nrlist">Non-redundant lists</a>
                   of RNA 3D structures
                   to choose representative structures for each molecule type and
                   linked secondary structure diagrams with their motif instances.

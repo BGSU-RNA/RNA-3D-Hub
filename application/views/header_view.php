@@ -14,7 +14,8 @@
     <![endif]-->
 
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
-    <script src="<?=$baseurl?>jmol/jmol.js"></script>
+    <script src="<?=$baseurl?>js/jmol/Jmol.js"></script>
+    <script src="<?=$baseurl?>js/jsmol/JSmol.min.nojq.js"></script>
     <script src="<?=$baseurl?>js/jquery.jmolTools.js"></script>
     <script src="<?=$baseurl?>js/jmolInlineLoader.js"></script>
 

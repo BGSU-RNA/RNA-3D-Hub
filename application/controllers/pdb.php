@@ -3,7 +3,7 @@ class Pdb extends CI_Controller {
 
 	public function index()
 	{
-        $this->output->cache(8640); # 6 days
+        $this->output->cache(262974); # 6 months
 
         $this->load->model('Pdb_model', '', TRUE);
         $data['pdbs'] = $this->Pdb_model->get_all_pdbs();
@@ -20,7 +20,7 @@ class Pdb extends CI_Controller {
     {
         // main pdb landing page with general info and links to specific pages
 
-        $this->output->cache(8640); # 6 days
+        $this->output->cache(262974); # 6 months
 
         $this->load->model('Pdb_model', '', TRUE);
         $pdb_status = $this->is_valid_pdb($id, 'il');
@@ -133,7 +133,7 @@ class Pdb extends CI_Controller {
 
 	public function motifs($id)
 	{
-        $this->output->cache(8640); # 6 days
+        $this->output->cache(262974); # 6 months
 
 	    $this->load->model('Pdb_model', '', TRUE);
         // check the pdb id

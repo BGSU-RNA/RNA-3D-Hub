@@ -3,7 +3,7 @@ class Nrlist extends CI_Controller {
 
 	public function index()
 	{
-        $this->output->cache(8640); # 6 days
+        $this->output->cache(262974); # 6 months
 
 	    $this->load->model('Nrlist_model', '', TRUE);
         $result = $this->Nrlist_model->get_all_releases();
@@ -28,7 +28,7 @@ class Nrlist extends CI_Controller {
 
 	public function release($id, $res='4.0A')
 	{
-        $this->output->cache(8640); # 6 days
+        $this->output->cache(262974); # 6 months
 
 	    $this->load->model('Nrlist_model', '', TRUE);
         if ($id == 'current') {
@@ -81,7 +81,7 @@ class Nrlist extends CI_Controller {
 
 	public function view($id)
 	{
-        $this->output->cache(8640); # 6 days
+        $this->output->cache(262974); # 6 months
 
 	    $this->load->model('Nrlist_model', '', TRUE);
 
@@ -94,8 +94,8 @@ class Nrlist extends CI_Controller {
         $this->table->set_template($tmpl);
         $data['releases'] = $this->table->generate($releases);
 
-        list($type, $resolution, $temp) = split('_', $id);
-        list($handle, $version) = split('.', $temp);
+        list($type, $resolution, $temp) = explode('_', $id);
+        list($handle, $version) = explode('.', $temp);
 	    $data['resolution'] = $resolution;
 	    $data['version']    = $version;
 
@@ -166,6 +166,8 @@ class Nrlist extends CI_Controller {
 
     public function release_history()
     {
+        $this->output->cache(262974); # 6 months
+
         $this->load->model('Nrlist_model', '' , TRUE);
         $tables = $this->Nrlist_model->get_complete_release_history();
         $resolutions = array('1.5','2.0','2.5','3.0','3.5','4.0','20.0','all');
