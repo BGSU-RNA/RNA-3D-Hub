@@ -170,7 +170,7 @@ class Pdb extends CI_Controller {
         } else {
             $data['message'] = $pdb_status['message'];
         }
-        $data['title'] = "Motifs in $id";
+        $data['title'] = "$id | Motifs";
         $data['baseurl'] = base_url();
         $data['method'] = 'fr3d';
         $data['pdb_id'] = $id;
