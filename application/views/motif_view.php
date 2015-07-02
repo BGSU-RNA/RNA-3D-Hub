@@ -68,11 +68,11 @@
                                     U: only U<br>
                                     N: any nucleotide'>
                                 <img class="span3 thumbnail"
-                                     src="http://rna.bgsu.edu/img/MotifAtlas/<?php echo substr($title,0,2) . $release_id;?>/<?=$title?>.png"
+                                     src="<?=$this->config->item('home_url')?>/img/MotifAtlas/<?php echo substr($title,0,2) . $release_id;?>/<?=$title?>.png"
                                      alt='2D diagram'>
                             </a>
                         </ul>
-                        <a href="http://rna.bgsu.edu/main/rna-3d-hub-help/" target="_blank">Help</a>
+                        <a href="<?=$this->config->item('home_url')?>/main/rna-3d-hub-help/" target="_blank">Help</a>
                 </div>
             </div>
             <div class="span12">
@@ -81,7 +81,7 @@
                     <ul class="tabs" data-tabs="tabs">
                         <li class="active"><a href="#int">Pairwise interactions</a></li>
                         <li><a href="#variants">Sequence variants</a></li>
-                        <li><a href="#similar">Similar motifs</a></li>
+                        <!-- <li><a href="#similar">Similar motifs</a></li> -->
                         <li><a href="#history">History</a></li>
                     </ul>
 
@@ -91,7 +91,7 @@
                           <span class="muted">
                               #D - ordering by discrepancy relative to the exemplar,
                               #S - ordering by similarity (same as in the heat map).
-                              <a href="http://rna.bgsu.edu/main/rna-3d-hub-help/" target="_blank">More</a>
+                              <a href="<?=$this->config->item('home_url')?>/main/rna-3d-hub-help/" target="_blank">More</a>
                           </span>
 
                             <?php echo $table;?>
@@ -142,11 +142,46 @@
                 <div class="row">
                     <div class="span6" id="jmolBlock">
                             <div class="block-div jmolheight">
-                                <script type="text/javascript">
-                                    jmolInitialize(" /jmol");
-                                    jmolSetAppletColor("#ffffff");
-                                    jmolApplet(340, "javascript appletLoaded()");
-                                </script>
+<script>
+    jmol_isReady = function(applet) {
+        // initialize the plugin
+        $('.jmolInline').jmolTools({
+            showStereoId: 'stereo',
+            showNeighborhoodId: 'neighborhood',
+            showNumbersId: 'showNtNums',
+            showNextId: 'next',
+            showPrevId: 'prev',
+            showAllId: 'all',
+            clearId: 'clear',
+            insertionsId: 'insertions'                
+        });
+        // run the plugin
+        $('.jmolInline').first().jmolToggle();
+    };
+
+    var Info = {
+        width: 340,
+        height: 340,
+        debug: false,
+        color: 'white',
+        addSelectionOptions: false,
+        use: 'HTML5',
+        j2sPath: '<?=$baseurl?>/js/jsmol/j2s/',
+        readyFunction: jmol_isReady,
+        disableInitialConsole: true
+    };
+
+    var jmolApplet0 = Jmol.getApplet('jmolApplet0', Info);
+
+    // these are conveniences that mimic behavior of Jmol.js
+    function jmolCheckbox(script1, script0,text,ischecked) {Jmol.jmolCheckbox(jmolApplet0,script1, script0, text, ischecked)};
+    function jmolButton(script, text) {Jmol.jmolButton(jmolApplet0, script,text)};
+    function jmolHtml(s) { document.write(s) };
+    function jmolBr() { jmolHtml("<br />") };
+    function jmolMenu(a) {Jmol.jmolMenu(jmolApplet0, a)};
+    function jmolScript(cmd) {Jmol.script(jmolApplet0, cmd)};
+    function jmolScriptWait(cmd) {Jmol.scriptWait(jmolApplet0, cmd)};
+</script>
                             </div>
                             <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
                             <input type='button' id='prev' class='btn' value='Previous'>
@@ -161,7 +196,7 @@
                             <?php echo $matrix;?>
 
                             <?php if ($matrix != ''): ?>
-                            Legend:
+                            Mutual discrepancy heat map legend:
                             <div id='mdmatrix-help' rel='twipsy' title='
                             Clicking
                             <ul>
@@ -212,35 +247,6 @@
         });
         $(".pdb").click(LookUpPDBInfo);
         $("#sort").tablesorter();
-
-        // initialize jmolTools
-        $('.jmolInline').jmolTools({
-            showStereoId: 'stereo',
-            showNeighborhoodId: 'neighborhood',
-            showNumbersId: 'showNtNums',
-            showNextId: 'next',
-            showPrevId: 'prev',
-            showAllId: 'all',
-            clearId: 'clear',
-            insertionsId: 'insertions'
-        });
-
-        // run when jmol is ready
-      	function appletLoaded (){
-      	    // toggle the first checkbox
-      	    $('.jmolInline').first().jmolToggle();
-
-      	    // mark it on the mutual discrepancy matrix
-      	    var id = $('.jmolInline').first().attr('id');
-      	    $('.md00').each(function(ind, elem) {
-                $elem = $(elem);
-                if ( $elem.data('pair').indexOf(id) == 0 ) {
-                    $elem.addClass('jmolActive');
-                    $.jmolTools.clickedCell = $elem;
-                    return;
-                }
-      	    });
-      	}
 
         // only add this code if the user is logged in
         <?php if ($this->session->userdata('username')): ?>

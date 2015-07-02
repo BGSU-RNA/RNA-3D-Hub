@@ -1,14 +1,13 @@
 function LookUpPDBInfo()
 {
     a = $(this);
-    var anchor_text = a.text();
+    var anchor_text = a.text(),
+	re = /[a-zA-Z0-9]{4}/,
+	pdb = re.exec(anchor_text),
+        loc = window.location.protocol + '//' + window.location.host +
+            '/rna3dhub/rest/getPdbInfo';
 
-	re = /[a-zA-Z0-9]{4}/;
-	pdb = re.exec(anchor_text);
-
-    var environment = window.location.href.split('/')[3]; // rna3dhub or rna3dhub_dev
-
-    $.post('http://rna.bgsu.edu/' + environment + '/rest/getPdbInfo', { pdb: pdb[0] }, function(data) {
+    $.post(loc, { pdb: pdb[0] }, function(data) {
         // hide all previously displayed popovers
         $('.popover-displayed').removeClass('popover-displayed')
                                .popover('hide')

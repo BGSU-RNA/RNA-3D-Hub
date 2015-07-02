@@ -33,11 +33,29 @@
         <div class="row">
             <div class="span6" id="jmol">
                     <div class="block-div jmolheight">
-                        <script type="text/javascript">
-                            jmolInitialize(" /jmol");
-                            jmolSetAppletColor("#ffffff");
-                            jmolApplet(340);
-                        </script>
+<script>
+    var Info = {
+        width: 340,
+        height: 340,
+        debug: false,
+        color: 'white',
+        addSelectionOptions: false,
+        use: 'HTML5',
+        j2sPath: '<?=$baseurl?>/js/jsmol/j2s/',
+        disableInitialConsole: true
+    };
+
+    var jmolApplet0 = Jmol.getApplet('jmolApplet0', Info);
+
+    // these are conveniences that mimic behavior of Jmol.js
+    function jmolCheckbox(script1, script0,text,ischecked) {Jmol.jmolCheckbox(jmolApplet0,script1, script0, text, ischecked)};
+    function jmolButton(script, text) {Jmol.jmolButton(jmolApplet0, script,text)};
+    function jmolHtml(s) { document.write(s) };
+    function jmolBr() { jmolHtml("<br />") };
+    function jmolMenu(a) {Jmol.jmolMenu(jmolApplet0, a)};
+    function jmolScript(cmd) {Jmol.script(jmolApplet0, cmd)};
+    function jmolScriptWait(cmd) {Jmol.scriptWait(jmolApplet0, cmd)};
+</script>
                     </div>
                     <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
                     <input type='button' id='stereo' class='btn' value="Show stereo">

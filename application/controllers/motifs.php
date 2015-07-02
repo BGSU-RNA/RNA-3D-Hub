@@ -3,7 +3,7 @@ class Motifs extends CI_Controller {
 
 	public function oldhome()
 	{
-        $this->output->cache(8640); # 6 days
+        $this->output->cache(262974); # 6 months
 
         $this->load->helper('url');
 	    $this->load->model('Motifs_model', '', TRUE);
@@ -30,6 +30,8 @@ class Motifs extends CI_Controller {
 
 	public function index()
 	{
+        $this->output->cache(262974); # 6 months
+
 	    $this->load->model('Motifs_model', '', TRUE);
 
         $data['featured'] = $this->Motifs_model->get_featured_motifs('il');
@@ -47,6 +49,8 @@ class Motifs extends CI_Controller {
 
     public function polymorphs($motif_type, $release_id)
     {
+        $this->output->cache(262974); # 6 months
+
         $this->load->model('Motifs_model', '', TRUE);
         $table = $this->Motifs_model->get_polymorphs($motif_type, $release_id);
 
@@ -66,7 +70,7 @@ class Motifs extends CI_Controller {
 
 	public function release($motif_type, $id, $format=NULL)
 	{
-        $this->output->cache(8640); # 6 days
+        $this->output->cache(262974); # 6 months
 
 	    $this->load->model('Motifs_model', '', TRUE);
 
@@ -93,11 +97,11 @@ class Motifs extends CI_Controller {
                 }
 
                 if ( $format == 'csv' ) {
-                    $this->output->set_header("Content-disposition: attachment; filename={$motif_type}_{$release_id}.csv")
+                    $this->output->set_header("Content-disposition: attachment; filename={$motif_type}_{$id}.csv")
                                  ->set_content_type('text/csv');
                     $download[] = ">{$motif_id}\n" . $this->Motif_model->get_csv($motif_id);
                 } else {
-                    $this->output->set_header("Content-disposition: attachment; filename={$motif_type}_{$release_id}.json")
+                    $this->output->set_header("Content-disposition: attachment; filename={$motif_type}_{$id}.json")
                                  ->set_content_type('application/json');
                     $download[] = $this->Motif_model->get_json($motif_id);
                 }
@@ -146,6 +150,8 @@ class Motifs extends CI_Controller {
 
 	public function releaseinfo($motif_type,$id)
 	{
+        $this->output->cache(262974); # 6 months
+
 	    $motif_type = strtolower($motif_type);
 	    $this->load->model('Motifs_model', '', TRUE);
         if ($id == 'current') {
@@ -174,6 +180,8 @@ class Motifs extends CI_Controller {
 
     public function graph($motif_type,$id)
     {
+        $this->output->cache(262974); # 6 months
+
 	    $motif_type = strtolower($motif_type);
 	    $this->load->model('Motifs_model', '', TRUE);
 

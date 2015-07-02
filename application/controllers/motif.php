@@ -21,7 +21,7 @@ class Motif extends MY_Controller {
 
 	public function view($motif_id, $format=NULL)
 	{
-        $this->output->cache(8640); # 6 days
+        $this->output->cache(262974); # 6 months
 
 	    $this->load->model('Motif_model', '', TRUE);
 
@@ -126,10 +126,10 @@ class Motif extends MY_Controller {
         }
 
         // similar motifs
-        $tmpl = array( 'table_open'  => '<table class="condensed-table bordered-table">' );
-        $this->table->set_heading(array('#', 'Min linkage', 'Motif', '', 'Description'));
-        $this->table->set_template($tmpl);
-        $data['similar_motifs'] = $this->table->generate($this->Motif_model->get_similar_motifs($motif_id));
+        // $tmpl = array( 'table_open'  => '<table class="condensed-table bordered-table">' );
+        // $this->table->set_heading(array('#', 'Min linkage', 'Motif', '', 'Description'));
+        // $this->table->set_template($tmpl);
+        // $data['similar_motifs'] = $this->table->generate($this->Motif_model->get_similar_motifs($motif_id));
 
         $data['current_url'] = current_url();
         $data['baseurl'] = base_url();

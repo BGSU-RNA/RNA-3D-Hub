@@ -49,11 +49,29 @@
 
           <div class="span6" id="jmol" >
               <div class="block jmolheight">
-                  <script type="text/javascript">
-                      jmolInitialize(" /jmol");
-                      jmolSetAppletColor("#f5f5f5");
-                      jmolApplet(340);
-                  </script>
+<script>
+    var Info = {
+        width: 340,
+        height: 340,
+        debug: false,
+        color: '#f5f5f5',
+        addSelectionOptions: false,
+        use: 'HTML5',
+        j2sPath: '<?=$baseurl?>/js/jsmol/j2s/',
+        disableInitialConsole: true
+    };
+
+    var jmolApplet0 = Jmol.getApplet('jmolApplet0', Info);
+
+    // these are conveniences that mimic behavior of Jmol.js
+    function jmolCheckbox(script1, script0,text,ischecked) {Jmol.jmolCheckbox(jmolApplet0,script1, script0, text, ischecked)};
+    function jmolButton(script, text) {Jmol.jmolButton(jmolApplet0, script,text)};
+    function jmolHtml(s) { document.write(s) };
+    function jmolBr() { jmolHtml("<br />") };
+    function jmolMenu(a) {Jmol.jmolMenu(jmolApplet0, a)};
+    function jmolScript(cmd) {Jmol.script(jmolApplet0, cmd)};
+    function jmolScriptWait(cmd) {Jmol.scriptWait(jmolApplet0, cmd)};
+</script>
               </div>
               <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
               <input type='button' id='showNtNums' class='btn' value="Show numbers">
@@ -115,9 +133,9 @@
         }
 
         function show_motif_exemplar_in_jmol(id) {
-            $.post('http://rna.bgsu.edu/' + get_rna3dhub_environment() + '/ajax/get_exemplar_coordinates', { motif_id: id }, function(data) {
+            $.post('<?=$this->config->item('home_url')?>/' + get_rna3dhub_environment() + '/ajax/get_exemplar_coordinates', { motif_id: id }, function(data) {
                 jmolScript('zap;');
-                jmolLoadInlineScript(data);
+                jmolScriptWait("load DATA \"append structure\"\n" + data + 'end "append structure";')
                 apply_jmol_styling();
             });
         }
@@ -225,30 +243,30 @@
             function handle_edge_click(event) {
                  var target = event.target;
                  var env = get_rna3dhub_environment();
-                 var text = 'Motifs <a href="http://rna.bgsu.edu/' + env + '/motif/view/' + target.data.source + '" target="_blank">' + target.data.source + '</a>';
-                 text += ' and ' + '<a href="http://rna.bgsu.edu/' + env + '/motif/view/' + target.data.target + '" target="_blank">' + target.data.target + '</a>';
+                 var text = 'Motifs <a href="<?=$this->config->item('home_url')?>/' + env + '/motif/view/' + target.data.source + '" target="_blank">' + target.data.source + '</a>';
+                 text += ' and ' + '<a href="<?=$this->config->item('home_url')?>/' + env + '/motif/view/' + target.data.target + '" target="_blank">' + target.data.target + '</a>';
                  text += ' are connected by loops ';
                  text += target.data.connection.split(' ').join(' and ');
                  text += ' at discrepancy ' + target.data.disc.toFixed(4) + '.';
-                 text +=  ' <a href="http://rna.bgsu.edu/' + env + '/motif/compare/'+ target.data.source + '/' + target.data.target + '" target="_blank">Compare motifs</a>';
+                 text +=  ' <a href="<?=$this->config->item('home_url')?>/' + env + '/motif/compare/'+ target.data.source + '/' + target.data.target + '" target="_blank">Compare motifs</a>';
                  $('#signature').html(text);
 
-                 text =  '<img class="thumbnail" src="http://rna.bgsu.edu/img/MotifAtlas/<?=$img_loc?>/'+target.data.source+'.png"/>';
-                 text += '<img class="thumbnail" src="http://rna.bgsu.edu/img/MotifAtlas/<?=$img_loc?>/'+target.data.target+'.png"/>'
+                 text =  '<img class="thumbnail" src="<?=$this->config->item('home_url')?>/img/MotifAtlas/<?=$img_loc?>/'+target.data.source+'.png"/>';
+                 text += '<img class="thumbnail" src="<?=$this->config->item('home_url')?>/img/MotifAtlas/<?=$img_loc?>/'+target.data.target+'.png"/>'
                  $('#varna').html(text).show();
             }
 
             function handle_node_click(event) {
                  var target = event.target;
                  var env = get_rna3dhub_environment();
-                 var text = 'Motif <a href="http://rna.bgsu.edu/' + env + '/motif/view/' + target.data.id + '" target="_blank">' + target.data.id + '</a>';
+                 var text = 'Motif <a href="<?=$this->config->item('home_url')?>/' + env + '/motif/view/' + target.data.id + '" target="_blank">' + target.data.id + '</a>';
                  text += '<dl><dt>Basepair signature</dt><dd>' + target.data.signature +  '</dd>';
                  text += '<dt>Number of instances</dt><dd>' + target.data.cands + '</dd>';
                  text += '<dt>Number of nucleotides</dt><dd>' + target.data.numnt + '</dd></dl>';
                  $('#signature').html(text);
                  show_motif_exemplar_in_jmol( target.data.id );
                  $('#neighborhood').attr('value','Show neighborhood');
-                 $('#varna').html('<img class="thumbnail" src="http://rna.bgsu.edu/img/MotifAtlas/<?=$img_loc?>/'+target.data.id+'.png"/>').show();
+                 $('#varna').html('<img class="thumbnail" src="<?=$this->config->item('home_url')?>/img/MotifAtlas/<?=$img_loc?>/'+target.data.id+'.png"/>').show();
             }
 
             vis.visualStyle(visual_style);
