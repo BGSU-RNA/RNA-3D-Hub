@@ -119,12 +119,12 @@ class Pdb_model extends CI_Model {
 
     function get_latest_loop_release()
     {
-        $this->db->select('id')
+        $this->db->select('loop_releases_id')
                  ->from('loop_releases')
                  ->order_by('date','desc')
                  ->limit(1);
         $result = $this->db->get()->result_array();
-        return $result[0]['id'];
+        return $result[0]['loop_releases_id'];
     }
 
     function pdb_exists($pdb_id)
