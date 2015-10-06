@@ -454,7 +454,7 @@ class Motifs_model extends CI_Model {
 
     function _get_motif_length_distribution($motif_id, $release_id)
     {
-        $this->db->select('loops_all.length')
+        $this->db->select('loop_info.length')
                  ->from('ml_loops')
                  ->join('loop_info', 'ml_loops.id=loop_info.loop_id')
                  ->where('ml_loops.release_id', $release_id)
