@@ -577,7 +577,7 @@ EOT;
     {
         // SELECT LOOP_id,`mltest`.`dcc_residues`.* FROM `ml_loop_positions`
         // JOIN `mltest`.`dcc_residues`
-        // ON nt_id = `mltest`.`dcc_residues`.`id`
+        // ON nt_id = `mltest`.`dcc_residues`.`dcc_residues_id`
         // WHERE `ml_loop_positions`.release_id = '0.5'
         // ORDER BY loop_id ASC
 
@@ -585,13 +585,13 @@ EOT;
         // JOIN `mltest`.`dcc_residues`
         // JOIN loops_all
         // LEFT JOIN ml_loops
-        // ON nt_id = `mltest`.`dcc_residues`.`id` AND loops_all.id=loop_id AND ml_loops.id=LOOP_id
+        // ON nt_id = `mltest`.`dcc_residues`.`dcc_residues_id` AND loops_all.id=loop_id AND ml_loops.id=LOOP_id
         // WHERE `ml_loop_positions`.release_id = '0.5' AND ml_loops.release_id='0.5'
         // ORDER BY loop_id ASC;
 
         $this->db->select()
                  ->from('ml_loop_positions')
-                 ->join('dcc_residues','nt_id = dcc_residues.id')
+                 ->join('dcc_residues','nt_id = dcc_residues.dcc_residues_id')
                  ->join('loops_all','loop_id=loops_all.id')
                  ->join('ml_loops','loop_id=ml_loops.id','left')
                  ->where('ml_loop_positions.release_id','0.5')
@@ -777,7 +777,7 @@ EOT;
                  ->select_min('mapman_Biso_mean')
                  ->select_min('mapman_occupancy_mean')
                  ->from('dcc_residues')
-                 ->like('id',strtoupper($pdb),'after');
+                 ->like('dcc_residues_id',strtoupper($pdb),'after');
         $result = $this->db->get()->result_array();
         return $result[0];
     }
@@ -800,14 +800,14 @@ EOT;
                  ->select_max('mapman_Biso_mean')
                  ->select_max('mapman_occupancy_mean')
                  ->from('dcc_residues')
-                 ->like('id',strtoupper($pdb),'after');
+                 ->like('dcc_residues_id',strtoupper($pdb),'after');
         $result = $this->db->get()->result_array();
         return $result[0];
      }
 
     function get_dcc_pdbs()
     {
-        $this->db->select('DISTINCT(substr(id,1,4)) as pdb FROM dcc_residues;',false);
+        $this->db->select('DISTINCT(substr(dcc_residues_id,1,4)) as pdb FROM dcc_residues;',false);
         $query = $this->db->get();
         foreach($query->result() as $row) {
             $result[] = anchor(base_url(array('loops','sfjmol',$row->pdb)),$row->pdb);
