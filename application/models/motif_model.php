@@ -154,9 +154,9 @@ class Motif_model extends CI_Model {
         }
 
         // get loop sequences
-        $this->db->select('id, seq')
-                 ->from('loops_all')
-                 ->where_in('id', $loop_ids);
+        $this->db->select('loop_id, seq')
+                 ->from('loop_info')
+                 ->where_in('loop_id', $loop_ids);
         $query = $this->db->get();
         foreach($query->result() as $row) {
             $seqs[$row->id] = $row->seq;
@@ -710,9 +710,9 @@ class Motif_model extends CI_Model {
     function get_loop_lengths()
     {
         // get lengths of complete loops to calculate the number of bulges.
-        $this->db->select('id,length')
-                 ->from('loops_all')
-                 ->where_in('id', $this->loops);
+        $this->db->select('loop_id,length')
+                 ->from('loop_info')
+                 ->where_in('loop_id', $this->loops);
         $query = $this->db->get();
 
         foreach($query->result() as $row) {

@@ -263,8 +263,8 @@ class Ajax_model extends CI_Model {
         // find all constituent nucleotides
         $this->db->select('nt_ids')
                  ->distinct()
-                 ->from('loops_all')
-                 ->where('id',$loop_id);
+                 ->from('loop_info')
+                 ->where('loop_id',$loop_id);
         $query = $this->db->get();
         if ($query->num_rows() == 0) { return 'Loop id not found'; }
 

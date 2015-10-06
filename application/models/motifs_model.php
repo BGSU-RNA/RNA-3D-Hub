@@ -95,8 +95,8 @@ class Motifs_model extends CI_Model {
             seq, length, group_concat(motif_id) AS motifs, count(motif_id) AS motif_num
             FROM (
                 SELECT DISTINCT(seq AND motif_id),seq, length, motif_id FROM ml_loops AS t1
-                JOIN loops_all AS t2
-                ON t1.id = t2.id
+                JOIN loop_info AS t2
+                ON t1.id = t2.loop_id
                 WHERE t1.release_id = '{$release_id}'
                 AND t2.`type` = '{$motif_type}'
                 ORDER BY length DESC
@@ -456,7 +456,7 @@ class Motifs_model extends CI_Model {
     {
         $this->db->select('loops_all.length')
                  ->from('ml_loops')
-                 ->join('loops_all', 'ml_loops.id=loops_all.id')
+                 ->join('loop_info', 'ml_loops.id=loop_info.loop_id')
                  ->where('ml_loops.release_id', $release_id)
                  ->where('ml_loops.motif_id', $motif_id);
         $query = $this->db->get();

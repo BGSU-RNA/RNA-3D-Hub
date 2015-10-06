@@ -14,8 +14,8 @@ class Loops_model extends CI_Model {
     function is_valid_loop_id($id)
     {
         $this->db->select()
-                 ->from('loops_all')
-                 ->where('id', $id);
+                 ->from('loop_info')
+                 ->where('loop_id', $id);
         $query = $this->db->get();
         if ( $query->num_rows() > 0 ) {
             return TRUE;
@@ -27,11 +27,11 @@ class Loops_model extends CI_Model {
     function get_loop_list($pdb_id)
     {
         $this->db->select('group_concat(unit_id) AS unit_ids, loops_all.id', FALSE)
-                 ->from('loops_all')
-                 ->join('loop_positions', 'loops_all.id=loop_positions.loop_id')
+                 ->from('loop_info')
+                 ->join('loop_positions', 'loop_info.loop_id=loop_positions.loop_id')
                  ->join('pdb_unit_id_correspondence', 'loop_positions.nt_id=pdb_unit_id_correspondence.old_id')
                  ->where('loops_all.pdb', $pdb_id)
-                 ->group_by('loops_all.id');
+                 ->group_by('loop_info.loop_id');
         $query = $this->db->get();
 
         if ( $query->num_rows() > 0 ) {
@@ -52,8 +52,8 @@ class Loops_model extends CI_Model {
         $result = array();
         // info from loops_all
         $this->db->select()
-                 ->from('loops_all')
-                 ->where('id',$id);
+                 ->from('loop_info')
+                 ->where('loop_id',$id);
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
             $loop_info = $query->row();
@@ -476,11 +476,11 @@ class Loops_model extends CI_Model {
         $type = array_search($type, $this->qa_status);
         $this->db->select()
                  ->from('loop_qa')
-                 ->join('loops_all','loop_qa.loop_qa_id=loops_all.id')
+                 ->join('loop_info','loop_qa.loop_qa_id=loop_info.loop_id')
                  ->where('status',$type)
                  ->where('type',$motif_type)
                  ->where('release_id',$release_id)
-                 ->order_by('loops_all.id')
+                 ->order_by('loop_info.loop_id')
                  ->limit($num,$offset);
         $query = $this->db->get();
 
@@ -585,14 +585,14 @@ EOT;
         // JOIN `mltest`.`dcc_residues`
         // JOIN loops_all
         // LEFT JOIN ml_loops
-        // ON nt_id = `mltest`.`dcc_residues`.`dcc_residues_id` AND loops_all.id=loop_id AND ml_loops.id=LOOP_id
+        // ON nt_id = `mltest`.`dcc_residues`.`dcc_residues_id` AND loop_info.loop_id=loop_id AND ml_loops.id=LOOP_id
         // WHERE `ml_loop_positions`.release_id = '0.5' AND ml_loops.release_id='0.5'
         // ORDER BY loop_id ASC;
 
         $this->db->select()
                  ->from('ml_loop_positions')
                  ->join('dcc_residues','nt_id = dcc_residues.dcc_residues_id')
-                 ->join('loops_all','loop_id=loops_all.id')
+                 ->join('loop_info','loop_id=loop_info.loop_id')
                  ->join('ml_loops','loop_id=ml_loops.id','left')
                  ->where('ml_loop_positions.release_id','0.5')
                  ->where('ml_loops.release_id','0.5')
