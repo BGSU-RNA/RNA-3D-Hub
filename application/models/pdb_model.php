@@ -58,7 +58,7 @@ class Pdb_model extends CI_Model {
         $release_id = $this->get_latest_loop_release();
         $this->db->select()
                  ->from('loop_qa')
-                 ->join('loops_all', 'loops_all.id=loop_qa.id')
+                 ->join('loops_all', 'loops_all.id=loop_qa.loop_qa_id')
                  ->where('pdb', $pdb_id)
                  ->where('release_id', $release_id);
         $query = $this->db->get();

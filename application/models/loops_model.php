@@ -67,7 +67,7 @@ class Loops_model extends CI_Model {
         // qa info
         $this->db->select()
                  ->from('loop_qa')
-                 ->where('id',$id)
+                 ->where('loop_qa_id',$id)
                  ->order_by('release_id', 'desc')
                  ->limit(1);
         $query = $this->db->get();
@@ -415,7 +415,7 @@ class Loops_model extends CI_Model {
         }
 
         // get loop counts group by loop type and release
-        $this->db->select('release_id, status, count(status) as counts, substr(id, 1, 2) as loop_type', FALSE)
+        $this->db->select('release_id, status, count(status) as counts, substr(loop_qa_id, 1, 2) as loop_type', FALSE)
                  ->from('loop_qa')
                  ->group_by(array('status', 'release_id', 'loop_type'));
         $query = $this->db->get();
@@ -476,7 +476,7 @@ class Loops_model extends CI_Model {
         $type = array_search($type, $this->qa_status);
         $this->db->select()
                  ->from('loop_qa')
-                 ->join('loops_all','loop_qa.id=loops_all.id')
+                 ->join('loops_all','loop_qa.loop_qa_id=loops_all.id')
                  ->where('status',$type)
                  ->where('type',$motif_type)
                  ->where('release_id',$release_id)
@@ -530,7 +530,7 @@ class Loops_model extends CI_Model {
         $type = array_search($type, $this->qa_status);
         $this->db->from('loop_qa')
                  ->where('status',$type)
-                 ->like('id',$motif_type,'after')
+                 ->like('loop_qa_id',$motif_type,'after')
                  ->where('release_id',$release_id);
         return $this->db->count_all_results();
     }
