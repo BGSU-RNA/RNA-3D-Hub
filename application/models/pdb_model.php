@@ -348,7 +348,7 @@ class Pdb_model extends CI_Model {
     function get_loops_info($pdb_id)
     {
         $this->db->select('count(*) as counts, type')
-                 ->from('loops_all')
+                 ->from('loop_info')
                  ->where('pdb_id', $pdb_id)
                  ->group_by('type');
         $query = $this->db->get();
