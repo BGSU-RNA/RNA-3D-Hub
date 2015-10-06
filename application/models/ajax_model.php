@@ -328,8 +328,8 @@ class Ajax_model extends CI_Model {
         }
         $this->db->select()
                  ->from('loop_searches')
-                 ->where('loop_id1',$loop_ids[0])
-                 ->where('loop_id2',$loop_ids[1]);
+                 ->where('loop_id_1',$loop_ids[0])
+                 ->where('loop_id_2',$loop_ids[1]);
         $query = $this->db->get();
 
         if ($query->num_rows() > 0) {
@@ -344,8 +344,8 @@ class Ajax_model extends CI_Model {
                 }
                 $this->db->select()
                          ->from('loop_searches')
-                         ->where('loop_id1',$loop_ids[1])
-                         ->where('loop_id2',$loop_ids[0]);
+                         ->where('loop_id_1',$loop_ids[1])
+                         ->where('loop_id_2',$loop_ids[0]);
                 $query = $this->db->get();
                 if ($query->num_rows() > 0) {
                     $row = $query->row_array();

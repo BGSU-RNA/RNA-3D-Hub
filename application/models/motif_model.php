@@ -163,16 +163,16 @@ class Motif_model extends CI_Model {
         }
 
         // get mutual discrepancies
-        $this->db->select('loop_searches.loop_id1 as loop1,
-                           loop_searches.loop_id2 as loop2,
+        $this->db->select('loop_searches.loop_id_1 as loop1,
+                           loop_searches.loop_id_2 as loop2,
                            loop_searches.disc as disc,
                            loop_search_qa.status as status,
                            loop_search_qa.message as qa_message,
                            loop_search_qa.status as qa_status')
                  ->from('loop_searches')
-                 ->join('loop_search_qa', 'loop_searches.loop_id1=loop_search_qa.loop_id_1 AND loop_searches.loop_id2=loop_search_qa.loop_id_2', 'left')
-                 ->where_in('loop_searches.loop_id1', $loop_ids)
-                 ->where_in('loop_searches.loop_id2', $loop_ids);
+                 ->join('loop_search_qa', 'loop_searches.loop_id_1=loop_search_qa.loop_id_1 AND loop_searches.loop_id_2=loop_search_qa.loop_id_2', 'left')
+                 ->where_in('loop_searches.loop_id_1', $loop_ids)
+                 ->where_in('loop_searches.loop_id_2', $loop_ids);
         $query = $this->db->get();
         $matrix = array();
         foreach ($query->result() as $row) {
@@ -314,8 +314,8 @@ class Motif_model extends CI_Model {
         $this->db->select_min('t2.disc', 'similarity_level')
                  ->select('t3.motif_id as similar_motif')
                  ->from('ml_loops as t1')
-                 ->join('loop_searches as t2', 't1.id = t2.loop_id1')
-                 ->join('ml_loops as t3', 't2.loop_id2 = t3.id')
+                 ->join('loop_searches as t2', 't1.id = t2.loop_id_1')
+                 ->join('ml_loops as t3', 't2.loop_id_2 = t3.id')
                  ->where('t1.motif_id', $motif_id)
                  ->where('t1.release_id', $this->release_id)
                  ->where('t3.release_id', $this->release_id)
@@ -333,8 +333,8 @@ class Motif_model extends CI_Model {
         $this->db->select_min('t2.disc', 'similarity_level')
                  ->select('t3.motif_id as similar_motif')
                  ->from('ml_loops as t1')
-                 ->join('loop_searches as t2', 't1.id = t2.loop_id2')
-                 ->join('ml_loops as t3', 't2.loop_id1 = t3.id')
+                 ->join('loop_searches as t2', 't1.id = t2.loop_id_2')
+                 ->join('ml_loops as t3', 't2.loop_id_1 = t3.id')
                  ->where('t1.motif_id', $motif_id)
                  ->where('t1.release_id', $this->release_id)
                  ->where('t3.release_id', $this->release_id)

@@ -319,10 +319,10 @@ class Loops_model extends CI_Model {
 
     function get_similar_loops($id)
     {
-        $where = "loop_searches.disc > 0 AND (loop_searches.loop_id1='$id' OR loop_searches.loop_id2='$id')";
-        $this->db->select('loop_searches.loop_id1, loop_searches.loop_id2, loop_searches.disc, loop_search_qa.status, loop_search_qa.message')
+        $where = "loop_searches.disc > 0 AND (loop_searches.loop_id_1='$id' OR loop_searches.loop_id_2='$id')";
+        $this->db->select('loop_searches.loop_id_1, loop_searches.loop_id_2, loop_searches.disc, loop_search_qa.status, loop_search_qa.message')
                  ->from('loop_searches')
-                 ->join('loop_search_qa','loop_searches.loop_id1=loop_search_qa.loop_id_1 AND loop_searches.loop_id2=loop_search_qa.loop_id_2','left')
+                 ->join('loop_search_qa','loop_searches.loop_id_1=loop_search_qa.loop_id_1 AND loop_searches.loop_id_2=loop_search_qa.loop_id_2','left')
                  ->where($where, NULL, FALSE)
                  ->order_by('loop_searches.disc', 'asc');
         $query = $this->db->get();
