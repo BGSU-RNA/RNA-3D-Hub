@@ -26,11 +26,11 @@ class Loops_model extends CI_Model {
 
     function get_loop_list($pdb_id)
     {
-        $this->db->select('group_concat(unit_id) AS unit_ids, loops_all.id', FALSE)
+        $this->db->select('group_concat(unit_id) AS unit_ids, loop_info.loop_id', FALSE)
                  ->from('loop_info')
                  ->join('loop_positions', 'loop_info.loop_id=loop_positions.loop_id')
                  ->join('pdb_unit_id_correspondence', 'loop_positions.nt_id=pdb_unit_id_correspondence.old_id')
-                 ->where('loops_all.pdb', $pdb_id)
+                 ->where('loop_info.pdb_id', $pdb_id)
                  ->group_by('loop_info.loop_id');
         $query = $this->db->get();
 

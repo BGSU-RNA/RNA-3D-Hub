@@ -59,7 +59,7 @@ class Pdb_model extends CI_Model {
         $this->db->select()
                  ->from('loop_qa')
                  ->join('loop_info', 'loop_info.loop_id=loop_qa.loop_qa_id')
-                 ->where('pdb', $pdb_id)
+                 ->where('pdb_id', $pdb_id)
                  ->where('release_id', $release_id);
         $query = $this->db->get();
 
@@ -349,7 +349,7 @@ class Pdb_model extends CI_Model {
     {
         $this->db->select('count(*) as counts, type')
                  ->from('loops_all')
-                 ->where('pdb', $pdb_id)
+                 ->where('pdb_id', $pdb_id)
                  ->group_by('type');
         $query = $this->db->get();
         $data['loops'] = array();
