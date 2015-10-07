@@ -213,11 +213,11 @@ class Nrlist_model extends CI_Model {
 
     function get_history($id,$mode)
     {
-        $this->db->select()->from('nr_set_diff')->where('nr_class1',$id);
+        $this->db->select()->from('nr_set_diff')->where('nr_class_id_1',$id);
         if ($mode == 'parents') {
-            $this->db->where('release_id',$this->first_seen_in);
+            $this->db->where('nr_release_id',$this->first_seen_in);
         } elseif ($mode=='children') {
-            $this->db->where('release_id !=',$this->first_seen_in);
+            $this->db->where('nr_release_id !=',$this->first_seen_in);
         }
         $query = $this->db->get();
         $table = array();
