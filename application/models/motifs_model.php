@@ -64,7 +64,7 @@ class Motifs_model extends CI_Model {
             $release_id = $this->get_latest_release($motif_type);
         }
 
-        $this->db->select('id')
+        $this->db->select('ml_motifs_id')
                  ->from('ml_motifs')
                  ->where('release_id', $release_id)
                  ->where('type', $motif_type);
@@ -636,7 +636,7 @@ class Motifs_model extends CI_Model {
             $handles[] = substr($motif, 3, 5); // XL_@@@@@
         }
 
-        $this->db->select('id')
+        $this->db->select('ml_motifs_id')
                  ->from('ml_motifs')
                  ->where_in('handle', $handles)
                  ->where('release_id', $rel);

@@ -23,9 +23,9 @@ class Motif_model extends CI_Model {
 
     function is_valid_motif_id($motif_id)
     {
-        $this->db->select('id')
+        $this->db->select('ml_motifs_id')
                  ->from('ml_motifs')
-                 ->where('id', $motif_id)
+                 ->where('ml_motifs_id', $motif_id)
                  ->limit(1);
         if ( $this->db->get()->num_rows() > 0 ) {
             return TRUE;
@@ -500,7 +500,7 @@ class Motif_model extends CI_Model {
         $this->db->select('ml_releases.id')
                  ->from('ml_releases')
                  ->join('ml_motifs', 'ml_releases.id = ml_motifs.release_id')
-                 ->where('ml_motifs.id',$motif_id)
+                 ->where('ml_motifs.ml_motifs_id',$motif_id)
                  ->where('ml_releases.type', substr($motif_id, 0, 2))
                  ->order_by('date','desc')
                  ->limit(1);
@@ -514,7 +514,7 @@ class Motif_model extends CI_Model {
         $this->db->select()
                  ->from('ml_releases')
                  ->join('ml_motifs', 'ml_releases.id = ml_motifs.release_id')
-                 ->where('ml_motifs.id',$motif_id)
+                 ->where('ml_motifs.ml_motifs_id',$motif_id)
                  ->where('ml_releases.type', substr($motif_id, 0, 2))
                  ->order_by('date');
         $query = $this->db->get();
@@ -545,7 +545,7 @@ class Motif_model extends CI_Model {
         $this->db->select()
                  ->from('ml_releases')
                  ->join('ml_motifs', 'ml_releases.id = ml_motifs.release_id')
-                 ->where('ml_motifs.id', $motif_id)
+                 ->where('ml_motifs.ml_motifs_id', $motif_id)
                  ->order_by('date');
         $result = $this->db->get();
         foreach ($result->result() as $row) {
