@@ -80,10 +80,10 @@ class Motifs_model extends CI_Model {
     {
         $this->db->select('STRAIGHT_JOIN ml_releases.*,count(ml_loops.ml_loops_id) AS loops, count(DISTINCT(motif_id)) AS motifs', FALSE)
                  ->from('ml_releases')
-                 ->join('ml_loops','ml_releases.id=ml_loops.release_id')
+                 ->join('ml_loops','ml_releases.ml_releases_id=ml_loops.release_id')
                  ->where('ml_releases.type',$motif_type)
                  ->like('ml_loops.ml_loops_id',$motif_type,'after')
-                 ->group_by('ml_releases.id')
+                 ->group_by('ml_releases.ml_releases_id')
                  ->order_by('ml_releases.date','desc');
         return $this->db->get();
     }
@@ -158,7 +158,7 @@ class Motifs_model extends CI_Model {
 
     function get_release_precedence($motif_type)
     {
-        $this->db->select('id')
+        $this->db->select('ml_releases_id')
                  ->from('ml_releases')
                  ->where('type',$motif_type)
                  ->order_by('date','desc');
@@ -268,7 +268,7 @@ class Motifs_model extends CI_Model {
 
             $this->db->select()
                      ->from('ml_releases')
-                     ->join('ml_release_diff','ml_releases.id=ml_release_diff.release_id1')
+                     ->join('ml_release_diff','ml_releases.ml_releases_id=ml_release_diff.release_id1')
                      ->where('ml_releases.type',$motif_type)
                      ->where('ml_release_diff.type',$motif_type)
                      ->where('direct_parent',1)
@@ -340,7 +340,7 @@ class Motifs_model extends CI_Model {
         $this->db->select('graphml')
                  ->from('ml_releases')
                  ->where('type',$motif_type)
-                 ->where('id',$id);
+                 ->where('ml_releases_id',$id);
         $query = $this->db->get();
         foreach ($query->result() as $row) {
             return $graphml = $row->graphml;
@@ -600,7 +600,7 @@ class Motifs_model extends CI_Model {
     {
         $this->db->select()
                  ->from('ml_releases')
-                 ->where("type = '$motif_type' AND (id = '$rel1' OR id = '$rel2')")
+                 ->where("type = '$motif_type' AND (ml_releases_id = '$rel1' OR ml_releases_id = '$rel2')")
                  ->order_by('date', 'asc');
         $query = $this->db->get();
         $releases = array();

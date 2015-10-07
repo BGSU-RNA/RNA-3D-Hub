@@ -199,9 +199,9 @@ class Loops_model extends CI_Model {
     function get_most_recent_motif_assignment($loop_id)
     {
         $loop_type = substr($loop_id, 0, 2);
-        $this->db->select('ml_loops.motif_id as motif_id, ml_releases.id as release_id')
+        $this->db->select('ml_loops.motif_id as motif_id, ml_releases.ml_releases_id as release_id')
                  ->from('ml_loops')
-                 ->join('ml_releases', 'ml_releases.id=ml_loops.release_id')
+                 ->join('ml_releases', 'ml_releases.ml_releases_id=ml_loops.release_id')
                  ->where('ml_loops.ml_loops_id', $loop_id)
                  ->where('ml_releases.type', $loop_type)
                  ->order_by('ml_releases.date', 'desc');

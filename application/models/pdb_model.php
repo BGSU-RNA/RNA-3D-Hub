@@ -368,7 +368,7 @@ class Pdb_model extends CI_Model {
 
     function get_latest_motif_release($motif_type)
     {
-        $this->db->select('id')
+        $this->db->select('ml_releases_id')
                  ->from('ml_releases')
                  ->order_by('date', 'desc')
                  ->where('type', $motif_type)

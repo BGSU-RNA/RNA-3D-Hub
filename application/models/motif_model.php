@@ -497,9 +497,9 @@ class Motif_model extends CI_Model {
 
     function get_latest_release_for_motif($motif_id)
     {
-        $this->db->select('ml_releases.id')
+        $this->db->select('ml_releases.ml_releases_id')
                  ->from('ml_releases')
-                 ->join('ml_motifs', 'ml_releases.id = ml_motifs.release_id')
+                 ->join('ml_motifs', 'ml_releases.ml_releases_id = ml_motifs.release_id')
                  ->where('ml_motifs.ml_motifs_id',$motif_id)
                  ->where('ml_releases.type', substr($motif_id, 0, 2))
                  ->order_by('date','desc')
@@ -513,7 +513,7 @@ class Motif_model extends CI_Model {
     {
         $this->db->select()
                  ->from('ml_releases')
-                 ->join('ml_motifs', 'ml_releases.id = ml_motifs.release_id')
+                 ->join('ml_motifs', 'ml_releases.ml_releases_id = ml_motifs.release_id')
                  ->where('ml_motifs.ml_motifs_id',$motif_id)
                  ->where('ml_releases.type', substr($motif_id, 0, 2))
                  ->order_by('date');
@@ -544,7 +544,7 @@ class Motif_model extends CI_Model {
     {
         $this->db->select()
                  ->from('ml_releases')
-                 ->join('ml_motifs', 'ml_releases.id = ml_motifs.release_id')
+                 ->join('ml_motifs', 'ml_releases.ml_releases_id = ml_motifs.release_id')
                  ->where('ml_motifs.ml_motifs_id', $motif_id)
                  ->order_by('date');
         $result = $this->db->get();
