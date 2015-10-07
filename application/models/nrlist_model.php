@@ -23,7 +23,7 @@ class Nrlist_model extends CI_Model {
 
     function count_motifs($rel)
     {
-        $this->db->select('*,count(id) as ids')
+        $this->db->select('*,count(nr_class_id) as ids')
                  ->from('nr_classes')
                  ->where('release_id', $rel)
                  ->group_by('resolution');
@@ -94,7 +94,7 @@ class Nrlist_model extends CI_Model {
         $this->db->select()
                  ->from('nr_classes')
                  ->join('nr_releases','nr_classes.release_id=nr_releases.id')
-                 ->where('nr_classes.id',$id)
+                 ->where('nr_classes.nr_class_id',$id)
                  ->order_by('nr_releases.date');
         $query = $this->db->get();
         $releases[0][0] = 'Release';
@@ -125,7 +125,7 @@ class Nrlist_model extends CI_Model {
         $this->current_release = $current_release;
         $this->db->select()
                  ->from('nr_classes')
-                 ->where('id',$id)
+                 ->where('nr_class_id',$id)
                  ->where('release_id',$current_release);
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
@@ -620,7 +620,7 @@ class Nrlist_model extends CI_Model {
         $resolution = str_replace('A', '', $resolution);
         $this->db->select('nr_pdbs.id as id, nr_pdbs.class_id as class_id, nr_pdbs.rep as rep')
                  ->from('nr_pdbs')
-                 ->join('nr_classes', 'nr_pdbs.class_id = nr_classes.id')
+                 ->join('nr_classes', 'nr_pdbs.class_id = nr_classes.nr_class_id')
                  ->where('nr_pdbs.release_id', $release)
                  ->where('nr_classes.release_id', $release)
                  ->where('resolution', $resolution);
@@ -679,7 +679,7 @@ class Nrlist_model extends CI_Model {
     {
         $this->db->select()
                  ->from('nr_classes')
-                 ->where('id', $id)
+                 ->where('nr_class_id', $id)
                  ->limit(1);
         if ( $this->db->get()->num_rows() == 0 ) {
             return False;

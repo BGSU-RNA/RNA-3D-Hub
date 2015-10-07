@@ -412,7 +412,7 @@ class Pdb_model extends CI_Model {
         // choose the equivalence class
         $this->db->select()
                  ->from('nr_pdbs')
-                 ->join('nr_classes', 'nr_pdbs.class_id = nr_classes.id')
+                 ->join('nr_classes', 'nr_pdbs.class_id = nr_classes.nr_class_id')
                  ->where('nr_pdbs.id', $pdb_id)
                  ->where('nr_pdbs.release_id', $latest_nr_release)
                  ->where('nr_classes.resolution', 'all')
