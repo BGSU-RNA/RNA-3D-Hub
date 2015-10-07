@@ -25,7 +25,7 @@ class Nrlist_model extends CI_Model {
     {
         $this->db->select('*,count(nr_class_id) as ids')
                  ->from('nr_classes')
-                 ->where('release_id', $rel)
+                 ->where('nr_release_id', $rel)
                  ->group_by('resolution');
         $query = $this->db->get();
 
@@ -93,7 +93,7 @@ class Nrlist_model extends CI_Model {
     {
         $this->db->select()
                  ->from('nr_classes')
-                 ->join('nr_releases','nr_classes.release_id=nr_releases.id')
+                 ->join('nr_releases','nr_classes.nr_release_id=nr_releases.id')
                  ->where('nr_classes.nr_class_id',$id)
                  ->order_by('nr_releases.date');
         $query = $this->db->get();
@@ -126,7 +126,7 @@ class Nrlist_model extends CI_Model {
         $this->db->select()
                  ->from('nr_classes')
                  ->where('nr_class_id',$id)
-                 ->where('release_id',$current_release);
+                 ->where('nr_release_id',$current_release);
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
             return 'Current';
@@ -547,7 +547,7 @@ class Nrlist_model extends CI_Model {
         // get annotations: updated/>2 parents etc
         $this->db->select()
                  ->from('nr_classes')
-                 ->where('release_id',$id)
+                 ->where('nr_release_id',$id)
                  ->where('resolution', $resolution);
         $query = $this->db->get();
         foreach ($query->result() as $row) {
@@ -622,7 +622,7 @@ class Nrlist_model extends CI_Model {
                  ->from('nr_pdbs')
                  ->join('nr_classes', 'nr_pdbs.class_id = nr_classes.nr_class_id')
                  ->where('nr_pdbs.release_id', $release)
-                 ->where('nr_classes.release_id', $release)
+                 ->where('nr_classes.nr_release_id', $release)
                  ->where('resolution', $resolution);
         $query = $this->db->get();
         foreach($query->result() as $row) {

@@ -416,7 +416,7 @@ class Pdb_model extends CI_Model {
                  ->where('nr_pdbs.id', $pdb_id)
                  ->where('nr_pdbs.release_id', $latest_nr_release)
                  ->where('nr_classes.resolution', 'all')
-                 ->where('nr_classes.release_id', $latest_nr_release);
+                 ->where('nr_classes.nr_release_id', $latest_nr_release);
         $result = $this->db->get();
         if ( $result->num_rows() == 0 ) {
             $equivalence_class = 'Not a member of any equivalent class, most likely due to the absence of complete nucleotides.';
