@@ -161,7 +161,7 @@ class Nrlist_model extends CI_Model {
         $this->db->select()
                  ->from('nr_pdbs')
                  ->join('pdb_info','pdb_info.structureId=nr_pdbs.id')
-                 ->where('nr_pdbs.class_id',$id)
+                 ->where('nr_pdbs.nr_class_id',$id)
                  ->where('nr_pdbs.release_id',$this->last_seen_in)
                  ->group_by('structureId')
                  ->order_by('nr_pdbs.rep','desc');
@@ -273,7 +273,7 @@ class Nrlist_model extends CI_Model {
     {
         $this->db->select('release_id,count(id) as num')
                  ->from('nr_pdbs')
-                 ->like('class_id','NR_all','after')
+                 ->like('nr_class_id','NR_all','after')
                  ->group_by('release_id');
         $query = $this->db->get();
         foreach ($query->result() as $row) {
@@ -495,7 +495,7 @@ class Nrlist_model extends CI_Model {
         $this->db->select()
                  ->from('nr_pdbs')
                  ->where('release_id', $id)
-                 ->like('class_id', "NR_{$resolution}", 'after');
+                 ->like('nr_class_id', "NR_{$resolution}", 'after');
         $query = $this->db->get();
 
         // reorganize by class and rep and pdb
@@ -568,8 +568,8 @@ class Nrlist_model extends CI_Model {
         $this->db->select('*,count(id) as num')
                  ->from('nr_pdbs')
                  ->where('release_id', $id)
-                 ->like('class_id', "NR_{$resolution}", 'after')
-                 ->group_by('class_id')
+                 ->like('nr_class_id', "NR_{$resolution}", 'after')
+                 ->group_by('nr_class_id')
                  ->order_by('num','desc')
                  ->order_by('id');
         $query = $this->db->get();
@@ -618,9 +618,9 @@ class Nrlist_model extends CI_Model {
     function get_csv($release, $resolution)
     {
         $resolution = str_replace('A', '', $resolution);
-        $this->db->select('nr_pdbs.id as id, nr_pdbs.class_id as class_id, nr_pdbs.rep as rep')
+        $this->db->select('nr_pdbs.id as id, nr_pdbs.nr_class_id as class_id, nr_pdbs.rep as rep')
                  ->from('nr_pdbs')
-                 ->join('nr_classes', 'nr_pdbs.class_id = nr_classes.nr_class_id')
+                 ->join('nr_classes', 'nr_pdbs.nr_class_id = nr_classes.nr_class_id')
                  ->where('nr_pdbs.release_id', $release)
                  ->where('nr_classes.nr_release_id', $release)
                  ->where('resolution', $resolution);

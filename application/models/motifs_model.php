@@ -544,13 +544,13 @@ class Motifs_model extends CI_Model {
                 // find a class where the new id is a rep, and the old one is not
                 $this->db->select()
                          ->from('nr_pdbs as t1')
-                         ->join('nr_pdbs as t2', 't1.class_id = t2.class_id AND ' .
+                         ->join('nr_pdbs as t2', 't1.nr_class_id = t2.nr_class_id AND ' .
                                                  't1.release_id=t2.release_id')
                          ->where('t1.id', $new_id)
                          ->where('t2.id', $old_id)
                          ->where('t1.rep', 1)
                          ->where('t2.rep', 0)
-                         ->like('t1.class_id', 'NR_4.0_', 'after')
+                         ->like('t1.nr_class_id', 'NR_4.0_', 'after')
                          ->limit(1);
                 $query = $this->db->get();
 
