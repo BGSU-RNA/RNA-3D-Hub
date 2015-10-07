@@ -317,7 +317,7 @@ class Pdb_model extends CI_Model {
 
     function get_latest_nr_release($pdb_id)
     {
-        $this->db->select('id')
+        $this->db->select('nr_release_id')
                  ->from('nr_releases')
                  ->order_by('date', 'desc')
                  ->limit(1);

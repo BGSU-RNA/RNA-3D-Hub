@@ -93,7 +93,7 @@ class Nrlist_model extends CI_Model {
     {
         $this->db->select()
                  ->from('nr_classes')
-                 ->join('nr_releases','nr_classes.nr_release_id=nr_releases.id')
+                 ->join('nr_releases','nr_classes.nr_release_id = nr_releases.nr_release_id')
                  ->where('nr_classes.nr_class_id',$id)
                  ->order_by('nr_releases.date');
         $query = $this->db->get();
@@ -407,7 +407,9 @@ class Nrlist_model extends CI_Model {
 
     function get_release_precedence()
     {
-        $this->db->select('id')->from('nr_releases')->order_by('date','desc');
+        $this->db->select('nr_release_id')
+                 ->from('nr_releases')
+                 ->order_by('date','desc');
         $query = $this->db->get();
         foreach ($query->result() as $row) {
             $ids[] = $row->id;
@@ -424,7 +426,7 @@ class Nrlist_model extends CI_Model {
 
         $this->db->select()
                  ->from('nr_releases')
-                 ->join('nr_release_diff','nr_releases.id=nr_release_diff.nr_release_id1')
+                 ->join('nr_release_diff','nr_releases.nr_release_id = nr_release_diff.nr_release_id1')
                  ->where('direct_parent',1)
                  ->order_by('date','desc');
         $query = $this->db->get();
@@ -449,7 +451,7 @@ class Nrlist_model extends CI_Model {
     {
         $this->db->select()
                  ->from('nr_releases')
-                 ->where('id',$id);
+                 ->where('nr_release_id',$id);
         $query = $this->db->get();
         foreach ($query->result() as $row) {
             $s = $row->description;
@@ -666,7 +668,7 @@ class Nrlist_model extends CI_Model {
     {
         $this->db->select()
                  ->from('nr_releases')
-                 ->where('id', $id)
+                 ->where('nr_release_id', $id)
                  ->limit(1);
         if ( $this->db->get()->num_rows() == 0 ) {
             return False;
