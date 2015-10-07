@@ -184,7 +184,7 @@ class Loops_model extends CI_Model {
         $this->db->select()
                  ->from('ml_loops')
                  ->where('release_id',$release->id)
-                 ->where('id',$id);
+                 ->where('ml_loops_id',$id);
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
             $motif = $query->row();
@@ -202,7 +202,7 @@ class Loops_model extends CI_Model {
         $this->db->select('ml_loops.motif_id as motif_id, ml_releases.id as release_id')
                  ->from('ml_loops')
                  ->join('ml_releases', 'ml_releases.id=ml_loops.release_id')
-                 ->where('ml_loops.id', $loop_id)
+                 ->where('ml_loops.ml_loops_id', $loop_id)
                  ->where('ml_releases.type', $loop_type)
                  ->order_by('ml_releases.date', 'desc');
         $query = $this->db->get();
@@ -349,7 +349,7 @@ class Loops_model extends CI_Model {
             $count++;
             $this->db->select()
                      ->from('ml_loops')
-                     ->where('id',$match)
+                     ->where('ml_loops_id',$match)
                      ->where('release_id',$ml_release_id);
             $q = $this->db->get();
             if ($q->num_rows() > 0) {
@@ -585,7 +585,7 @@ EOT;
         // JOIN `mltest`.`dcc_residues`
         // JOIN loops_all
         // LEFT JOIN ml_loops
-        // ON nt_id = `mltest`.`dcc_residues`.`dcc_residues_id` AND loop_info.loop_id=loop_id AND ml_loops.id=LOOP_id
+        // ON nt_id = `mltest`.`dcc_residues`.`dcc_residues_id` AND loop_info.loop_id=loop_id AND ml_loops.ml_loopsid=LOOP_id
         // WHERE `ml_loop_positions`.release_id = '0.5' AND ml_loops.release_id='0.5'
         // ORDER BY loop_id ASC;
 
@@ -593,7 +593,7 @@ EOT;
                  ->from('ml_loop_positions')
                  ->join('dcc_residues','nt_id = dcc_residues.dcc_residues_id')
                  ->join('loop_info','loop_id=loop_info.loop_id')
-                 ->join('ml_loops','loop_id=ml_loops.id','left')
+                 ->join('ml_loops','loop_id=ml_loops.ml_loops_id','left')
                  ->where('ml_loop_positions.release_id','0.5')
                  ->where('ml_loops.release_id','0.5')
                  ->group_by('loop_id') // NB! comment out or leave in?

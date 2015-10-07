@@ -384,7 +384,7 @@ class Pdb_model extends CI_Model {
         $this->db->select('count(distinct motif_id) as counts')
                  ->from('ml_loops')
                  ->where('release_id', $latest_release)
-                 ->like('id', $motif_type . '_' . $pdb_id, 'right');
+                 ->like('ml_loops_id', $motif_type . '_' . $pdb_id, 'right');
         $result = $this->db->get()->row();
 
         return $result->counts;
