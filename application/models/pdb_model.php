@@ -154,7 +154,7 @@ class Pdb_model extends CI_Model {
     {
         $this->db->select()
                  ->from('pdb_analysis_status')
-                 ->where('id', $pdb_id)
+                 ->where('pdb_id', $pdb_id)
                  ->where("$interaction_type IS NOT NULL");
         if ( $this->db->get()->num_rows() > 0 ) {
             return True;
