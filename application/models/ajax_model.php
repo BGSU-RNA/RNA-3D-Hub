@@ -79,7 +79,7 @@ class Ajax_model extends CI_Model {
             // check obsolete files
             $this->db->select()
                      ->from('pdb_obsolete')
-                     ->where('obsolete_id', $pdb);
+                     ->where('pdb_obsolete_id', $pdb);
             $query = $this->db->get();
             if ( $query->num_rows() > 0 ) {
                 $row = $query->row();

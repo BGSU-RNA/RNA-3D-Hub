@@ -583,7 +583,7 @@ class Motifs_model extends CI_Model {
 
         $this->db->select()
                  ->from('pdb_obsolete')
-                 ->where_in('obsolete_id', $only_old);
+                 ->where_in('pdb_obsolete_id', $only_old);
         $query = $this->db->get();
 
         foreach($query->result() as $row) {

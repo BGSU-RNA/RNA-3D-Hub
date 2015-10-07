@@ -539,7 +539,7 @@ class Nrlist_model extends CI_Model {
         // check if any of the files became obsolete
         $this->db->select()
                  ->from('pdb_obsolete')
-                 ->where_in('obsolete_id', $pdbs);
+                 ->where_in('pdb_obsolete_id', $pdbs);
         $query = $this->db->get();
         foreach($query->result() as $row) {
             $pdb[$row->obsolete_id]['title'] = "OBSOLETE: replaced by <a class='pdb'>{$row->replaced_by}</a>";
