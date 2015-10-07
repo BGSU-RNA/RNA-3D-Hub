@@ -206,9 +206,9 @@ class Ajax_model extends CI_Model {
         $this->db->select('coordinates')
                  ->distinct()
                  ->from('pdb_coordinates')
-                 ->join('pdb_distances','pdb_coordinates.id=pdb_distances.id1')
-                 ->where_in('id2',$nt_ids)
-                 ->where_not_in('id1',$nt_ids);
+                 ->join('unit_pairs_distances','pdb_coordinates.id = unit_pairs_distances.unit_id_1')
+                 ->where_in('unit_id_2',$nt_ids)
+                 ->where_not_in('unit_id_1',$nt_ids);
         $query = $this->db->get();
 
          $final_result .= "MODEL     2\n";
@@ -242,9 +242,9 @@ class Ajax_model extends CI_Model {
         $this->db->select('coordinates')
                  ->distinct()
                  ->from('pdb_coordinates')
-                 ->join('pdb_distances','pdb_coordinates.id=pdb_distances.id1')
-                 ->where_in('id2',$nt_ids)
-                 ->where_not_in('id1',$nt_ids);
+                 ->join('unit_pairs_distances','pdb_coordinates.id = unit_pairs_distances.unit_id_1')
+                 ->where_in('unit_id_2',$nt_ids)
+                 ->where_not_in('unit_id_1',$nt_ids);
         $query = $this->db->get();
 
          $final_result .= "MODEL     2\n";
@@ -289,9 +289,9 @@ class Ajax_model extends CI_Model {
         $this->db->select('coordinates')
                  ->distinct()
                  ->from('pdb_coordinates')
-                 ->join('pdb_distances','pdb_coordinates.id=pdb_distances.id1')
-                 ->where_in('id2',$nt_ids)
-                 ->where_not_in('id1',$nt_ids);
+                 ->join('unit_pairs_distances','pdb_coordinates.id = unit_pairs_distances.unit_id_1')
+                 ->where_in('unit_id_2',$nt_ids)
+                 ->where_not_in('unit_id_1',$nt_ids);
         $query = $this->db->get();
 
         $final_result .= "MODEL     2\n";
