@@ -160,7 +160,7 @@ class Nrlist_model extends CI_Model {
     {
         $this->db->select()
                  ->from('nr_pdbs')
-                 ->join('pdb_info','pdb_info.structureId=nr_pdbs.id')
+                 ->join('pdb_info','pdb_info.structureId=nr_pdbs.nr_pdb_id')
                  ->where('nr_pdbs.nr_class_id',$id)
                  ->where('nr_pdbs.release_id',$this->last_seen_in)
                  ->group_by('structureId')
@@ -271,7 +271,7 @@ class Nrlist_model extends CI_Model {
 
     function get_pdb_files_counts()
     {
-        $this->db->select('release_id,count(id) as num')
+        $this->db->select('release_id,count(nr_pdb_id) as num')
                  ->from('nr_pdbs')
                  ->like('nr_class_id','NR_all','after')
                  ->group_by('release_id');
@@ -565,13 +565,13 @@ class Nrlist_model extends CI_Model {
         $counts_text .= '<br><br>';
 
         // get order
-        $this->db->select('*,count(id) as num')
+        $this->db->select('*,count(nr_pdb_id) as num')
                  ->from('nr_pdbs')
                  ->where('release_id', $id)
                  ->like('nr_class_id', "NR_{$resolution}", 'after')
                  ->group_by('nr_class_id')
                  ->order_by('num','desc')
-                 ->order_by('id');
+                 ->order_by('nr_pdb_id');
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
@@ -618,7 +618,7 @@ class Nrlist_model extends CI_Model {
     function get_csv($release, $resolution)
     {
         $resolution = str_replace('A', '', $resolution);
-        $this->db->select('nr_pdbs.id as id, nr_pdbs.nr_class_id as class_id, nr_pdbs.rep as rep')
+        $this->db->select('nr_pdbs.nr_pdb_id as id, nr_pdbs.nr_class_id as class_id, nr_pdbs.rep as rep')
                  ->from('nr_pdbs')
                  ->join('nr_classes', 'nr_pdbs.nr_class_id = nr_classes.nr_class_id')
                  ->where('nr_pdbs.release_id', $release)

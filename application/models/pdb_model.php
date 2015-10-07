@@ -333,7 +333,7 @@ class Pdb_model extends CI_Model {
         // get nr equivalence classes
         $this->db->select()
                  ->from('nr_pdbs')
-                 ->where('id', $pdb_id)
+                 ->where('nr_pdb_id', $pdb_id)
                  ->where('release_id', $data['latest_nr_release']);
         $query = $this->db->get();
         $data = array();
@@ -413,7 +413,7 @@ class Pdb_model extends CI_Model {
         $this->db->select()
                  ->from('nr_pdbs')
                  ->join('nr_classes', 'nr_pdbs.nr_class_id = nr_classes.nr_class_id')
-                 ->where('nr_pdbs.id', $pdb_id)
+                 ->where('nr_pdbs.nr_pdb_id', $pdb_id)
                  ->where('nr_pdbs.release_id', $latest_nr_release)
                  ->where('nr_classes.resolution', 'all')
                  ->where('nr_classes.nr_release_id', $latest_nr_release);
