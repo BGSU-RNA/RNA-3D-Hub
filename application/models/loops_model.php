@@ -156,8 +156,8 @@ class Loops_model extends CI_Model {
         // get equivalence classes
         $this->db->select()
                  ->from('nr_pdbs')
-                 ->where('id',$result['pdb'])
-                 ->where('release_id', $release->id);
+                 ->where('nr_pdb_id',$result['pdb'])
+                 ->where('nr_release_id', $release->id);
         $query = $this->db->get();
 
         $nr_classes = array();

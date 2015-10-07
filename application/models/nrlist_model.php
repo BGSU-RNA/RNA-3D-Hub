@@ -162,7 +162,7 @@ class Nrlist_model extends CI_Model {
                  ->from('nr_pdbs')
                  ->join('pdb_info','pdb_info.structureId=nr_pdbs.nr_pdb_id')
                  ->where('nr_pdbs.nr_class_id',$id)
-                 ->where('nr_pdbs.release_id',$this->last_seen_in)
+                 ->where('nr_pdbs.nr_release_id',$this->last_seen_in)
                  ->group_by('structureId')
                  ->order_by('nr_pdbs.rep','desc');
         $query = $this->db->get();
@@ -271,10 +271,10 @@ class Nrlist_model extends CI_Model {
 
     function get_pdb_files_counts()
     {
-        $this->db->select('release_id,count(nr_pdb_id) as num')
+        $this->db->select('nr_release_id,count(nr_pdb_id) as num')
                  ->from('nr_pdbs')
                  ->like('nr_class_id','NR_all','after')
-                 ->group_by('release_id');
+                 ->group_by('nr_release_id');
         $query = $this->db->get();
         foreach ($query->result() as $row) {
             $counts[$row->release_id] = $row->num;
@@ -494,7 +494,7 @@ class Nrlist_model extends CI_Model {
         // get raw release data
         $this->db->select()
                  ->from('nr_pdbs')
-                 ->where('release_id', $id)
+                 ->where('nr_release_id', $id)
                  ->like('nr_class_id', "NR_{$resolution}", 'after');
         $query = $this->db->get();
 
@@ -567,7 +567,7 @@ class Nrlist_model extends CI_Model {
         // get order
         $this->db->select('*,count(nr_pdb_id) as num')
                  ->from('nr_pdbs')
-                 ->where('release_id', $id)
+                 ->where('nr_release_id', $id)
                  ->like('nr_class_id', "NR_{$resolution}", 'after')
                  ->group_by('nr_class_id')
                  ->order_by('num','desc')
@@ -621,7 +621,7 @@ class Nrlist_model extends CI_Model {
         $this->db->select('nr_pdbs.nr_pdb_id as id, nr_pdbs.nr_class_id as class_id, nr_pdbs.rep as rep')
                  ->from('nr_pdbs')
                  ->join('nr_classes', 'nr_pdbs.nr_class_id = nr_classes.nr_class_id')
-                 ->where('nr_pdbs.release_id', $release)
+                 ->where('nr_pdbs.nr_release_id', $release)
                  ->where('nr_classes.nr_release_id', $release)
                  ->where('resolution', $resolution);
         $query = $this->db->get();

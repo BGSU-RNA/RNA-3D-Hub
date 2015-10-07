@@ -545,7 +545,7 @@ class Motifs_model extends CI_Model {
                 $this->db->select()
                          ->from('nr_pdbs as t1')
                          ->join('nr_pdbs as t2', 't1.nr_class_id = t2.nr_class_id AND ' .
-                                                 't1.release_id=t2.release_id')
+                                                 't1.nr_release_id=t2.nr_release_id')
                          ->where('t1.nr_pdb_id', $new_id)
                          ->where('t2.nr_pdb_id', $old_id)
                          ->where('t1.rep', 1)
