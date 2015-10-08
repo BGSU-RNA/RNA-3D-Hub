@@ -168,7 +168,7 @@ class Pdb_model extends CI_Model {
         // get correspondences between old and new ids
         $this->db->select('old_id, unit_id')
                  ->from('pdb_unit_id_correspondence')
-                 ->where('pdb', $pdb_id);
+                 ->where('pdb_id', $pdb_id);
         $query = $this->db->get();
         $unit_ids = array();
         foreach ( $query->result() as $row ) {
