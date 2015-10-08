@@ -25,9 +25,9 @@ class Pdb_model extends CI_Model {
 
     function get_recent_rna_containing_structures($num)
     {
-        $this->db->select('distinct(structureId)')
+        $this->db->select('distinct(pdb_id)')
                  ->from('pdb_info')
-                 ->order_by('releaseDate', 'desc')
+                 ->order_by('release_date', 'desc')
                  ->limit($num);
         $query = $this->db->get();
         foreach($query->result() as $row) {
