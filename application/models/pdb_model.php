@@ -215,9 +215,9 @@ class Pdb_model extends CI_Model {
 
         $unit_ids = $this->_get_unit_ids($pdb_id);
 
-        $this->db->select('iPdbSig,jPdbSig,' . $db_field)
-                 ->from('pdb_pairwise_interactions')
-                 ->join('pdb_coordinates', 'pdb_pairwise_interactions.iPdbSig = pdb_coordinates.id')
+        $this->db->select('unit_id_1,unit_id_2,' . $db_field)
+                 ->from('unit_pairs_interactions')
+                 ->join('pdb_coordinates', 'unit_pairs_interactions.unit_id_1 = pdb_coordinates.id')
                  ->where('pdb_id', $pdb_id)
                  ->where($where)
                  ->order_by('index');
@@ -393,7 +393,7 @@ class Pdb_model extends CI_Model {
     function get_pairwise_info($pdb_id, $interaction)
     {
         $this->db->select("count($interaction)/2 as counts")
-                 ->from('pdb_pairwise_interactions')
+                 ->from('unit_pairs_interactions')
                  ->where('pdb_id', $pdb_id);
         if ( $interaction == 'f_bphs' ) {
             $this->db->where("char_length($interaction) = 4");
@@ -502,9 +502,9 @@ class Pdb_model extends CI_Model {
     function get_longrange_bp($pdb)
     {
         $this->db->select('C1.unit_id as nt1, C2.unit_id as nt2, f_lwbp as family, f_crossing as crossing')
-                 ->from('pdb_pairwise_interactions')
-                 ->join('pdb_unit_id_correspondence as C1', 'C1.old_id = pdb_pairwise_interactions.iPdbSig')
-                 ->join('pdb_unit_id_correspondence as C2', 'C2.old_id = pdb_pairwise_interactions.jPdbSig')
+                 ->from('unit_pairs_interactions')
+                 ->join('pdb_unit_id_correspondence as C1', 'C1.old_id = unit_pairs_interactions.unit_id_1')
+                 ->join('pdb_unit_id_correspondence as C2', 'C2.old_id = unit_pairs_interactions.unit_id_2')
                  ->where('pdb_id', $pdb)
                  ->where('f_crossing > 3')
                  ->where('f_lwbp is not null');

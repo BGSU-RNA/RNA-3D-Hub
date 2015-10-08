@@ -816,9 +816,9 @@ class Motif_model extends CI_Model {
     function get_interactions()
     {
         $this->db->select()
-                 ->from('pdb_pairwise_interactions')
-                 ->where_in('iPdbSig', array_keys($this->nt_ids))
-                 ->where_in('jPdbSig', array_keys($this->nt_ids));
+                 ->from('unit_pairs_interactions')
+                 ->where_in('unit_id_1', array_keys($this->nt_ids))
+                 ->where_in('unit_id_2', array_keys($this->nt_ids));
         $query = $this->db->get();
         foreach($query->result() as $row) {
             $nt_full1 = $row->iPdbSig;

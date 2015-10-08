@@ -24,7 +24,7 @@ class Ajax_model extends CI_Model {
         $f_lwbp = array('cHH','cHS','cHW','cSH','cSS','cSW','cWH','cWS','cWW','tHH',
                         'tHS','tHW','tSH','tSS','tSW','tWH','tWS','tWW');
         return $this->db->select('f_lwbp')
-                        ->from('pdb_pairwise_interactions')
+                        ->from('unit_pairs_interactions')
                         ->where('pdb_id', $pdb_id)
                         ->where_in('f_lwbp', $f_lwbp)
                         ->count_all_results() / 2;
