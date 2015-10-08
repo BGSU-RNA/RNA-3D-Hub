@@ -282,9 +282,9 @@ class Loops_model extends CI_Model {
                 $chains[] = $row->chain;
             }
             $this->db->select()
-                     ->from('pdb_info')
-                     ->where('structureId', substr($id,3,4))
-                     ->where_in('chainId', $chains);
+                     ->from('chain_info')
+                     ->where('pdb_id', substr($id,3,4))
+                     ->where_in('chain_id', $chains);
             $query = $this->db->get();
             // db_name = 'PDB, Uniprot'
             // db_ids  = 'PDB_id, Uniprot_id'
