@@ -143,10 +143,10 @@ class Nrlist_model extends CI_Model {
     function get_source_organism($pdb_id)
     {
         $this->db->select('source')
-                 ->from('pdb_info')
-                 ->where('structureId', $pdb_id)
-                 ->like('entityMacromoleculeType', 'RNA')
-                 ->where("chainLength = (SELECT max(chainLength) FROM pdb_info WHERE structureId ='$pdb_id' AND entityMacromoleculeType LIKE '%RNA%')");
+                 ->from('chain_info')
+                 ->where('pdb_id', $pdb_id)
+                 ->like('entity_macromolecule_type', 'RNA')
+                 ->where("chain_length = (SELECT max(chain_length) FROM chain_info WHERE pdb_id ='$pdb_id' AND entity_macromolecule_type LIKE '%RNA%')");
         $query = $this->db->get();
         if ( $query->num_rows() > 0 ) {
             $result = $query->result();
