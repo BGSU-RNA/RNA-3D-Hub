@@ -515,7 +515,7 @@ class Nrlist_model extends CI_Model {
         $pdbs = array_unique($pdbs);
 
         // get general pdb info
-        $this->db->select('structureId, structureTitle, resolution, experimentalTechnique')
+        $this->db->select('structureId, title, resolution, experimentalTechnique')
                  ->from('pdb_info')
                  ->where_in('structureId', $pdbs )
                  ->group_by('structureId');
