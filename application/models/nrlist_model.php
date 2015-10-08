@@ -284,8 +284,8 @@ class Nrlist_model extends CI_Model {
 
     function get_newest_pdb_images()
     {
-        $sql = "SELECT DISTINCT(`structureId`) FROM `pdb_info`" .
-               "WHERE `releaseDate` >= DATE_ADD('" .
+        $sql = "SELECT DISTINCT(`pdb_id`) FROM `pdb_info`" .
+               "WHERE `release_date` >= DATE_ADD('" .
                date("Y-m-d H:i:s") . "', INTERVAL -1 WEEK);";
         $query = $this->db->query($sql);
 
