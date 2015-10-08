@@ -14,11 +14,11 @@ class Pdb_model extends CI_Model {
 
     function get_all_pdbs()
     {
-        $this->db->select('distinct(structureId)')
+        $this->db->select('distinct(pdb_id)')
                  ->from('pdb_info');
         $query = $this->db->get();
         foreach ($query->result() as $row) {
-            $pdbs[] = $row->structureId; //anchor(base_url(array('pdb',$row->structureId)), $row->structureId );
+            $pdbs[] = $row->pdb_id; //anchor(base_url(array('pdb',$row->structureId)), $row->structureId );
         }
         return $pdbs;
     }
@@ -130,9 +130,9 @@ class Pdb_model extends CI_Model {
     function pdb_exists($pdb_id)
     {
         // does RNA 3D Hub know about this structure?
-        $this->db->select('structureId')
+        $this->db->select('pdb_id')
                  ->from('pdb_info')
-                 ->where('structureId', $pdb_id)
+                 ->where('pdb_id', $pdb_id)
                  ->limit(1);
         if ( $this->db->get()->num_rows() > 0 ) {
             return true;
@@ -278,22 +278,24 @@ class Pdb_model extends CI_Model {
 
     function get_general_info($pdb_id)
     {
+        //  QUERY NEEDS TO BE REWRITTEN
+        //  NEEDS DATA FROM BOTH pdb_info and chain_info
         $this->db->select()
                  ->from('pdb_info')
-                 ->where('structureId', $pdb_id);
+                 ->where('pdb_id', $pdb_id);
         $query = $this->db->get();
 
         $data['rna_chains'] = 0;
         foreach ($query->result() as $row) {
             // get this info only once because it applies to all chains
             if ( $data['rna_chains'] == 0 ) {
-                $data['structureTitle'] = $row->structureTitle;
-                $data['experimentalTechnique'] = $row->experimentalTechnique;
+                $data['title'] = $row->title;
+                $data['experimental_technique'] = $row->experimental_technique;
                 $data['resolution'] = $row->resolution;
-                $data['releaseDate'] = $row->releaseDate;
-                $data['structureAuthor'] = $row->structureAuthor;
+                $data['release_date'] = $row->release_date;
+                $data['authors'] = $row->authors;
                 $data['pdb_url'] = "http://www.pdb.org/pdb/explore/explore.do?structureId={$pdb_id}";
-                $data['ndb_url'] = "http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget={$row->ndbId}";
+                $data['ndb_url'] = "http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget={$row->ndb_id}";
             }
             // only for RNA chains
             if ( $row->entityMacromoleculeType == 'Polyribonucleotide (RNA)' or

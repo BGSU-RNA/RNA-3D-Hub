@@ -160,10 +160,10 @@ class Nrlist_model extends CI_Model {
     {
         $this->db->select()
                  ->from('nr_pdbs')
-                 ->join('pdb_info','pdb_info.structureId=nr_pdbs.nr_pdb_id')
+                 ->join('pdb_info','pdb_info.pdb_id = nr_pdbs.nr_pdb_id')
                  ->where('nr_pdbs.nr_class_id',$id)
                  ->where('nr_pdbs.nr_release_id',$this->last_seen_in)
-                 ->group_by('structureId')
+                 ->group_by('pdb_id')
                  ->order_by('nr_pdbs.rep','desc');
         $query = $this->db->get();
         $i = 0;
@@ -342,7 +342,7 @@ class Nrlist_model extends CI_Model {
 
     function get_total_pdb_count()
     {
-        $this->db->select('structureId')
+        $this->db->select('pdb_id')
                  ->from('pdb_info')
                  ->distinct();
         $query = $this->db->get();
@@ -515,10 +515,10 @@ class Nrlist_model extends CI_Model {
         $pdbs = array_unique($pdbs);
 
         // get general pdb info
-        $this->db->select('structureId, title, resolution, experimentalTechnique')
+        $this->db->select('pdb_id, title, resolution, experimentalTechnique')
                  ->from('pdb_info')
-                 ->where_in('structureId', $pdbs )
-                 ->group_by('structureId');
+                 ->where_in('pdb_id', $pdbs )
+                 ->group_by('pdb_id');
         $query = $this->db->get();
         foreach($query->result() as $row) {
             $pdb[$row->structureId]['title']      = $row->structureTitle;

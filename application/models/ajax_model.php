@@ -45,7 +45,7 @@ class Ajax_model extends CI_Model {
     {
         $this->db->select()
                  ->from('pdb_info')
-                 ->where('structureId', $pdb)
+                 ->where('pdb_id', $pdb)
                  ->limit(1);
         $query = $this->db->get();
         if ( $query->num_rows() > 0 ) {

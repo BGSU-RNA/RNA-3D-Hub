@@ -127,7 +127,7 @@ class Loops_model extends CI_Model {
         $result['pdb_link'] = anchor_popup('http://www.rcsb.org/pdb/explore.do?structureId=' . $result['pdb'], 'PDB');
         $this->db->select()
                  ->from('pdb_info')
-                 ->where('structureId',$result['pdb'])
+                 ->where('pdb_id',$result['pdb'])
                  ->limit(1);
         $query = $this->db->get();
         if ($query->num_rows() > 0) {
