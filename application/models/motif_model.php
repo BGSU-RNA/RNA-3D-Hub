@@ -435,9 +435,9 @@ class Motif_model extends CI_Model {
             // get indexes of bordering nucleotides for loop id
             $this->db->select('pdb_coordinates.index')
                      ->from('loop_positions')
-                     ->join('pdb_coordinates', 'loop_positions.nt_id=pdb_coordinates.id')
-                     ->join('ml_loop_positions', 'loop_positions.loop_id=ml_loop_positions.loop_id AND ' .
-                                                 'loop_positions.nt_id=ml_loop_positions.nt_id')
+                     ->join('pdb_coordinates', 'loop_positions.nt_id = pdb_coordinates.pdb_coordinates_id')
+                     ->join('ml_loop_positions', 'loop_positions.loop_id = ml_loop_positions.loop_id AND ' .
+                                                 'loop_positions.nt_id = ml_loop_positions.nt_id')
                      ->where('ml_loop_positions.release_id', $latest_release)
                      ->where('loop_positions.loop_id', $loop_id)
                      ->where('loop_positions.border', 1)

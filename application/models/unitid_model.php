@@ -37,7 +37,7 @@ class Unitid_model extends CI_Model {
             // check pdb_coordinates in case the new unit id hasn't been generated yet
             $this->db->select()
                      ->from('pdb_coordinates')
-                     ->where('id', $unit_id);
+                     ->where('pdb_coordinates_id', $unit_id);
             $query = $this->db->get();
 
             if ( $query->num_rows() == 0 ) {

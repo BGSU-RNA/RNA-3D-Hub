@@ -12,7 +12,7 @@ class Ajax_model extends CI_Model {
     function count_nucleotides($pdb_id)
     {
         // count nucleotides in all chains
-        return $this->db->select('id')
+        return $this->db->select('pdb_coordinates_id')
                         ->from('pdb_coordinates')
                         ->where('pdb_id', $pdb_id)
                         ->where_in('unit', array('A','C','G','U'))
@@ -191,7 +191,7 @@ class Ajax_model extends CI_Model {
 
         $nts = explode(',', $nt_ids);
         foreach ($nts as $nt) {
-            $this->db->or_like('id', $nt, 'after');
+            $this->db->or_like('pdb_coordinates_id', $nt, 'after');
         }
         $query = $this->db->get();
         if ($query->num_rows() == 0) { return 'Loop coordinates not found'; }
@@ -206,7 +206,7 @@ class Ajax_model extends CI_Model {
         $this->db->select('coordinates')
                  ->distinct()
                  ->from('pdb_coordinates')
-                 ->join('unit_pairs_distances','pdb_coordinates.id = unit_pairs_distances.unit_id_1')
+                 ->join('unit_pairs_distances','pdb_coordinates.pdb_coordinates_id = unit_pairs_distances.unit_id_1')
                  ->where_in('unit_id_2',$nt_ids)
                  ->where_not_in('unit_id_1',$nt_ids);
         $query = $this->db->get();
@@ -226,7 +226,7 @@ class Ajax_model extends CI_Model {
     {
         $imploded = "'" . implode("','",$nt_ids) . "'";
 
-        $query_string = "* from pdb_coordinates where id IN ($imploded) ORDER BY FIELD(id, $imploded);";
+        $query_string = "* from pdb_coordinates where pdb_coordinates_id IN ($imploded) ORDER BY FIELD(id, $imploded);";
         $this->db->select($query_string, FALSE);
         $query = $this->db->get();
 
@@ -242,7 +242,7 @@ class Ajax_model extends CI_Model {
         $this->db->select('coordinates')
                  ->distinct()
                  ->from('pdb_coordinates')
-                 ->join('unit_pairs_distances','pdb_coordinates.id = unit_pairs_distances.unit_id_1')
+                 ->join('unit_pairs_distances','pdb_coordinates.pdb_coordinates_id = unit_pairs_distances.unit_id_1')
                  ->where_in('unit_id_2',$nt_ids)
                  ->where_not_in('unit_id_1',$nt_ids);
         $query = $this->db->get();
@@ -275,7 +275,7 @@ class Ajax_model extends CI_Model {
         // get their coordinates
         $this->db->select('coordinates')
                  ->from('pdb_coordinates')
-                 ->where_in('id',$nt_ids);
+                 ->where_in('pdb_coordinates_id',$nt_ids);
         $query = $this->db->get();
         if ($query->num_rows() == 0) { return 'Loop coordinates not found'; }
 
@@ -289,7 +289,7 @@ class Ajax_model extends CI_Model {
         $this->db->select('coordinates')
                  ->distinct()
                  ->from('pdb_coordinates')
-                 ->join('unit_pairs_distances','pdb_coordinates.id = unit_pairs_distances.unit_id_1')
+                 ->join('unit_pairs_distances','pdb_coordinates.pdb_coordinates_id = unit_pairs_distances.unit_id_1')
                  ->where_in('unit_id_2',$nt_ids)
                  ->where_not_in('unit_id_1',$nt_ids);
         $query = $this->db->get();

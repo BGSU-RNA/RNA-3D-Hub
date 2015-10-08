@@ -177,7 +177,7 @@ class Pdb_model extends CI_Model {
 
         // if no new unit ids are found, fall back on old ids
         if ( count($unit_ids) == 0 ) {
-            $this->db->select('id')
+            $this->db->select('pdb_coordinates_id')
                      ->from('pdb_coordinates')
                      ->where('pdb_id', $pdb_id);
             $query = $this->db->get();
@@ -217,7 +217,7 @@ class Pdb_model extends CI_Model {
 
         $this->db->select('unit_id_1,unit_id_2,' . $db_field)
                  ->from('unit_pairs_interactions')
-                 ->join('pdb_coordinates', 'unit_pairs_interactions.unit_id_1 = pdb_coordinates.id')
+                 ->join('pdb_coordinates', 'unit_pairs_interactions.unit_id_1 = pdb_coordinates.pdb_coordinates_id')
                  ->where('pdb_id', $pdb_id)
                  ->where($where)
                  ->order_by('index');
@@ -464,7 +464,7 @@ class Pdb_model extends CI_Model {
 
         $this->db->select('pdb_unit_id_correspondence.unit_id as id, pdb_coordinates.chain as chain, pdb_coordinates.unit as sequence')
                  ->from('pdb_unit_ordering')
-                 ->join('pdb_coordinates', 'pdb_coordinates.id = pdb_unit_ordering.nt_id')
+                 ->join('pdb_coordinates', 'pdb_coordinates.pdb_coordinates_id = pdb_unit_ordering.nt_id')
                  ->join('pdb_unit_id_correspondence', 'pdb_unit_id_correspondence.old_id = pdb_unit_ordering.nt_id')
                  ->where('pdb_unit_ordering.pdb', $pdb_id)
                  ->where_in('pdb_coordinates.chain', $chains)
