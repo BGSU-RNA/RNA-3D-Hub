@@ -179,7 +179,7 @@ class Pdb_model extends CI_Model {
         if ( count($unit_ids) == 0 ) {
             $this->db->select('id')
                      ->from('pdb_coordinates')
-                     ->where('pdb', $pdb_id);
+                     ->where('pdb_id', $pdb_id);
             $query = $this->db->get();
             foreach ( $query->result() as $row ) {
                 $unit_ids[$row->id] = $row->id;
@@ -263,7 +263,7 @@ class Pdb_model extends CI_Model {
         $this->db->select('pdb_type')
                  ->distinct()
                  ->from('pdb_coordinates')
-                 ->where('pdb', $pdb_id);
+                 ->where('pdb_id', $pdb_id);
         $query = $this->db->get();
         if ( $query->num_rows() == 1 ) {
             return $query->row()->pdb_type;

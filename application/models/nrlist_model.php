@@ -608,7 +608,7 @@ class Nrlist_model extends CI_Model {
     {
         $this->db->select('count(*) as length')
                  ->from('pdb_coordinates')
-                 ->where('pdb', $pdb_id)
+                 ->where('pdb_id', $pdb_id)
                  ->where_in('unit', array('A','C','G','U'))
                  ->order_by('count(*)', 'DESC')
                  ->limit(1);

@@ -484,7 +484,7 @@ class Motif_model extends CI_Model {
 
         $this->db->select('unit')
                  ->from('pdb_coordinates')
-                 ->where('pdb', $pdb)
+                 ->where('pdb_id', $pdb)
                  ->where_in('unit', $rna)
                  ->where('index >=', $start)
                  ->where('index <=', $stop);
