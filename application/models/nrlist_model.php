@@ -188,9 +188,9 @@ class Nrlist_model extends CI_Model {
     function get_compound_list($id)
     {
         $this->db->select('group_concat(compound separator ", ") as compounds', FALSE)
-                 ->from('pdb_info')
-                 ->where('structureId', $id)
-                 ->group_by('structureId');
+                 ->from('chain_info')
+                 ->where('pdb_id', $id)
+                 ->group_by('pdb_id');
         $query = $this->db->get();
         foreach ($query->result() as $row) {
             $result = $row->compounds;
