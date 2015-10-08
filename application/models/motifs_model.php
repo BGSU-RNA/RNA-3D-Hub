@@ -622,7 +622,7 @@ class Motifs_model extends CI_Model {
         $query = $this->db->get();
 
         foreach($query->result() as $row){
-            $loops[] = $row->id;
+            $loops[] = $row->ml_loops_id;
         }
 
         return $loops;
@@ -644,7 +644,7 @@ class Motifs_model extends CI_Model {
 
         $updated_new = array();
         foreach($query->result() as $row){
-            $updated_new[] = $row->id;
+            $updated_new[] = $row->ml_motifs_id;
         }
 
         return $updated_new;
