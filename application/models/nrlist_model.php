@@ -45,14 +45,14 @@ class Nrlist_model extends CI_Model {
 
         $this->db->select()
                  ->from('nr_release_diff')
-                 ->where('nr_release_id1',$rel1)
-                 ->where('nr_release_id2',$rel2);
+                 ->where('nr_release_id_1',$rel1)
+                 ->where('nr_release_id_2',$rel2);
         $query = $this->db->get();
         if ($query->num_rows == 0) {
             $this->db->select()
                      ->from('nr_release_diff')
-                     ->where('nr_release_id1',$rel2)
-                     ->where('nr_release_id2',$rel1);
+                     ->where('nr_release_id_1',$rel2)
+                     ->where('nr_release_id_2',$rel1);
             $query = $this->db->get();
         }
 
@@ -66,26 +66,31 @@ class Nrlist_model extends CI_Model {
             } else {
                 $data['uls'][$labels[$row->resolution]]['ul_intersection'] = '';
             }
+
             if ($row->num_updated_groups > 0) {
                 $data['uls'][$labels[$row->resolution]]['ul_updated'] = ul(array_map("add_url", explode(', ',$row->updated_groups)),$attributes);
             } else {
                 $data['uls'][$labels[$row->resolution]]['ul_updated'] = '';
             }
+            
             if ($row->num_added_groups > 0) {
                 $data['uls'][$labels[$row->resolution]]['ul_only_in_1'] = ul(array_map("add_url", explode(', ',$row->added_groups)),$attributes);
             } else {
                 $data['uls'][$labels[$row->resolution]]['ul_only_in_1'] = '';
             }
+            
             if ($row->num_removed_groups > 0) {
                 $data['uls'][$labels[$row->resolution]]['ul_only_in_2'] = ul(array_map("add_url", explode(', ',$row->removed_groups)),$attributes);
             } else {
                 $data['uls'][$labels[$row->resolution]]['ul_only_in_2'] = '';
             }
+            
             $data['uls'][$labels[$row->resolution]]['num_intersection'] = $row->num_same_groups;
             $data['uls'][$labels[$row->resolution]]['num_updated']      = $row->num_updated_groups;
             $data['uls'][$labels[$row->resolution]]['num_only_in_1']    = $row->num_added_groups;
             $data['uls'][$labels[$row->resolution]]['num_only_in_2']    = $row->num_removed_groups;
         }
+        
         return $data;
     }
 
@@ -102,13 +107,13 @@ class Nrlist_model extends CI_Model {
         $i = 0;
         foreach ($query->result() as $row) {
             if ($i==0) {
-                $this->first_seen_in = $row->release_id;
+                $this->first_seen_in = $row->nr_release_id;
                 $i++;
             }
-            $releases[0][] = anchor(base_url("nrlist/release/".$row->release_id), $row->release_id);
+            $releases[0][] = anchor(base_url("nrlist/release/".$row->nr_release_id), $row->nr_release_id);
             $releases[1][] = $this->beautify_description_date($row->description);
         }
-        $this->last_seen_in = $row->release_id;
+        $this->last_seen_in = $row->nr_release_id;
         return $releases;
     }
 
@@ -120,7 +125,7 @@ class Nrlist_model extends CI_Model {
                  ->limit(1);
         $query = $this->db->get();
         foreach ($query->result() as $row) {
-            $current_release = $row->id;
+            $current_release = $row->nr_release_id;
         }
         $this->current_release = $current_release;
         $this->db->select()
@@ -222,9 +227,9 @@ class Nrlist_model extends CI_Model {
         $query = $this->db->get();
         $table = array();
         foreach ($query->result() as $row) {
-            $table[] = array($row->nr_class1,
-                             anchor(base_url("nrlist/view/".$row->nr_class2),$row->nr_class2),
-                             anchor(base_url("nrlist/release/".$row->release_id), $row->release_id),
+            $table[] = array($row->nr_class_id_1,
+                             anchor(base_url("nrlist/view/".$row->nr_class_id_2),$row->nr_class_id_2),
+                             anchor(base_url("nrlist/release/".$row->nr_release_id), $row->nr_release_id),
                              $this->add_pdb_class($row->intersection),
                              $this->add_pdb_class($row->one_minus_two),
                              $this->add_pdb_class($row->two_minus_one));
@@ -239,17 +244,17 @@ class Nrlist_model extends CI_Model {
 
     function get_change_counts_by_release()
     {
-        $this->db->select('nr_release_id1')
+        $this->db->select('nr_release_id_1')
                  ->select_sum('num_added_groups','nag')
                  ->select_sum('num_removed_groups','nrg')
                  ->select_sum('num_updated_groups','nug')
                  ->from('nr_release_diff')
                  ->where('direct_parent',1)
-                 ->group_by('nr_release_id1');
+                 ->group_by('nr_release_id_1');
         $query = $this->db->get();
         $changes = array();
         foreach ($query->result() as $row) {
-            $changes[$row->nr_release_id1] = $row->nag + $row->nug + $row->nrg;
+            $changes[$row->nr_release_id_1] = $row->nag + $row->nug + $row->nrg;
         }
         return $changes;
     }
@@ -277,7 +282,7 @@ class Nrlist_model extends CI_Model {
                  ->group_by('nr_release_id');
         $query = $this->db->get();
         foreach ($query->result() as $row) {
-            $counts[$row->release_id] = $row->num;
+            $counts[$row->nr_release_id] = $row->num;
         }
         return $counts;
     }
@@ -314,14 +319,14 @@ class Nrlist_model extends CI_Model {
                  ->limit(2);
         $query = $this->db->get();
         foreach ($query->result() as $row) {
-            $releases[] = $row->id;
+            $releases[] = $row->nr_release_id;
         }
 
         // get their release difference
         $this->db->select()
                  ->from('nr_release_diff')
-                 ->where('nr_release_id1', $releases[0])
-                 ->where('nr_release_id2', $releases[1])
+                 ->where('nr_release_id_1', $releases[0])
+                 ->where('nr_release_id_2', $releases[1])
                  ->where('resolution', 'all');
         $query = $this->db->get();
         foreach ($query->result() as $row) {
@@ -389,7 +394,7 @@ class Nrlist_model extends CI_Model {
                  ->order_by('date','desc')
                  ->limit(1);
         $result = $this->db->get()->result_array();
-        return $result[0]['id'];
+        return $result[0]['nr_release_id'];
     }
 
     function make_release_label($num)
@@ -412,7 +417,7 @@ class Nrlist_model extends CI_Model {
                  ->order_by('date','desc');
         $query = $this->db->get();
         foreach ($query->result() as $row) {
-            $ids[] = $row->id;
+            $ids[] = $row->nr_release_id;
         }
         for ($i=0; $i<count($ids)-1; $i++) {
             $releases[$ids[$i]] = $ids[$i+1];
@@ -426,15 +431,15 @@ class Nrlist_model extends CI_Model {
 
         $this->db->select()
                  ->from('nr_releases')
-                 ->join('nr_release_diff','nr_releases.nr_release_id = nr_release_diff.nr_release_id1')
+                 ->join('nr_release_diff','nr_releases.nr_release_id = nr_release_diff.nr_release_id_1')
                  ->where('direct_parent',1)
                  ->order_by('date','desc');
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
-            if ($row->nr_release_id2 == $releases[$row->id]) {
+            if ($row->nr_release_id_2 == $releases[$row->nr_release_id]) {
                 $tables[$row->resolution][] = array(
-                    anchor(base_url(array('nrlist','compare',$row->id,$releases[$row->id])), $row->id),
+                    anchor(base_url(array('nrlist','compare',$row->nr_release_id,$releases[$row->nr_release_id])), $row->nr_release_id),
                     $this->beautify_description_date($row->description),
                     $this->make_release_label($row->num_added_groups),
                     $this->make_release_label($row->num_removed_groups),
@@ -651,14 +656,14 @@ class Nrlist_model extends CI_Model {
 
         $table = array();
         foreach ($query->result() as $row) {
-            if (array_key_exists($row->id,$changes)) {
-                $label_type = $this->get_label_type($changes[$row->id]);
+            if (array_key_exists($row->nr_release_id,$changes)) {
+                $label_type = $this->get_label_type($changes[$row->nr_release_id]);
                 $label = " <span class='label {$label_type}'>{$changes[$row->id]} changes</span>";
             } else {
                 $label = '';
             }
-            $table[] = form_radio(array('name'=>'release1','value'=>$row->id)) . $row->id . $label;
-            $table[] = form_radio(array('name'=>'release2','value'=>$row->id)) . $row->id;
+            $table[] = form_radio(array('name'=>'release1','value'=>$row->nr_release_id)) . $row->nr_release_id . $label;
+            $table[] = form_radio(array('name'=>'release2','value'=>$row->nr_release_id)) . $row->nr_release_id;
             $table[] = $this->beautify_description_date($row->description);
         }
         return $table;

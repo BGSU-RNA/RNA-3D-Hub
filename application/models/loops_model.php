@@ -37,7 +37,7 @@ class Loops_model extends CI_Model {
         if ( $query->num_rows() > 0 ) {
             $data = array();
             foreach($query->result() as $row) {
-                $data[] = '"' . implode('","', array($row->id, $row->unit_ids)) . '"';
+                $data[] = '"' . implode('","', array($row->loop_id, $row->unit_ids)) . '"';
             }
             $table = implode("\n", $data);
         } else {

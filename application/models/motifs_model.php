@@ -71,7 +71,7 @@ class Motifs_model extends CI_Model {
         $query = $this->db->get();
         $motif_ids = array();
         foreach($query->result() as $row) {
-            $motif_ids[] = $row->id;
+            $motif_ids[] = $row->ml_motifs_id;
         }
         return $motif_ids;
     }
@@ -501,9 +501,9 @@ class Motifs_model extends CI_Model {
                  ->limit(1);
         $result = $this->db->get()->row();
         if ( $date ) {
-            return array('id' => $result->id, 'date' => $result->date);
+            return array('id' => $result->ml_releases_id, 'date' => $result->date);
         } else {
-            return $result->id;
+            return $result->ml_releases_id;
         }
     }
 
@@ -519,7 +519,7 @@ class Motifs_model extends CI_Model {
         // extract pdb substring
         $pdbs = array();
         foreach($query->result() as $row) {
-            $pdbs[] = substr($row->id, 3, 4);
+            $pdbs[] = substr($row->ml_loops_id, 3, 4);
         }
 
         return array_unique($pdbs);

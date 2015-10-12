@@ -390,7 +390,7 @@ class Motif_model extends CI_Model {
         $query = $this->db->get();
         $loops = array();
         foreach ($query->result() as $row) {
-            $loops[] = $row->id;
+            $loops[] = $row->ml_loops_id;
         }
 
         // intraclusteral linkage
@@ -715,7 +715,7 @@ class Motif_model extends CI_Model {
         $query = $this->db->get();
 
         foreach($query->result() as $row) {
-            $this->full_length[$row->id] = $row->length;
+            $this->full_length[$row->loop_id] = $row->length;
         }
     }
 
@@ -939,7 +939,7 @@ class Motif_model extends CI_Model {
                  ->order_by('date','desc');
         $row = $this->db->get()->row();
 
-        if ($row->id == $this->release_id) {
+        if ($row->ml_releases_id == $this->release_id) {
             return ' <label class="label success">current</label>';
         } else {
             return '';

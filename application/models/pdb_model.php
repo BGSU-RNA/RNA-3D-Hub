@@ -44,11 +44,11 @@ class Pdb_model extends CI_Model {
         $this->db->select()
                  ->from('ml_loops')
                  ->where('release_id', $latest_release)
-                 ->like('id', strtoupper($loop_type) . '_' . $pdb_id, 'right');
+                 ->like('ml_loops_id', strtoupper($loop_type) . '_' . $pdb_id, 'right');
         $query = $this->db->get();
         $data = array();
         foreach ($query->result() as $row) {
-            $data[$row->id] = $row->motif_id;
+            $data[$row->ml_loops_id] = $row->motif_id;
         }
         return $data;
     }
@@ -182,7 +182,7 @@ class Pdb_model extends CI_Model {
                      ->where('pdb_id', $pdb_id);
             $query = $this->db->get();
             foreach ( $query->result() as $row ) {
-                $unit_ids[$row->id] = $row->id;
+                $unit_ids[$row->pdb_coordinates_id] = $row->pdb_coordinates_id;
             }
         }
 
@@ -324,7 +324,7 @@ class Pdb_model extends CI_Model {
                  ->order_by('date', 'desc')
                  ->limit(1);
         $result = $this->db->get()->row();
-        return $result->id;
+        return $result->nr_release_id;
     }
 
     function get_nrlist_info($pdb_id)
@@ -376,7 +376,7 @@ class Pdb_model extends CI_Model {
                  ->where('type', $motif_type)
                  ->limit(1);
         $result = $this->db->get()->row();
-        return $result->id;
+        return $result->ml_releases_id;
     }
 
     function get_motifs_info($pdb_id, $motif_type)
