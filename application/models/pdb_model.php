@@ -73,16 +73,16 @@ class Pdb_model extends CI_Model {
         $motifs = array_merge($motifs, $this->get_latest_motif_assignments($pdb_id, 'HL'));
 
         foreach ($query->result() as $row) {
-            $loop_type = substr($row->id, 0, 2);
+            $loop_type = substr($row->loop_qa_id, 0, 2);
             if ($row->status == 1) {
-                if ( array_key_exists($row->id, $motifs) ) {
-                    $motif_id = anchor_popup("motif/view/{$motifs[$row->id]}", $motifs[$row->id]);
+                if ( array_key_exists($row->loop_qa_id, $motifs) ) {
+                    $motif_id = anchor_popup("motif/view/{$motifs[$row->loop_qa_id]}", $motifs[$row->loop_qa_id]);
                 } else {
                     $motif_id = 'NA';
                 }
                 $valid_tables[$loop_type][] = array(count($valid_tables[$loop_type]) + 1,
                                                     array( 'class' => 'loop',
-                                                           'data'  => $this->get_checkbox($row->id, $row->nt_ids)
+                                                           'data'  => $this->get_checkbox($row->loop_qa_id, $row->nt_ids)
                                                           ),
                                                     $row->loop_name,
                                                     $motif_id
@@ -97,7 +97,7 @@ class Pdb_model extends CI_Model {
                 }
                 $invalid_tables[$loop_type][] = array(count($invalid_tables[$loop_type])+1,
                                                       array( 'class' => 'loop',
-                                                             'data'  => $this->get_checkbox($row->id, $row->nt_ids)
+                                                             'data'  => $this->get_checkbox($row->loop_qa_id, $row->nt_ids)
                                                             ),
                                                       $this->make_reason_label($row->status),
                                                       $annotation);

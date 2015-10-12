@@ -164,7 +164,7 @@ class Motifs_model extends CI_Model {
                  ->order_by('date','desc');
         $query = $this->db->get();
         foreach ($query->result() as $row) {
-            $ids[] = $row->id;
+            $ids[] = $row->ml_releases_id;
         }
         for ($i=0; $i<count($ids)-1; $i++) {
             $releases[$ids[$i]] = $ids[$i+1];
@@ -181,7 +181,7 @@ class Motifs_model extends CI_Model {
                  ->limit(1);
         $query = $this->db->get();
         foreach ($query->result() as $row) {
-            $current_release = $row->id;
+            $current_release = $row->ml_releases_id;
         }
         if ($id == $current_release) {
             return 'Current';

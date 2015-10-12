@@ -289,7 +289,7 @@ class Loops_model extends CI_Model {
             // db_name = 'PDB, Uniprot'
             // db_ids  = 'PDB_id, Uniprot_id'
             foreach ($query->result() as $row) {
-                $result['proteins'][$row->chainId]['description'] = $row->compound;
+                $result['proteins'][$row->chain_id]['description'] = $row->compound;
                 $databases = explode(',', $row->db_name);
                 $ids = explode(',', $row->db_id);
                 for ($i = 0; $i < count($databases); $i++) {
