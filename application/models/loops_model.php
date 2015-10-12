@@ -314,7 +314,7 @@ class Loops_model extends CI_Model {
                  ->limit(1);
         $query = $this->db->get();
         $row = array_shift($query->result());
-        return $row->id;
+        return $row->ml_releases_id;
     }
 
     function get_similar_loops($id)
