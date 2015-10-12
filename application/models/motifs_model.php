@@ -590,7 +590,7 @@ class Motifs_model extends CI_Model {
             if ( $row->replaced_by == '' ) {
                 $row->replaced_by = 'None';
             }
-            $removed[$row->obsolete_id] = $row->replaced_by;
+            $removed[$row->pdb_obsolete_id] = $row->replaced_by;
         }
 
         return $removed;
