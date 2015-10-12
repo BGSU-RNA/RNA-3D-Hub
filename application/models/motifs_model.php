@@ -605,7 +605,7 @@ class Motifs_model extends CI_Model {
         $query = $this->db->get();
         $releases = array();
         foreach($query->result() as $row) {
-            $releases[] = $row->id;
+            $releases[] = $row->ml_releases_id;
         }
 
         return $releases;
