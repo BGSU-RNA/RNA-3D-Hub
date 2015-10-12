@@ -189,7 +189,7 @@ class Loops_model extends CI_Model {
         if ($query->num_rows() > 0) {
             $motif = $query->row();
             return array('motif_id' => $motif->motif_id,
-                         'release_id' => $release->id);
+                         'release_id' => $release->ml_releases_id);
         } else {
             return NULL;
         }
@@ -270,8 +270,8 @@ class Loops_model extends CI_Model {
         $this->db->select('t3.chain')
                  ->distinct()
                  ->from('loop_positions as t1')
-                 ->join('pdb_distances as t2', 't1.nt_id = t2.id1')
-                 ->join('pdb_coordinates as t3', 't2.id2 = t3.id')
+                 ->join('pdb_distances as t2', 't1.nt_id = t2.unit_id_1')
+                 ->join('pdb_coordinates as t3', 't2.unit_id_2 = t3.id')
                  ->where('loop_id', $id)
                  ->where('char_length(t3.unit) = 3')
                  ->not_like('t3.coordinates','HETATM','after');

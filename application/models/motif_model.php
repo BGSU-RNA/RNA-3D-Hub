@@ -753,7 +753,7 @@ class Motif_model extends CI_Model {
 		         ->limit(1);
         $query = $this->db->get();
         $result = $query->row();
-    	$loop_id = $result->id;
+    	$loop_id = $result->ml_loops_id;
 
     	// get chain breaks
     	$this->db->select('ml_loop_positions.position')

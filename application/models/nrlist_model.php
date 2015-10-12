@@ -90,7 +90,7 @@ class Nrlist_model extends CI_Model {
             $data['uls'][$labels[$row->resolution]]['num_only_in_1']    = $row->num_added_groups;
             $data['uls'][$labels[$row->resolution]]['num_only_in_2']    = $row->num_removed_groups;
         }
-        
+
         return $data;
     }
 
@@ -369,20 +369,20 @@ class Nrlist_model extends CI_Model {
         $i = 0;
         foreach ($query->result() as $row) {
             if ($i == 0) {
-                $id = anchor(base_url("nrlist/release/".$row->id), $row->id.' (current)');
+                $id = anchor(base_url("nrlist/release/".$row->nr_release_id), $row->nr_release_id.' (current)');
                 $i++;
             } else {
-                $id = anchor(base_url("nrlist/release/".$row->id), $row->id);
+                $id = anchor(base_url("nrlist/release/".$row->nr_release_id), $row->nr_release_id);
             }
-            if (array_key_exists($row->id,$changes)) {
-                $label = $this->get_label_type($changes[$row->id]);
-                $compare_url = base_url(array('nrlist','compare',$row->id,$releases[$row->id]));
-                $status = "<a href='$compare_url' class='nodec'><span class='label {$label}'>{$changes[$row->id]} changes</span></a>";
+            if (array_key_exists($row->nr_release_id,$changes)) {
+                $label = $this->get_label_type($changes[$row->nr_release_id]);
+                $compare_url = base_url(array('nrlist','compare',$row->nr_release_id,$releases[$row->nr_release_id]));
+                $status = "<a href='$compare_url' class='nodec'><span class='label {$label}'>{$changes[$row->nr_release_id]} changes</span></a>";
             } else {
                 $status = '';
             }
             $description = $this->beautify_description_date($row->description);
-            $table[] = array($id, $status, $description, $pdb_count[$row->id] );
+            $table[] = array($id, $status, $description, $pdb_count[$row->nr_release_id] );
         }
         return $table;
     }

@@ -424,7 +424,7 @@ class Pdb_model extends CI_Model {
             $equivalence_class = 'Not a member of any equivalent class, most likely due to the absence of complete nucleotides.';
             $equivalence_class_found = False;
         } else {
-            $equivalence_class = $result->row()->class_id;
+            $equivalence_class = $result->row()->nr_class_id;
             $equivalence_class_found = True;
         }
 
@@ -442,11 +442,11 @@ class Pdb_model extends CI_Model {
             $isFirst = True;
             foreach($query->result() as $row) {
                 if ( $isFirst ) {
-                    $representative = $row->id;
+                    $representative = $row->nr_pdb_id;
                     $isFirst = False;
                 }
-                if ( $row->id != $pdb_id ) {
-                    $pdbs[] = $row->id;
+                if ( $row->nr_pdb_id != $pdb_id ) {
+                    $pdbs[] = $row->nr_pdb_id;
                 }
             }
         }

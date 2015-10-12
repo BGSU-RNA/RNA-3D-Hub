@@ -43,7 +43,7 @@ class Release_history_model extends CI_Model {
                  ->where('release_id', $rel);
         $query = $this->db->get();
         foreach ($query->result() as $row) {
-           $loops[] = $row->id;
+           $loops[] = $row->ml_loops_id;
         }
         return $loops;
     }
@@ -83,15 +83,15 @@ class Release_history_model extends CI_Model {
         $this->db->where('release_id', $this->rel1);
         $result = $this->db->get()->result_array();
         for ($i = 0; $i < count($result); $i++) {
-            $rel1_ids[$result[$i]['handle']] = $result[$i]['id'];
+            $rel1_ids[$result[$i]['handle']] = $result[$i]['ml_motifs_id'];
         }
 
-        $this->db->select('id, handle');
+        $this->db->select('ml_motifs_id, handle');
         $this->db->from('ml_motifs');
         $this->db->where('release_id', $this->rel2);
         $result = $this->db->get()->result_array();
         for ($i = 0; $i < count($result); $i++) {
-            $rel2_ids[$result[$i]['handle']] = $result[$i]['id'];
+            $rel2_ids[$result[$i]['handle']] = $result[$i]['ml_motifs_id'];
         }
 
         foreach (array_merge(array_diff_key($rel1_ids, $rel2_ids)) as $handle => $id) {
