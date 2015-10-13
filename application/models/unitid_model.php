@@ -55,7 +55,7 @@ class Unitid_model extends CI_Model {
                                   'ins_code' => $row->ins_code,
                                   'sym_op'   => 'not available',
                                   'pdb_file' => $row->pdb_type == 'AU' ? 'pdb' : 'pdb1',
-                                  'pdb_id'   => $row->pdb,
+                                  'pdb_id'   => $row->pdb_id
                                  );
                 return array('result' => $result, 'id_type' => 'old');
             }
@@ -81,7 +81,7 @@ class Unitid_model extends CI_Model {
                               'ins_code' => $row->ins_code,
                               'sym_op'   => $row->sym_op,
                               'pdb_file' => $row->pdb_file,
-                              'pdb_id'   => $row->pdb
+                              'pdb_id'   => $row->pdb_id
                              );
         }
         return array('result' => $result, 'id_type' => $id_type);
