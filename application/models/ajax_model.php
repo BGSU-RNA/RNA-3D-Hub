@@ -52,7 +52,7 @@ class Ajax_model extends CI_Model {
             $row = $query->row();
 
             // don't report resolution for nmr structures
-            if (preg_match('/NMR/', $row->experimentalTechnique)) {
+            if (preg_match('/NMR/', $row->experimental_technique)) {
                 $resolution = '';
             } else {
                 $resolution = "<u>Resolution:</u> {$row->resolution} &Aring<br>";
@@ -64,9 +64,9 @@ class Ajax_model extends CI_Model {
             $nucleotides = $this->count_nucleotides($pdb);
             $bpnt = number_format($basepairs/$nucleotides, 4);
 
-            $pdb_info = "<u>Title</u>: {$row->structureTitle}<br>" .
+            $pdb_info = "<u>Title</u>: {$row->title}<br>" .
                         $resolution .
-                        "<u>Method</u>: {$row->experimentalTechnique}<br>" .
+                        "<u>Method</u>: {$row->experimental_technique}<br>" .
                         "<u>Organism</u>: {$source}<br>" .
                         "<i>$nucleotides nucleotides, $basepairs basepairs, $bpnt basepairs/nucleotide</i><br><br>" .
                         'Explore in ' .
@@ -109,7 +109,7 @@ class Ajax_model extends CI_Model {
         try {
             for ($i=0; $i<count($contents)-1; $i+=2) {
                 $data = array('manual_annotation' => $contents[$i+1]);
-                $this->db->where('id', $contents[$i]);
+                $this->db->where('loop_benchmark_id', $contents[$i]);
                 $this->db->update('loop_benchmark', $data);
             }
             return 1;
@@ -133,7 +133,7 @@ class Ajax_model extends CI_Model {
 
         $list_ids = "'" . implode("','",$nt_ids) . "'";
 
-        $sql_command = '* FROM dcc_residues where dcc_residues_id IN ('. $list_ids .') order by(FIELD(id,'.$list_ids.'));';
+        $sql_command = '* FROM dcc_residues where dcc_residues_id IN ('. $list_ids .') order by(FIELD(dcc_residues_id,'.$list_ids.'));';
         $this->db->select($sql_command, FALSE);
         $query = $this->db->get();
         //         $this->db->select()
@@ -144,11 +144,11 @@ class Ajax_model extends CI_Model {
 
         $s = array();
         foreach ($query->result() as $row) {
-            $parts   = explode('_',$row->id);
+            $parts   = explode('_',$row->dcc_residues_id);
             $nt_type = $parts[5];
 
             $fields = get_object_vars($row);
-            unset($fields['id']);
+            unset($fields['dcc_residues_id']);
 
             foreach ($fields as $key => $value) {
                 if (!array_key_exists($key,$s)) {
@@ -159,6 +159,7 @@ class Ajax_model extends CI_Model {
                 $s[$key] .= str_repeat($value . ' ', $lengths[$nt_type]);
             }
         }
+
         return json_encode($s);
     }
 

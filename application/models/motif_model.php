@@ -549,7 +549,7 @@ class Motif_model extends CI_Model {
                  ->order_by('date');
         $result = $this->db->get();
         foreach ($result->result() as $row) {
-            $releases_present[] = $row->release_id;
+            $releases_present[] = $row->ml_releases_id;
         }
 
         $this->db->select()
