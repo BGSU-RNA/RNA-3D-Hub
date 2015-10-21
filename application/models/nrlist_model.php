@@ -218,18 +218,18 @@ class Nrlist_model extends CI_Model {
 
     function get_history($id,$mode)
     {
-        $this->db->select()->from('nr_set_diff')->where('nr_class_id_1',$id);
+        $this->db->select()->from('__trash_nr_set_diff')->where('nr_class1',$id);
         if ($mode == 'parents') {
-            $this->db->where('nr_release_id',$this->first_seen_in);
+            $this->db->where('release_id',$this->first_seen_in);
         } elseif ($mode=='children') {
-            $this->db->where('nr_release_id !=',$this->first_seen_in);
+            $this->db->where('release_id !=',$this->first_seen_in);
         }
         $query = $this->db->get();
         $table = array();
         foreach ($query->result() as $row) {
-            $table[] = array($row->nr_class_id_1,
-                             anchor(base_url("nrlist/view/".$row->nr_class_id_2),$row->nr_class_id_2),
-                             anchor(base_url("nrlist/release/".$row->nr_release_id), $row->nr_release_id),
+            $table[] = array($row->nr_class1,
+                             anchor(base_url("nrlist/view/".$row->nr_class2),$row->nr_class2),
+                             anchor(base_url("nrlist/release/".$row->release_id), $row->release_id),
                              $this->add_pdb_class($row->intersection),
                              $this->add_pdb_class($row->one_minus_two),
                              $this->add_pdb_class($row->two_minus_one));
