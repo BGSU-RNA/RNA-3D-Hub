@@ -98,7 +98,7 @@ class Nrlist_model extends CI_Model {
     {
         $this->db->select()
                  ->from('nr_classes')
-                 ->join('nr_releases','nr_classes.nr_release_id = nr_releases.nr_release_id')
+                 ->join('nr_releases','nr_classes.nr_release_id = nr_releases.id')
                  ->where('nr_classes.nr_class_id',$id)
                  ->order_by('nr_releases.date');
         $query = $this->db->get();
@@ -107,13 +107,13 @@ class Nrlist_model extends CI_Model {
         $i = 0;
         foreach ($query->result() as $row) {
             if ($i==0) {
-                $this->first_seen_in = $row->nr_release_id;
+                $this->first_seen_in = $row->id;
                 $i++;
             }
-            $releases[0][] = anchor(base_url("nrlist/release/".$row->nr_release_id), $row->nr_release_id);
+            $releases[0][] = anchor(base_url("nrlist/release/".$row->id), $row->id);
             $releases[1][] = $this->beautify_description_date($row->description);
         }
-        $this->last_seen_in = $row->nr_release_id;
+        $this->last_seen_in = $row->id;
         return $releases;
     }
 
@@ -125,7 +125,7 @@ class Nrlist_model extends CI_Model {
                  ->limit(1);
         $query = $this->db->get();
         foreach ($query->result() as $row) {
-            $current_release = $row->nr_release_id;
+            $current_release = $row->id;
         }
         $this->current_release = $current_release;
         $this->db->select()
@@ -319,7 +319,7 @@ class Nrlist_model extends CI_Model {
                  ->limit(2);
         $query = $this->db->get();
         foreach ($query->result() as $row) {
-            $releases[] = $row->nr_release_id;
+            $releases[] = $row->id;
         }
 
         // get their release difference
@@ -369,20 +369,20 @@ class Nrlist_model extends CI_Model {
         $i = 0;
         foreach ($query->result() as $row) {
             if ($i == 0) {
-                $id = anchor(base_url("nrlist/release/".$row->nr_release_id), $row->nr_release_id.' (current)');
+                $id = anchor(base_url("nrlist/release/".$row->id), $row->id.' (current)');
                 $i++;
             } else {
-                $id = anchor(base_url("nrlist/release/".$row->nr_release_id), $row->nr_release_id);
+                $id = anchor(base_url("nrlist/release/".$row->id), $row->id);
             }
-            if (array_key_exists($row->nr_release_id,$changes)) {
-                $label = $this->get_label_type($changes[$row->nr_release_id]);
-                $compare_url = base_url(array('nrlist','compare',$row->nr_release_id,$releases[$row->nr_release_id]));
-                $status = "<a href='$compare_url' class='nodec'><span class='label {$label}'>{$changes[$row->nr_release_id]} changes</span></a>";
+            if (array_key_exists($row->id,$changes)) {
+                $label = $this->get_label_type($changes[$row->id]);
+                $compare_url = base_url(array('nrlist','compare',$row->id,$releases[$row->id]));
+                $status = "<a href='$compare_url' class='nodec'><span class='label {$label}'>{$changes[$row->id]} changes</span></a>";
             } else {
                 $status = '';
             }
             $description = $this->beautify_description_date($row->description);
-            $table[] = array($id, $status, $description, $pdb_count[$row->nr_release_id] );
+            $table[] = array($id, $status, $description, $pdb_count[$row->id] );
         }
         return $table;
     }
@@ -394,7 +394,7 @@ class Nrlist_model extends CI_Model {
                  ->order_by('date','desc')
                  ->limit(1);
         $result = $this->db->get()->result_array();
-        return $result[0]['nr_release_id'];
+        return $result[0]['id'];
     }
 
     function make_release_label($num)
@@ -412,12 +412,12 @@ class Nrlist_model extends CI_Model {
 
     function get_release_precedence()
     {
-        $this->db->select('nr_release_id')
+        $this->db->select('id')
                  ->from('nr_releases')
                  ->order_by('date','desc');
         $query = $this->db->get();
         foreach ($query->result() as $row) {
-            $ids[] = $row->nr_release_id;
+            $ids[] = $row->id;
         }
         for ($i=0; $i<count($ids)-1; $i++) {
             $releases[$ids[$i]] = $ids[$i+1];
@@ -431,15 +431,15 @@ class Nrlist_model extends CI_Model {
 
         $this->db->select()
                  ->from('nr_releases')
-                 ->join('nr_release_diff','nr_releases.nr_release_id = nr_release_diff.nr_release_id1')
+                 ->join('nr_release_diff','nr_releases.id = nr_release_diff.nr_release_id1')
                  ->where('direct_parent',1)
                  ->order_by('date','desc');
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
-            if ($row->nr_release_id_2 == $releases[$row->nr_release_id]) {
+            if ($row->nr_release_id2 == $releases[$row->id]) {
                 $tables[$row->resolution][] = array(
-                    anchor(base_url(array('nrlist','compare',$row->nr_release_id,$releases[$row->nr_release_id])), $row->nr_release_id),
+                    anchor(base_url(array('nrlist','compare',$row->id,$releases[$row->id])), $row->id),
                     $this->beautify_description_date($row->description),
                     $this->make_release_label($row->num_added_groups),
                     $this->make_release_label($row->num_removed_groups),
@@ -456,7 +456,7 @@ class Nrlist_model extends CI_Model {
     {
         $this->db->select()
                  ->from('nr_releases')
-                 ->where('nr_release_id',$id);
+                 ->where('id',$id);
         $query = $this->db->get();
         foreach ($query->result() as $row) {
             $s = $row->description;
@@ -656,14 +656,14 @@ class Nrlist_model extends CI_Model {
 
         $table = array();
         foreach ($query->result() as $row) {
-            if (array_key_exists($row->nr_release_id,$changes)) {
-                $label_type = $this->get_label_type($changes[$row->nr_release_id]);
+            if (array_key_exists($row->id,$changes)) {
+                $label_type = $this->get_label_type($changes[$row->id]);
                 $label = " <span class='label {$label_type}'>{$changes[$row->id]} changes</span>";
             } else {
                 $label = '';
             }
-            $table[] = form_radio(array('name'=>'release1','value'=>$row->nr_release_id)) . $row->nr_release_id . $label;
-            $table[] = form_radio(array('name'=>'release2','value'=>$row->nr_release_id)) . $row->nr_release_id;
+            $table[] = form_radio(array('name'=>'release1','value'=>$row->id)) . $row->id . $label;
+            $table[] = form_radio(array('name'=>'release2','value'=>$row->id)) . $row->id;
             $table[] = $this->beautify_description_date($row->description);
         }
         return $table;
@@ -673,7 +673,7 @@ class Nrlist_model extends CI_Model {
     {
         $this->db->select()
                  ->from('nr_releases')
-                 ->where('nr_release_id', $id)
+                 ->where('id', $id)
                  ->limit(1);
         if ( $this->db->get()->num_rows() == 0 ) {
             return False;
