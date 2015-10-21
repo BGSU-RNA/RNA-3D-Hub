@@ -49,8 +49,8 @@ class Loops_benchmark_model extends CI_Model {
     function get_benchmark_table($motif_type)
     {
         $chainbreaks = array('HL'=>'0', 'IL'=>'1', 'J3'=>'2');
-        $this->db->select('loop_benchmark_id,chain,fr3d,rna3dmotif,scor,rloom,rnajunction,cossmos,manual_annotation')
-                 ->from('loop_benchmark')
+        $this->db->select('id,chain,fr3d,rna3dmotif,scor,rloom,rnajunction,cossmos,manual_annotation')
+                 ->from('__loop_benchmark')
                  ->where('type',$chainbreaks[$motif_type]);
         $query = $this->db->get();
 
