@@ -612,7 +612,7 @@ class Nrlist_model extends CI_Model {
     function count_all_nucleotides($pdb_id)
     {
         $this->db->select('count(*) as length')
-                 ->from('pdb_coordinates')
+                 ->from('__pdb_coordinates')
                  ->where('pdb_id', $pdb_id)
                  ->where_in('unit', array('A','C','G','U'))
                  ->order_by('count(*)', 'DESC')

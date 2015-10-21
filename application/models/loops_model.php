@@ -271,7 +271,7 @@ class Loops_model extends CI_Model {
                  ->distinct()
                  ->from('loop_positions as t1')
                  ->join('pdb_distances as t2', 't1.nt_id = t2.unit_id_1')
-                 ->join('pdb_coordinates as t3', 't2.unit_id_2 = t3.id')
+                 ->join('__pdb_coordinates as t3', 't2.unit_id_2 = t3.pdb_coordinates_id')
                  ->where('loop_id', $id)
                  ->where('char_length(t3.unit) = 3')
                  ->not_like('t3.coordinates','HETATM','after');
