@@ -262,7 +262,7 @@ class Ajax_model extends CI_Model {
     function get_loop_coordinates($loop_id)
     {
         // find all constituent nucleotides
-        $this->db->select('nt_ids')
+        $this->db->select('unit_ids')
                  ->distinct()
                  ->from('loop_info')
                  ->where('loop_id',$loop_id);
