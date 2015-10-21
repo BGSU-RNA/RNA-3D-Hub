@@ -591,7 +591,7 @@ EOT;
 
         $this->db->select()
                  ->from('ml_loop_positions')
-                 ->join('dcc_residues','nt_id = dcc_residues.dcc_residues_id')
+                 ->join('__dcc_residues','nt_id = __dcc_residues.dcc_residues_id')
                  ->join('loop_info','loop_id=loop_info.loop_id')
                  ->join('ml_loops','loop_id=ml_loops.ml_loops_id','left')
                  ->where('ml_loop_positions.release_id','0.5')
@@ -776,7 +776,7 @@ EOT;
                  ->select_min('mapman_real_space_R')
                  ->select_min('mapman_Biso_mean')
                  ->select_min('mapman_occupancy_mean')
-                 ->from('dcc_residues')
+                 ->from('__dcc_residues')
                  ->like('dcc_residues_id',strtoupper($pdb),'after');
         $result = $this->db->get()->result_array();
         return $result[0];
@@ -799,7 +799,7 @@ EOT;
                  ->select_max('mapman_real_space_R')
                  ->select_max('mapman_Biso_mean')
                  ->select_max('mapman_occupancy_mean')
-                 ->from('dcc_residues')
+                 ->from('__dcc_residues')
                  ->like('dcc_residues_id',strtoupper($pdb),'after');
         $result = $this->db->get()->result_array();
         return $result[0];
@@ -807,7 +807,7 @@ EOT;
 
     function get_dcc_pdbs()
     {
-        $this->db->select('DISTINCT(substr(dcc_residues_id,1,4)) as pdb FROM dcc_residues;',false);
+        $this->db->select('DISTINCT(substr(dcc_residues_id,1,4)) as pdb FROM __dcc_residues;',false);
         $query = $this->db->get();
         foreach($query->result() as $row) {
             $result[] = anchor(base_url(array('loops','sfjmol',$row->pdb)),$row->pdb);

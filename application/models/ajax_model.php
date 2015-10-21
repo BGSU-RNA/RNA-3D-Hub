@@ -133,7 +133,7 @@ class Ajax_model extends CI_Model {
 
         $list_ids = "'" . implode("','",$nt_ids) . "'";
 
-        $sql_command = '* FROM dcc_residues where dcc_residues_id IN ('. $list_ids .') order by(FIELD(dcc_residues_id,'.$list_ids.'));';
+        $sql_command = '* FROM __dcc_residues where dcc_residues_id IN ('. $list_ids .') order by(FIELD(dcc_residues_id,'.$list_ids.'));';
         $this->db->select($sql_command, FALSE);
         $query = $this->db->get();
         //         $this->db->select()
