@@ -167,7 +167,7 @@ class Pdb_model extends CI_Model {
     {
         // get correspondences between old and new ids
         $this->db->select('old_id, unit_id')
-                 ->from('pdb_unit_id_correspondence')
+                 ->from('__pdb_unit_id_correspondence')
                  ->where('pdb_id', $pdb_id);
         $query = $this->db->get();
         $unit_ids = array();
@@ -464,10 +464,10 @@ class Pdb_model extends CI_Model {
         $result = $this->db->get()->row();
         $chains = explode(",", $result->best_chains);
 
-        $this->db->select('pdb_unit_id_correspondence.unit_id as id, __pdb_coordinates.chain as chain, __pdb_coordinates.unit as sequence')
+        $this->db->select('__pdb_unit_id_correspondence.unit_id as id, __pdb_coordinates.chain as chain, __pdb_coordinates.unit as sequence')
                  ->from('pdb_unit_ordering')
                  ->join('__pdb_coordinates', '__pdb_coordinates.pdb_coordinates_id = pdb_unit_ordering.nt_id')
-                 ->join('pdb_unit_id_correspondence', 'pdb_unit_id_correspondence.old_id = pdb_unit_ordering.nt_id')
+                 ->join('__pdb_unit_id_correspondence', '__pdb_unit_id_correspondence.old_id = pdb_unit_ordering.nt_id')
                  ->where('pdb_unit_ordering.pdb', $pdb_id)
                  ->where_in('__pdb_coordinates.chain', $chains)
                  ->order_by('pdb_unit_ordering.index', 'asc');
@@ -505,8 +505,8 @@ class Pdb_model extends CI_Model {
     {
         $this->db->select('C1.unit_id as nt1, C2.unit_id as nt2, f_lwbp as family, f_crossing as crossing')
                  ->from('unit_pairs_interactions')
-                 ->join('pdb_unit_id_correspondence as C1', 'C1.old_id = unit_pairs_interactions.unit_id_1')
-                 ->join('pdb_unit_id_correspondence as C2', 'C2.old_id = unit_pairs_interactions.unit_id_2')
+                 ->join('__pdb_unit_id_correspondence as C1', 'C1.old_id = unit_pairs_interactions.unit_id_1')
+                 ->join('__pdb_unit_id_correspondence as C2', 'C2.old_id = unit_pairs_interactions.unit_id_2')
                  ->where('pdb_id', $pdb)
                  ->where('f_crossing > 3')
                  ->where('f_lwbp is not null');
