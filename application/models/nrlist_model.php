@@ -45,14 +45,14 @@ class Nrlist_model extends CI_Model {
 
         $this->db->select()
                  ->from('nr_release_diff')
-                 ->where('nr_release_id_1',$rel1)
-                 ->where('nr_release_id_2',$rel2);
+                 ->where('nr_release_id1',$rel1)
+                 ->where('nr_release_id2',$rel2);
         $query = $this->db->get();
         if ($query->num_rows == 0) {
             $this->db->select()
                      ->from('nr_release_diff')
-                     ->where('nr_release_id_1',$rel2)
-                     ->where('nr_release_id_2',$rel1);
+                     ->where('nr_release_id1',$rel2)
+                     ->where('nr_release_id2',$rel1);
             $query = $this->db->get();
         }
 
@@ -244,17 +244,17 @@ class Nrlist_model extends CI_Model {
 
     function get_change_counts_by_release()
     {
-        $this->db->select('nr_release_id_1')
+        $this->db->select('nr_release_id1')
                  ->select_sum('num_added_groups','nag')
                  ->select_sum('num_removed_groups','nrg')
                  ->select_sum('num_updated_groups','nug')
                  ->from('nr_release_diff')
                  ->where('direct_parent',1)
-                 ->group_by('nr_release_id_1');
+                 ->group_by('nr_release_id1');
         $query = $this->db->get();
         $changes = array();
         foreach ($query->result() as $row) {
-            $changes[$row->nr_release_id_1] = $row->nag + $row->nug + $row->nrg;
+            $changes[$row->nr_release_id1] = $row->nag + $row->nug + $row->nrg;
         }
         return $changes;
     }
@@ -325,8 +325,8 @@ class Nrlist_model extends CI_Model {
         // get their release difference
         $this->db->select()
                  ->from('nr_release_diff')
-                 ->where('nr_release_id_1', $releases[0])
-                 ->where('nr_release_id_2', $releases[1])
+                 ->where('nr_release_id1', $releases[0])
+                 ->where('nr_release_id2', $releases[1])
                  ->where('resolution', 'all');
         $query = $this->db->get();
         foreach ($query->result() as $row) {
@@ -431,7 +431,7 @@ class Nrlist_model extends CI_Model {
 
         $this->db->select()
                  ->from('nr_releases')
-                 ->join('nr_release_diff','nr_releases.nr_release_id = nr_release_diff.nr_release_id_1')
+                 ->join('nr_release_diff','nr_releases.nr_release_id = nr_release_diff.nr_release_id1')
                  ->where('direct_parent',1)
                  ->order_by('date','desc');
         $query = $this->db->get();
