@@ -284,17 +284,17 @@ class Loops_model extends CI_Model {
             $this->db->select()
                      ->from('chain_info')
                      ->where('pdb_id', substr($id,3,4))
-                     ->where_in('chain_id', $chains);
+                     ->where_in('chain_name', $chains);
             $query = $this->db->get();
             // db_name = 'PDB, Uniprot'
             // db_ids  = 'PDB_id, Uniprot_id'
             foreach ($query->result() as $row) {
-                $result['proteins'][$row->chain_id]['description'] = $row->compound;
+                $result['proteins'][$row->chain_name]['description'] = $row->compound;
                 $databases = explode(',', $row->db_name);
                 $ids = explode(',', $row->db_id);
                 for ($i = 0; $i < count($databases); $i++) {
                     if (preg_match('/Uniprot/i', $databases[$i])) {
-                        $result['proteins'][$row->chainId]['uniprot'] = anchor_popup('http://www.uniprot.org/uniprot/' . trim($ids[$i]), $ids[$i]);
+                        $result['proteins'][$row->chain_name]['uniprot'] = anchor_popup('http://www.uniprot.org/uniprot/' . trim($ids[$i]), $ids[$i]);
                     }
                 }
             }
