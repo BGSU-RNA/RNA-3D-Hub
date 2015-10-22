@@ -96,24 +96,33 @@ class Nrlist_model extends CI_Model {
 
     function get_releases_by_class($id)
     {
-        $this->db->select()
-                 ->from('nr_classes')
-                 ->join('nr_releases','nr_classes.nr_release_id = nr_releases.id')
-                 ->where('nr_classes.nr_class_id',$id)
-                 ->order_by('nr_releases.date');
+        /* Can this safely reduce to just nr_class_id and description? */
+        $this->db->select('nrc.nr_class_id')
+                 ->select('nrc.name')
+                 ->select('nrc.nr_release_id')
+                 ->select('nrc.resolution')
+                 ->select('nrc.handle')
+                 ->select('nrc.version')
+                 ->select('nrc.comment')
+                 ->select('nrr.date')
+                 ->select('nrr.description')
+                 ->from('nr_classes AS nrc')
+                 ->join('nr_releases AS nrr','nrc.nr_release_id = nrr.nr_release_id')
+                 ->where('nrc.nr_class_id',$id)
+                 ->order_by('nrr.date');
         $query = $this->db->get();
         $releases[0][0] = 'Release';
         $releases[1][0] = 'Date';
         $i = 0;
         foreach ($query->result() as $row) {
             if ($i==0) {
-                $this->first_seen_in = $row->id;
+                $this->first_seen_in = $row->nr_class_id;
                 $i++;
             }
-            $releases[0][] = anchor(base_url("nrlist/release/".$row->id), $row->id);
+            $releases[0][] = anchor(base_url("nrlist/release/".$row->nr_class_id), $row->nr_class_id);
             $releases[1][] = $this->beautify_description_date($row->description);
         }
-        $this->last_seen_in = $row->id;
+        $this->last_seen_in = $row->nr_class_id;
         return $releases;
     }
 
