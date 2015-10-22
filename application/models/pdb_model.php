@@ -56,9 +56,15 @@ class Pdb_model extends CI_Model {
     function get_loops($pdb_id)
     {
         $release_id = $this->get_latest_loop_release();
-        $this->db->select()
-                 ->from('loop_qa')
-                 ->join('loop_info', 'loop_info.loop_id = loop_qa.loop_id')
+        $this->db->select('lq.loop_qa_id')
+                 ->select('lq.status')
+                 ->select('lq.modifications')
+                 ->select('lq.nt_signature')
+                 ->select('lq.complementary')
+                 ->select('li.unit_ids')
+                 ->select('li.loop_name')
+                 ->from('loop_qa AS lq')
+                 ->join('loop_info AS li', 'li.loop_id = lq.loop_qa_id')
                  ->where('pdb_id', $pdb_id)
                  ->where('release_id', $release_id);
         $query = $this->db->get();
@@ -80,9 +86,10 @@ class Pdb_model extends CI_Model {
                 } else {
                     $motif_id = 'NA';
                 }
+
                 $valid_tables[$loop_type][] = array(count($valid_tables[$loop_type]) + 1,
                                                     array( 'class' => 'loop',
-                                                           'data'  => $this->get_checkbox($row->loop_qa_id, $row->nt_ids)
+                                                           'data'  => $this->get_checkbox($row->loop_qa_id, $row->unit_ids)
                                                           ),
                                                     $row->loop_name,
                                                     $motif_id
@@ -95,14 +102,16 @@ class Pdb_model extends CI_Model {
                 } else {
                     $annotation = $row->nt_signature;
                 }
+
                 $invalid_tables[$loop_type][] = array(count($invalid_tables[$loop_type])+1,
                                                       array( 'class' => 'loop',
-                                                             'data'  => $this->get_checkbox($row->loop_qa_id, $row->nt_ids)
+                                                             'data'  => $this->get_checkbox($row->loop_qa_id, $row->unit_ids)
                                                             ),
                                                       $this->make_reason_label($row->status),
                                                       $annotation);
             }
         }
+
         return array('valid' => $valid_tables, 'invalid' => $invalid_tables);
     }
 
@@ -123,6 +132,7 @@ class Pdb_model extends CI_Model {
                  ->from('loop_releases')
                  ->order_by('date','desc')
                  ->limit(1);
+
         $result = $this->db->get()->result_array();
         return $result[0]['loop_releases_id'];
     }
@@ -134,6 +144,7 @@ class Pdb_model extends CI_Model {
                  ->from('pdb_info')
                  ->where('pdb_id', $pdb_id)
                  ->limit(1);
+
         if ( $this->db->get()->num_rows() > 0 ) {
             return true;
         }
@@ -152,10 +163,11 @@ class Pdb_model extends CI_Model {
 
     function pdb_is_annotated($pdb_id, $interaction_type)
     {
-        $this->db->select()
+        $this->db->select('pdb_analysis_status_id')
                  ->from('pdb_analysis_status')
                  ->where('pdb_id', $pdb_id)
                  ->where("$interaction_type IS NOT NULL");
+
         if ( $this->db->get()->num_rows() > 0 ) {
             return True;
         } else {
@@ -333,38 +345,45 @@ class Pdb_model extends CI_Model {
         $data['latest_nr_release'] = $this->get_latest_nr_release($pdb_id);
 
         // get nr equivalence classes
-        $this->db->select()
+        $this->db->select('nr_class_id')
+                 ->select('rep')
                  ->from('nr_pdbs')
                  ->where('nr_pdb_id', $pdb_id)
                  ->where('nr_release_id', $data['latest_nr_release']);
         $query = $this->db->get();
+
         $data = array();
         foreach ($query->result() as $row) {
-            $data['nr_classes'][] = $row->class_id;
-            $data['nr_urls'][$row->class_id] = anchor('nrlist/view/' . $row->class_id, $row->class_id);
-            $data['representatives'][$row->class_id] = $row->rep;
+            $data['nr_classes'][] = $row->nr_class_id;
+            $data['nr_urls'][$row->nr_class_id] = anchor('nrlist/view/' . $row->nr_class_id, $row->nr_class_id);
+            $data['representatives'][$row->nr_class_id] = $row->rep;
         }
+
         return $data;
     }
 
     function get_loops_info($pdb_id)
     {
-        $this->db->select('count(*) as counts, type')
+        $this->db->select('count(loop_id) as counts, type')
                  ->from('loop_info')
                  ->where('pdb_id', $pdb_id)
                  ->group_by('type');
         $query = $this->db->get();
+
         $data['loops'] = array();
         foreach ($query->result() as $row) {
             $data['loops'][$row->type] = $row->counts;
         }
+        
         // add zeros if some loop types are not present
         foreach ( array('IL', 'HL', 'J3') as $loop_type ) {
             if ( !array_key_exists($loop_type, $data['loops']) ) {
                 $data['loops'][$loop_type] = 0;
             }
         }
+        
         $data['loops']['url'] = anchor('pdb/' . $pdb_id . '/motifs', 'More');
+        
         return $data;
     }
 
@@ -375,7 +394,9 @@ class Pdb_model extends CI_Model {
                  ->order_by('date', 'desc')
                  ->where('type', $motif_type)
                  ->limit(1);
+        
         $result = $this->db->get()->row();
+        
         return $result->ml_releases_id;
     }
 
@@ -412,14 +433,15 @@ class Pdb_model extends CI_Model {
         $latest_nr_release = $this->get_latest_nr_release($pdb_id);
 
         // choose the equivalence class
-        $this->db->select()
-                 ->from('nr_pdbs')
-                 ->join('nr_classes', 'nr_pdbs.nr_class_id = nr_classes.nr_class_id')
-                 ->where('nr_pdbs.nr_pdb_id', $pdb_id)
-                 ->where('nr_pdbs.nr_release_id', $latest_nr_release)
-                 ->where('nr_classes.resolution', 'all')
-                 ->where('nr_classes.nr_release_id', $latest_nr_release);
+        $this->db->select('np.nr_class_id')
+                 ->from('nr_pdbs AS np')
+                 ->join('nr_classes AS nc', 'np.nr_class_id = nc.nr_class_id')
+                 ->where('np.nr_pdb_id', $pdb_id)
+                 ->where('np.nr_release_id', $latest_nr_release)
+                 ->where('nc.resolution', 'all')
+                 ->where('nc.nr_release_id', $latest_nr_release);
         $result = $this->db->get();
+
         if ( $result->num_rows() == 0 ) {
             $equivalence_class = 'Not a member of any equivalent class, most likely due to the absence of complete nucleotides.';
             $equivalence_class_found = False;
@@ -432,7 +454,7 @@ class Pdb_model extends CI_Model {
         $representative = Null;
         if ( $equivalence_class_found ) {
             // choose all structures from the selected equivalence class
-            $this->db->select()
+            $this->db->select('nr_pdb_id')
                      ->from('nr_pdbs')
                      ->where('nr_release_id', $latest_nr_release)
                      ->where('nr_class_id', $equivalence_class)
@@ -450,6 +472,7 @@ class Pdb_model extends CI_Model {
                 }
             }
         }
+
         return array('related_pdbs' => $pdbs,
                      'eq_class' => $equivalence_class,
                      'representative' => $representative);
@@ -457,20 +480,20 @@ class Pdb_model extends CI_Model {
 
     function get_ordered_nts($pdb_id)
     {
-        $this->db->select()
+        $this->db->select('best_chains')
                  ->from('pdb_best_chains_and_models')
                  ->where('pdb_id', $pdb_id);
 
         $result = $this->db->get()->row();
         $chains = explode(",", $result->best_chains);
 
-        $this->db->select('__pdb_unit_id_correspondence.unit_id as id, __pdb_coordinates.chain as chain, __pdb_coordinates.unit as sequence')
-                 ->from('pdb_unit_ordering')
-                 ->join('__pdb_coordinates', '__pdb_coordinates.pdb_coordinates_id = pdb_unit_ordering.nt_id')
-                 ->join('__pdb_unit_id_correspondence', '__pdb_unit_id_correspondence.old_id = pdb_unit_ordering.nt_id')
-                 ->where('pdb_unit_ordering.pdb', $pdb_id)
-                 ->where_in('__pdb_coordinates.chain', $chains)
-                 ->order_by('pdb_unit_ordering.index', 'asc');
+        $this->db->select('pu.unit_id as id, pc.chain as chain, pc.unit as sequence')
+                 ->from('pdb_unit_ordering AS uo')
+                 ->join('__pdb_coordinates AS pc', 'pc.pdb_coordinates_id = uo.nt_id')
+                 ->join('__pdb_unit_id_correspondence AS pu', 'pu.old_id = uo.nt_id')
+                 ->where('uo.pdb', $pdb_id)
+                 ->where_in('pc.chain', $chains)
+                 ->order_by('uo.index', 'asc');
 
         $query = $this->db->get();
         $chain_data = array();
@@ -483,6 +506,7 @@ class Pdb_model extends CI_Model {
             $chain_data[$row->chain]['nts'][] = array('id' => $row->id,
                                                       'sequence' => $row->sequence);
         }
+        
         return array_values($chain_data);
     }
 
