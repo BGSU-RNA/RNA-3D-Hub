@@ -54,7 +54,7 @@ class Apiv1_model extends CI_Model {
     {
         // best guess based on the input data
         $rna_nts = array('A', 'C', 'G', 'U');
-        $this->db->select()
+        $this->db->select('pdb_coordinates_id')
                  ->from('__pdb_coordinates')
                  ->where('pdb_id', $pdb_id)
                  ->where('model', 1) // look only in the first model
@@ -62,6 +62,7 @@ class Apiv1_model extends CI_Model {
                  ->where('ins_code', preg_replace('/\d/', '', $nt))
                  ->where_in('unit', $rna_nts)
                  ->limit(1);
+
         if ( $chain ) {
             $this->db->where('chain', $chain);
         }
@@ -181,13 +182,14 @@ class Apiv1_model extends CI_Model {
         $rna_nts = array('A', 'C', 'G', 'U');
 
         for ($i = $block[0]; $i <= $block[1]; $i++) {
-            $this->db->select()
+            $this->db->select('number, ins_code')
                      ->from('__pdb_coordinates')
                      ->where('pdb_id', $pdb_id)
                      ->where('index', $i)
                      ->where_in('unit', $rna_nts) // separate index for nucleotides and heteroatoms
                      ->limit(1);
             $query = $this->db->get();
+
             $result = $query->row();
             $expanded[] = $result->number . $result->ins_code;
         }
