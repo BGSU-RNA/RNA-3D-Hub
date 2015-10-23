@@ -13,7 +13,7 @@ class Loops_model extends CI_Model {
 
     function is_valid_loop_id($id)
     {
-        $this->db->select()
+        $this->db->select('loop_id')
                  ->from('loop_info')
                  ->where('loop_id', $id);
         $query = $this->db->get();
@@ -50,11 +50,13 @@ class Loops_model extends CI_Model {
     function get_loop_info($id)
     {
         $result = array();
+
         // info from loops_all
-        $this->db->select()
+        $this->db->select('length, seq')
                  ->from('loop_info')
                  ->where('loop_id',$id);
         $query = $this->db->get();
+
         if ($query->num_rows() > 0) {
             $loop_info = $query->row();
             $result['length'] = $loop_info->length;
@@ -65,12 +67,13 @@ class Loops_model extends CI_Model {
         }
 
         // qa info
-        $this->db->select()
+        $this->db->select('status, modifications, nt_signature, complementary')
                  ->from('loop_qa')
-                 ->where('loop_id',$id)
+                 ->where('loop_qa_id',$id)
                  ->order_by('release_id', 'desc')
                  ->limit(1);
         $query = $this->db->get();
+
         if ($query->num_rows() > 0) {
             $loop_qa = $query->row();
             switch ($loop_qa->status) {
@@ -98,18 +101,21 @@ class Loops_model extends CI_Model {
         }
 
         // get list of bulges
-        $this->db->select()
+        $this->db->select('unit_id')
                  ->from('loop_positions')
                  ->where('loop_id',$id)
                  ->where('bulge',1)
                  ->order_by('position');
         $query = $this->db->get();
+
         if ($query->num_rows() > 0) {
             $bulges = array();
+
             foreach ($query->result() as $row) {
-                $parts = explode('_', $row->nt_id);
+                $parts = explode('_', $row->unit_id);
                 $bulges[] = $parts[5] . $parts[4];
             }
+
             $result['bulges'] = implode(', ', $bulges);
         } else {
             $result['bulges'] = "None detected";
@@ -125,15 +131,18 @@ class Loops_model extends CI_Model {
         $result['pdb'] = substr($id,3,4);
         $result['rna3dhub_link'] = anchor_popup('pdb/' . $result['pdb'] . '/motifs', 'RNA 3D Hub');
         $result['pdb_link'] = anchor_popup('http://www.rcsb.org/pdb/explore.do?structureId=' . $result['pdb'], 'PDB');
-        $this->db->select()
+
+        $this->db->select('title, experimental_techinque, resolution')
                  ->from('pdb_info')
                  ->where('pdb_id',$result['pdb'])
                  ->limit(1);
         $query = $this->db->get();
+
         if ($query->num_rows() > 0) {
             $pdb_info = $query->row();
-            $result['pdb_desc'] = $pdb_info->structureTitle;
-            $result['pdb_exptechnique'] = $pdb_info->experimentalTechnique;
+            $result['pdb_desc'] = $pdb_info->title;
+            $result['pdb_exptechnique'] = $pdb_info->experimental_techinque;
+
             if ($pdb_info->resolution == Null) {
                 $result['pdb_resolution'] = '';
             } else {
@@ -147,22 +156,23 @@ class Loops_model extends CI_Model {
 
         // non-redundant equivalence class info
         // get latest NR release id
-        $this->db->select()
+        $this->db->select('nr_release_id')
                  ->from('nr_releases')
                  ->order_by('date','desc')
                  ->limit(1);
         $query = $this->db->get();
         $release = $query->row();
+
         // get equivalence classes
-        $this->db->select()
+        $this->db->select('nr_class_id')
                  ->from('nr_pdbs')
                  ->where('nr_pdb_id',$result['pdb'])
-                 ->where('nr_release_id', $release->id);
+                 ->where('nr_release_id', $release->nr_release_id);
         $query = $this->db->get();
 
         $nr_classes = array();
         foreach ($query->result() as $row) {
-            $nr_classes[] = anchor_popup('nrlist/view/' . $row->class_id, $row->class_id);
+            $nr_classes[] = anchor_popup('nrlist/view/' . $row->nr_class_id, $row->nr_class_id);
         }
         $result['nr_classes'] = implode(', ', $nr_classes);
 
@@ -266,6 +276,7 @@ class Loops_model extends CI_Model {
     function get_protein_info($id)
     {
         $result = array();
+
         // get nearby protein chains
         $this->db->select('t3.chain')
                  ->distinct()
@@ -276,22 +287,33 @@ class Loops_model extends CI_Model {
                  ->where('char_length(t3.unit) = 3')
                  ->not_like('t3.coordinates','HETATM','after');
         $query = $this->db->get();
+
         if ($query->num_rows() > 0) {
             $chains = array();
+            
             foreach ($query->result() as $row) {
                 $chains[] = $row->chain;
             }
-            $this->db->select()
+            
+            /*
+              TODO:  RESOLVE THE db_name and db_ids fields
+            
+              Neither column is present in updated versions
+              of pdb_info and chain_info.
+            */
+            $this->db->select('chain_name, compound')
                      ->from('chain_info')
                      ->where('pdb_id', substr($id,3,4))
                      ->where_in('chain_name', $chains);
             $query = $this->db->get();
+            
             // db_name = 'PDB, Uniprot'
             // db_ids  = 'PDB_id, Uniprot_id'
             foreach ($query->result() as $row) {
                 $result['proteins'][$row->chain_name]['description'] = $row->compound;
                 $databases = explode(',', $row->db_name);
                 $ids = explode(',', $row->db_id);
+            
                 for ($i = 0; $i < count($databases); $i++) {
                     if (preg_match('/Uniprot/i', $databases[$i])) {
                         $result['proteins'][$row->chain_name]['uniprot'] = anchor_popup('http://www.uniprot.org/uniprot/' . trim($ids[$i]), $ids[$i]);
@@ -319,12 +341,12 @@ class Loops_model extends CI_Model {
 
     function get_similar_loops($id)
     {
-        $where = "loop_searches.disc > 0 AND (loop_searches.loop_id_1='$id' OR loop_searches.loop_id_2='$id')";
-        $this->db->select('loop_searches.loop_id_1, loop_searches.loop_id_2, loop_searches.disc, loop_search_qa.status, loop_search_qa.message')
-                 ->from('loop_searches')
-                 ->join('loop_search_qa','loop_searches.loop_id_1=loop_search_qa.loop_id_1 AND loop_searches.loop_id_2=loop_search_qa.loop_id_2','left')
+        $where = "ls.disc > 0 AND (ls.loop_id_1='$id' OR ls.loop_id_2='$id')";
+        $this->db->select('ls.loop_id_1, ls.loop_id_2, ls.disc, lq.status, lq.message')
+                 ->from('loop_searches AS ls')
+                 ->join('loop_search_qa AS lq','ls.loop_id_1 = lq.loop_id_1 AND ls.loop_id_2 = lq.loop_id_2','left')
                  ->where($where, NULL, FALSE)
-                 ->order_by('loop_searches.disc', 'asc');
+                 ->order_by('ls.disc', 'asc');
         $query = $this->db->get();
 
         $matches = array();
@@ -340,18 +362,22 @@ class Loops_model extends CI_Model {
             } else {
                 $match = $row->loop_id1;
             }
+            
             // exclude rows with reversed orientation of loop_id1 and loop_id2
             if ( array_key_exists($match, $matches) ) {
                 continue;
             } else {
                 $matches[$match]='';
             }
+
             $count++;
+            
             $this->db->select()
                      ->from('ml_loops')
                      ->where('ml_loops_id',$match)
                      ->where('release_id',$ml_release_id);
             $q = $this->db->get();
+
             if ($q->num_rows() > 0) {
                 $result = $q->row();
             } else {
@@ -404,24 +430,24 @@ class Loops_model extends CI_Model {
     function get_loop_stats()
     {
         // get release order
-        $this->db->select()
+        $this->db->select('loop_releases_id, date')
                  ->from('loop_releases')
                  ->order_by('date', 'desc');
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
-            $releases[] = $row->id;
-            $dates[$row->id] = substr($row->date,0,10);
+            $releases[] = $row->loop_releases_id;
+            $dates[$row->loop_releases_id] = substr($row->date,0,10);
         }
 
         // get loop counts group by loop type and release
-        $this->db->select('release_id, status, count(status) as counts, substr(loop_id, 1, 2) as loop_type', FALSE)
+        $this->db->select('loop_release_id, status, count(status) as counts, substr(loop_id, 1, 2) as loop_type', FALSE)
                  ->from('loop_qa')
-                 ->group_by(array('status', 'release_id', 'loop_type'));
+                 ->group_by(array('status', 'loop_release_id', 'loop_type'));
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
-            $results[$row->loop_type][$row->release_id][$row->status] = $row->counts;
+            $results[$row->loop_type][$row->loop_release_id][$row->status] = $row->counts;
         }
 
         foreach (array_keys($results) as $loop_type) {
@@ -437,6 +463,7 @@ class Loops_model extends CI_Model {
                                             $this->make_view_loops_link($results,$loop_type,$release,6));
             }
         }
+
         return $tables;
     }
 
@@ -474,13 +501,13 @@ class Loops_model extends CI_Model {
     {
         $verbose = $type;
         $type = array_search($type, $this->qa_status);
-        $this->db->select()
-                 ->from('loop_qa')
-                 ->join('loop_info','loop_qa.loop_id = loop_info.loop_id')
+        $this->db->select('qa.loop_qa_id, qa.modifications, qa.nt_signature, qa.complementary, li.seq')
+                 ->from('loop_qa AS qa')
+                 ->join('loop_info AS li','qa.loop_qa_id = li.loop_id')
                  ->where('status',$type)
                  ->where('type',$motif_type)
                  ->where('release_id',$release_id)
-                 ->order_by('loop_info.loop_id')
+                 ->order_by('li.loop_id')
                  ->limit($num,$offset);
         $query = $this->db->get();
 
@@ -502,10 +529,12 @@ class Loops_model extends CI_Model {
                 $this->table->set_heading('#','id','PDB','Info');
                 $info = '';
             }
+
             $this->table->add_row($offset + $i,
-                                          $this->make_radio_button($row->id),
-                                          '<a class="pdb">' . substr($row->id,3,4) . '</a>',
+                                          $this->make_radio_button($row->loop_qa_id),
+                                          '<a class="pdb">' . substr($row->loop_qa_id,3,4) . '</a>',
                                           $info);
+
             $i++;
         }
 
@@ -515,6 +544,7 @@ class Loops_model extends CI_Model {
             $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table'>" );
             $this->table->set_template($tmpl);
         }
+
         return $this->table->generate();
     }
 
