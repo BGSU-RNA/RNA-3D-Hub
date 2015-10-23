@@ -23,6 +23,7 @@ class Ajax_model extends CI_Model {
     {
         $f_lwbp = array('cHH','cHS','cHW','cSH','cSS','cSW','cWH','cWS','cWW','tHH',
                         'tHS','tHW','tSH','tSS','tSW','tWH','tWS','tWW');
+
         return $this->db->select('f_lwbp')
                         ->from('unit_pairs_interactions')
                         ->where('pdb_id', $pdb_id)
@@ -32,22 +33,26 @@ class Ajax_model extends CI_Model {
 
     function get_source_organism($pdb_id)
     {
-        $this->db->select()
+        $this->db->select('source')
                  ->from('chain_info')
                  ->where('pdb_id', $pdb_id)
                  ->like('entity_macromolecule_type', 'RNA')
                  ->where("chain_length = (SELECT max(chain_length) FROM chain_info WHERE pdb_id ='$pdb_id' AND entity_macromolecule_type LIKE '%RNA%')");
         $query = $this->db->get()->result();
+
         return $query[0]->source;
     }
 
     function get_pdb_info($pdb)
     {
-        $this->db->select()
+        $this->db->select('title')
+                 ->select('experimental_techinque')
+                 ->select('resolution')
                  ->from('pdb_info')
                  ->where('pdb_id', $pdb)
                  ->limit(1);
         $query = $this->db->get();
+
         if ( $query->num_rows() > 0 ) {
             $row = $query->row();
 
@@ -77,10 +82,11 @@ class Ajax_model extends CI_Model {
                         anchor_popup("pdb/$pdb", 'RNA 3D Hub');
         } else {
             // check obsolete files
-            $this->db->select()
+            $this->db->select('replaced_by')
                      ->from('pdb_obsolete')
                      ->where('pdb_obsolete_id', $pdb);
             $query = $this->db->get();
+
             if ( $query->num_rows() > 0 ) {
                 $row = $query->row();
 
@@ -91,6 +97,7 @@ class Ajax_model extends CI_Model {
                     // pdb file is replaced by one or more new pdbs
                     $replaced_by = explode(',', $row->replaced_by);
                     $new_urls = '';
+
                     foreach ($replaced_by as $new_file) {
                         $new_urls .= anchor_popup("http://www.pdb.org/pdb/explore/explore.do?structureId=$new_file", $new_file) . ' ';
                     }
@@ -133,7 +140,13 @@ class Ajax_model extends CI_Model {
 
         $list_ids = "'" . implode("','",$nt_ids) . "'";
 
-        $sql_command = '* FROM __dcc_residues where dcc_residues_id IN ('. $list_ids .') order by(FIELD(dcc_residues_id,'.$list_ids.'));';
+        $sql_command = 'dcc_residues_id, sfcheck_correlation, sfcheck_correlation_side_chain, ' .
+                            'sfcheck_real_space_R, sfcheck_real_space_R_side_chain, sfcheck_connect, ' .
+                            'sfcheck_shift, sfcheck_shift_side_chain, sfcheck_density_index_main_chain, ' .
+                            'sfcheck_density_index_side_chain, sfcheck_B_iso_main_chain, ' .
+                            'sfcheck_B_iso_side_chain, mapman_correlation, mapman_real_space_R, ' .
+                            'mapman_Biso_mean, mapman_occupancy_mean FROM __dcc_residues where dcc_residues_id IN (' . 
+                            $list_ids . ') order by(FIELD(dcc_residues_id,' . $list_ids . '));';
         $this->db->select($sql_command, FALSE);
         $query = $this->db->get();
         //         $this->db->select()
@@ -155,6 +168,7 @@ class Ajax_model extends CI_Model {
                     $s[$key] = '';
                 }
             }
+
             foreach ($fields as $key => $value) {
                 $s[$key] .= str_repeat($value . ' ', $lengths[$nt_type]);
             }
@@ -191,16 +205,19 @@ class Ajax_model extends CI_Model {
         $this->db->select('coordinates')->from('__pdb_coordinates');
 
         $nts = explode(',', $nt_ids);
+
         foreach ($nts as $nt) {
             $this->db->or_like('pdb_coordinates_id', $nt, 'after');
         }
+        
         $query = $this->db->get();
+        
         if ($query->num_rows() == 0) { return 'Loop coordinates not found'; }
 
         $final_result = "MODEL     1\n";
-        foreach ($query->result() as $row) {
+                foreach ($query->result() as $row) {
             $final_result .= $row->coordinates . "\n";
-        }
+        }        
         $final_result .= "ENDMDL\n";
 
         // get neighborhood
@@ -212,13 +229,13 @@ class Ajax_model extends CI_Model {
                  ->where_not_in('unit_id_1',$nt_ids);
         $query = $this->db->get();
 
-         $final_result .= "MODEL     2\n";
-         if ($query->num_rows() > 0) {
+        $final_result .= "MODEL     2\n";
+                if ($query->num_rows() > 0) {
             foreach ($query->result() as $row) {
                 $final_result .= $row->coordinates . "\n";
             }
-         }
-         $final_result .= "ENDMDL";
+        }
+        $final_result .= "ENDMDL";
 
         return $final_result;
     }
@@ -227,7 +244,8 @@ class Ajax_model extends CI_Model {
     {
         $imploded = "'" . implode("','",$nt_ids) . "'";
 
-        $query_string = "* from __pdb_coordinates where pdb_coordinates_id IN ($imploded) ORDER BY FIELD(id, $imploded);";
+        $query_string = "coordinates from __pdb_coordinates where pdb_coordinates_id " . 
+                            "IN ($imploded) ORDER BY FIELD(id, $imploded);";
         $this->db->select($query_string, FALSE);
         $query = $this->db->get();
 
@@ -270,7 +288,7 @@ class Ajax_model extends CI_Model {
         if ($query->num_rows() == 0) { return 'Loop id not found'; }
 
         foreach ($query->result() as $row) {
-            $nt_ids = explode(',',$row->nt_ids);
+            $nt_ids = explode(',',$row->unit_ids);
         }
 
         // get their coordinates
@@ -327,7 +345,8 @@ class Ajax_model extends CI_Model {
         } else {
             $nt_list = 'nt_list2';
         }
-        $this->db->select()
+
+        $this->db->select('loop_searches_id, loop_id_1, loop_id_2, disc, nt_list1, nt_list2')
                  ->from('loop_searches')
                  ->where('loop_id_1',$loop_ids[0])
                  ->where('loop_id_2',$loop_ids[1]);
@@ -343,11 +362,13 @@ class Ajax_model extends CI_Model {
                 } else {
                     $nt_list = 'nt_list1';
                 }
-                $this->db->select()
+
+                $this->db->select('loop_searches_id, loop_id_1, loop_id_2, disc, nt_list1, nt_list2')
                          ->from('loop_searches')
                          ->where('loop_id_1',$loop_ids[1])
                          ->where('loop_id_2',$loop_ids[0]);
                 $query = $this->db->get();
+
                 if ($query->num_rows() > 0) {
                     $row = $query->row_array();
                 } else {
@@ -361,7 +382,6 @@ class Ajax_model extends CI_Model {
         $nt_ids = explode(',', $row[$nt_list]);
 
         return $this->get_nt_coordinates($nt_ids);
-
     }
 
     function get_exemplar_coordinates($motif_id)
