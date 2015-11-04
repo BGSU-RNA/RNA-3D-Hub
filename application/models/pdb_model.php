@@ -31,7 +31,7 @@ class Pdb_model extends CI_Model {
                  ->limit($num);
         $query = $this->db->get();
         foreach($query->result() as $row) {
-            $pdbs[] = $row->structureId;
+            $pdbs[] = $row->pdb_id;
         }
         return $pdbs;
     }

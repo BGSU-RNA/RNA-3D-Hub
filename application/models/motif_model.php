@@ -505,7 +505,7 @@ class Motif_model extends CI_Model {
                  ->order_by('date','desc')
                  ->limit(1);
         $result = $this->db->get()->result_array();
-        return $result[0]['id'];
+        return $result[0]['ml_releases_id'];
     }
 
     // history tab

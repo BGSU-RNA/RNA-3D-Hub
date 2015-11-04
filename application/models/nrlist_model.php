@@ -546,7 +546,7 @@ CREATE TABLE `nr_release_diff` (
                  ->select('rd.num_added_pdbs')
                  ->select('rd.num_removed_pdbs')
                  ->from('nr_releases AS re')
-                 ->join('nr_release_diff AS rd','re.id = rd.nr_release_id1')
+                 ->join('__trash_nr_release_diff AS rd','re.id = rd.nr_release_id1')
                  ->where('rd.direct_parent',1)
                  ->order_by('re.date','desc');
         $query = $this->db->get();
