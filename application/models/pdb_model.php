@@ -163,10 +163,18 @@ class Pdb_model extends CI_Model {
 
     function pdb_is_annotated($pdb_id, $interaction_type)
     {
-        $this->db->select('pdb_analysis_status_id')
-                 ->from('pdb_analysis_status')
-                 ->where('pdb_id', $pdb_id)
-                 ->where("$interaction_type IS NOT NULL");
+        //$this->db->select('pdb_analysis_status_id')
+        //         ->from('pdb_analysis_status')
+        //         ->where('pdb_id', $pdb_id)
+        //         ->where("$interaction_type IS NOT NULL");
+
+        //$query = "COUNT(IF(`li`.`type` = `$interaction_type`, 1, NULL)) AS numloops";
+
+        $this->db->select('pas.pdb_analysis_status_id, li.type')
+                 //->select($query, FALSE)
+                 ->from('pdb_analysis_status AS pas')
+                 ->join('loop_info AS li', 'pas.pdb_id = li.pdb_id')
+                 ->where('pas.pdb_id', $pdb_id);
 
         if ( $this->db->get()->num_rows() > 0 ) {
             return True;
@@ -331,12 +339,12 @@ class Pdb_model extends CI_Model {
 
     function get_latest_nr_release($pdb_id)
     {
-        $this->db->select('id')
+        $this->db->select('nr_release_id')
                  ->from('nr_releases')
                  ->order_by('date', 'desc')
                  ->limit(1);
         $result = $this->db->get()->row();
-        return $result->id;
+        return $result->nr_release_id;
     }
 
     function get_nrlist_info($pdb_id)
