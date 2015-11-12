@@ -433,15 +433,15 @@ class Motif_model extends CI_Model {
             $index = array();
 
             // get indexes of bordering nucleotides for loop id
-            $this->db->select('__pdb_coordinates.index')
-                     ->from('loop_positions')
-                     ->join('__pdb_coordinates', 'loop_positions.nt_id = __pdb_coordinates.pdb_coordinates_id')
-                     ->join('ml_loop_positions', 'loop_positions.loop_id = ml_loop_positions.loop_id AND ' .
-                                                 'loop_positions.nt_id = ml_loop_positions.nt_id')
-                     ->where('ml_loop_positions.release_id', $latest_release)
-                     ->where('loop_positions.loop_id', $loop_id)
-                     ->where('loop_positions.border', 1)
-                     ->order_by('ml_loop_positions.position');
+            $this->db->select('pc.index')
+                     ->from('loop_positions AS lp')
+                     ->join('__pdb_coordinates AS pc', 'lp.unit_id = pc.pdb_coordinates_id')
+                     ->join('ml_loop_positions AS ml', 'lp.loop_id = ml.loop_id AND ' .
+                                                       'lp.unit_id = ml.nt_id')
+                     ->where('ml.release_id', $latest_release)
+                     ->where('lp.loop_id', $loop_id)
+                     ->where('lp.border', 1)
+                     ->order_by('ml.position');
             $query = $this->db->get();
 
             foreach($query->result() as $row) {
@@ -756,15 +756,15 @@ class Motif_model extends CI_Model {
     	$loop_id = $result->ml_loops_id;
 
     	// get chain breaks
-    	$this->db->select('ml_loop_positions.position')
-    	         ->from('loop_positions')
-    	         ->join('ml_loop_positions', 'loop_positions.loop_id = ml_loop_positions.loop_id AND ' .
-    	                                     'loop_positions.nt_id = ml_loop_positions.nt_id')
-    	         ->where('loop_positions.loop_id', $loop_id)
-    	         ->where('loop_positions.border', 1)
-    	         ->where('ml_loop_positions.motif_id', $this->motif_id)
-    	         ->where('ml_loop_positions.release_id', $this->release_id)
-    	         ->order_by('ml_loop_positions.position', 'ASC');
+    	$this->db->select('ml.position')
+    	         ->from('loop_positions AS lp')
+    	         ->join('ml_loop_positions AS ml', 'lp.loop_id = ml.loop_id AND ' .
+    	                                           'lp.unit_id = ml.nt_id')
+    	         ->where('lp.loop_id', $loop_id)
+    	         ->where('lp.border', 1)
+    	         ->where('ml.motif_id', $this->motif_id)
+    	         ->where('ml.release_id', $this->release_id)
+    	         ->order_by('ml.position', 'ASC');
         $result = $this->db->get()->result_array();
 
         // take second row
