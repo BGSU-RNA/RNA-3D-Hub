@@ -63,34 +63,14 @@ CREATE TABLE `nr_release_diff` (
         $counts1 = $this->count_motifs($rel1);
         $counts2 = $this->count_motifs($rel2);
 
-        $this->db->select('resolution')
-                 ->select('added_groups')
-                 ->select('removed_groups')
-                 ->select('updated_groups')
-                 ->select('same_groups')
-                 ->select('num_added_groups')
-                 ->select('num_removed_groups')
-                 ->select('num_updated_groups')
-                 ->select('num_same_groups')
-                 ->from('nr_release_diff')
-                 ->where('nr_release_id1',$rel1)
-                 ->where('nr_release_id2',$rel2);
-        $query = $this->db->get();
+        $sql = "CALL nr_release_diff(?,?)";
+        $par = array($rel1, $rel2);
+
+        $query = $this->db->query($sql, $par);
 
         if ($query->num_rows == 0) {
-            $this->db->select('resolution')
-                     ->select('added_groups')
-                     ->select('removed_groups')
-                     ->select('updated_groups')
-                     ->select('same_groups')
-                     ->select('num_added_groups')
-                     ->select('num_removed_groups')
-                     ->select('num_updated_groups')
-                     ->select('num_same_groups')
-                     ->from('nr_release_diff')
-                     ->where('nr_release_id1',$rel2)
-                     ->where('nr_release_id2',$rel1);
-            $query = $this->db->get();
+            $par = array($rel2,$rel1);
+            $query = $this->db->query($sql, $par);
         }
 
         foreach ($query->result() as $row) {
