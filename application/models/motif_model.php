@@ -429,15 +429,17 @@ class Motif_model extends CI_Model {
         $seq   = array();
 
         foreach($this->loops as $loop_id) {
+            echo "<p>latest_release = $latest_release---</p>";
+            echo "<p>loop_id = $loop_id---</p>";
 
             $index = array();
 
             // get indexes of bordering nucleotides for loop id
-            $this->db->select('pc.index')
+            $this->db->select('lp.position', 'index')
                      ->from('loop_positions AS lp')
-                     ->join('__pdb_coordinates AS pc', 'lp.unit_id = pc.pdb_coordinates_id')
+                     ->join('unit_info AS ui', 'lp.unit_id = ui.unit_id')
                      ->join('ml_loop_positions AS ml', 'lp.loop_id = ml.loop_id AND ' .
-                                                       'lp.unit_id = ml.nt_id')
+                                                       'lp.position = ml.position')
                      ->where('ml.release_id', $latest_release)
                      ->where('lp.loop_id', $loop_id)
                      ->where('lp.border', 1)
@@ -445,10 +447,15 @@ class Motif_model extends CI_Model {
             $query = $this->db->get();
 
             foreach($query->result() as $row) {
-                $index[] = $row->index;
+                $index[] = $row->position;
+                echo "<p>index = $row->position---</p>";
             }
 
             list($loop_type, $pdb, $order) = explode('_', $loop_id);
+
+            echo "<p>loop_type = $loop_type---</p>";
+            echo "<p>pdb = $pdb---</p>";
+            echo "<p>order = $order---</p>";
 
             if ( $loop_type == 'HL' ) {
                 $seq = array($this->get_strand_fragment($pdb, $index[0], $index[1]));
@@ -482,12 +489,15 @@ class Motif_model extends CI_Model {
     {
         $rna = array('A', 'C', 'G', 'U');
 
+        echo "<p>start = $start---</p>";
+        echo "<p>stop = $stop---</p>";
+
         $this->db->select('unit')
-                 ->from('__pdb_coordinates')
+                 ->from('unit_info')
                  ->where('pdb_id', $pdb)
                  ->where_in('unit', $rna)
-                 ->where('index >=', $start)
-                 ->where('index <=', $stop);
+                 ->where('chain_index >=', $start)
+                 ->where('chain_index <=', $stop);
         $query = $this->db->get();
         foreach($query->result() as $row) {
             $nts[] = $row->unit;

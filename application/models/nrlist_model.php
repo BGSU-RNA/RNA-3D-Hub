@@ -223,17 +223,18 @@ CREATE TABLE `nr_release_diff` (
 
     function get_members($id)
     {
-        $this->db->select('np.nr_pdb_id')
+        $this->db->select('pi.pdb_id')
                  ->select('pi.title')
                  ->select('pi.experimental_technique')
                  ->select('pi.release_date')
                  ->select('pi.resolution')
-                 ->from('__trash_nr_pdbs AS np')
-                 ->join('pdb_info AS pi','pi.pdb_id = np.nr_pdb_id')
-                 ->where('np.nr_class_id',$id)
-                 ->where('np.nr_release_id',$this->last_seen_in)
+                 ->from('pdb_info AS pi')
+                 ->join('ife_info AS ii','ii.pdb_id = pi.pdb_id')
+                 ->join('nr_chains AS nc', 'nc.ife_id = ii.ife_id')
+                 ->where('nc.nr_class_id',$id)
+                 ->where('nc.nr_release_id',$this->last_seen_in)
                  ->group_by('pdb_id')
-                 ->order_by('np.rep','desc');
+                 ->order_by('nc.rep','desc');
         $query = $this->db->get();
 
         $i = 0;
@@ -330,17 +331,18 @@ CREATE TABLE `nr_release_diff` (
 
     function get_change_counts_by_release()
     {
-        $this->db->select('nr_release_id1')
-                 ->select_sum('num_added_groups','nag')
-                 ->select_sum('num_removed_groups','nrg')
-                 ->select_sum('num_updated_groups','nug')
-                 ->from('__trash_nr_release_diff')
-                 ->where('direct_parent',1)
-                 ->group_by('nr_release_id1');
+        $this->db->select('nr_release_id, new_class_count AS nag, removed_class_count AS nrg, updated_class_count AS nug')
+                 #->select('num_added_groups','nag')
+                 #->select_sum('num_removed_groups','nrg')
+                 #->select_sum('num_updated_groups','nug')
+                 ->from('nr_parent_counts');
+                 #->from('__trash_nr_release_diff')
+                 #->where('direct_parent',1)
+                 #->group_by('nr_release_id');
         $query = $this->db->get();
         $changes = array();
         foreach ($query->result() as $row) {
-            $changes[$row->nr_release_id1] = $row->nag + $row->nug + $row->nrg;
+            $changes[$row->nr_release_id] = $row->nag + $row->nug + $row->nrg;
         }
         return $changes;
     }
@@ -362,10 +364,10 @@ CREATE TABLE `nr_release_diff` (
 
     function get_pdb_files_counts()
     {
-        $this->db->select('nr_release_id, count(nr_pdb_id) as num')
-                 ->from('__trash_nr_pdbs')
-                 ->like('nr_class_id','NR_all','after')
-                 ->group_by('nr_release_id');
+        $this->db->select('nch.nr_release_id, count(ii.pdb_id) as num')
+                 ->from('ife_info AS ii')
+                 ->join('nr_chains AS nch', 'ii.ife_id = nch.ife_id')
+                 ->group_by('nch.nr_release_id');
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
@@ -536,31 +538,29 @@ CREATE TABLE `nr_release_diff` (
     {
         $releases = $this->get_release_precedence();
 
-        $this->db->select('re.nr_release_id')
-                 ->select('re.description')
-                 ->select('rd.nr_release_id2')
-                 ->select('rd.resolution')
-                 ->select('rd.num_added_groups')
-                 ->select('rd.num_removed_groups')
-                 ->select('rd.num_updated_groups')
-                 ->select('rd.num_added_pdbs')
-                 ->select('rd.num_removed_pdbs')
-                 ->from('nr_releases AS re')
-                 ->join('__trash_nr_release_diff AS rd','re.id = rd.nr_release_id1')
-                 ->where('rd.direct_parent',1)
-                 ->order_by('re.date','desc');
+        $this->db->select('nr_release_id')
+                 ->select('description')
+                 ->select('parent_nr_release_id')
+                 ->select('resolution')
+                 ->select('new_class_count')
+                 ->select('removed_class_count')
+                 ->select('updated_class_count')
+                 ->select('pdb_added_count')
+                 ->select('pdb_removed_count')
+                 ->from('nr_release_compare_counts')
+                 ->order_by('date', 'desc');
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
-            if ($row->nr_release_id2 == $releases[$row->nr_release_id]) {
+            if ($row->parent_nr_release_id == $releases[$row->nr_release_id]) {
                 $tables[$row->resolution][] = array(
-                    anchor(base_url(array('nrlist','compare',$row->nr_release_id,$releases[$row->nr_release_id])), $row->nr_release_id),
+                    anchor(base_url(array('nrlist','compare',$row->nr_release_id,$row->parent_nr_release_id)), $row->nr_release_id),
                     $this->beautify_description_date($row->description),
-                    $this->make_release_label($row->num_added_groups),
-                    $this->make_release_label($row->num_removed_groups),
-                    $this->make_release_label($row->num_updated_groups),
-                    $this->make_release_label($row->num_added_pdbs),
-                    $this->make_release_label($row->num_removed_pdbs)
+                    $this->make_release_label($row->new_class_count),
+                    $this->make_release_label($row->removed_class_count),
+                    $this->make_release_label($row->updated_class_count),
+                    $this->make_release_label($row->pdb_added_count),
+                    $this->make_release_label($row->pdb_removed_count)
                 );
             }
         }
@@ -618,26 +618,28 @@ CREATE TABLE `nr_release_diff` (
         $resolution = str_replace('A', '', $resolution);
 
         // get raw release data
-        $this->db->select('nr_pdb_id, nr_class_id, rep')
-                 ->from('__trash_nr_pdbs')
-                 ->where('nr_release_id', $id)
-                 ->like('nr_class_id', "NR_{$resolution}", 'after');
+        $this->db->select('ii.pdb_id, nl.name, nc.rep')
+                 ->from('ife_info AS ii')
+                 ->join('nr_chains AS nc', 'ii.ife_id = nc.ife_id')
+                 ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
+                 ->where('nc.nr_release_id', $id)
+                 ->like('nl.name', "NR_{$resolution}", 'after');
         $query = $this->db->get();
 
         // reorganize by class and rep and pdb
         $class = array();
         foreach ($query->result() as $row) {
-            $pdbs[] = $row->nr_pdb_id;
+            $pdbs[] = $row->pdb_id;
 
             if ($row->rep == 1) {
-                $reps[$row->nr_class_id] = $row->nr_pdb_id;
+                $reps[$row->name] = $row->pdb_id;
             }
 
-            if (!array_key_exists($row->class_id, $class) ) {
-                $class[$row->nr_class_id] = array();
+            if (!array_key_exists($row->name, $class) ) {
+                $class[$row->name] = array();
             }
 
-            $class[$row->nr_class_id][]     = $row->nr_pdb_id;
+            $class[$row->name][] = $row->pdb_id;
         }
 
         $pdbs = array_unique($pdbs);
@@ -700,17 +702,19 @@ CREATE TABLE `nr_release_diff` (
         $counts_text .= '<br><br>';
 
         // get order
-        $this->db->select('nr_class_id, count(nr_pdb_id) as num')
-                 ->from('nr_pdbs')
-                 ->where('nr_release_id', $id)
-                 ->like('nr_class_id', "NR_{$resolution}", 'after')
-                 ->group_by('nr_class_id')
+        $this->db->select('nl.name, count(ii.pdb_id) as num')
+                 ->from('nr_chains AS nc')
+                 ->join('ife_info AS ii', 'nc.ife_id = ii.ife_id')
+                 ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
+                 ->where('nc.nr_release_id', $id)
+                 ->like('nl.name', "NR_{$resolution}", 'after')
+                 ->group_by('nl.name')
                  ->order_by('num','desc')
-                 ->order_by('nr_pdb_id');
+                 ->order_by('ii.pdb_id');
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
-            $order[] = $row->nr_class_id;
+            $order[] = $row->name;
         }
 
         // make the table
@@ -742,8 +746,8 @@ CREATE TABLE `nr_release_diff` (
 
     function count_all_nucleotides($pdb_id)
     {
-        $this->db->select('count(pdb_coordinates_id) as length')
-                 ->from('__pdb_coordinates')
+        $this->db->select('count(unit_id) as length')
+                 ->from('unit_info')
                  ->where('pdb_id', $pdb_id)
                  ->where_in('unit', array('A','C','G','U'))
                  ->order_by('count(*)', 'DESC')
@@ -757,11 +761,11 @@ CREATE TABLE `nr_release_diff` (
     function get_csv($release, $resolution)
     {
         $resolution = str_replace('A', '', $resolution);
-        $this->db->select('np.nr_pdb_id as id, np.nr_class_id as class_id, np.rep as rep')
-                 ->from('nr_pdbs AS np')
-                 ->join('nr_classes AS nc', 'np.nr_class_id = nc.nr_class_id')
-                 ->where('nr_pdbs.nr_release_id', $release)
-                 ->where('nr_classes.nr_release_id', $release)
+        $this->db->select('ii.pdb_id as id, nl.name as class_id, nc.rep')
+                 ->from('nr_chains AS nc')
+                 ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
+                 ->join('ife_info AS ii', 'nc.ife_id = ii.ife_id')
+                 ->where('nc.nr_release_id', $release)
                  ->where('resolution', $resolution);
         $query = $this->db->get();
 
@@ -822,9 +826,9 @@ CREATE TABLE `nr_release_diff` (
 
     function is_valid_class($id)
     {
-        $this->db->select('nr_class_id')
+        $this->db->select('name')
                  ->from('nr_classes')
-                 ->where('nr_class_id', $id)
+                 ->where('name', $id)
                  ->limit(1);
 
         if ( $this->db->get()->num_rows() == 0 ) {

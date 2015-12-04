@@ -63,12 +63,12 @@
               <!-- section1 -->
               <div class="span4">
                 <dl>
-                  <dt>Structure title</dt>
-                  <dd><?=$structureTitle?></dd>
+                  <dt>Structure Title</dt>
+                  <dd><?=$title?></dd>
                   <dt>Authors</dt>
-                  <dd><?=$structureAuthor?></dd>
+                  <dd><?=$authors?></dd>
                   <dt>Release Date</dt>
-                  <dd><?=$releaseDate?></dd>
+                  <dd><?=$release_date?></dd>
                 </dl>
               </div>
 
@@ -76,7 +76,7 @@
               <div class="span3">
                 <dl>
                   <dt>Experimental technique</dt>
-                  <dd><?=$experimentalTechnique?></dd>
+                  <dd><?=$experimental_technique?></dd>
                   <?php if ($resolution != ''): ?>
                   <dt>Resolution</dt>
                   <dd><?php echo number_format($resolution, 1); ?> &Aring</dd>

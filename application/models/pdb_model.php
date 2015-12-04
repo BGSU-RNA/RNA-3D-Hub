@@ -301,8 +301,9 @@ class Pdb_model extends CI_Model {
         //  QUERY NEEDS TO BE REWRITTEN
         //  NEEDS DATA FROM BOTH pdb_info and chain_info
         $this->db->select()
-                 ->from('pdb_info')
-                 ->where('pdb_id', $pdb_id);
+                 ->from('pdb_info AS pi')
+                 ->join('chain_info AS ci', 'pi.pdb_id = ci.pdb_id')
+                 ->where('pi.pdb_id', $pdb_id);
         $query = $this->db->get();
 
         $data['rna_chains'] = 0;
@@ -310,7 +311,7 @@ class Pdb_model extends CI_Model {
             // get this info only once because it applies to all chains
             if ( $data['rna_chains'] == 0 ) {
                 $data['title'] = $row->title;
-                $data['experimental_technique'] = $row->experimental_technique;
+                $data['experimental_technique'] = $row->experimental_techinque;
                 $data['resolution'] = $row->resolution;
                 $data['release_date'] = $row->release_date;
                 $data['authors'] = $row->authors;
@@ -318,13 +319,13 @@ class Pdb_model extends CI_Model {
                 $data['ndb_url'] = "http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget={$row->ndb_id}";
             }
             // only for RNA chains
-            if ( $row->entityMacromoleculeType == 'Polyribonucleotide (RNA)' or
-                 $row->entityMacromoleculeType == 'DNA/RNA Hybrid' ) {
+            if ( $row->entity_macromolecule_type == 'Polyribonucleotide (RNA)' or
+                 $row->entity_macromolecule_type == 'DNA/RNA Hybrid' ) {
                 $data['rna_chains']++;
                 $organisms[] = $row->source;
-                $data['rna_compounds'][] = array("chain"    => $row->chainId,
+                $data['rna_compounds'][] = array("chain"    => $row->chain_id,
                                                  "compound" => $row->compound,
-                                                 "length"   => $row->chainLength,
+                                                 "length"   => $row->chain_length,
                                                  "organism" => $row->source);
             }
             // for all chains
@@ -353,10 +354,11 @@ class Pdb_model extends CI_Model {
         $data['latest_nr_release'] = $this->get_latest_nr_release($pdb_id);
 
         // get nr equivalence classes
-        $this->db->select('nr_class_id')
-                 ->select('rep')
-                 ->from('nr_pdbs')
-                 ->where('nr_pdb_id', $pdb_id)
+        $this->db->select('nc.nr_class_id')
+                 ->select('nc.rep')
+                 ->from('nr_chains AS nc')
+                 ->join('ife_info AS ii', 'nc.ife_id = ii.ife_id')
+                 ->where('ii.pdb_id', $pdb_id)
                  ->where('nr_release_id', $data['latest_nr_release']);
         $query = $this->db->get();
 
@@ -442,9 +444,10 @@ class Pdb_model extends CI_Model {
 
         // choose the equivalence class
         $this->db->select('np.nr_class_id')
-                 ->from('nr_pdbs AS np')
+                 ->from('nr_chains AS np')
                  ->join('nr_classes AS nc', 'np.nr_class_id = nc.nr_class_id')
-                 ->where('np.nr_pdb_id', $pdb_id)
+                 ->join('ife_info AS ii', 'np.ife_id = ii.ife_id')
+                 ->where('ii.pdb_id', $pdb_id)
                  ->where('np.nr_release_id', $latest_nr_release)
                  ->where('nc.resolution', 'all')
                  ->where('nc.nr_release_id', $latest_nr_release);
@@ -462,8 +465,9 @@ class Pdb_model extends CI_Model {
         $representative = Null;
         if ( $equivalence_class_found ) {
             // choose all structures from the selected equivalence class
-            $this->db->select('nr_pdb_id')
-                     ->from('nr_pdbs')
+            $this->db->select('ii.pdb_id')
+                     ->from('nr_chains AS np')
+                     ->join('ife_info AS ii', 'np.ife_id = ii.ife_id')
                      ->where('nr_release_id', $latest_nr_release)
                      ->where('nr_class_id', $equivalence_class)
                      ->order_by('rep', 'desc');
@@ -472,11 +476,11 @@ class Pdb_model extends CI_Model {
             $isFirst = True;
             foreach($query->result() as $row) {
                 if ( $isFirst ) {
-                    $representative = $row->nr_pdb_id;
+                    $representative = $row->pdb_id;
                     $isFirst = False;
                 }
-                if ( $row->nr_pdb_id != $pdb_id ) {
-                    $pdbs[] = $row->nr_pdb_id;
+                if ( $row->pdb_id != $pdb_id ) {
+                    $pdbs[] = $row->pdb_id;
                 }
             }
         }
