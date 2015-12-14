@@ -107,25 +107,29 @@ CREATE TABLE `nr_release_diff` (
             $data['uls'][$labels[$row->resolution]]['num_only_in_2']    = $row->num_removed_groups;
         }
 
+        $query->free_result();
+        unset($query);
+
         return $data;
     }
 
     function get_releases_by_class($id)
     {
         /* TODO:  Can this safely reduce to just nr_class_id and description? */
-        $this->db->select('nrc.nr_class_id')
-                 ->select('nrc.name')
+        $this->db
+                 #->select('nrc.nr_class_id')
+                 #->select('nrc.name')
                  ->select('nrc.nr_release_id')
-                 ->select('nrc.resolution')
-                 ->select('nrc.handle')
-                 ->select('nrc.version')
-                 ->select('nrc.comment')
+                 #->select('nrc.resolution')
+                 #->select('nrc.handle')
+                 #->select('nrc.version')
+                 #->select('nrc.comment')
                  /*->select('nrr.nr_release_id')*/
-                 ->select('nrr.date')
+                 #->select('nrr.date')
                  ->select('nrr.description')
                  ->from('nr_classes AS nrc')
                  ->join('nr_releases AS nrr','nrc.nr_release_id = nrr.nr_release_id')
-                 ->where('nrc.nr_class_id',$id)
+                 ->where('nrc.name',$id)
                  ->order_by('nrr.date');
         $query = $this->db->get();
         $releases[0][0] = 'Release';
@@ -133,13 +137,13 @@ CREATE TABLE `nr_release_diff` (
         $i = 0;
         foreach ($query->result() as $row) {
             if ($i==0) {
-                $this->first_seen_in = $row->nr_class_id;
+                $this->first_seen_in = $row->nr_release_id;
                 $i++;
             }
-            $releases[0][] = anchor(base_url("nrlist/release/".$row->nr_class_id), $row->nr_class_id);
+            $releases[0][] = anchor(base_url("nrlist/release/".$row->nr_release_id), $row->nr_release_id);
             $releases[1][] = $this->beautify_description_date($row->description);
         }
-        $this->last_seen_in = $row->nr_class_id;
+        $this->last_seen_in = $row->nr_release_id;
         return $releases;
     }
 
@@ -209,18 +213,19 @@ CREATE TABLE `nr_release_diff` (
                  ->select('pi.release_date')
                  ->select('pi.resolution')
                  ->from('pdb_info AS pi')
-                 ->join('ife_info AS ii','ii.pdb_id = pi.pdb_id')
-                 ->join('nr_chains AS nc', 'nc.ife_id = ii.ife_id')
-                 ->where('nc.nr_class_id',$id)
-                 ->where('nc.nr_release_id',$this->last_seen_in)
-                 ->group_by('pdb_id')
-                 ->order_by('nc.rep','desc');
+                 ->join('ife_info AS ii','pi.pdb_id = ii.pdb_id')
+                 ->join('nr_chains AS ch', 'ii.ife_id = ch.ife_id')
+                 ->join('nr_classes AS cl', 'ch.nr_class_id = cl.nr_class_id AND ch.nr_release_id = cl.nr_release_id')
+                 ->where('cl.name',$id)
+                 #->where('nch.nr_release_id',$this->last_seen_in) # what was this doing? still necessary?
+                 ->group_by('pi.pdb_id')
+                 ->order_by('ch.rep','desc');
         $query = $this->db->get();
 
         $i = 0;
         
         foreach ($query->result() as $row) {
-            $link = $this->make_pdb_widget_link($row->nr_pdb_id);
+            $link = $this->make_pdb_widget_link($row->pdb_id);
 
             if ( $i==0 ) {
                 $link = $link . ' <strong>(rep)</strong>';
@@ -231,8 +236,8 @@ CREATE TABLE `nr_release_diff` (
             $table[] = array($i,
                              $link,
                              $row->title,
-                             $this->get_source_organism($row->nr_pdb_id),
-                             $this->get_compound_list($row->nr_pdb_id),
+                             $this->get_source_organism($row->pdb_id),
+                             $this->get_compound_list($row->pdb_id),
                              $row->experimental_technique,
                              $row->resolution,
                              $row->release_date);
@@ -271,35 +276,45 @@ CREATE TABLE `nr_release_diff` (
 
     function get_history($id,$mode)
     {
-        $this->db->select('nr_class_id_1')
-                 ->select('nr_class_id_2')
-                 ->select('nr_release_id')
-                 ->select('intersection')
-                 ->select('overlap')
-                 ->select('one_minus_two')
-                 ->select('two_minus_one')
-                 ->from('__trash_nr_set_diff')
-                 ->where('nr_class1',$id);
+        echo "<p>ID: $id</p>";
+        echo "<p>mode: $mode</p>";
+        echo "<p>first seen:  $this->first_seen_in</p>";
+        echo "<p>last seen:  $this->last_seen_in</p>";
 
         if ($mode == 'parents') {
-            $this->db->where('nr_release_id',$this->first_seen_in);
-        } elseif ($mode=='children') {
-            $this->db->where('nr_release_id !=',$this->first_seen_in);
+            $sql = "CALL nr_set_diffs_parents(?,?)";
+            $par = array($id,$this->first_seen_in);
+        } elseif ($mode == 'children') {
+            $sql = "CALL nr_set_diffs_children(?,?)";
+            $par = array($id,$this->last_seen_in);
         }
 
-        $query = $this->db->get();
+        $query = $this->db->query($sql, $par);
 
         $table = array();
 
         foreach ($query->result() as $row) {
-            $table[] = array($row->nr_class1,
-                             anchor(base_url("nrlist/view/".$row->nr_class_id_2),$row->nr_class_id_2),
+            $nr_class_name_out = ( $mode == 'parents' ) ? $row->nr_class_name_parent : $row->nr_class_name_child;
+            $one_minus_two = ( $mode == 'parents' ) ? $row->added : $row->only;
+            $two_minus_one = ( $mode == 'parents' ) ? $row->removed : $row->added;
+            $one_minus_two_count = ( $mode == 'parents' ) ? $row->add_count : $row->only_count;
+            $two_minus_one_count = ( $mode == 'parents' ) ? $row->rem_count : $row->add_count;
+
+            $table[] = array($row->nr_class_name_base,
+                             anchor(base_url("nrlist/view/".$nr_class_name_out),$nr_class_name_out),
                              anchor(base_url("nrlist/release/".$row->nr_release_id), $row->nr_release_id),
                              $this->add_pdb_class($row->intersection),
-                             $this->add_pdb_class($row->one_minus_two),
-                             $this->add_pdb_class($row->two_minus_one)
+                             $this->add_pdb_class($one_minus_two),
+                             $this->add_pdb_class($two_minus_one),
+                             $row->int_count,
+                             $one_minus_two_count,
+                             $two_minus_one_count
                             );
         }
+
+        $query->next_result();
+        #$query->free_result(); echo "<p>FREEDOM!</p>";
+        #unset($query);
 
         return $table;
     }
@@ -311,19 +326,18 @@ CREATE TABLE `nr_release_diff` (
 
     function get_change_counts_by_release()
     {
-        $this->db->select('nr_release_id, new_class_count AS nag, removed_class_count AS nrg, updated_class_count AS nug')
-                 #->select('num_added_groups','nag')
-                 #->select_sum('num_removed_groups','nrg')
-                 #->select_sum('num_updated_groups','nug')
+        $this->db->select('nr_release_id')
+                 ->select('new_class_count AS nag')
+                 ->select('removed_class_count AS nrg')
+                 ->select('updated_class_count AS nug')
                  ->from('nr_parent_counts');
-                 #->from('__trash_nr_release_diff')
-                 #->where('direct_parent',1)
-                 #->group_by('nr_release_id');
         $query = $this->db->get();
+
         $changes = array();
         foreach ($query->result() as $row) {
             $changes[$row->nr_release_id] = $row->nag + $row->nug + $row->nrg;
         }
+
         return $changes;
     }
 
@@ -331,14 +345,14 @@ CREATE TABLE `nr_release_diff` (
     {
         if ($changes == 0) {
             $label = 'success';
-        }
-        elseif ($changes <= 20) {
+        } elseif ($changes <= 20) {
             $label = 'notice';
         } elseif ($changes <= 100) {
             $label = 'warning';
         } else {
             $label = 'important';
         }
+
         return $label;
     }
 
