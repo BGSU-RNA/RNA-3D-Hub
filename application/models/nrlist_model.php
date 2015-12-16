@@ -631,14 +631,15 @@ CREATE TABLE `nr_release_diff` (
         $pdbs = array_unique($pdbs);
 
         // get general ife info
-        $this->db->select('ife_id, length')
+        $this->db->select('ife_id')
                  ->from('ife_info')
                  ->where_in('ife_id', $ifes)
                  ->group_by('ife_id');
         $query = $this->db->get();
 
         foreach($query->result() as $row) {
-            $ife[$row->ife_id]['length'] = $row->length;
+            $ife[$row->ife_id]['ife_id'] = $row->ife_id;
+            #echo "<p>ife_id: $row->ife_id</p>";
         }
 
         // get general pdb info
@@ -698,10 +699,16 @@ CREATE TABLE `nr_release_diff` (
         }
         $counts_text .= '<br><br>';
 
+        // make the table
+        $table = array();
+        $i = 1;
+
         // get order
-        $this->db->select('nl.name, count(ii.ife_id) as num')
+        $this->db->select('nl.name, ii.pdb_id, ii.length, ci.compound, ci.source, ci.taxonomy_id, nl.nr_class_id, count(ii.ife_id) as num')
                  ->from('nr_chains AS nc')
                  ->join('ife_info AS ii', 'nc.ife_id = ii.ife_id')
+                 ->join('ife_chains AS ic', 'ii.ife_id = ic.ife_id')
+                 ->join('chain_info AS ci', 'ic.chain_id = ci.chain_id')
                  ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
                  ->where('nc.nr_release_id', $id)
                  ->like('nl.name', "NR_{$resolution}", 'after')
@@ -711,18 +718,40 @@ CREATE TABLE `nr_release_diff` (
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
-            echo "<p>name: $row->name // num: $row->num</p>";
-            $order[] = $row->name;
-            $nums[]  = $row->num;
+            $class_id = $row->name;
+            $nums     = $row->num;
+            $ife_id   = $reps[$class_id];
+            $pdb_id   = $row->pdb_id;
+            $source   = ( is_null($row->source) ) ? "" : '<a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=' 
+                            . $row->taxonomy_id . '">' . $row->source . '</a>'; 
+            
+            $table[] = array($i,
+                             anchor(base_url("nrlist/view/".$class_id),$class_id)
+                             . '<br>' . $this->add_annotation_label($row->nr_class_id, $reason)
+                             . '<br>' . $source,
+                             #. '<br>' . $this->get_source_organism_for_class($class[$class_id]),
+                             '<strong class="pdb">' . $ife_id . " (" . $pdb_id . ')</strong>' .
+                             '<ul>' .
+                             #'<li>' . $pdb[$pdb_id]['title'] . '</li>' .
+                             '<li>' . $row->compound . '</li>' .
+                             '<li>' . $pdb[$pdb_id]['experimental_technique'] . '</li>' .
+                             '<li>Chain(s): ' . $best_chains[$pdb_id] .
+                             '; model(s): ' . $best_models[$pdb_id] . '</li>' .
+                             '</ul>',
+                             $pdb[$pdb_id]['resolution'],
+                             $row->length,
+                             #$this->count_all_nucleotides($pdb_id),
+                             "(" . $nums . ") " . $this->add_pdb_class($class[$class_id])
+                            );
+            $i++;
         }
 
-        // make the table
-        $table = array();
-        $i = 1;
-
+/*
         foreach ($order as $class_id) {
             $ife_id = $reps[$class_id];
-            $nums   = $nums[$class_id];
+            $nums   = $nums['$class_id'];
+
+            echo "<p>class_id: $class_id // nums: $nums</p>";
 
             $this->db->select('ii.pdb_id')
                      ->from('ife_info AS ii')
@@ -747,10 +776,11 @@ CREATE TABLE `nr_release_diff` (
                              $pdb[$pdb_id]['resolution'],
                              $ife[$ife_id]['length'],
                              #$this->count_all_nucleotides($pdb_id),
-                             "() " . $this->add_pdb_class($class[$class_id])
+                             "(" . $nums . ") " . $this->add_pdb_class($class[$class_id])
                             );
             $i++;
         }
+*/
 
         return array('table' => $table, 'counts' => $counts_text);
     }
