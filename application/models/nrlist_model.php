@@ -276,11 +276,6 @@ CREATE TABLE `nr_release_diff` (
 
     function get_history($id,$mode)
     {
-        echo "<p>ID: $id</p>";
-        echo "<p>mode: $mode</p>";
-        echo "<p>first seen:  $this->first_seen_in</p>";
-        echo "<p>last seen:  $this->last_seen_in</p>";
-
         if ($mode == 'parents') {
             $sql = "CALL nr_set_diffs_parents(?,?)";
             $par = array($id,$this->first_seen_in);
@@ -303,18 +298,13 @@ CREATE TABLE `nr_release_diff` (
             $table[] = array($row->nr_class_name_base,
                              anchor(base_url("nrlist/view/".$nr_class_name_out),$nr_class_name_out),
                              anchor(base_url("nrlist/release/".$row->nr_release_id), $row->nr_release_id),
-                             $this->add_pdb_class($row->intersection),
-                             $this->add_pdb_class($one_minus_two),
-                             $this->add_pdb_class($two_minus_one),
-                             $row->int_count,
-                             $one_minus_two_count,
-                             $two_minus_one_count
+                             "(" . $row->int_count . ") " . $this->add_pdb_class($row->intersection),
+                             "(" . $one_minus_two_count . ") " . $this->add_pdb_class($one_minus_two),
+                             "(" . $two_minus_one_count . ") " . $this->add_pdb_class($two_minus_one)
                             );
         }
 
-        $query->next_result();
-        #$query->free_result(); echo "<p>FREEDOM!</p>";
-        #unset($query);
+        $query->next_result(); ### clears the extra empty MySQL result set
 
         return $table;
     }
