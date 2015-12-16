@@ -602,7 +602,7 @@ CREATE TABLE `nr_release_diff` (
         $resolution = str_replace('A', '', $resolution);
 
         // get raw release data
-        $this->db->select('ii.pdb_id, nl.name, nc.rep')
+        $this->db->select('ii.ife_id, ii.pdb_id, nl.name, nc.rep')
                  ->from('ife_info AS ii')
                  ->join('nr_chains AS nc', 'ii.ife_id = nc.ife_id')
                  ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
@@ -616,14 +616,14 @@ CREATE TABLE `nr_release_diff` (
             $pdbs[] = $row->pdb_id;
 
             if ($row->rep == 1) {
-                $reps[$row->name] = $row->pdb_id;
+                $reps[$row->name] = $row->ife_id;
             }
 
             if (!array_key_exists($row->name, $class) ) {
                 $class[$row->name] = array();
             }
 
-            $class[$row->name][] = $row->pdb_id;
+            $class[$row->name][] = $row->ife_id;
         }
 
         $pdbs = array_unique($pdbs);
@@ -686,7 +686,7 @@ CREATE TABLE `nr_release_diff` (
         $counts_text .= '<br><br>';
 
         // get order
-        $this->db->select('nl.name, count(ii.pdb_id) as num')
+        $this->db->select('nl.name, count(ii.ife_id) as num')
                  ->from('nr_chains AS nc')
                  ->join('ife_info AS ii', 'nc.ife_id = ii.ife_id')
                  ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
@@ -694,7 +694,7 @@ CREATE TABLE `nr_release_diff` (
                  ->like('nl.name', "NR_{$resolution}", 'after')
                  ->group_by('nl.name')
                  ->order_by('num','desc')
-                 ->order_by('ii.pdb_id');
+                 ->order_by('ii.ife_id');
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
@@ -706,7 +706,17 @@ CREATE TABLE `nr_release_diff` (
         $i = 1;
 
         foreach ($order as $class_id) {
-            $pdb_id = $reps[$class_id];
+            $ife_id = $reps[$class_id];
+
+            $this->db->select('ii.pdb_id')
+                     ->from('ife_info AS ii')
+                     ->where('ii.ife_id', $ife_id);
+            $query = $this->db->get();
+
+            foreach ($query->result() as $row) {
+                $pdb_id = $row->pdb_id;
+            }
+
             $table[] = array($i,
                              anchor(base_url("nrlist/view/".$class_id),$class_id)
                              . '<br>' . $this->add_annotation_label($class_id, $reason)
