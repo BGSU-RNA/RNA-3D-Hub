@@ -613,6 +613,7 @@ CREATE TABLE `nr_release_diff` (
         // reorganize by class and rep and pdb
         $class = array();
         foreach ($query->result() as $row) {
+            $ifes[] = $row->ife_id;
             $pdbs[] = $row->pdb_id;
 
             if ($row->rep == 1) {
@@ -626,7 +627,19 @@ CREATE TABLE `nr_release_diff` (
             $class[$row->name][] = $row->ife_id;
         }
 
+        $ifes = array_unique($ifes);
         $pdbs = array_unique($pdbs);
+
+        // get general ife info
+        $this->db->select('ife_id, length')
+                 ->from('ife_info')
+                 ->where_in('ife_id', $ifes)
+                 ->group_by('ife_id');
+        $query = $this->db->get();
+
+        foreach($query->result() as $row) {
+            $ife[$row->ife_id]['length'] = $row->length;
+        }
 
         // get general pdb info
         $this->db->select('pdb_id, title, resolution, experimental_technique')
@@ -698,7 +711,9 @@ CREATE TABLE `nr_release_diff` (
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
+            echo "<p>name: $row->name // num: $row->num</p>";
             $order[] = $row->name;
+            $nums[]  = $row->num;
         }
 
         // make the table
@@ -707,6 +722,7 @@ CREATE TABLE `nr_release_diff` (
 
         foreach ($order as $class_id) {
             $ife_id = $reps[$class_id];
+            $nums   = $nums[$class_id];
 
             $this->db->select('ii.pdb_id')
                      ->from('ife_info AS ii')
@@ -721,7 +737,7 @@ CREATE TABLE `nr_release_diff` (
                              anchor(base_url("nrlist/view/".$class_id),$class_id)
                              . '<br>' . $this->add_annotation_label($class_id, $reason)
                              . '<br>' . $this->get_source_organism_for_class($class[$class_id]),
-                             '<strong class="pdb">' . $pdb_id . '</strong>' .
+                             '<strong class="pdb">' . $ife_id . " (" . $pdb_id . ')</strong>' .
                              '<ul>' .
                              '<li>' . $pdb[$pdb_id]['title'] . '</li>' .
                              '<li>' . $pdb[$pdb_id]['experimental_technique'] . '</li>' .
@@ -729,8 +745,9 @@ CREATE TABLE `nr_release_diff` (
                              '; model(s): ' . $best_models[$pdb_id] . '</li>' .
                              '</ul>',
                              $pdb[$pdb_id]['resolution'],
-                             $this->count_all_nucleotides($pdb_id),
-                             $this->add_pdb_class($class[$class_id])
+                             $ife[$ife_id]['length'],
+                             #$this->count_all_nucleotides($pdb_id),
+                             "() " . $this->add_pdb_class($class[$class_id])
                             );
             $i++;
         }
