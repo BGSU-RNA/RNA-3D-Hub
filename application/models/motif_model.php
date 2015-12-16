@@ -23,9 +23,9 @@ class Motif_model extends CI_Model {
 
     function is_valid_motif_id($motif_id)
     {
-        $this->db->select('id')
+        $this->db->select('ml_motifs_id')
                  ->from('ml_motifs')
-                 ->where('id', $motif_id)
+                 ->where('ml_motifs_id', $motif_id)
                  ->limit(1);
         if ( $this->db->get()->num_rows() > 0 ) {
             return TRUE;
@@ -154,25 +154,25 @@ class Motif_model extends CI_Model {
         }
 
         // get loop sequences
-        $this->db->select('id, seq')
-                 ->from('loops_all')
-                 ->where_in('id', $loop_ids);
+        $this->db->select('loop_id, seq')
+                 ->from('loop_info')
+                 ->where_in('loop_id', $loop_ids);
         $query = $this->db->get();
         foreach($query->result() as $row) {
             $seqs[$row->id] = $row->seq;
         }
 
         // get mutual discrepancies
-        $this->db->select('loop_searches.loop_id1 as loop1,
-                           loop_searches.loop_id2 as loop2,
+        $this->db->select('loop_searches.loop_id_1 as loop1,
+                           loop_searches.loop_id_2 as loop2,
                            loop_searches.disc as disc,
                            loop_search_qa.status as status,
                            loop_search_qa.message as qa_message,
                            loop_search_qa.status as qa_status')
                  ->from('loop_searches')
-                 ->join('loop_search_qa', 'loop_searches.loop_id1=loop_search_qa.loop_id1 AND loop_searches.loop_id2=loop_search_qa.loop_id2', 'left')
-                 ->where_in('loop_searches.loop_id1', $loop_ids)
-                 ->where_in('loop_searches.loop_id2', $loop_ids);
+                 ->join('loop_search_qa', 'loop_searches.loop_id_1=loop_search_qa.loop_id_1 AND loop_searches.loop_id_2=loop_search_qa.loop_id_2', 'left')
+                 ->where_in('loop_searches.loop_id_1', $loop_ids)
+                 ->where_in('loop_searches.loop_id_2', $loop_ids);
         $query = $this->db->get();
         $matrix = array();
         foreach ($query->result() as $row) {
@@ -314,8 +314,8 @@ class Motif_model extends CI_Model {
         $this->db->select_min('t2.disc', 'similarity_level')
                  ->select('t3.motif_id as similar_motif')
                  ->from('ml_loops as t1')
-                 ->join('loop_searches as t2', 't1.id = t2.loop_id1')
-                 ->join('ml_loops as t3', 't2.loop_id2 = t3.id')
+                 ->join('loop_searches as t2', 't1.ml_loops_id = t2.loop_id_1')
+                 ->join('ml_loops as t3', 't2.loop_id_2 = t3.ml_loops_id')
                  ->where('t1.motif_id', $motif_id)
                  ->where('t1.release_id', $this->release_id)
                  ->where('t3.release_id', $this->release_id)
@@ -333,8 +333,8 @@ class Motif_model extends CI_Model {
         $this->db->select_min('t2.disc', 'similarity_level')
                  ->select('t3.motif_id as similar_motif')
                  ->from('ml_loops as t1')
-                 ->join('loop_searches as t2', 't1.id = t2.loop_id2')
-                 ->join('ml_loops as t3', 't2.loop_id1 = t3.id')
+                 ->join('loop_searches as t2', 't1.ml_loops_id = t2.loop_id_2')
+                 ->join('ml_loops as t3', 't2.loop_id_1 = t3.ml_loops_id')
                  ->where('t1.motif_id', $motif_id)
                  ->where('t1.release_id', $this->release_id)
                  ->where('t3.release_id', $this->release_id)
@@ -383,14 +383,14 @@ class Motif_model extends CI_Model {
     function get_linkage_data( $motif_id )
     {
         // get loop ids from this motif
-        $this->db->select('id')
+        $this->db->select('ml_loops_id')
                  ->from('ml_loops')
                  ->where('motif_id', $motif_id)
                  ->where('release_id', $this->release_id);
         $query = $this->db->get();
         $loops = array();
         foreach ($query->result() as $row) {
-            $loops[] = $row->id;
+            $loops[] = $row->ml_loops_id;
         }
 
         // intraclusteral linkage
@@ -419,7 +419,6 @@ class Motif_model extends CI_Model {
 
         // interclusteral linkage
 
-
         return $results;
     }
 
@@ -430,26 +429,33 @@ class Motif_model extends CI_Model {
         $seq   = array();
 
         foreach($this->loops as $loop_id) {
+            echo "<p>latest_release = $latest_release---</p>";
+            echo "<p>loop_id = $loop_id---</p>";
 
             $index = array();
 
             // get indexes of bordering nucleotides for loop id
-            $this->db->select('pdb_coordinates.index')
-                     ->from('loop_positions')
-                     ->join('pdb_coordinates', 'loop_positions.nt_id=pdb_coordinates.id')
-                     ->join('ml_loop_positions', 'loop_positions.loop_id=ml_loop_positions.loop_id AND ' .
-                                                 'loop_positions.nt_id=ml_loop_positions.nt_id')
-                     ->where('ml_loop_positions.release_id', $latest_release)
-                     ->where('loop_positions.loop_id', $loop_id)
-                     ->where('loop_positions.border', 1)
-                     ->order_by('ml_loop_positions.position');
+            $this->db->select('lp.position', 'index')
+                     ->from('loop_positions AS lp')
+                     ->join('unit_info AS ui', 'lp.unit_id = ui.unit_id')
+                     ->join('ml_loop_positions AS ml', 'lp.loop_id = ml.loop_id AND ' .
+                                                       'lp.position = ml.position')
+                     ->where('ml.release_id', $latest_release)
+                     ->where('lp.loop_id', $loop_id)
+                     ->where('lp.border', 1)
+                     ->order_by('ml.position');
             $query = $this->db->get();
 
             foreach($query->result() as $row) {
-                $index[] = $row->index;
+                $index[] = $row->position;
+                echo "<p>index = $row->position---</p>";
             }
 
             list($loop_type, $pdb, $order) = explode('_', $loop_id);
+
+            echo "<p>loop_type = $loop_type---</p>";
+            echo "<p>pdb = $pdb---</p>";
+            echo "<p>order = $order---</p>";
 
             if ( $loop_type == 'HL' ) {
                 $seq = array($this->get_strand_fragment($pdb, $index[0], $index[1]));
@@ -483,12 +489,15 @@ class Motif_model extends CI_Model {
     {
         $rna = array('A', 'C', 'G', 'U');
 
+        echo "<p>start = $start---</p>";
+        echo "<p>stop = $stop---</p>";
+
         $this->db->select('unit')
-                 ->from('pdb_coordinates')
-                 ->where('pdb', $pdb)
+                 ->from('unit_info')
+                 ->where('pdb_id', $pdb)
                  ->where_in('unit', $rna)
-                 ->where('index >=', $start)
-                 ->where('index <=', $stop);
+                 ->where('chain_index >=', $start)
+                 ->where('chain_index <=', $stop);
         $query = $this->db->get();
         foreach($query->result() as $row) {
             $nts[] = $row->unit;
@@ -498,15 +507,15 @@ class Motif_model extends CI_Model {
 
     function get_latest_release_for_motif($motif_id)
     {
-        $this->db->select('ml_releases.id')
+        $this->db->select('ml_releases.ml_releases_id')
                  ->from('ml_releases')
-                 ->join('ml_motifs', 'ml_releases.id = ml_motifs.release_id')
-                 ->where('ml_motifs.id',$motif_id)
+                 ->join('ml_motifs', 'ml_releases.ml_releases_id = ml_motifs.release_id')
+                 ->where('ml_motifs.ml_motifs_id',$motif_id)
                  ->where('ml_releases.type', substr($motif_id, 0, 2))
                  ->order_by('date','desc')
                  ->limit(1);
         $result = $this->db->get()->result_array();
-        return $result[0]['id'];
+        return $result[0]['ml_releases_id'];
     }
 
     // history tab
@@ -514,8 +523,8 @@ class Motif_model extends CI_Model {
     {
         $this->db->select()
                  ->from('ml_releases')
-                 ->join('ml_motifs', 'ml_releases.id = ml_motifs.release_id')
-                 ->where('ml_motifs.id',$motif_id)
+                 ->join('ml_motifs', 'ml_releases.ml_releases_id = ml_motifs.release_id')
+                 ->where('ml_motifs.ml_motifs_id',$motif_id)
                  ->where('ml_releases.type', substr($motif_id, 0, 2))
                  ->order_by('date');
         $query = $this->db->get();
@@ -545,12 +554,12 @@ class Motif_model extends CI_Model {
     {
         $this->db->select()
                  ->from('ml_releases')
-                 ->join('ml_motifs', 'ml_releases.id = ml_motifs.release_id')
-                 ->where('ml_motifs.id', $motif_id)
+                 ->join('ml_motifs', 'ml_releases.ml_releases_id = ml_motifs.release_id')
+                 ->where('ml_motifs.ml_motifs_id', $motif_id)
                  ->order_by('date');
         $result = $this->db->get();
         foreach ($result->result() as $row) {
-            $releases_present[] = $row->release_id;
+            $releases_present[] = $row->ml_releases_id;
         }
 
         $this->db->select()
@@ -710,13 +719,13 @@ class Motif_model extends CI_Model {
     function get_loop_lengths()
     {
         // get lengths of complete loops to calculate the number of bulges.
-        $this->db->select('id,length')
-                 ->from('loops_all')
-                 ->where_in('id', $this->loops);
+        $this->db->select('loop_id,length')
+                 ->from('loop_info')
+                 ->where_in('loop_id', $this->loops);
         $query = $this->db->get();
 
         foreach($query->result() as $row) {
-            $this->full_length[$row->id] = $row->length;
+            $this->full_length[$row->loop_id] = $row->length;
         }
     }
 
@@ -748,24 +757,24 @@ class Motif_model extends CI_Model {
 		}
 
 		// get an internal loop from this motif
-		$this->db->select('id')
+		$this->db->select('ml_loops_id')
 		         ->from('ml_loops')
 		         ->where('motif_id', $this->motif_id)
 		         ->limit(1);
         $query = $this->db->get();
         $result = $query->row();
-    	$loop_id = $result->id;
+    	$loop_id = $result->ml_loops_id;
 
     	// get chain breaks
-    	$this->db->select('ml_loop_positions.position')
-    	         ->from('loop_positions')
-    	         ->join('ml_loop_positions', 'loop_positions.loop_id = ml_loop_positions.loop_id AND ' .
-    	                                     'loop_positions.nt_id = ml_loop_positions.nt_id')
-    	         ->where('loop_positions.loop_id', $loop_id)
-    	         ->where('loop_positions.border', 1)
-    	         ->where('ml_loop_positions.motif_id', $this->motif_id)
-    	         ->where('ml_loop_positions.release_id', $this->release_id)
-    	         ->order_by('ml_loop_positions.position', 'ASC');
+    	$this->db->select('ml.position')
+    	         ->from('loop_positions AS lp')
+    	         ->join('ml_loop_positions AS ml', 'lp.loop_id = ml.loop_id AND ' .
+    	                                           'lp.unit_id = ml.nt_id')
+    	         ->where('lp.loop_id', $loop_id)
+    	         ->where('lp.border', 1)
+    	         ->where('ml.motif_id', $this->motif_id)
+    	         ->where('ml.release_id', $this->release_id)
+    	         ->order_by('ml.position', 'ASC');
         $result = $this->db->get()->result_array();
 
         // take second row
@@ -817,9 +826,9 @@ class Motif_model extends CI_Model {
     function get_interactions()
     {
         $this->db->select()
-                 ->from('pdb_pairwise_interactions')
-                 ->where_in('iPdbSig', array_keys($this->nt_ids))
-                 ->where_in('jPdbSig', array_keys($this->nt_ids));
+                 ->from('unit_pairs_interactions')
+                 ->where_in('unit_id_1', array_keys($this->nt_ids))
+                 ->where_in('unit_id_2', array_keys($this->nt_ids));
         $query = $this->db->get();
         foreach($query->result() as $row) {
             $nt_full1 = $row->iPdbSig;
@@ -940,7 +949,7 @@ class Motif_model extends CI_Model {
                  ->order_by('date','desc');
         $row = $this->db->get()->row();
 
-        if ($row->id == $this->release_id) {
+        if ($row->ml_releases_id == $this->release_id) {
             return ' <label class="label success">current</label>';
         } else {
             return '';

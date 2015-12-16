@@ -23,9 +23,9 @@ class Nrlist_model extends CI_Model {
 
     function count_motifs($rel)
     {
-        $this->db->select('*,count(id) as ids')
+        $this->db->select('resolution, count(nr_class_id) as ids')
                  ->from('nr_classes')
-                 ->where('release_id', $rel)
+                 ->where('nr_release_id', $rel)
                  ->group_by('resolution');
         $query = $this->db->get();
 
@@ -35,6 +35,26 @@ class Nrlist_model extends CI_Model {
         return $counts;
     }
 
+/*
+CREATE TABLE `nr_release_diff` (
+                 ->select('nr_release_id1')
+                 ->select('nr_release_id2')
+                 ->select('resolution')
+                 ->select('direct_parent')
+                 ->select('added_groups')
+                 ->select('removed_groups')
+                 ->select('updated_groups')
+                 ->select('same_groups')
+                 ->select('added_pdbs')
+                 ->select('removed_pdbs')
+                 ->select('num_added_groups')
+                 ->select('num_removed_groups')
+                 ->select('num_updated_groups')
+                 ->select('num_same_groups')
+                 ->select('num_added_pdbs')
+                 ->select('num_removed_pdbs')
+*/
+
     function get_release_diff($rel1, $rel2)
     {
         $labels = array('1.5'=>'1_5A','2.0'=>'2_0A','2.5'=>'2_5A','3.0'=>'3_0A','3.5'=>'3_5A','4.0'=>'4_0A','20.0'=>'20_0A','all'=>'all');
@@ -43,21 +63,17 @@ class Nrlist_model extends CI_Model {
         $counts1 = $this->count_motifs($rel1);
         $counts2 = $this->count_motifs($rel2);
 
-        $this->db->select()
-                 ->from('nr_release_diff')
-                 ->where('nr_release_id1',$rel1)
-                 ->where('nr_release_id2',$rel2);
-        $query = $this->db->get();
+        $sql = "CALL nr_release_diff(?,?)";
+        $par = array($rel1, $rel2);
+
+        $query = $this->db->query($sql, $par);
+
         if ($query->num_rows == 0) {
-            $this->db->select()
-                     ->from('nr_release_diff')
-                     ->where('nr_release_id1',$rel2)
-                     ->where('nr_release_id2',$rel1);
-            $query = $this->db->get();
+            $par = array($rel2,$rel1);
+            $query = $this->db->query($sql, $par);
         }
 
         foreach ($query->result() as $row) {
-
             $data['uls'][$labels[$row->resolution]]['num_motifs1'] = $counts1[$row->resolution];
             $data['uls'][$labels[$row->resolution]]['num_motifs2'] = $counts2[$row->resolution];
 
@@ -66,68 +82,101 @@ class Nrlist_model extends CI_Model {
             } else {
                 $data['uls'][$labels[$row->resolution]]['ul_intersection'] = '';
             }
+
             if ($row->num_updated_groups > 0) {
                 $data['uls'][$labels[$row->resolution]]['ul_updated'] = ul(array_map("add_url", explode(', ',$row->updated_groups)),$attributes);
             } else {
                 $data['uls'][$labels[$row->resolution]]['ul_updated'] = '';
             }
+            
             if ($row->num_added_groups > 0) {
                 $data['uls'][$labels[$row->resolution]]['ul_only_in_1'] = ul(array_map("add_url", explode(', ',$row->added_groups)),$attributes);
             } else {
                 $data['uls'][$labels[$row->resolution]]['ul_only_in_1'] = '';
             }
+            
             if ($row->num_removed_groups > 0) {
                 $data['uls'][$labels[$row->resolution]]['ul_only_in_2'] = ul(array_map("add_url", explode(', ',$row->removed_groups)),$attributes);
             } else {
                 $data['uls'][$labels[$row->resolution]]['ul_only_in_2'] = '';
             }
+            
             $data['uls'][$labels[$row->resolution]]['num_intersection'] = $row->num_same_groups;
             $data['uls'][$labels[$row->resolution]]['num_updated']      = $row->num_updated_groups;
             $data['uls'][$labels[$row->resolution]]['num_only_in_1']    = $row->num_added_groups;
             $data['uls'][$labels[$row->resolution]]['num_only_in_2']    = $row->num_removed_groups;
         }
+
+        $query->free_result();
+        unset($query);
+
         return $data;
     }
 
     function get_releases_by_class($id)
     {
-        $this->db->select()
-                 ->from('nr_classes')
-                 ->join('nr_releases','nr_classes.release_id=nr_releases.id')
-                 ->where('nr_classes.id',$id)
-                 ->order_by('nr_releases.date');
+        /* TODO:  Can this safely reduce to just nr_class_id and description? */
+        $this->db
+                 #->select('nrc.nr_class_id')
+                 #->select('nrc.name')
+                 ->select('nrc.nr_release_id')
+                 #->select('nrc.resolution')
+                 #->select('nrc.handle')
+                 #->select('nrc.version')
+                 #->select('nrc.comment')
+                 /*->select('nrr.nr_release_id')*/
+                 #->select('nrr.date')
+                 ->select('nrr.description')
+                 ->from('nr_classes AS nrc')
+                 ->join('nr_releases AS nrr','nrc.nr_release_id = nrr.nr_release_id')
+                 ->where('nrc.name',$id)
+                 ->order_by('nrr.date');
         $query = $this->db->get();
         $releases[0][0] = 'Release';
         $releases[1][0] = 'Date';
         $i = 0;
         foreach ($query->result() as $row) {
             if ($i==0) {
-                $this->first_seen_in = $row->release_id;
+                $this->first_seen_in = $row->nr_release_id;
                 $i++;
             }
-            $releases[0][] = anchor(base_url("nrlist/release/".$row->release_id), $row->release_id);
+            $releases[0][] = anchor(base_url("nrlist/release/".$row->nr_release_id), $row->nr_release_id);
             $releases[1][] = $this->beautify_description_date($row->description);
         }
-        $this->last_seen_in = $row->release_id;
+        $this->last_seen_in = $row->nr_release_id;
         return $releases;
     }
 
     function get_status($id)
     {
-        $this->db->select()
+        /* TODO:  Reduce to nr_release_id? */
+        $this->db->select('nr_release_id')
+                 ->select('date')
+                 ->select('description')
                  ->from('nr_releases')
                  ->order_by('date','desc')
                  ->limit(1);
         $query = $this->db->get();
+
         foreach ($query->result() as $row) {
-            $current_release = $row->id;
+            $current_release = $row->nr_release_id;
         }
+
         $this->current_release = $current_release;
-        $this->db->select()
+
+        /* TODO:  Reduce to one column? */
+        $this->db->select('nr_class_id')
+                 ->select('name')
+                 ->select('nr_release_id')
+                 ->select('resolution')
+                 ->select('handle')
+                 ->select('version')
+                 ->select('comment')
                  ->from('nr_classes')
-                 ->where('id',$id)
-                 ->where('release_id',$current_release);
+                 ->where('nr_class_id',$id)
+                 ->where('nr_release_id',$current_release);
         $query = $this->db->get();
+
         if ($query->num_rows() > 0) {
             return 'Current';
         } else {
@@ -143,10 +192,10 @@ class Nrlist_model extends CI_Model {
     function get_source_organism($pdb_id)
     {
         $this->db->select('source')
-                 ->from('pdb_info')
-                 ->where('structureId', $pdb_id)
-                 ->like('entityMacromoleculeType', 'RNA')
-                 ->where("chainLength = (SELECT max(chainLength) FROM pdb_info WHERE structureId ='$pdb_id' AND entityMacromoleculeType LIKE '%RNA%')");
+                 ->from('chain_info')
+                 ->where('pdb_id', $pdb_id)
+                 ->like('entity_macromolecule_type', 'RNA')
+                 ->where("chain_length = (SELECT max(chain_length) FROM chain_info WHERE pdb_id ='$pdb_id' AND entity_macromolecule_type LIKE '%RNA%')");
         $query = $this->db->get();
         if ( $query->num_rows() > 0 ) {
             $result = $query->result();
@@ -158,43 +207,57 @@ class Nrlist_model extends CI_Model {
 
     function get_members($id)
     {
-        $this->db->select()
-                 ->from('nr_pdbs')
-                 ->join('pdb_info','pdb_info.structureId=nr_pdbs.id')
-                 ->where('nr_pdbs.class_id',$id)
-                 ->where('nr_pdbs.release_id',$this->last_seen_in)
-                 ->group_by('structureId')
-                 ->order_by('nr_pdbs.rep','desc');
+        $this->db->select('pi.pdb_id')
+                 ->select('pi.title')
+                 ->select('pi.experimental_technique')
+                 ->select('pi.release_date')
+                 ->select('pi.resolution')
+                 ->from('pdb_info AS pi')
+                 ->join('ife_info AS ii','pi.pdb_id = ii.pdb_id')
+                 ->join('nr_chains AS ch', 'ii.ife_id = ch.ife_id')
+                 ->join('nr_classes AS cl', 'ch.nr_class_id = cl.nr_class_id AND ch.nr_release_id = cl.nr_release_id')
+                 ->where('cl.name',$id)
+                 #->where('nch.nr_release_id',$this->last_seen_in) # what was this doing? still necessary?
+                 ->group_by('pi.pdb_id')
+                 ->order_by('ch.rep','desc');
         $query = $this->db->get();
+
         $i = 0;
+        
         foreach ($query->result() as $row) {
-            $link = $this->make_pdb_widget_link($row->structureId);
+            $link = $this->make_pdb_widget_link($row->pdb_id);
+
             if ( $i==0 ) {
                 $link = $link . ' <strong>(rep)</strong>';
             }
+
             $i++;
+
             $table[] = array($i,
                              $link,
-                             $row->structureTitle,
-                             $this->get_source_organism($row->structureId),
-                             $this->get_compound_list($row->structureId),
-                             $row->experimentalTechnique,
+                             $row->title,
+                             $this->get_source_organism($row->pdb_id),
+                             $this->get_compound_list($row->pdb_id),
+                             $row->experimental_technique,
                              $row->resolution,
-                             $row->releaseDate);
+                             $row->release_date);
         }
+
         return $table;
     }
 
     function get_compound_list($id)
     {
         $this->db->select('group_concat(compound separator ", ") as compounds', FALSE)
-                 ->from('pdb_info')
-                 ->where('structureId', $id)
-                 ->group_by('structureId');
+                 ->from('chain_info')
+                 ->where('pdb_id', $id)
+                 ->group_by('pdb_id');
         $query = $this->db->get();
+
         foreach ($query->result() as $row) {
             $result = $row->compounds;
         }
+
         return $result;
     }
 
@@ -213,22 +276,46 @@ class Nrlist_model extends CI_Model {
 
     function get_history($id,$mode)
     {
-        $this->db->select()->from('nr_set_diff')->where('nr_class1',$id);
+        echo "<p>ID: $id</p>";
+        echo "<p>mode: $mode</p>";
+        echo "<p>first seen:  $this->first_seen_in</p>";
+        echo "<p>last seen:  $this->last_seen_in</p>";
+
         if ($mode == 'parents') {
-            $this->db->where('release_id',$this->first_seen_in);
-        } elseif ($mode=='children') {
-            $this->db->where('release_id !=',$this->first_seen_in);
+            $sql = "CALL nr_set_diffs_parents(?,?)";
+            $par = array($id,$this->first_seen_in);
+        } elseif ($mode == 'children') {
+            $sql = "CALL nr_set_diffs_children(?,?)";
+            $par = array($id,$this->last_seen_in);
         }
-        $query = $this->db->get();
+
+        $query = $this->db->query($sql, $par);
+
         $table = array();
+
         foreach ($query->result() as $row) {
-            $table[] = array($row->nr_class1,
-                             anchor(base_url("nrlist/view/".$row->nr_class2),$row->nr_class2),
-                             anchor(base_url("nrlist/release/".$row->release_id), $row->release_id),
+            $nr_class_name_out = ( $mode == 'parents' ) ? $row->nr_class_name_parent : $row->nr_class_name_child;
+            $one_minus_two = ( $mode == 'parents' ) ? $row->added : $row->only;
+            $two_minus_one = ( $mode == 'parents' ) ? $row->removed : $row->added;
+            $one_minus_two_count = ( $mode == 'parents' ) ? $row->add_count : $row->only_count;
+            $two_minus_one_count = ( $mode == 'parents' ) ? $row->rem_count : $row->add_count;
+
+            $table[] = array($row->nr_class_name_base,
+                             anchor(base_url("nrlist/view/".$nr_class_name_out),$nr_class_name_out),
+                             anchor(base_url("nrlist/release/".$row->nr_release_id), $row->nr_release_id),
                              $this->add_pdb_class($row->intersection),
-                             $this->add_pdb_class($row->one_minus_two),
-                             $this->add_pdb_class($row->two_minus_one));
+                             $this->add_pdb_class($one_minus_two),
+                             $this->add_pdb_class($two_minus_one),
+                             $row->int_count,
+                             $one_minus_two_count,
+                             $two_minus_one_count
+                            );
         }
+
+        $query->next_result();
+        #$query->free_result(); echo "<p>FREEDOM!</p>";
+        #unset($query);
+
         return $table;
     }
 
@@ -239,18 +326,18 @@ class Nrlist_model extends CI_Model {
 
     function get_change_counts_by_release()
     {
-        $this->db->select('nr_release_id1')
-                 ->select_sum('num_added_groups','nag')
-                 ->select_sum('num_removed_groups','nrg')
-                 ->select_sum('num_updated_groups','nug')
-                 ->from('nr_release_diff')
-                 ->where('direct_parent',1)
-                 ->group_by('nr_release_id1');
+        $this->db->select('nr_release_id')
+                 ->select('new_class_count AS nag')
+                 ->select('removed_class_count AS nrg')
+                 ->select('updated_class_count AS nug')
+                 ->from('nr_parent_counts');
         $query = $this->db->get();
+
         $changes = array();
         foreach ($query->result() as $row) {
-            $changes[$row->nr_release_id1] = $row->nag + $row->nug + $row->nrg;
+            $changes[$row->nr_release_id] = $row->nag + $row->nug + $row->nrg;
         }
+
         return $changes;
     }
 
@@ -258,41 +345,44 @@ class Nrlist_model extends CI_Model {
     {
         if ($changes == 0) {
             $label = 'success';
-        }
-        elseif ($changes <= 20) {
+        } elseif ($changes <= 20) {
             $label = 'notice';
         } elseif ($changes <= 100) {
             $label = 'warning';
         } else {
             $label = 'important';
         }
+
         return $label;
     }
 
     function get_pdb_files_counts()
     {
-        $this->db->select('release_id,count(id) as num')
-                 ->from('nr_pdbs')
-                 ->like('class_id','NR_all','after')
-                 ->group_by('release_id');
+        $this->db->select('nch.nr_release_id, count(ii.pdb_id) as num')
+                 ->from('ife_info AS ii')
+                 ->join('nr_chains AS nch', 'ii.ife_id = nch.ife_id')
+                 ->group_by('nch.nr_release_id');
         $query = $this->db->get();
+
         foreach ($query->result() as $row) {
-            $counts[$row->release_id] = $row->num;
+            $counts[$row->nr_release_id] = $row->num;
         }
+        
         return $counts;
     }
 
     function get_newest_pdb_images()
     {
-        $sql = "SELECT DISTINCT(`structureId`) FROM `pdb_info`" .
-               "WHERE `releaseDate` >= DATE_ADD('" .
+        $sql = "SELECT DISTINCT(`pdb_id`) FROM `pdb_info`" .
+               "WHERE `release_date` >= DATE_ADD('" .
                date("Y-m-d H:i:s") . "', INTERVAL -1 WEEK);";
         $query = $this->db->query($sql);
 
         $new_files = array();
         foreach ($query->result() as $row) {
-            $new_files[] = $row->structureId;
+            $new_files[] = $row->pdb_id;
         }
+
         if ( count($new_files) > 0 ) {
             $html = '<h4>New RNA-containing PDB files released this week:</h4>';
             foreach ($new_files as $new_file) {
@@ -302,31 +392,37 @@ class Nrlist_model extends CI_Model {
         } else {
             $html = '<strong>No new RNA-containing PDB files this week.</strong>';
         }
+
         return $html;
     }
 
     function get_newest_nr_class_members()
     {
         // get two latest releases
-        $this->db->select()
+        $this->db->select('nr_release_id')
+                 ->select('date')
+                 ->select('description')
                  ->from('nr_releases')
                  ->order_by('date', 'desc')
                  ->limit(2);
         $query = $this->db->get();
+
         foreach ($query->result() as $row) {
-            $releases[] = $row->id;
+            $releases[] = $row->nr_release_id;
         }
 
         // get their release difference
-        $this->db->select()
-                 ->from('nr_release_diff')
+        $this->db->select('added_pdbs')
+                 ->from('__trash_nr_release_diff')
                  ->where('nr_release_id1', $releases[0])
                  ->where('nr_release_id2', $releases[1])
                  ->where('resolution', 'all');
         $query = $this->db->get();
+
         foreach ($query->result() as $row) {
             $new_files = $row->added_pdbs;
         }
+
         if ($new_files != '' ) {
             $html = '<h4>New RNA-containing PDB files released this week:</h4>';
             $new_files = explode(',', $new_files);
@@ -337,12 +433,13 @@ class Nrlist_model extends CI_Model {
         } else {
             $html = '<strong>No new RNA-containing PDB files this week.</strong>';
         }
+
         return $html;
     }
 
     function get_total_pdb_count()
     {
-        $this->db->select('structureId')
+        $this->db->select('pdb_id')
                  ->from('pdb_info')
                  ->distinct();
         $query = $this->db->get();
@@ -356,7 +453,9 @@ class Nrlist_model extends CI_Model {
         $pdb_count = $this->get_pdb_files_counts();
         $releases  = $this->get_release_precedence();
 
-        $this->db->select()
+        $this->db->select('nr_release_id')
+                 ->select('date')
+                 ->select('description')
                  ->from('nr_releases')
                  ->order_by('date','desc');
         $query = $this->db->get();
@@ -364,32 +463,38 @@ class Nrlist_model extends CI_Model {
         $i = 0;
         foreach ($query->result() as $row) {
             if ($i == 0) {
-                $id = anchor(base_url("nrlist/release/".$row->id), $row->id.' (current)');
+                $id = anchor(base_url("nrlist/release/".$row->nr_release_id), $row->nr_release_id.' (current)');
                 $i++;
             } else {
-                $id = anchor(base_url("nrlist/release/".$row->id), $row->id);
+                $id = anchor(base_url("nrlist/release/".$row->nr_release_id), $row->nr_release_id);
             }
-            if (array_key_exists($row->id,$changes)) {
-                $label = $this->get_label_type($changes[$row->id]);
-                $compare_url = base_url(array('nrlist','compare',$row->id,$releases[$row->id]));
-                $status = "<a href='$compare_url' class='nodec'><span class='label {$label}'>{$changes[$row->id]} changes</span></a>";
+
+            if (array_key_exists($row->nr_release_id,$changes)) {
+                $label = $this->get_label_type($changes[$row->nr_release_id]);
+                $compare_url = base_url(array('nrlist','compare',$row->nr_release_id,$releases[$row->nr_release_id]));
+                $status = "<a href='$compare_url' class='nodec'><span class='label {$label}'>{$changes[$row->nr_release_id]} changes</span></a>";
             } else {
                 $status = '';
             }
+
             $description = $this->beautify_description_date($row->description);
-            $table[] = array($id, $status, $description, $pdb_count[$row->id] );
+            $table[] = array($id, $status, $description, $pdb_count[$row->nr_release_id] );
         }
+
         return $table;
     }
 
     function get_latest_release()
     {
-        $this->db->select()
+        $this->db->select('nr_release_id')
+                 ->select('date')
+                 ->select('description')
                  ->from('nr_releases')
                  ->order_by('date','desc')
                  ->limit(1);
         $result = $this->db->get()->result_array();
-        return $result[0]['id'];
+
+        return $result[0]['nr_release_id'];
     }
 
     function make_release_label($num)
@@ -407,14 +512,19 @@ class Nrlist_model extends CI_Model {
 
     function get_release_precedence()
     {
-        $this->db->select('id')->from('nr_releases')->order_by('date','desc');
+        $this->db->select('nr_release_id')
+                 ->from('nr_releases')
+                 ->order_by('date','desc');
         $query = $this->db->get();
+
         foreach ($query->result() as $row) {
-            $ids[] = $row->id;
+            $ids[] = $row->nr_release_id;
         }
+        
         for ($i=0; $i<count($ids)-1; $i++) {
             $releases[$ids[$i]] = $ids[$i+1];
         }
+        
         return $releases;
     }
 
@@ -422,38 +532,47 @@ class Nrlist_model extends CI_Model {
     {
         $releases = $this->get_release_precedence();
 
-        $this->db->select()
-                 ->from('nr_releases')
-                 ->join('nr_release_diff','nr_releases.id=nr_release_diff.nr_release_id1')
-                 ->where('direct_parent',1)
-                 ->order_by('date','desc');
+        $this->db->select('nr_release_id')
+                 ->select('description')
+                 ->select('parent_nr_release_id')
+                 ->select('resolution')
+                 ->select('new_class_count')
+                 ->select('removed_class_count')
+                 ->select('updated_class_count')
+                 ->select('pdb_added_count')
+                 ->select('pdb_removed_count')
+                 ->from('nr_release_compare_counts')
+                 ->order_by('date', 'desc');
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
-            if ($row->nr_release_id2 == $releases[$row->id]) {
+            if ($row->parent_nr_release_id == $releases[$row->nr_release_id]) {
                 $tables[$row->resolution][] = array(
-                    anchor(base_url(array('nrlist','compare',$row->id,$releases[$row->id])), $row->id),
+                    anchor(base_url(array('nrlist','compare',$row->nr_release_id,$row->parent_nr_release_id)), $row->nr_release_id),
                     $this->beautify_description_date($row->description),
-                    $this->make_release_label($row->num_added_groups),
-                    $this->make_release_label($row->num_removed_groups),
-                    $this->make_release_label($row->num_updated_groups),
-                    $this->make_release_label($row->num_added_pdbs),
-                    $this->make_release_label($row->num_removed_pdbs)
+                    $this->make_release_label($row->new_class_count),
+                    $this->make_release_label($row->removed_class_count),
+                    $this->make_release_label($row->updated_class_count),
+                    $this->make_release_label($row->pdb_added_count),
+                    $this->make_release_label($row->pdb_removed_count)
                 );
             }
         }
+
         return $tables;
     }
 
     function get_release_description($id)
     {
-        $this->db->select()
+        $this->db->select('description')
                  ->from('nr_releases')
-                 ->where('id',$id);
+                 ->where('nr_release_id',$id);
         $query = $this->db->get();
+
         foreach ($query->result() as $row) {
             $s = $row->description;
         }
+
         return $this->beautify_description_date($s);
     }
 
@@ -491,73 +610,85 @@ class Nrlist_model extends CI_Model {
     function get_release($id, $resolution)
     {
         $resolution = str_replace('A', '', $resolution);
+
         // get raw release data
-        $this->db->select()
-                 ->from('nr_pdbs')
-                 ->where('release_id', $id)
-                 ->like('class_id', "NR_{$resolution}", 'after');
+        $this->db->select('ii.pdb_id, nl.name, nc.rep')
+                 ->from('ife_info AS ii')
+                 ->join('nr_chains AS nc', 'ii.ife_id = nc.ife_id')
+                 ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
+                 ->where('nc.nr_release_id', $id)
+                 ->like('nl.name', "NR_{$resolution}", 'after');
         $query = $this->db->get();
 
         // reorganize by class and rep and pdb
         $class = array();
         foreach ($query->result() as $row) {
-            $pdbs[] = $row->id;
+            $pdbs[] = $row->pdb_id;
+
             if ($row->rep == 1) {
-                $reps[$row->class_id] = $row->id;
+                $reps[$row->name] = $row->pdb_id;
             }
-            if (!array_key_exists($row->class_id, $class) ) {
-                $class[$row->class_id] = array();
+
+            if (!array_key_exists($row->name, $class) ) {
+                $class[$row->name] = array();
             }
-            $class[$row->class_id][]     = $row->id;
+
+            $class[$row->name][] = $row->pdb_id;
         }
+
         $pdbs = array_unique($pdbs);
 
         // get general pdb info
-        $this->db->select('structureId, structureTitle, resolution, experimentalTechnique')
+        $this->db->select('pdb_id, title, resolution, experimental_technique')
                  ->from('pdb_info')
-                 ->where_in('structureId', $pdbs )
-                 ->group_by('structureId');
+                 ->where_in('pdb_id', $pdbs )
+                 ->group_by('pdb_id');
         $query = $this->db->get();
+
         foreach($query->result() as $row) {
-            $pdb[$row->structureId]['title']      = $row->structureTitle;
-            $pdb[$row->structureId]['resolution'] = (is_null($row->resolution)) ? '' : number_format($row->resolution, 1) . ' &Aring';
-            $pdb[$row->structureId]['experimentalTechnique'] = $row->experimentalTechnique;
+            $pdb[$row->pdb_id]['title']      = $row->title;
+            $pdb[$row->pdb_id]['resolution'] = (is_null($row->resolution)) ? '' : number_format($row->resolution, 1) . ' &Aring';
+            $pdb[$row->pdb_id]['experimental_technique'] = $row->experimental_technique;
         }
 
         // get best chains and models
-        $this->db->select()
+        $this->db->select('pdb_id, best_chains, best_models')
                  ->from('pdb_best_chains_and_models')
                  ->where_in('pdb_id', $pdbs);
         $query = $this->db->get();
+
         foreach($query->result() as $row) {
             $best_chains[$row->pdb_id] = $row->best_chains;
             $best_models[$row->pdb_id] = $row->best_models;
         }
 
         // check if any of the files became obsolete
-        $this->db->select()
+        $this->db->select('pdb_obsolete_id, replaced_by')
                  ->from('pdb_obsolete')
-                 ->where_in('obsolete_id', $pdbs);
+                 ->where_in('pdb_obsolete_id', $pdbs);
         $query = $this->db->get();
+
         foreach($query->result() as $row) {
-            $pdb[$row->obsolete_id]['title'] = "OBSOLETE: replaced by <a class='pdb'>{$row->replaced_by}</a>";
-            $pdb[$row->obsolete_id]['resolution'] = '';
+            $pdb[$row->pdb_obsolete_id]['title'] = "OBSOLETE: replaced by <a class='pdb'>{$row->replaced_by}</a>";
+            $pdb[$row->pdb_obsolete_id]['resolution'] = '';
         }
 
         // get annotations: updated/>2 parents etc
-        $this->db->select()
+        $this->db->select('nr_class_id, comment')
                  ->from('nr_classes')
-                 ->where('release_id',$id)
+                 ->where('nr_release_id',$id)
                  ->where('resolution', $resolution);
         $query = $this->db->get();
+
         foreach ($query->result() as $row) {
-            $reason[$row->id]  = $row->comment;
-            $reason_flat[]     = $row->comment;
+            $reason[$row->nr_class_id] = $row->comment;
+            $reason_flat[]             = $row->comment;
         }
 
         // count all annotation types
         $counts = array_count_values($reason_flat);
         $counts_text = '';
+
         foreach ($counts as $comment => $count) {
             $label = $this->get_annotation_label_type($comment);
             $counts_text .= "<span class='label $label'>$comment</span> <strong>$count</strong>;    ";
@@ -565,22 +696,25 @@ class Nrlist_model extends CI_Model {
         $counts_text .= '<br><br>';
 
         // get order
-        $this->db->select('*,count(id) as num')
-                 ->from('nr_pdbs')
-                 ->where('release_id', $id)
-                 ->like('class_id', "NR_{$resolution}", 'after')
-                 ->group_by('class_id')
+        $this->db->select('nl.name, count(ii.pdb_id) as num')
+                 ->from('nr_chains AS nc')
+                 ->join('ife_info AS ii', 'nc.ife_id = ii.ife_id')
+                 ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
+                 ->where('nc.nr_release_id', $id)
+                 ->like('nl.name', "NR_{$resolution}", 'after')
+                 ->group_by('nl.name')
                  ->order_by('num','desc')
-                 ->order_by('id');
+                 ->order_by('ii.pdb_id');
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
-            $order[] = $row->class_id;
+            $order[] = $row->name;
         }
 
         // make the table
         $table = array();
         $i = 1;
+
         foreach ($order as $class_id) {
             $pdb_id = $reps[$class_id];
             $table[] = array($i,
@@ -590,27 +724,30 @@ class Nrlist_model extends CI_Model {
                              '<strong class="pdb">' . $pdb_id . '</strong>' .
                              '<ul>' .
                              '<li>' . $pdb[$pdb_id]['title'] . '</li>' .
-                             '<li>' . $pdb[$pdb_id]['experimentalTechnique'] . '</li>' .
+                             '<li>' . $pdb[$pdb_id]['experimental_technique'] . '</li>' .
                              '<li>Chain(s): ' . $best_chains[$pdb_id] .
                              '; model(s): ' . $best_models[$pdb_id] . '</li>' .
                              '</ul>',
                              $pdb[$pdb_id]['resolution'],
                              $this->count_all_nucleotides($pdb_id),
-                             $this->add_pdb_class($class[$class_id]));
+                             $this->add_pdb_class($class[$class_id])
+                            );
             $i++;
         }
+
         return array('table' => $table, 'counts' => $counts_text);
     }
 
     function count_all_nucleotides($pdb_id)
     {
-        $this->db->select('count(*) as length')
-                 ->from('pdb_coordinates')
-                 ->where('pdb', $pdb_id)
+        $this->db->select('count(unit_id) as length')
+                 ->from('unit_info')
+                 ->where('pdb_id', $pdb_id)
                  ->where_in('unit', array('A','C','G','U'))
                  ->order_by('count(*)', 'DESC')
                  ->limit(1);
         $query = $this->db->get();
+
         $result = $query->result();
         return $result[0]->length;
     }
@@ -618,23 +755,26 @@ class Nrlist_model extends CI_Model {
     function get_csv($release, $resolution)
     {
         $resolution = str_replace('A', '', $resolution);
-        $this->db->select('nr_pdbs.id as id, nr_pdbs.class_id as class_id, nr_pdbs.rep as rep')
-                 ->from('nr_pdbs')
-                 ->join('nr_classes', 'nr_pdbs.class_id = nr_classes.id')
-                 ->where('nr_pdbs.release_id', $release)
-                 ->where('nr_classes.release_id', $release)
+        $this->db->select('ii.pdb_id as id, nl.name as class_id, nc.rep')
+                 ->from('nr_chains AS nc')
+                 ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
+                 ->join('ife_info AS ii', 'nc.ife_id = ii.ife_id')
+                 ->where('nc.nr_release_id', $release)
                  ->where('resolution', $resolution);
         $query = $this->db->get();
+
         foreach($query->result() as $row) {
             if ( $row->rep == 1 ) {
                 $reps[$row->class_id] = $row->id;
             }
             $members[$row->class_id][] = $row->id;
         }
+
         $csv = '';
         foreach($reps as $class_id => $rep) {
             $csv .= '"' . implode('","', array($class_id, $rep, implode(',', $members[$class_id]))) . '"' . "\n";
         }
+
         return $csv;
     }
 
@@ -642,9 +782,9 @@ class Nrlist_model extends CI_Model {
     {
         $changes = $this->get_change_counts_by_release();
 
-        $this->db->select()
-                  ->from('nr_releases')
-                  ->order_by('date','desc');
+        $this->db->select('nr_release_id AS id, description')
+                 ->from('nr_releases')
+                 ->order_by('date','desc');
         $query = $this->db->get();
 
         $table = array();
@@ -655,19 +795,22 @@ class Nrlist_model extends CI_Model {
             } else {
                 $label = '';
             }
+
             $table[] = form_radio(array('name'=>'release1','value'=>$row->id)) . $row->id . $label;
             $table[] = form_radio(array('name'=>'release2','value'=>$row->id)) . $row->id;
             $table[] = $this->beautify_description_date($row->description);
         }
+
         return $table;
     }
 
     function is_valid_release($id)
     {
-        $this->db->select()
+        $this->db->select('nr_release_id')
                  ->from('nr_releases')
-                 ->where('id', $id)
+                 ->where('nr_release_id', $id)
                  ->limit(1);
+
         if ( $this->db->get()->num_rows() == 0 ) {
             return False;
         } else {
@@ -677,10 +820,11 @@ class Nrlist_model extends CI_Model {
 
     function is_valid_class($id)
     {
-        $this->db->select()
+        $this->db->select('name')
                  ->from('nr_classes')
-                 ->where('id', $id)
+                 ->where('name', $id)
                  ->limit(1);
+
         if ( $this->db->get()->num_rows() == 0 ) {
             return False;
         } else {

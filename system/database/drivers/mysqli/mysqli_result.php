@@ -112,8 +112,17 @@ class CI_DB_mysqli_result extends CI_DB_result {
 		{
 			mysqli_free_result($this->result_id);
 			$this->result_id = FALSE;
+			$this->result_array = array();
 		}
 	}
+
+    function next_result()
+    {
+        if (is_object($this->conn_id))
+        {
+            return mysqli_next_result($this->conn_id);
+        }
+    }
 
 	// --------------------------------------------------------------------
 

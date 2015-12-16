@@ -42,7 +42,7 @@ class Motifs_model extends CI_Model {
         $data = array();
 
         foreach($motifs as $motif) {
-            $this->db->select('*, count(ml_loops.id) as members')
+            $this->db->select('*, count(ml_loops.ml_loops_id) as members')
                      ->from('ml_motif_annotations')
                      ->join('ml_loops', 'ml_motif_annotations.motif_id = ml_loops.motif_id')
                      ->like('ml_motif_annotations.common_name', $motif)
@@ -64,26 +64,26 @@ class Motifs_model extends CI_Model {
             $release_id = $this->get_latest_release($motif_type);
         }
 
-        $this->db->select('id')
+        $this->db->select('ml_motifs_id')
                  ->from('ml_motifs')
                  ->where('release_id', $release_id)
                  ->where('type', $motif_type);
         $query = $this->db->get();
         $motif_ids = array();
         foreach($query->result() as $row) {
-            $motif_ids[] = $row->id;
+            $motif_ids[] = $row->ml_motifs_id;
         }
         return $motif_ids;
     }
 
     function db_get_all_releases($motif_type)
     {
-        $this->db->select('STRAIGHT_JOIN ml_releases.*,count(ml_loops.id) AS loops, count(DISTINCT(motif_id)) AS motifs', FALSE)
+        $this->db->select('STRAIGHT_JOIN ml_releases.*,count(ml_loops.ml_loops_id) AS loops, count(DISTINCT(motif_id)) AS motifs', FALSE)
                  ->from('ml_releases')
-                 ->join('ml_loops','ml_releases.id=ml_loops.release_id')
+                 ->join('ml_loops','ml_releases.ml_releases_id=ml_loops.release_id')
                  ->where('ml_releases.type',$motif_type)
-                 ->like('ml_loops.id',$motif_type,'after')
-                 ->group_by('ml_releases.id')
+                 ->like('ml_loops.ml_loops_id',$motif_type,'after')
+                 ->group_by('ml_releases.ml_releases_id')
                  ->order_by('ml_releases.date','desc');
         return $this->db->get();
     }
@@ -95,8 +95,8 @@ class Motifs_model extends CI_Model {
             seq, length, group_concat(motif_id) AS motifs, count(motif_id) AS motif_num
             FROM (
                 SELECT DISTINCT(seq AND motif_id),seq, length, motif_id FROM ml_loops AS t1
-                JOIN loops_all AS t2
-                ON t1.id = t2.id
+                JOIN loop_info AS t2
+                ON t1.ml_loops_id = t2.loop_id
                 WHERE t1.release_id = '{$release_id}'
                 AND t2.`type` = '{$motif_type}'
                 ORDER BY length DESC
@@ -158,13 +158,13 @@ class Motifs_model extends CI_Model {
 
     function get_release_precedence($motif_type)
     {
-        $this->db->select('id')
+        $this->db->select('ml_releases_id')
                  ->from('ml_releases')
                  ->where('type',$motif_type)
                  ->order_by('date','desc');
         $query = $this->db->get();
         foreach ($query->result() as $row) {
-            $ids[] = $row->id;
+            $ids[] = $row->ml_releases_id;
         }
         for ($i=0; $i<count($ids)-1; $i++) {
             $releases[$ids[$i]] = $ids[$i+1];
@@ -181,7 +181,7 @@ class Motifs_model extends CI_Model {
                  ->limit(1);
         $query = $this->db->get();
         foreach ($query->result() as $row) {
-            $current_release = $row->id;
+            $current_release = $row->ml_releases_id;
         }
         if ($id == $current_release) {
             return 'Current';
@@ -257,18 +257,18 @@ class Motifs_model extends CI_Model {
 
             $query = $this->db_get_all_releases($motif_type);
             foreach($query->result() as $row){
-                $data[$row->id]['loops'] = $row->loops;
-                $data[$row->id]['motifs'] = $row->motifs;
-                $data[$row->id]['description'] = $row->description;
-                $data[$row->id]['annotation'] = $row->annotation;
-                $data[$row->id]['date'] = $row->date;
+                $data[$row->ml_releases_id]['loops'] = $row->loops;
+                $data[$row->ml_releases_id]['motifs'] = $row->motifs;
+                $data[$row->ml_releases_id]['description'] = $row->description;
+                $data[$row->ml_releases_id]['annotation'] = $row->annotation;
+                $data[$row->ml_releases_id]['date'] = $row->date;
             }
 
             $releases = $this->get_release_precedence($motif_type);
 
             $this->db->select()
                      ->from('ml_releases')
-                     ->join('ml_release_diff','ml_releases.id=ml_release_diff.release_id1')
+                     ->join('ml_release_diff','ml_releases.ml_releases_id = ml_release_diff.release_id1')
                      ->where('ml_releases.type',$motif_type)
                      ->where('ml_release_diff.type',$motif_type)
                      ->where('direct_parent',1)
@@ -276,18 +276,18 @@ class Motifs_model extends CI_Model {
             $query = $this->db->get();
 
             foreach ($query->result() as $row) {
-                if ($row->release_id2 == $releases[$row->id]) {
+                if ($row->release_id2 == $releases[$row->ml_releases_id]) {
                     $table[$motif_type][] = array(
-                        anchor(base_url(array('motifs','release',$motif_type,$row->id)), $row->id),
-                        $this->make_release_label($row->num_added_groups, $row->id, $releases[$row->id], $motif_type),
-                        $this->make_release_label($row->num_removed_groups, $row->id, $releases[$row->id], $motif_type),
-                        $this->make_release_label($row->num_updated_groups, $row->id, $releases[$row->id], $motif_type),
-                        $this->make_release_label($row->num_added_loops, $row->id, $releases[$row->id], $motif_type),
-                        $this->make_release_label($row->num_removed_loops, $row->id, $releases[$row->id], $motif_type),
-                        $data[$row->id]['loops'],
-                        $data[$row->id]['motifs'],
-                        date('m-d-Y', strtotime($data[$row->id]['date'])),
-                        $data[$row->id]['annotation']
+                        anchor(base_url(array('motifs','release',$motif_type,$row->ml_releases_id)), $row->ml_releases_id),
+                        $this->make_release_label($row->num_added_groups, $row->ml_releases_id, $releases[$row->ml_releases_id], $motif_type),
+                        $this->make_release_label($row->num_removed_groups, $row->ml_releases_id, $releases[$row->ml_releases_id], $motif_type),
+                        $this->make_release_label($row->num_updated_groups, $row->ml_releases_id, $releases[$row->ml_releases_id], $motif_type),
+                        $this->make_release_label($row->num_added_loops, $row->ml_releases_id, $releases[$row->ml_releases_id], $motif_type),
+                        $this->make_release_label($row->num_removed_loops, $row->ml_releases_id, $releases[$row->ml_releases_id], $motif_type),
+                        $data[$row->ml_releases_id]['loops'],
+                        $data[$row->ml_releases_id]['motifs'],
+                        date('m-d-Y', strtotime($data[$row->ml_releases_id]['date'])),
+                        $data[$row->ml_releases_id]['annotation']
                     );
                 }
             }
@@ -305,10 +305,8 @@ class Motifs_model extends CI_Model {
                 date('m-d-Y', strtotime($data['0.1']['date'])),
                 $data['0.1']['annotation']
             );
-
-
-
         }
+
         return $table;
     }
 
@@ -340,7 +338,7 @@ class Motifs_model extends CI_Model {
         $this->db->select('graphml')
                  ->from('ml_releases')
                  ->where('type',$motif_type)
-                 ->where('id',$id);
+                 ->where('ml_releases_id',$id);
         $query = $this->db->get();
         foreach ($query->result() as $row) {
             return $graphml = $row->graphml;
@@ -362,7 +360,7 @@ class Motifs_model extends CI_Model {
                  ->where('release_id',$id);
         $query = $this->db->get();
         foreach ($query->result() as $row) {
-            $reason[$row->id]  = $row->comment;
+            $reason[$row->ml_motifs_id]  = $row->comment;
             $reason_flat[]     = $row->comment;
         }
         // count all annotation types
@@ -384,7 +382,7 @@ class Motifs_model extends CI_Model {
         }
 
         // get the motif ids and counts
-        $this->db->select('motif_id,count(id) AS instances')
+        $this->db->select('motif_id,count(ml_loops_id) AS instances')
                  ->from('ml_loops')
                  ->like('motif_id',strtoupper($motif_type),'after')
                  ->where('release_id', $id)
@@ -454,9 +452,9 @@ class Motifs_model extends CI_Model {
 
     function _get_motif_length_distribution($motif_id, $release_id)
     {
-        $this->db->select('loops_all.length')
+        $this->db->select('loop_info.length')
                  ->from('ml_loops')
-                 ->join('loops_all', 'ml_loops.id=loops_all.id')
+                 ->join('loop_info', 'ml_loops.ml_loops_id=loop_info.loop_id')
                  ->where('ml_loops.release_id', $release_id)
                  ->where('ml_loops.motif_id', $motif_id);
         $query = $this->db->get();
@@ -501,25 +499,25 @@ class Motifs_model extends CI_Model {
                  ->limit(1);
         $result = $this->db->get()->row();
         if ( $date ) {
-            return array('id' => $result->id, 'date' => $result->date);
+            return array('id' => $result->ml_releases_id, 'date' => $result->date);
         } else {
-            return $result->id;
+            return $result->ml_releases_id;
         }
     }
 
     function get_pdb_files_from_motif_release($motif_type, $release_id)
     {
         // get all loops in the release
-        $this->db->select('id')
+        $this->db->select('ml_loops_id')
                  ->from('ml_loops')
                  ->where('release_id', $release_id)
-                 ->like('id', $motif_type, 'after');
+                 ->like('ml_loops_id', $motif_type, 'after');
         $query = $this->db->get();
 
         // extract pdb substring
         $pdbs = array();
         foreach($query->result() as $row) {
-            $pdbs[] = substr($row->id, 3, 4);
+            $pdbs[] = substr($row->ml_loops_id, 3, 4);
         }
 
         return array_unique($pdbs);
@@ -543,14 +541,14 @@ class Motifs_model extends CI_Model {
             foreach($only_old as $old_id) {
                 // find a class where the new id is a rep, and the old one is not
                 $this->db->select()
-                         ->from('nr_pdbs as t1')
-                         ->join('nr_pdbs as t2', 't1.class_id = t2.class_id AND ' .
-                                                 't1.release_id=t2.release_id')
-                         ->where('t1.id', $new_id)
-                         ->where('t2.id', $old_id)
+                         ->from('__trash_nr_pdbs as t1')
+                         ->join('__trash_nr_pdbs as t2', 't1.nr_class_id = t2.nr_class_id AND ' .
+                                                         't1.nr_release_id = t2.nr_release_id')
+                         ->where('t1.nr_pdb_id', $new_id)
+                         ->where('t2.nr_pdb_id', $old_id)
                          ->where('t1.rep', 1)
                          ->where('t2.rep', 0)
-                         ->like('t1.class_id', 'NR_4.0_', 'after')
+                         ->like('t1.nr_class_id', 'NR_4.0_', 'after')
                          ->limit(1);
                 $query = $this->db->get();
 
@@ -583,14 +581,14 @@ class Motifs_model extends CI_Model {
 
         $this->db->select()
                  ->from('pdb_obsolete')
-                 ->where_in('obsolete_id', $only_old);
+                 ->where_in('pdb_obsolete_id', $only_old);
         $query = $this->db->get();
 
         foreach($query->result() as $row) {
             if ( $row->replaced_by == '' ) {
                 $row->replaced_by = 'None';
             }
-            $removed[$row->obsolete_id] = $row->replaced_by;
+            $removed[$row->pdb_obsolete_id] = $row->replaced_by;
         }
 
         return $removed;
@@ -600,12 +598,12 @@ class Motifs_model extends CI_Model {
     {
         $this->db->select()
                  ->from('ml_releases')
-                 ->where("type = '$motif_type' AND (id = '$rel1' OR id = '$rel2')")
+                 ->where("type = '$motif_type' AND (ml_releases_id = '$rel1' OR ml_releases_id = '$rel2')")
                  ->order_by('date', 'asc');
         $query = $this->db->get();
         $releases = array();
         foreach($query->result() as $row) {
-            $releases[] = $row->id;
+            $releases[] = $row->ml_releases_id;
         }
 
         return $releases;
@@ -615,14 +613,14 @@ class Motifs_model extends CI_Model {
     {
         $loops = array();
 
-        $this->db->select('id')
+        $this->db->select('ml_loops_id')
                  ->from('ml_loops')
                  ->where('motif_id', $motif_id)
-                 ->group_by('id');
+                 ->group_by('ml_loops_id');
         $query = $this->db->get();
 
         foreach($query->result() as $row){
-            $loops[] = $row->id;
+            $loops[] = $row->ml_loops_id;
         }
 
         return $loops;
@@ -636,7 +634,7 @@ class Motifs_model extends CI_Model {
             $handles[] = substr($motif, 3, 5); // XL_@@@@@
         }
 
-        $this->db->select('id')
+        $this->db->select('ml_motifs_id')
                  ->from('ml_motifs')
                  ->where_in('handle', $handles)
                  ->where('release_id', $rel);
@@ -644,7 +642,7 @@ class Motifs_model extends CI_Model {
 
         $updated_new = array();
         foreach($query->result() as $row){
-            $updated_new[] = $row->id;
+            $updated_new[] = $row->ml_motifs_id;
         }
 
         return $updated_new;
@@ -733,11 +731,11 @@ class Motifs_model extends CI_Model {
 
     function _get_instance_counts($motifs, $release)
     {
-        $this->db->select('motif_id, count(id) as instances')
+        $this->db->select('motif_id, count(ml_loops_id) as instances')
                  ->from('ml_loops')
                  ->where_in('motif_id', $motifs)
                  ->where('release_id', $release)
-                 ->order_by('count(id)', 'desc')
+                 ->order_by('count(ml_loops_id)', 'desc')
                  ->group_by('motif_id');
         $query = $this->db->get();
 
