@@ -704,12 +704,13 @@ CREATE TABLE `nr_release_diff` (
         $i = 1;
 
         // get order
-        $this->db->select('nl.name, ii.pdb_id, ii.length, ci.compound, ci.source, ci.taxonomy_id, nl.nr_class_id, count(ii.ife_id) as num')
+        $this->db->select('nl.name, ii.pdb_id, ii.length, ci.compound, sm.species_name, sm.species_id, nl.nr_class_id, count(ii.ife_id) as num')
                  ->from('nr_chains AS nc')
                  ->join('ife_info AS ii', 'nc.ife_id = ii.ife_id')
                  ->join('ife_chains AS ic', 'ii.ife_id = ic.ife_id')
                  ->join('chain_info AS ci', 'ic.chain_id = ci.chain_id')
                  ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
+                 ->join('species_mapping AS sm', 'ci.taxonomy_id = sm.species_mapping_id')
                  ->where('nc.nr_release_id', $id)
                  ->like('nl.name', "NR_{$resolution}", 'after')
                  ->group_by('nl.name')
@@ -722,8 +723,8 @@ CREATE TABLE `nr_release_diff` (
             $nums     = $row->num;
             $ife_id   = $reps[$class_id];
             $pdb_id   = $row->pdb_id;
-            $source   = ( is_null($row->source) ) ? "" : '<a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=' 
-                            . $row->taxonomy_id . '">' . $row->source . '</a>'; 
+            $source   = ( is_null($row->species_name) ) ? "" : '<a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=' 
+                            . $row->species_id . '">' . $row->species_name . '</a>'; 
             
             $table[] = array($i,
                              anchor(base_url("nrlist/view/".$class_id),$class_id)
