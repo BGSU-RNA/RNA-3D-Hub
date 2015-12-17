@@ -710,11 +710,12 @@ CREATE TABLE `nr_release_diff` (
                  ->join('ife_chains AS ic', 'ii.ife_id = ic.ife_id')
                  ->join('chain_info AS ci', 'ic.chain_id = ci.chain_id')
                  ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
-                 ->join('species_mapping AS sm', 'ci.taxonomy_id = sm.species_mapping_id')
+                 ->join('species_mapping AS sm', 'ci.taxonomy_id = sm.species_mapping_id', 'left')
                  ->where('nc.nr_release_id', $id)
                  ->like('nl.name', "NR_{$resolution}", 'after')
                  ->group_by('nl.name')
                  ->order_by('num','desc')
+                 ->order_by('nc.rep','desc')
                  ->order_by('ii.ife_id');
         $query = $this->db->get();
 
@@ -724,17 +725,19 @@ CREATE TABLE `nr_release_diff` (
             $ife_id   = $reps[$class_id];
             $pdb_id   = $row->pdb_id;
             $source   = ( is_null($row->species_name) ) ? "" : '<a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=' 
-                            . $row->species_id . '">' . $row->species_name . '</a>'; 
+                            . $row->species_id . '">' . $row->species_name . '</a>';
+            $compound = $row->compound; ### original
+            $compound = (strlen($row->compound) > 40 ) ? substr($row->compound, 0, 40) . "[...]" : $row->compound; ### simple truncation
             
             $table[] = array($i,
                              anchor(base_url("nrlist/view/".$class_id),$class_id)
                              . '<br>' . $this->add_annotation_label($row->nr_class_id, $reason)
                              . '<br>' . $source,
                              #. '<br>' . $this->get_source_organism_for_class($class[$class_id]),
-                             '<strong class="pdb">' . $ife_id . " (" . $pdb_id . ')</strong>' .
+                             $ife_id . ' (<strong class="pdb">' . $pdb_id . '</strong>)' .
                              '<ul>' .
                              #'<li>' . $pdb[$pdb_id]['title'] . '</li>' .
-                             '<li>' . $row->compound . '</li>' .
+                             '<li>' . $compound . '</li>' .
                              '<li>' . $pdb[$pdb_id]['experimental_technique'] . '</li>' .
                              '<li>Chain(s): ' . $best_chains[$pdb_id] .
                              '; model(s): ' . $best_models[$pdb_id] . '</li>' .
