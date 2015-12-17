@@ -711,7 +711,7 @@ CREATE TABLE `nr_release_diff` (
                  ->join('chain_info AS ci', 'ic.chain_id = ci.chain_id')
                  ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
                  ->join('species_mapping AS sm', 'ci.taxonomy_id = sm.species_mapping_id', 'left')
-                 ->join('nr_class_reps AS cr', 'nl.name = cr.name')
+                 ->join('nr_class_reps AS cr', 'nl.name = cr.name AND nl.nr_class_id = cr.nr_class_id')
                  ->where('nc.nr_release_id', $id)
                  ->like('nl.name', "NR_{$resolution}", 'after')
                  ->group_by('nl.name')
