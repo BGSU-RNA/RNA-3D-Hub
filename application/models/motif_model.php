@@ -159,7 +159,7 @@ class Motif_model extends CI_Model {
                  ->where_in('loop_id', $loop_ids);
         $query = $this->db->get();
         foreach($query->result() as $row) {
-            $seqs[$row->id] = $row->seq;
+            $seqs[$row->loop_id] = $row->seq;
         }
 
         // get mutual discrepancies
@@ -496,12 +496,17 @@ class Motif_model extends CI_Model {
                  ->from('unit_info')
                  ->where('pdb_id', $pdb)
                  ->where_in('unit', $rna)
+                 #->where('number >=', $start)
+                 #->where('number <=', $stop);
                  ->where('chain_index >=', $start)
                  ->where('chain_index <=', $stop);
+        
         $query = $this->db->get();
+
         foreach($query->result() as $row) {
             $nts[] = $row->unit;
         }
+        
         return implode('', $nts);
     }
 
