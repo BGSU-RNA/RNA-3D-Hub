@@ -538,8 +538,9 @@ CREATE TABLE `nr_release_diff` (
         foreach ($query->result() as $row) {
             if ($row->parent_nr_release_id == $releases[$row->nr_release_id]) {
                 $tables[$row->resolution][] = array(
-                    anchor(base_url(array('nrlist','compare',$row->nr_release_id,$row->parent_nr_release_id)), $row->nr_release_id),
+                    anchor(base_url(array('nrlist','release',$row->nr_release_id)),$row->nr_release_id),
                     $this->beautify_description_date($row->description),
+                    anchor(base_url(array('nrlist','compare',$row->nr_release_id,$row->parent_nr_release_id)), $row->parent_nr_release_id),
                     $this->make_release_label($row->new_class_count),
                     $this->make_release_label($row->removed_class_count),
                     $this->make_release_label($row->updated_class_count),
@@ -727,17 +728,14 @@ CREATE TABLE `nr_release_diff` (
             $pdb_id   = $row->pdb_id;
             $source   = ( is_null($row->species_name) ) ? "" : '<a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=' 
                             . $row->species_id . '">' . $row->species_name . '</a>';
-            $compound = $row->compound; ### original
-            $compound = (strlen($row->compound) > 40 ) ? substr($row->compound, 0, 40) . "[...]" : $row->compound; ### simple truncation
+            $compound = (strlen($row->compound) > 40 ) ? substr($row->compound, 0, 40) . "[...]" : $row->compound;
             
             $table[] = array($i,
                              anchor(base_url("nrlist/view/".$class_id),$class_id)
                              . '<br>' . $this->add_annotation_label($row->nr_class_id, $reason)
                              . '<br>' . $source,
-                             #. '<br>' . $this->get_source_organism_for_class($class[$class_id]),
                              $ife_id . ' (<strong class="pdb">' . $pdb_id . '</strong>)' .
                              '<ul>' .
-                             #'<li>' . $pdb[$pdb_id]['title'] . '</li>' .
                              '<li>' . $compound . '</li>' .
                              '<li>' . $pdb[$pdb_id]['experimental_technique'] . '</li>' .
                              '<li>Chain(s): ' . $best_chains[$pdb_id] .
@@ -745,47 +743,10 @@ CREATE TABLE `nr_release_diff` (
                              '</ul>',
                              $pdb[$pdb_id]['resolution'],
                              $row->length,
-                             #$this->count_all_nucleotides($pdb_id),
                              "(" . $nums . ") " . $this->add_pdb_class($class[$class_id])
                             );
             $i++;
         }
-
-/*
-        foreach ($order as $class_id) {
-            $ife_id = $reps[$class_id];
-            $nums   = $nums['$class_id'];
-
-            echo "<p>class_id: $class_id // nums: $nums</p>";
-
-            $this->db->select('ii.pdb_id')
-                     ->from('ife_info AS ii')
-                     ->where('ii.ife_id', $ife_id);
-            $query = $this->db->get();
-
-            foreach ($query->result() as $row) {
-                $pdb_id = $row->pdb_id;
-            }
-
-            $table[] = array($i,
-                             anchor(base_url("nrlist/view/".$class_id),$class_id)
-                             . '<br>' . $this->add_annotation_label($class_id, $reason)
-                             . '<br>' . $this->get_source_organism_for_class($class[$class_id]),
-                             '<strong class="pdb">' . $ife_id . " (" . $pdb_id . ')</strong>' .
-                             '<ul>' .
-                             '<li>' . $pdb[$pdb_id]['title'] . '</li>' .
-                             '<li>' . $pdb[$pdb_id]['experimental_technique'] . '</li>' .
-                             '<li>Chain(s): ' . $best_chains[$pdb_id] .
-                             '; model(s): ' . $best_models[$pdb_id] . '</li>' .
-                             '</ul>',
-                             $pdb[$pdb_id]['resolution'],
-                             $ife[$ife_id]['length'],
-                             #$this->count_all_nucleotides($pdb_id),
-                             "(" . $nums . ") " . $this->add_pdb_class($class[$class_id])
-                            );
-            $i++;
-        }
-*/
 
         return array('table' => $table, 'counts' => $counts_text);
     }
