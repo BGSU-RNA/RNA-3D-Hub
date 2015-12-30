@@ -11,7 +11,7 @@
             </p>
 
             <p>
-            - provides annotations of base-pairing, -stacking, and -backbone interactions computed by <a href="http://rna.bgsu.edu/FR3D">FR3D</a>
+            - provides annotations of base-pairing, -stacking, and -backbone interactions computed by <a href="<?=$this->config->item('fr3d_url')?>">FR3D</a>
             </p>
             <p>
             - extracts internal, hairpin and 3-way junction loops and annotates them with motifs from the <a href="<?=$baseurl?>motifs?">RNA 3D Motif Atlas</a>

@@ -41,7 +41,7 @@
             <div class="span9 offset1" id='explanation'>
                 <p>
                 Complete agreement between methods is marked in green. Overlapping loops are in orange.
-                All comparisons are relative to the loops found by FR3D.
+                All comparisons are relative to the loops found by <a href="<?=$this->config->item('fr3d_url')?>">FR3D</a>.
                 The table can be sorted by clicking on the column headers.
                 </p>
 
