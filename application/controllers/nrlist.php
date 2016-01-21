@@ -175,7 +175,7 @@ class Nrlist extends CI_Controller {
 
         $i = 0;
         foreach ($resolutions as $res) {
-            $this->table->set_heading('Release','Date','Added groups','Removed groups','Updated groups','Added pdbs','Removed pdbs');
+            $this->table->set_heading('Release','Date','Compare parent','Added groups','Removed groups','Updated groups','Added pdbs','Removed pdbs');
             $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped' id='{$labels[$i]}table'>" );
             $this->table->set_template($tmpl);
             $data['tables'][$labels[$i]] = $this->table->generate($tables[$res]);

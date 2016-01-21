@@ -24,7 +24,7 @@
           <h2>RNA Structure Atlas</h2>
           Structural annotations of all RNA-containing 3D structures including:
           <ul>
-             <li>Pairwise interactions produced by <a href="<?=$this->config->item('home_url')?>/FR3D">FR3D</a></li>
+             <li>Pairwise interactions produced by <a href="<?=$this->config->item('fr3d_url')?>">FR3D</a></li>
              <li>Hairpin, internal, and three-way junction loops</li>
              <li>Motif annotations from the <a href="<?=$this->config->item('home_url')?>/rna3dhub/motifs">Motif Atlas</a></li>
              <li>Similar structures from the <a href="<?=$this->config->item('home_url')?>/rna3dhub/nrlist">Non-redundant Lists</a></li>

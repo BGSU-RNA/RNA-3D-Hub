@@ -56,7 +56,7 @@
             </p>
 
             <p>
-              <strong>Method.</strong> To create the Motif Atlas we extract RNA 3D motif instances from the current <a href="<?=$this->config->item('home_url')?>/rna3dhub/nrlist">non-redundant list</a> using <a href="<?=$this->config->item('home_url')?>/FR3D">FR3D</a>, a program for symbolic and geometric searching of RNA 3D structures. Next, we use a clustering approach based on maximum cliques to obtain a representative collection of RNA 3D motifs. Unique and stable ids are assigned to all motifs and motif instances.
+              <strong>Method.</strong> To create the Motif Atlas we extract RNA 3D motif instances from the current <a href="<?=$this->config->item('home_url')?>/rna3dhub/nrlist">non-redundant list</a> using <a href="<?=$this->config->item('fr3d_url')?>">FR3D</a>, a program for symbolic and geometric searching of RNA 3D structures. Next, we use a clustering approach based on maximum cliques to obtain a representative collection of RNA 3D motifs. Unique and stable ids are assigned to all motifs and motif instances.
             </p>
 
                 <strong>Citation.</strong> The paper describing RNA 3D Motif Atlas has been <a href="http://rnajournal.cshlp.org/content/19/10/1327.full" target="_blank">published in RNA</a>. If you use this resource, please cite:
