@@ -268,9 +268,11 @@ CREATE TABLE `nr_release_diff` (
         } else {
             $s = $list;
         }
+
         for ($i = 0; $i < count($s); $i++) {
             $s[$i] = "<a class='pdb'>$s[$i]</a>";
         }
+
         return implode(', ', $s);
     }
 
@@ -667,6 +669,14 @@ CREATE TABLE `nr_release_diff` (
             $best_models[$row->pdb_id] = $row->best_models;
         }
 
+        // cover for missing information
+        foreach($pdbs as $pdb_id) {
+            if (!array_key_exists($pdb_id, $best_chains)) {
+                $best_chains[$pdb_id] = "";
+                $best_models[$pdb_id] = "";
+            }
+        }
+
         // check if any of the files became obsolete
         $this->db->select('pdb_obsolete_id, replaced_by')
                  ->from('pdb_obsolete')
@@ -729,7 +739,31 @@ CREATE TABLE `nr_release_diff` (
             $source   = ( is_null($row->species_name) ) ? "" : '<a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=' 
                             . $row->species_id . '">' . $row->species_name . '</a>';
             $compound = (strlen($row->compound) > 40 ) ? substr($row->compound, 0, 40) . "[...]" : $row->compound;
-            
+
+            if (preg_match('/\+/',$ife_id)){
+                $best_chains = "";
+                $ife_set     = explode('+', $ife_id);
+                $idx         = 0;
+
+                foreach ($ife_set as $each_ife){
+                    $ife_split        = explode('|', $each_ife);
+                    $get_chains[$idx] = $ife_split[1];
+                    $get_models[$idx] = "1"; # get list from multiple ife_ids after rewrite
+                    $idx++;
+                }
+
+                $sort_chains = array_unique($get_chains);
+                $sort_models = array_unique($get_models);
+                sort($sort_chains);
+                sort($sort_models);
+                $best_chains = implode(', ', $sort_chains);
+                $best_models = implode(', ', $sort_models);
+            } else {
+                $ife_split   = explode('|', $ife_id);
+                $best_chains = $ife_split[1]; #"simple case to write";
+                $best_models = 1; # get from ife_id after rewrite
+            }
+
             $table[] = array($i,
                              anchor(base_url("nrlist/view/".$class_id),$class_id)
                              . '<br>' . $this->add_annotation_label($row->nr_class_id, $reason)
@@ -738,8 +772,7 @@ CREATE TABLE `nr_release_diff` (
                              '<ul>' .
                              '<li>' . $compound . '</li>' .
                              '<li>' . $pdb[$pdb_id]['experimental_technique'] . '</li>' .
-                             '<li>Chain(s): ' . $best_chains[$pdb_id] .
-                             '; model(s): ' . $best_models[$pdb_id] . '</li>' .
+                             '<li>Chain(s): ' . $best_chains . '; model(s): ' . $best_models . '</li>' .
                              '</ul>',
                              $pdb[$pdb_id]['resolution'],
                              $row->length,
