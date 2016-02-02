@@ -658,6 +658,7 @@ CREATE TABLE `nr_release_diff` (
             $pdb[$row->pdb_id]['experimental_technique'] = $row->experimental_technique;
         }
 
+/*
         // get best chains and models
         $this->db->select('pdb_id, best_chains, best_models')
                  ->from('pdb_best_chains_and_models')
@@ -676,6 +677,7 @@ CREATE TABLE `nr_release_diff` (
                 $best_models[$pdb_id] = "";
             }
         }
+*/
 
         // check if any of the files became obsolete
         $this->db->select('pdb_obsolete_id, replaced_by')
@@ -715,13 +717,10 @@ CREATE TABLE `nr_release_diff` (
         $i = 1;
 
         // get order
-        $this->db->select('nl.name, cr.pdb_id, cr.length, ci.compound, sm.species_name, sm.species_id, nl.nr_class_id, count(ii.ife_id) as num')
+        $this->db->select('nl.name, cr.pdb_id, cr.length, cr.compound, cr.species_name, cr.species_id, nl.nr_class_id, count(DISTINCT ii.ife_id) as num')
                  ->from('nr_chains AS nc')
                  ->join('ife_info AS ii', 'nc.ife_id = ii.ife_id')
-                 ->join('ife_chains AS ic', 'ii.ife_id = ic.ife_id')
-                 ->join('chain_info AS ci', 'ic.chain_id = ci.chain_id')
                  ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
-                 ->join('species_mapping AS sm', 'ci.taxonomy_id = sm.species_mapping_id', 'left')
                  ->join('nr_class_reps AS cr', 'nl.name = cr.name AND nl.nr_class_id = cr.nr_class_id')
                  ->where('nc.nr_release_id', $id)
                  ->like('nl.name', "NR_{$resolution}", 'after')
