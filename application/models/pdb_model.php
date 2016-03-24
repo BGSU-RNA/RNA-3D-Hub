@@ -540,11 +540,14 @@ class Pdb_model extends CI_Model {
 
     function get_longrange_bp($pdb)
     {
-        $this->db->select('C1.unit_id as nt1, C2.unit_id as nt2, f_lwbp as family, f_crossing as crossing')
-                 ->from('unit_pairs_interactions')
-                 ->join('__pdb_unit_id_correspondence as C1', 'C1.old_id = unit_pairs_interactions.unit_id_1')
-                 ->join('__pdb_unit_id_correspondence as C2', 'C2.old_id = unit_pairs_interactions.unit_id_2')
-                 ->where('pdb_id', $pdb)
+        $this->db->select('U1.unit_id as nt1')
+                 ->select('U2.unit_id as nt2')
+                 ->select('upi.f_lwbp as family')
+                 ->select('upi.f_crossing as crossing')
+                 ->from('unit_pairs_interactions AS upi')
+                 ->join('unit_info as U1', 'U1.unit_id = upi.unit_id_1')
+                 ->join('unit_info as U2', 'U2.unit_id = upi.unit_id_2')
+                 ->where('upi.pdb_id', $pdb)
                  ->where('f_crossing > 3')
                  ->where('f_lwbp is not null');
 
