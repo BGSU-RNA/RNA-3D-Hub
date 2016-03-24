@@ -311,7 +311,7 @@ class Pdb_model extends CI_Model {
             // get this info only once because it applies to all chains
             if ( $data['rna_chains'] == 0 ) {
                 $data['title'] = $row->title;
-                $data['experimental_technique'] = $row->experimental_techinque;
+                $data['experimental_technique'] = $row->experimental_technique;
                 $data['resolution'] = $row->resolution;
                 $data['release_date'] = $row->release_date;
                 $data['authors'] = $row->authors;
