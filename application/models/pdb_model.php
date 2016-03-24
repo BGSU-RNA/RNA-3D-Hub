@@ -236,9 +236,9 @@ class Pdb_model extends CI_Model {
         $unit_ids = $this->_get_unit_ids($pdb_id);
 
         $this->db->select('unit_id_1,unit_id_2,' . $db_field)
-                 ->from('unit_pairs_interactions')
-                 ->join('__pdb_coordinates', 'unit_pairs_interactions.unit_id_1 = __pdb_coordinates.pdb_coordinates_id')
-                 ->where('pdb_id', $pdb_id)
+                 ->from('unit_pairs_interactions AS upi')
+                 ->join('__pdb_coordinates AS pc', 'upi.unit_id_1 = pc.pdb_coordinates_id')
+                 ->where('upi.pdb_id', $pdb_id)
                  ->where($where)
                  ->order_by('index');
         $query = $this->db->get();
