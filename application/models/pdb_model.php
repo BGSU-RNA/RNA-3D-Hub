@@ -185,25 +185,35 @@ class Pdb_model extends CI_Model {
 
     function _get_unit_ids($pdb_id)
     {
-        // get correspondences between old and new ids
-        $this->db->select('old_id, unit_id')
-                 ->from('__pdb_unit_id_correspondence')
+    #    // get correspondences between old and new ids
+    #    $this->db->select('old_id, unit_id')
+    #             ->from('__pdb_unit_id_correspondence')
+    #             ->where('pdb_id', $pdb_id);
+    #    $query = $this->db->get();
+    #    $unit_ids = array();
+    #    foreach ( $query->result() as $row ) {
+    #        $unit_ids[$row->old_id] = $row->unit_id;
+    #    }
+    #
+    #    // if no new unit ids are found, fall back on old ids
+    #    if ( count($unit_ids) == 0 ) {
+    #        $this->db->select('pdb_coordinates_id')
+    #                 ->from('__pdb_coordinates')
+    #                 ->where('pdb_id', $pdb_id);
+    #        $query = $this->db->get();
+    #        foreach ( $query->result() as $row ) {
+    #            $unit_ids[$row->pdb_coordinates_id] = $row->pdb_coordinates_id;
+    #        }
+    #    }
+
+        // retrieve new-style IDs from unit_info
+        $this->db->select('unit_id')
+                 ->from('unit_info')
                  ->where('pdb_id', $pdb_id);
         $query = $this->db->get();
         $unit_ids = array();
         foreach ( $query->result() as $row ) {
-            $unit_ids[$row->old_id] = $row->unit_id;
-        }
-
-        // if no new unit ids are found, fall back on old ids
-        if ( count($unit_ids) == 0 ) {
-            $this->db->select('pdb_coordinates_id')
-                     ->from('__pdb_coordinates')
-                     ->where('pdb_id', $pdb_id);
-            $query = $this->db->get();
-            foreach ( $query->result() as $row ) {
-                $unit_ids[$row->pdb_coordinates_id] = $row->pdb_coordinates_id;
-            }
+            $unit_ids[$row->unit_id] = $row->unit_id;
         }
 
         return $unit_ids;
@@ -235,12 +245,12 @@ class Pdb_model extends CI_Model {
 
         $unit_ids = $this->_get_unit_ids($pdb_id);
 
-        $this->db->select('unit_id_1,unit_id_2,' . $db_field)
+        $this->db->select('upi.unit_id_1, upi.unit_id_2,' . $db_field)
                  ->from('unit_pairs_interactions AS upi')
-                 ->join('__pdb_coordinates AS pc', 'upi.unit_id_1 = pc.pdb_coordinates_id')
+                 ->join('unit_info AS ui', 'upi.unit_id_1 = ui.unit_id')
                  ->where('upi.pdb_id', $pdb_id)
                  ->where($where)
-                 ->order_by('index');
+                 ->order_by('number');
         $query = $this->db->get();
 
         $i = 1;
@@ -250,7 +260,7 @@ class Pdb_model extends CI_Model {
             $output_fields = array();
             $csv_fields    = array();
 
-            $csv_fields[0] = $unit_ids[$row->iPdbSig];
+            $csv_fields[0] = $unit_ids[$row->unit_id_1];
             foreach ($targets as $target) {
                 if ( isset($row->{$db_fields[$target]}) and ($row->{$db_fields[$target]} != '') ) {
                     $output_fields[] = $row->{$db_fields[$target]};
@@ -259,13 +269,13 @@ class Pdb_model extends CI_Model {
                     $csv_fields[] = '';
                 }
             }
-            $csv_fields[] = $unit_ids[$row->jPdbSig];
+            $csv_fields[] = $unit_ids[$row->unit_id_2];
 
-            $html .= str_pad('<span>' . $unit_ids[$row->iPdbSig] . '</span>', 38, ' ') .
+            $html .= str_pad('<span>' . $unit_ids[$row->unit_id_1] . '</span>', 38, ' ') .
                     "<a class='jmolInline' id='s{$i}'>" .
                       str_pad(implode(', ', $output_fields), 10, ' ', STR_PAD_BOTH) .
                     "</a>" .
-                    str_pad('<span>' . $unit_ids[$row->jPdbSig] . '</span>', 38, ' ', STR_PAD_LEFT) .
+                    str_pad('<span>' . $unit_ids[$row->unit_id_2] . '</span>', 38, ' ', STR_PAD_LEFT) .
                     "\n";
             $csv .= '"' . implode('","', $csv_fields) . '"' . "\n";
             $i++;
@@ -275,25 +285,6 @@ class Pdb_model extends CI_Model {
                       'header' => array_merge( $header, explode(',', $interaction_description) ),
                       'csv'    => $csv
                      );
-    }
-
-    function get_analyzed_structure($pdb_id)
-    {
-        // determine where .pdb or .pdb1 file was analyzed by FR3D
-        $this->db->select('pdb_type')
-                 ->distinct()
-                 ->from('__pdb_coordinates')
-                 ->where('pdb_id', $pdb_id);
-        $query = $this->db->get();
-        if ( $query->num_rows() == 1 ) {
-            return $query->row()->pdb_type;
-        } elseif ( $query->num_rows() > 1 ) {
-            // implement when more interactions are imported
-            return 'More than one pdb file';
-        } else {
-            return 'Error';
-        }
-
     }
 
     function get_general_info($pdb_id)
@@ -428,12 +419,15 @@ class Pdb_model extends CI_Model {
         $this->db->select("count($interaction)/2 as counts")
                  ->from('unit_pairs_interactions')
                  ->where('pdb_id', $pdb_id);
+
         if ( $interaction == 'f_bphs' ) {
             $this->db->where("char_length($interaction) = 4");
         } else {
             $this->db->where("char_length($interaction) = 3");
         }
+
         $result = $this->db->get()->row();
+
         return number_format($result->counts, 0);
     }
 
@@ -463,6 +457,7 @@ class Pdb_model extends CI_Model {
 
         $pdbs = array();
         $representative = Null;
+
         if ( $equivalence_class_found ) {
             // choose all structures from the selected equivalence class
             $this->db->select('ii.pdb_id')
@@ -474,11 +469,13 @@ class Pdb_model extends CI_Model {
             $query = $this->db->get();
 
             $isFirst = True;
+
             foreach($query->result() as $row) {
                 if ( $isFirst ) {
                     $representative = $row->pdb_id;
                     $isFirst = False;
                 }
+
                 if ( $row->pdb_id != $pdb_id ) {
                     $pdbs[] = $row->pdb_id;
                 }
@@ -499,16 +496,23 @@ class Pdb_model extends CI_Model {
         $result = $this->db->get()->row();
         $chains = explode(",", $result->best_chains);
 
-        $this->db->select('pu.unit_id as id, pc.chain as chain, pc.unit as sequence')
-                 ->from('pdb_unit_ordering AS uo')
-                 ->join('__pdb_coordinates AS pc', 'pc.pdb_coordinates_id = uo.nt_id')
-                 ->join('__pdb_unit_id_correspondence AS pu', 'pu.old_id = uo.nt_id')
-                 ->where('uo.pdb', $pdb_id)
-                 ->where_in('pc.chain', $chains)
-                 ->order_by('uo.index', 'asc');
+        #$this->db->select('pu.unit_id as id, pc.chain as chain, pc.unit as sequence')
+        #         ->from('pdb_unit_ordering AS uo')
+        #         ->join('__pdb_coordinates AS pc', 'pc.pdb_coordinates_id = uo.nt_id')
+        #         ->join('__pdb_unit_id_correspondence AS pu', 'pu.old_id = uo.nt_id')
+        #         ->where('uo.pdb', $pdb_id)
+        #         ->where_in('pc.chain', $chains)
+        #         ->order_by('uo.index', 'asc');
+
+        $this->db->select('unit_id as id, chain, unit as sequence')
+                 ->from('unit_info')
+                 ->where('pdb_id', $pdb_id)
+                 ->where_in('chain', $chains)
+                 ->order_by('number', 'asc');
 
         $query = $this->db->get();
         $chain_data = array();
+
         foreach($chains as $chain) {
             $chain_data[$chain] = array('id' => 'chain-' + $chain,
                                         'nts' => array());
@@ -535,6 +539,7 @@ class Pdb_model extends CI_Model {
                  ->where('pdb_id', $pdb_id);
 
         $result = $this->db->get()->row();
+
         return ($result) ? $result->json_structure : false;
     }
 
