@@ -476,15 +476,15 @@ class Motifs_model extends CI_Model {
             $changes = $this->get_change_counts_by_release($motif_type);
             $query   = $this->db_get_all_releases($motif_type);
             foreach ($query->result() as $row) {
-                if (array_key_exists($row->id, $changes)) {
-                    $label = $this->get_label_type($changes[$row->id]);
-                    $num_changes = "<span class='label {$label}'>{$changes[$row->id]} changes</span>";
+                if (array_key_exists($row->ml_releases_id, $changes)) {
+                    $label = $this->get_label_type($changes[$row->ml_releases_id]);
+                    $num_changes = "<span class='label {$label}'>{$changes[$row->ml_releases_id]} changes</span>";
                 } else {
                     $num_changes = '';
                 }
 
-                $table[$motif_type][] = form_radio(array('name'=>'release1','value'=>$row->id)) . $row->id . $num_changes;
-                $table[$motif_type][] = form_radio(array('name'=>'release2','value'=>$row->id)) . $row->id;
+                $table[$motif_type][] = form_radio(array('name'=>'release1','value'=>$row->ml_releases_id)) . $row->ml_releases_id . $num_changes;
+                $table[$motif_type][] = form_radio(array('name'=>'release2','value'=>$row->ml_releases_id)) . $row->ml_releases_id;
             }
         }
         return $table;
@@ -579,7 +579,8 @@ class Motifs_model extends CI_Model {
             return $removed;
         }
 
-        $this->db->select()
+        $this->db->select('pdb_obsolete_id')
+                 ->select('replaced_by')
                  ->from('pdb_obsolete')
                  ->where_in('pdb_obsolete_id', $only_old);
         $query = $this->db->get();
@@ -596,7 +597,7 @@ class Motifs_model extends CI_Model {
 
     function order_releases($rel1, $rel2, $motif_type)
     {
-        $this->db->select()
+        $this->db->select('ml_releases_id')
                  ->from('ml_releases')
                  ->where("type = '$motif_type' AND (ml_releases_id = '$rel1' OR ml_releases_id = '$rel2')")
                  ->order_by('date', 'asc');
