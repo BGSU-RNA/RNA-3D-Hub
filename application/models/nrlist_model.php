@@ -633,6 +633,9 @@ CREATE TABLE `nr_release_diff` (
         $ifes = array_unique($ifes);
         $pdbs = array_unique($pdbs);
 
+/*
+        THIS CODE DOES NOTHING USEFUL
+
         // get general ife info
         $this->db->select('ife_id')
                  ->from('ife_info')
@@ -644,6 +647,7 @@ CREATE TABLE `nr_release_diff` (
             $ife[$row->ife_id]['ife_id'] = $row->ife_id;
             #echo "<p>ife_id: $row->ife_id</p>";
         }
+*/
 
         // get general pdb info
         $this->db->select('pdb_id, title, resolution, experimental_technique')
@@ -690,7 +694,7 @@ CREATE TABLE `nr_release_diff` (
             $pdb[$row->pdb_obsolete_id]['resolution'] = '';
         }
 
-        // get annotations: updated/>2 parents etc
+        // get annotations: "updated/>2 parents" etc.
         $this->db->select('nr_class_id, comment')
                  ->from('nr_classes')
                  ->where('nr_release_id',$id)
