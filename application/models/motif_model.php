@@ -492,8 +492,7 @@ class Motif_model extends CI_Model {
         $rna = array('A', 'C', 'G', 'U');
 
         ### DEBUGS
-        echo "<p>start/stop = $start/$stop---</p>";
-        echo "<p>pdb_id = $pdb---</p>";
+        echo "<p>start/stop/pdb_id = $start/$stop/$pdb---</p>";
 
         $this->db->select('unit')
                  ->from('unit_info')
