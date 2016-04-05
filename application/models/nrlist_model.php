@@ -154,7 +154,7 @@ CREATE TABLE `nr_release_diff` (
                  ->select('date')
                  ->select('description')
                  ->from('nr_releases')
-                 ->order_by('date','desc')
+                 ->order_by('index','desc')
                  ->limit(1);
         $query = $this->db->get();
 
@@ -395,7 +395,7 @@ CREATE TABLE `nr_release_diff` (
                  ->select('date')
                  ->select('description')
                  ->from('nr_releases')
-                 ->order_by('date', 'desc')
+                 ->order_by('index', 'desc')
                  ->limit(2);
         $query = $this->db->get();
 
@@ -482,7 +482,7 @@ CREATE TABLE `nr_release_diff` (
                  ->select('date')
                  ->select('description')
                  ->from('nr_releases')
-                 ->order_by('date','desc')
+                 ->order_by('index','desc')
                  ->limit(1);
         $result = $this->db->get()->result_array();
 
@@ -506,7 +506,7 @@ CREATE TABLE `nr_release_diff` (
     {
         $this->db->select('nr_release_id')
                  ->from('nr_releases')
-                 ->order_by('date','desc');
+                 ->order_by('index','desc');
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
@@ -534,7 +534,7 @@ CREATE TABLE `nr_release_diff` (
                  ->select('pdb_added_count')
                  ->select('pdb_removed_count')
                  ->from('nr_release_compare_counts')
-                 ->order_by('date', 'desc');
+                 ->order_by('index', 'desc');
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
@@ -833,7 +833,7 @@ CREATE TABLE `nr_release_diff` (
 
         $this->db->select('nr_release_id AS id, description')
                  ->from('nr_releases')
-                 ->order_by('date','desc');
+                 ->order_by('index','desc');
         $query = $this->db->get();
 
         $table = array();
