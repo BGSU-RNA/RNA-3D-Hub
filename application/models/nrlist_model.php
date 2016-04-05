@@ -449,7 +449,7 @@ CREATE TABLE `nr_release_diff` (
                  ->select('date')
                  ->select('description')
                  ->from('nr_releases')
-                 ->order_by('date','desc');
+                 ->order_by('index','desc');
         $query = $this->db->get();
 
         $i = 0;
