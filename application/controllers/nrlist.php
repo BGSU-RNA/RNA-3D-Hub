@@ -147,9 +147,13 @@ class Nrlist extends CI_Controller {
 
     public function compare($rel1 = NULL, $rel2 = NULL)
     {
+        $this->load->model('Nrlist_model', '', TRUE);
+
         if ($rel1 == NULL and $rel2 == NULL) {
-            $rel1 = $this->input->post('release1');
-            $rel2 = $this->input->post('release2');
+            list($home1, $home2) = $this->Nrlist_model->get_two_newest_releases();
+
+            $rel1 = ( $this->input->post('release1') ) ? $this->input->post('release1') : $home1;
+            $rel2 = ( $this->input->post('release2') ) ? $this->input->post('release2') : $home2;
         }
 
         $this->load->model('Nrlist_model', '' , TRUE);
@@ -160,6 +164,9 @@ class Nrlist extends CI_Controller {
         $data['rel2']  = $rel2;
 
         $data['baseurl'] = base_url();
+
+        #var_dump($data); ### DEBUG
+
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_release_compare_results_view', $data);

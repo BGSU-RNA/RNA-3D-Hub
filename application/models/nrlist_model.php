@@ -881,6 +881,23 @@ CREATE TABLE `nr_release_diff` (
         }
     }
 
+    function get_two_newest_releases()
+    {
+        $this->db->select('nr_release_id')
+                 ->select('parent_nr_release_id')
+                 ->from('nr_releases')
+                 ->order_by('index', 'desc')
+                 ->limit(1);
+        $query = $this->db->get();
+
+        foreach ($query->result() as $row){
+            $rel1 = $row->nr_release_id;
+            $rel2 = $row->parent_nr_release_id;
+        }
+
+        return array($rel1, $rel2);
+    }
+
 }
 
 /* End of file nrlist_model.php */
