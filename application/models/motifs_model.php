@@ -229,16 +229,12 @@ class Motifs_model extends CI_Model {
 
         if ($num == 0) {
             $reltype = "default";
-            #return "<span class='label default'>$text</span>";
         } elseif ($num <= 10) {
             $reltype = "notice";
-            #return "<span class='label notice'>$text</span>";
         } elseif ($num <= 100) {
             $reltype = "warning";
-            #return "<span class='label warning'>$text</span>";
         } else {
             $reltype = "important";
-            #return "<span class='label important'>$text</span>";
         }
 
         return "<span class='label $reltype'>$text</span>";
@@ -681,7 +677,7 @@ class Motifs_model extends CI_Model {
     {
         // check that the correct version is used
         $handles = array();
-        
+
         foreach($updated as $motif){
             $handles[] = substr($motif, 3, 5); // XL_@@@@@
         }
