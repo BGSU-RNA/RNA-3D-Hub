@@ -804,7 +804,7 @@ CREATE TABLE `nr_release_diff` (
     function get_csv($release, $resolution)
     {
         $resolution = str_replace('A', '', $resolution);
-        $this->db->select('ii.pdb_id as id, nl.name as class_id, nc.rep')
+        $this->db->select('ii.ife_id as id, nl.name as class_id, nc.rep')
                  ->from('nr_chains AS nc')
                  ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
                  ->join('ife_info AS ii', 'nc.ife_id = ii.ife_id')
