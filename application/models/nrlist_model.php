@@ -154,7 +154,7 @@ CREATE TABLE `nr_release_diff` (
                  ->select('date')
                  ->select('description')
                  ->from('nr_releases')
-                 ->order_by('date','desc')
+                 ->order_by('index','desc')
                  ->limit(1);
         $query = $this->db->get();
 
@@ -268,9 +268,11 @@ CREATE TABLE `nr_release_diff` (
         } else {
             $s = $list;
         }
+
         for ($i = 0; $i < count($s); $i++) {
             $s[$i] = "<a class='pdb'>$s[$i]</a>";
         }
+
         return implode(', ', $s);
     }
 
@@ -393,7 +395,7 @@ CREATE TABLE `nr_release_diff` (
                  ->select('date')
                  ->select('description')
                  ->from('nr_releases')
-                 ->order_by('date', 'desc')
+                 ->order_by('index', 'desc')
                  ->limit(2);
         $query = $this->db->get();
 
@@ -447,7 +449,7 @@ CREATE TABLE `nr_release_diff` (
                  ->select('date')
                  ->select('description')
                  ->from('nr_releases')
-                 ->order_by('date','desc');
+                 ->order_by('index','desc');
         $query = $this->db->get();
 
         $i = 0;
@@ -480,7 +482,7 @@ CREATE TABLE `nr_release_diff` (
                  ->select('date')
                  ->select('description')
                  ->from('nr_releases')
-                 ->order_by('date','desc')
+                 ->order_by('index','desc')
                  ->limit(1);
         $result = $this->db->get()->result_array();
 
@@ -504,7 +506,7 @@ CREATE TABLE `nr_release_diff` (
     {
         $this->db->select('nr_release_id')
                  ->from('nr_releases')
-                 ->order_by('date','desc');
+                 ->order_by('index','desc');
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
@@ -532,7 +534,7 @@ CREATE TABLE `nr_release_diff` (
                  ->select('pdb_added_count')
                  ->select('pdb_removed_count')
                  ->from('nr_release_compare_counts')
-                 ->order_by('date', 'desc');
+                 ->order_by('index', 'desc');
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
@@ -631,6 +633,9 @@ CREATE TABLE `nr_release_diff` (
         $ifes = array_unique($ifes);
         $pdbs = array_unique($pdbs);
 
+/*
+        THIS CODE DOES NOTHING USEFUL
+
         // get general ife info
         $this->db->select('ife_id')
                  ->from('ife_info')
@@ -642,6 +647,7 @@ CREATE TABLE `nr_release_diff` (
             $ife[$row->ife_id]['ife_id'] = $row->ife_id;
             #echo "<p>ife_id: $row->ife_id</p>";
         }
+*/
 
         // get general pdb info
         $this->db->select('pdb_id, title, resolution, experimental_technique')
@@ -656,6 +662,7 @@ CREATE TABLE `nr_release_diff` (
             $pdb[$row->pdb_id]['experimental_technique'] = $row->experimental_technique;
         }
 
+/*
         // get best chains and models
         $this->db->select('pdb_id, best_chains, best_models')
                  ->from('pdb_best_chains_and_models')
@@ -666,6 +673,15 @@ CREATE TABLE `nr_release_diff` (
             $best_chains[$row->pdb_id] = $row->best_chains;
             $best_models[$row->pdb_id] = $row->best_models;
         }
+
+        // cover for missing information
+        foreach($pdbs as $pdb_id) {
+            if (!array_key_exists($pdb_id, $best_chains)) {
+                $best_chains[$pdb_id] = "";
+                $best_models[$pdb_id] = "";
+            }
+        }
+*/
 
         // check if any of the files became obsolete
         $this->db->select('pdb_obsolete_id, replaced_by')
@@ -678,7 +694,7 @@ CREATE TABLE `nr_release_diff` (
             $pdb[$row->pdb_obsolete_id]['resolution'] = '';
         }
 
-        // get annotations: updated/>2 parents etc
+        // get annotations: "updated/>2 parents" etc.
         $this->db->select('nr_class_id, comment')
                  ->from('nr_classes')
                  ->where('nr_release_id',$id)
@@ -705,13 +721,10 @@ CREATE TABLE `nr_release_diff` (
         $i = 1;
 
         // get order
-        $this->db->select('nl.name, cr.pdb_id, cr.length, ci.compound, sm.species_name, sm.species_id, nl.nr_class_id, count(ii.ife_id) as num')
+        $this->db->select('nl.name, cr.pdb_id, cr.length, cr.compound, cr.species_name, cr.species_id, nl.nr_class_id, count(DISTINCT ii.ife_id) as num')
                  ->from('nr_chains AS nc')
                  ->join('ife_info AS ii', 'nc.ife_id = ii.ife_id')
-                 ->join('ife_chains AS ic', 'ii.ife_id = ic.ife_id')
-                 ->join('chain_info AS ci', 'ic.chain_id = ci.chain_id')
                  ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
-                 ->join('species_mapping AS sm', 'ci.taxonomy_id = sm.species_mapping_id', 'left')
                  ->join('nr_class_reps AS cr', 'nl.name = cr.name AND nl.nr_class_id = cr.nr_class_id')
                  ->where('nc.nr_release_id', $id)
                  ->like('nl.name', "NR_{$resolution}", 'after')
@@ -729,7 +742,31 @@ CREATE TABLE `nr_release_diff` (
             $source   = ( is_null($row->species_name) ) ? "" : '<a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=' 
                             . $row->species_id . '">' . $row->species_name . '</a>';
             $compound = (strlen($row->compound) > 40 ) ? substr($row->compound, 0, 40) . "[...]" : $row->compound;
-            
+
+            if (preg_match('/\+/',$ife_id)){
+                $best_chains = "";
+                $ife_set     = explode('+', $ife_id);
+                $idx         = 0;
+
+                foreach ($ife_set as $each_ife){
+                    $ife_split        = explode('|', $each_ife);
+                    $get_chains[$idx] = $ife_split[1];
+                    $get_models[$idx] = "1"; # get list from multiple ife_ids after rewrite
+                    $idx++;
+                }
+
+                $sort_chains = array_unique($get_chains);
+                $sort_models = array_unique($get_models);
+                sort($sort_chains);
+                sort($sort_models);
+                $best_chains = implode(', ', $sort_chains);
+                $best_models = implode(', ', $sort_models);
+            } else {
+                $ife_split   = explode('|', $ife_id);
+                $best_chains = $ife_split[1]; #"simple case to write";
+                $best_models = 1; # get from ife_id after rewrite
+            }
+
             $table[] = array($i,
                              anchor(base_url("nrlist/view/".$class_id),$class_id)
                              . '<br>' . $this->add_annotation_label($row->nr_class_id, $reason)
@@ -738,8 +775,7 @@ CREATE TABLE `nr_release_diff` (
                              '<ul>' .
                              '<li>' . $compound . '</li>' .
                              '<li>' . $pdb[$pdb_id]['experimental_technique'] . '</li>' .
-                             '<li>Chain(s): ' . $best_chains[$pdb_id] .
-                             '; model(s): ' . $best_models[$pdb_id] . '</li>' .
+                             '<li>Chain(s): ' . $best_chains . '; model(s): ' . $best_models . '</li>' .
                              '</ul>',
                              $pdb[$pdb_id]['resolution'],
                              $row->length,
@@ -797,7 +833,7 @@ CREATE TABLE `nr_release_diff` (
 
         $this->db->select('nr_release_id AS id, description')
                  ->from('nr_releases')
-                 ->order_by('date','desc');
+                 ->order_by('index','desc');
         $query = $this->db->get();
 
         $table = array();
@@ -843,6 +879,23 @@ CREATE TABLE `nr_release_diff` (
         } else {
             return True;
         }
+    }
+
+    function get_two_newest_releases()
+    {
+        $this->db->select('nr_release_id')
+                 ->select('parent_nr_release_id')
+                 ->from('nr_releases')
+                 ->order_by('index', 'desc')
+                 ->limit(1);
+        $query = $this->db->get();
+
+        foreach ($query->result() as $row){
+            $rel1 = $row->nr_release_id;
+            $rel2 = $row->parent_nr_release_id;
+        }
+
+        return array($rel1, $rel2);
     }
 
 }

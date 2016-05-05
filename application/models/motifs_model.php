@@ -39,22 +39,26 @@ class Motifs_model extends CI_Model {
         } else {
             $motifs = array('T-loop', 'GNRA');
         }
+
         $data = array();
 
         foreach($motifs as $motif) {
-            $this->db->select('*, count(ml_loops.ml_loops_id) as members')
-                     ->from('ml_motif_annotations')
-                     ->join('ml_loops', 'ml_motif_annotations.motif_id = ml_loops.motif_id')
-                     ->like('ml_motif_annotations.common_name', $motif)
+            $this->db->select('MA.motif_id')
+                     ->select('count(ML.ml_loops_id) AS members')
+                     ->from('ml_motif_annotations AS MA')
+                     ->join('ml_loops AS ML', 'MA.motif_id = ML.motif_id')
+                     ->like('MA.common_name', $motif)
                      ->where('release_id', $release_id)
-                     ->group_by('ml_loops.motif_id')
+                     ->group_by('ML.motif_id')
                      ->order_by('members', 'desc')
                      ->limit(1);
             $query = $this->db->get();
+
             if ( $query->num_rows() > 0 ) {
                 $data[$motif] = $query->row()->motif_id;
             }
         }
+
         return $data;
     }
 
@@ -69,22 +73,25 @@ class Motifs_model extends CI_Model {
                  ->where('release_id', $release_id)
                  ->where('type', $motif_type);
         $query = $this->db->get();
+
         $motif_ids = array();
+        
         foreach($query->result() as $row) {
             $motif_ids[] = $row->ml_motifs_id;
         }
+        
         return $motif_ids;
     }
 
     function db_get_all_releases($motif_type)
     {
-        $this->db->select('STRAIGHT_JOIN ml_releases.*,count(ml_loops.ml_loops_id) AS loops, count(DISTINCT(motif_id)) AS motifs', FALSE)
-                 ->from('ml_releases')
-                 ->join('ml_loops','ml_releases.ml_releases_id=ml_loops.release_id')
-                 ->where('ml_releases.type',$motif_type)
-                 ->like('ml_loops.ml_loops_id',$motif_type,'after')
-                 ->group_by('ml_releases.ml_releases_id')
-                 ->order_by('ml_releases.date','desc');
+        $this->db->select('STRAIGHT_JOIN MR.*, count(ML.ml_loops_id) AS loops, count(DISTINCT(motif_id)) AS motifs', FALSE)
+                 ->from('ml_releases AS MR')
+                 ->join('ml_loops AS ML','MR.ml_releases_id = ML.release_id')
+                 ->where('MR.type',$motif_type)
+                 ->like('ML.ml_loops_id',$motif_type,'after')
+                 ->group_by('MR.ml_releases_id')
+                 ->order_by('MR.date','desc');
         return $this->db->get();
     }
 
@@ -110,12 +117,14 @@ class Motifs_model extends CI_Model {
         if ($query->num_rows() == 0) { return 'No polymorphs found in this release'; }
 
         $table = array();
+
         foreach ($query->result() as $row) {
             $table[] = array($row->seq,
                              $row->length,
                              $row->motif_num,
                              $this->format_polymorphic_motif_list($row->motifs) );
         }
+
         return $table;
     }
 
@@ -123,6 +132,7 @@ class Motifs_model extends CI_Model {
     {
         $motifs = explode(',', $motif_list);
         $output = '<ul class="inputs-list">';
+
         foreach ($motifs as $motif) {
             $loop_link = anchor_popup("motif/view/$motif", '&#10140;');
             $shuffled = str_shuffle($motif); // to avoid id collision
@@ -135,6 +145,7 @@ class Motifs_model extends CI_Model {
                 </label>
             </li>";
         }
+
         $compare_link = anchor_popup(base_url(array('motif', 'compare', $motifs[0], $motifs[1])), 'Compare');
         return $output . "<li>$compare_link</li></ul>";
     }
@@ -150,9 +161,11 @@ class Motifs_model extends CI_Model {
                  ->where('direct_parent',1)
                  ->group_by('release_id1');
         $query = $this->db->get();
+
         foreach ($query->result() as $row) {
             $changes[$row->release_id1] = $row->nag + $row->nug + $row->nrg;
         }
+
         return $changes;
     }
 
@@ -163,26 +176,31 @@ class Motifs_model extends CI_Model {
                  ->where('type',$motif_type)
                  ->order_by('date','desc');
         $query = $this->db->get();
+
         foreach ($query->result() as $row) {
             $ids[] = $row->ml_releases_id;
         }
+
         for ($i=0; $i<count($ids)-1; $i++) {
             $releases[$ids[$i]] = $ids[$i+1];
         }
+
         return $releases;
     }
 
     function get_release_status($motif_type,$id)
     {
-        $this->db->select()
+        $this->db->select('ml_releases_id')
                  ->from('ml_releases')
                  ->where('type',$motif_type)
                  ->order_by('date','desc')
                  ->limit(1);
         $query = $this->db->get();
+
         foreach ($query->result() as $row) {
             $current_release = $row->ml_releases_id;
         }
+
         if ($id == $current_release) {
             return 'Current';
         } else {
@@ -201,21 +219,25 @@ class Motifs_model extends CI_Model {
         } else {
             $label = 'important';
         }
+
         return $label;
     }
 
     function make_release_label($num, $id1, $id2, $motif_type)
     {
         $text = anchor(base_url(array('motifs','compare',$motif_type,$id1,$id2)), $num);
+
         if ($num == 0) {
-            return "<span class='label default'>$text</span>";
+            $reltype = "default";
         } elseif ($num <= 10) {
-            return "<span class='label notice'>$text</span>";
+            $reltype = "notice";
         } elseif ($num <= 100) {
-            return "<span class='label warning'>$text</span>";
+            $reltype = "warning";
         } else {
-            return "<span class='label important'>$text</span>";
+            $reltype = "important";
         }
+
+        return "<span class='label $reltype'>$text</span>";
     }
 
     function get_all_releases()
@@ -226,6 +248,7 @@ class Motifs_model extends CI_Model {
             $query   = $this->db_get_all_releases($motif_type);
 
             $i = 0;
+
             foreach ($query->result() as $row) {
                 if ($i == 0) {
                     $id = anchor(base_url(array("motifs/release",$motif_type,$row->id)), $row->id . ' (current)');
@@ -233,6 +256,7 @@ class Motifs_model extends CI_Model {
                 } else {
                     $id = anchor(base_url(array("motifs/release",$motif_type,$row->id)), $row->id);
                 }
+
                 if (array_key_exists($row->id, $changes)) {
                     $label = $this->get_label_type($changes[$row->id]);
                     $compare_url = base_url(array('motifs','compare',$motif_type,$row->id,$compare[$row->id]));
@@ -248,14 +272,15 @@ class Motifs_model extends CI_Model {
                                         $row->motifs);
             }
         }
+
         return $table;
     }
 
     function get_complete_release_history()
     {
         foreach ($this->types as $motif_type) {
-
             $query = $this->db_get_all_releases($motif_type);
+            
             foreach($query->result() as $row){
                 $data[$row->ml_releases_id]['loops'] = $row->loops;
                 $data[$row->ml_releases_id]['motifs'] = $row->motifs;
@@ -266,11 +291,17 @@ class Motifs_model extends CI_Model {
 
             $releases = $this->get_release_precedence($motif_type);
 
-            $this->db->select()
-                     ->from('ml_releases')
-                     ->join('ml_release_diff','ml_releases.ml_releases_id = ml_release_diff.release_id1')
-                     ->where('ml_releases.type',$motif_type)
-                     ->where('ml_release_diff.type',$motif_type)
+            $this->db->select('MR.ml_releases_id')
+                     ->select('RD.release_id2')
+                     ->select('RD.num_added_groups')
+                     ->select('RD.num_removed_groups')
+                     ->select('RD.num_updated_groups')
+                     ->select('RD.num_added_loops')
+                     ->select('RD.num_removed_loops')
+                     ->from('ml_releases AS MR')
+                     ->join('ml_release_diff AS RD','MR.ml_releases_id = RD.release_id1')
+                     ->where('MR.type',$motif_type)
+                     ->where('RD.type',$motif_type)
                      ->where('direct_parent',1)
                      ->order_by('date','desc');
             $query = $this->db->get();
@@ -340,6 +371,7 @@ class Motifs_model extends CI_Model {
                  ->where('type',$motif_type)
                  ->where('ml_releases_id',$id);
         $query = $this->db->get();
+
         foreach ($query->result() as $row) {
             return $graphml = $row->graphml;
         }
@@ -354,35 +386,42 @@ class Motifs_model extends CI_Model {
     function get_release($motif_type,$id)
     {
         // get annotations: updated/>2 parents etc
-        $this->db->select()
+        $this->db->select('ml_motifs_id, comment')
                  ->from('ml_motifs')
                  ->where('type',$motif_type)
                  ->where('release_id',$id);
         $query = $this->db->get();
+        
         foreach ($query->result() as $row) {
             $reason[$row->ml_motifs_id]  = $row->comment;
             $reason_flat[]     = $row->comment;
         }
+
         // count all annotation types
         $counts = array_count_values($reason_flat);
         $counts_text = '';
+
         foreach ($counts as $comment => $count) {
             $label = $this->get_annotation_label_type($comment);
             $counts_text .= "<span class='label $label'>$comment</span> <strong>$count</strong>;    ";
         }
+
         $counts_text .= '<br><br>';
 
         // get common names and annotations
-        $this->db->select()
+        $this->db->select('motif_id')
+                 ->select('bp_signature')
+                 ->select('common_name')
                  ->from('ml_motif_annotations');
         $query = $this->db->get();
+
         foreach ($query->result() as $row) {
             $annotations[$row->motif_id]['bp_signature'] = $row->bp_signature;
             $annotations[$row->motif_id]['common_name'] = $row->common_name;
         }
 
         // get the motif ids and counts
-        $this->db->select('motif_id,count(ml_loops_id) AS instances')
+        $this->db->select('motif_id, count(ml_loops_id) AS instances')
                  ->from('ml_loops')
                  ->like('motif_id',strtoupper($motif_type),'after')
                  ->where('release_id', $id)
@@ -391,6 +430,7 @@ class Motifs_model extends CI_Model {
         $query = $this->db->get();
 
         $i = 1;
+
         foreach ($query->result() as $row) {
             if ( array_key_exists($row->motif_id, $annotations) &&
                  strlen($annotations[$row->motif_id]['common_name']) > 1 ) {
@@ -423,6 +463,7 @@ class Motifs_model extends CI_Model {
                              $row->instances);
             $i++;
         }
+
         return array( 'table' => $table, 'counts' => $counts_text );
     }
 
@@ -431,8 +472,8 @@ class Motifs_model extends CI_Model {
         $result = $this->get_release($motif_type, $release_id);
 
         $table = array();
-        foreach ($result['table'] as $row) {
 
+        foreach ($result['table'] as $row) {
             preg_match('/([IH]L_\d{5}\.\d+)/', $row[2], $matches);
 
             $motif_id = $matches[0];
@@ -452,11 +493,11 @@ class Motifs_model extends CI_Model {
 
     function _get_motif_length_distribution($motif_id, $release_id)
     {
-        $this->db->select('loop_info.length')
-                 ->from('ml_loops')
-                 ->join('loop_info', 'ml_loops.ml_loops_id=loop_info.loop_id')
-                 ->where('ml_loops.release_id', $release_id)
-                 ->where('ml_loops.motif_id', $motif_id);
+        $this->db->select('LI.length')
+                 ->from('ml_loops AS ML')
+                 ->join('loop_info AS LI', 'ML.ml_loops_id = LI.loop_id')
+                 ->where('ML.release_id', $release_id)
+                 ->where('ML.motif_id', $motif_id);
         $query = $this->db->get();
 
         foreach($query->result() as $row) {
@@ -475,29 +516,32 @@ class Motifs_model extends CI_Model {
         foreach ($this->types as $motif_type) {
             $changes = $this->get_change_counts_by_release($motif_type);
             $query   = $this->db_get_all_releases($motif_type);
+
             foreach ($query->result() as $row) {
-                if (array_key_exists($row->id, $changes)) {
-                    $label = $this->get_label_type($changes[$row->id]);
-                    $num_changes = "<span class='label {$label}'>{$changes[$row->id]} changes</span>";
+                if (array_key_exists($row->ml_releases_id, $changes)) {
+                    $label = $this->get_label_type($changes[$row->ml_releases_id]);
+                    $num_changes = "<span class='label {$label}'>{$changes[$row->ml_releases_id]} changes</span>";
                 } else {
                     $num_changes = '';
                 }
 
-                $table[$motif_type][] = form_radio(array('name'=>'release1','value'=>$row->id)) . $row->id . $num_changes;
-                $table[$motif_type][] = form_radio(array('name'=>'release2','value'=>$row->id)) . $row->id;
+                $table[$motif_type][] = form_radio(array('name'=>'release1','value'=>$row->ml_releases_id)) . $row->ml_releases_id . $num_changes;
+                $table[$motif_type][] = form_radio(array('name'=>'release2','value'=>$row->ml_releases_id)) . $row->ml_releases_id;
             }
         }
+
         return $table;
     }
 
     function get_latest_release($motif_type, $date=NULL)
     {
-        $this->db->select()
+        $this->db->select('ml_releases_id, date')
                  ->from('ml_releases')
                  ->where('type',$motif_type)
                  ->order_by('date','desc')
                  ->limit(1);
         $result = $this->db->get()->row();
+
         if ( $date ) {
             return array('id' => $result->ml_releases_id, 'date' => $result->date);
         } else {
@@ -516,6 +560,7 @@ class Motifs_model extends CI_Model {
 
         // extract pdb substring
         $pdbs = array();
+
         foreach($query->result() as $row) {
             $pdbs[] = substr($row->ml_loops_id, 3, 4);
         }
@@ -537,18 +582,17 @@ class Motifs_model extends CI_Model {
         $added    = array();
 
         foreach($only_new as $new_id) {
-
             foreach($only_old as $old_id) {
                 // find a class where the new id is a rep, and the old one is not
-                $this->db->select()
-                         ->from('__trash_nr_pdbs as t1')
-                         ->join('__trash_nr_pdbs as t2', 't1.nr_class_id = t2.nr_class_id AND ' .
-                                                         't1.nr_release_id = t2.nr_release_id')
-                         ->where('t1.nr_pdb_id', $new_id)
-                         ->where('t2.nr_pdb_id', $old_id)
-                         ->where('t1.rep', 1)
-                         ->where('t2.rep', 0)
-                         ->like('t1.nr_class_id', 'NR_4.0_', 'after')
+                $this->db->select('P1.pdb_id')
+                         ->from('nr_pdbs AS P1')
+                         ->join('nr_pdbs AS P2', 'P1.nr_class_id = P2.nr_class_id AND ' .
+                                                 'P1.nr_release_id = P2.nr_release_id')
+                         ->where('P1.pdb_id', $new_id)
+                         ->where('P2.pdb_id', $old_id)
+                         ->where('P1.rep', 1)
+                         ->where('P2.rep', 0)
+                         ->like('P1.nr_class_name', 'NR_4.0_', 'after')
                          ->limit(1);
                 $query = $this->db->get();
 
@@ -565,7 +609,6 @@ class Motifs_model extends CI_Model {
         }
 
         return array('pdbs_replaced' => $replaced, 'pdbs_added' => $added);
-
     }
 
     function get_removed_pdbs($pdbs1, $pdbs2)
@@ -579,7 +622,8 @@ class Motifs_model extends CI_Model {
             return $removed;
         }
 
-        $this->db->select()
+        $this->db->select('pdb_obsolete_id')
+                 ->select('replaced_by')
                  ->from('pdb_obsolete')
                  ->where_in('pdb_obsolete_id', $only_old);
         $query = $this->db->get();
@@ -588,6 +632,7 @@ class Motifs_model extends CI_Model {
             if ( $row->replaced_by == '' ) {
                 $row->replaced_by = 'None';
             }
+
             $removed[$row->pdb_obsolete_id] = $row->replaced_by;
         }
 
@@ -596,12 +641,14 @@ class Motifs_model extends CI_Model {
 
     function order_releases($rel1, $rel2, $motif_type)
     {
-        $this->db->select()
+        $this->db->select('ml_releases_id')
                  ->from('ml_releases')
                  ->where("type = '$motif_type' AND (ml_releases_id = '$rel1' OR ml_releases_id = '$rel2')")
                  ->order_by('date', 'asc');
         $query = $this->db->get();
+
         $releases = array();
+
         foreach($query->result() as $row) {
             $releases[] = $row->ml_releases_id;
         }
@@ -630,6 +677,7 @@ class Motifs_model extends CI_Model {
     {
         // check that the correct version is used
         $handles = array();
+
         foreach($updated as $motif){
             $handles[] = substr($motif, 3, 5); // XL_@@@@@
         }

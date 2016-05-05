@@ -1,11 +1,11 @@
 <?php
 class Nrlist extends CI_Controller {
 
-	public function index()
-	{
+    public function index()
+    {
         $this->output->cache(262974); # 6 months
 
-	    $this->load->model('Nrlist_model', '', TRUE);
+        $this->load->model('Nrlist_model', '', TRUE);
         $result = $this->Nrlist_model->get_all_releases();
 
         $this->table->set_heading('Release id', 'All changes', 'Date', 'NR PDB files');
@@ -23,21 +23,21 @@ class Nrlist extends CI_Controller {
         $this->load->view('nrlist_all_releases_view', $data);
         $this->load->view('footer');
 
-//         $this->output->enable_profiler(TRUE);
-	}
+        //$this->output->enable_profiler(TRUE);
+    }
 
-	public function release($id, $res='4.0A')
-	{
+    public function release($id, $res='4.0A')
+    {
         $this->output->cache(262974); # 6 months
 
-	    $this->load->model('Nrlist_model', '', TRUE);
+        $this->load->model('Nrlist_model', '', TRUE);
         if ($id == 'current') {
             $id = $this->Nrlist_model->get_latest_release();
         } elseif ( !$this->Nrlist_model->is_valid_release($id) ) {
             show_404();
         }
 
-	    $data['title']       = "NR list $id";
+        $data['title']       = "NR list $id";
         $data['release_id']  = $id;
         $data['description'] = $this->Nrlist_model->get_release_description($id);
         $data['resolution'] = $res;
@@ -55,15 +55,17 @@ class Nrlist extends CI_Controller {
         $this->load->view('nrlist_release_view', $data);
         $this->load->view('footer');
 
-//         $this->output->enable_profiler(TRUE);
-	}
+        //$this->output->enable_profiler(TRUE);
+    }
 
     public function download($id, $res='all', $format='csv')
     {
         if ($format != 'csv') {
             show_404();
         }
-	    $this->load->model('Nrlist_model', '', TRUE);
+
+        $this->load->model('Nrlist_model', '', TRUE);
+
         if ($id == 'current') {
             $id = $this->Nrlist_model->get_latest_release();
         } elseif ( !$this->Nrlist_model->is_valid_release($id) ) {
@@ -79,25 +81,25 @@ class Nrlist extends CI_Controller {
         $this->load->view('csv_view', $data);
     }
 
-	public function view($id)
-	{
+    public function view($id)
+    {
         $this->output->cache(262974); # 6 months
 
-	    $this->load->model('Nrlist_model', '', TRUE);
+        $this->load->model('Nrlist_model', '', TRUE);
 
         if ( !$this->Nrlist_model->is_valid_class($id) ) {
             show_404();
         }
 
-	    $releases = $this->Nrlist_model->get_releases_by_class($id);
+        $releases = $this->Nrlist_model->get_releases_by_class($id);
         $tmpl = array( 'table_open'  => "<table class='bordered-table'>" );
         $this->table->set_template($tmpl);
         $data['releases'] = $this->table->generate($releases);
 
         list($type, $resolution, $temp) = explode('_', $id);
         list($handle, $version) = explode('.', $temp);
-	    $data['resolution'] = $resolution;
-	    $data['version']    = $version;
+        $data['resolution'] = $resolution;
+        $data['version']    = $version;
 
         $data['status'] = $this->Nrlist_model->get_status($id);
 
@@ -116,13 +118,13 @@ class Nrlist extends CI_Controller {
         $this->table->set_heading('This class','Descendant classes','Release id','Intersection','Only in this class','Added to child');
         $data['children'] = $this->table->generate($history);
 
-	    $data['title'] = $id;
+        $data['title'] = $id;
         $data['baseurl'] = base_url();
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_class_view', $data);
         $this->load->view('footer');
-	}
+    }
 
     public function compare_releases()
     {
@@ -143,11 +145,15 @@ class Nrlist extends CI_Controller {
         $this->load->view('footer');
     }
 
-	public function compare($rel1 = NULL, $rel2 = NULL)
-	{
+    public function compare($rel1 = NULL, $rel2 = NULL)
+    {
+        $this->load->model('Nrlist_model', '', TRUE);
+
         if ($rel1 == NULL and $rel2 == NULL) {
-            $rel1 = $this->input->post('release1');
-            $rel2 = $this->input->post('release2');
+            list($home1, $home2) = $this->Nrlist_model->get_two_newest_releases();
+
+            $rel1 = ( $this->input->post('release1') ) ? $this->input->post('release1') : $home1;
+            $rel2 = ( $this->input->post('release2') ) ? $this->input->post('release2') : $home2;
         }
 
         $this->load->model('Nrlist_model', '' , TRUE);
@@ -158,11 +164,14 @@ class Nrlist extends CI_Controller {
         $data['rel2']  = $rel2;
 
         $data['baseurl'] = base_url();
+
+        #var_dump($data); ### DEBUG
+
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_release_compare_results_view', $data);
         $this->load->view('footer');
-	}
+    }
 
     public function release_history()
     {
