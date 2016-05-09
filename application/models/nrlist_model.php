@@ -208,6 +208,7 @@ CREATE TABLE `nr_release_diff` (
     function get_members($id)
     {
         $this->db->select('pi.pdb_id')
+                 ->select('ch.ife_id')
                  ->select('pi.title')
                  ->select('pi.experimental_technique')
                  ->select('pi.release_date')
@@ -219,13 +220,14 @@ CREATE TABLE `nr_release_diff` (
                  ->where('cl.name',$id)
                  #->where('nch.nr_release_id',$this->last_seen_in) # what was this doing? still necessary?
                  ->group_by('pi.pdb_id')
+                 ->group_by('ii.ife_id')
                  ->order_by('ch.rep','desc');
         $query = $this->db->get();
 
         $i = 0;
         
         foreach ($query->result() as $row) {
-            $link = $this->make_pdb_widget_link($row->pdb_id);
+            $link = $this->make_pdb_widget_link($row->ife_id);
 
             if ( $i==0 ) {
                 $link = $link . ' <strong>(rep)</strong>';
@@ -236,7 +238,7 @@ CREATE TABLE `nr_release_diff` (
             $table[] = array($i,
                              $link,
                              $row->title,
-                             $this->get_source_organism($row->pdb_id),
+                             $this->get_source_organism($row->ife_id),
                              $this->get_compound_list($row->pdb_id),
                              $row->experimental_technique,
                              $row->resolution,
