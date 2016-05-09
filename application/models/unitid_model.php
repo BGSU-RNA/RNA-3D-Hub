@@ -63,7 +63,7 @@ class Unitid_model extends CI_Model {
 
         // determine id type
         $parts = explode('_', $unit_id);
-        if ( $parts[1] == 'AU' or $parts[1] == 'BA1' ) {
+        if ( count($parts) > 1 && ($parts[1] == 'AU' or $parts[1] == 'BA1') ) {
             $id_type = 'old';
         } else {
             $id_type = 'new';
