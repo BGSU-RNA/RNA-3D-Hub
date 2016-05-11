@@ -43,18 +43,24 @@ class Ajax_model extends CI_Model {
         return $query[0]->source;
     }
 
-    function get_pdb_info($pdb)
+    function get_pdb_info($ife)
     {
-        $this->db->select('title')
-                 ->select('experimental_techinque')
-                 ->select('resolution')
-                 ->from('pdb_info')
-                 ->where('pdb_id', $pdb)
+        $pdb_url = "http://www.pdb.org/pdb/explore/explore.do?structureId=";
+
+        $this->db->select('pi.title')
+                 ->select('pi.experimental_technique')
+                 ->select('pi.resolution')
+                 ->select('ii.pdb_id')
+                 ->from('ife_info AS ii')
+                 ->join('pdb_info AS pi', 'ii.pdb_id = pi.pdb_id')
+                 ->where('ii.ife_id', $ife)
                  ->limit(1);
         $query = $this->db->get();
 
         if ( $query->num_rows() > 0 ) {
             $row = $query->row();
+
+            $pdb = $row->pdb_id;
 
             // don't report resolution for nmr structures
             if (preg_match('/NMR/', $row->experimental_technique)) {
@@ -75,7 +81,7 @@ class Ajax_model extends CI_Model {
                         "<u>Organism</u>: {$source}<br>" .
                         "<i>$nucleotides nucleotides, $basepairs basepairs, $bpnt basepairs/nucleotide</i><br><br>" .
                         'Explore in ' .
-                        anchor_popup("http://www.pdb.org/pdb/explore/explore.do?structureId=$pdb", 'PDB') .
+                        anchor_popup("$pdb_url$pdb", 'PDB') .
                         ',  ' .
                         anchor_popup("http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget=$pdb", 'NDB') .
                         ' or ' .
@@ -92,15 +98,16 @@ class Ajax_model extends CI_Model {
 
                 if ($row->replaced_by == '') {
                     // pdb file is not replaced
-                    $pdb_info = 'Structure ' . anchor_popup("http://www.pdb.org/pdb/explore/explore.do?structureId=$pdb", $pdb) . " was obsoleted.";
+                    $pdb_info = 'Structure ' . anchor_popup("$pdb_url$pdb", $pdb) . " was obsoleted.";
                 } else {
                     // pdb file is replaced by one or more new pdbs
                     $replaced_by = explode(',', $row->replaced_by);
                     $new_urls = '';
 
                     foreach ($replaced_by as $new_file) {
-                        $new_urls .= anchor_popup("http://www.pdb.org/pdb/explore/explore.do?structureId=$new_file", $new_file) . ' ';
+                        $new_urls .= anchor_popup("$pdb_url$new_file", $new_file) . ' ';
                     }
+                    
                     $pdb_info = "PDB file {$pdb} was replaced by {$new_urls}";
                 }
             } else {
