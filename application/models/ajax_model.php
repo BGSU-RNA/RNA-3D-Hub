@@ -45,7 +45,7 @@ class Ajax_model extends CI_Model {
 
     function get_pdb_info($pdb)
     {
-        $pdb_url = "http://www.pdb.org/pdb/explore/explore.do?structureId=";
+        $pdb_url = "http://www.rcsb.org/pdb/explore/explore.do?structureId=";
 
         $this->db->select('pi.title')
                  ->select('pi.experimental_technique')
