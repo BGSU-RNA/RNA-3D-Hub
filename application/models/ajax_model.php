@@ -47,22 +47,16 @@ class Ajax_model extends CI_Model {
     {
         $pdb_url = "http://www.pdb.org/pdb/explore/explore.do?structureId=";
 
-        echo "<p>IFE: $ife</p>";
-
         $this->db->select('pi.title')
                  ->select('pi.experimental_technique')
                  ->select('pi.resolution')
-                 #->select('ii.pdb_id')
                  ->from('pdb_info AS pi')
-                 #->join('ife_info AS ii', 'pi.pdb_id = ii.pdb_id')
                  ->where('pi.pdb_id', $pdb)
                  ->limit(1);
         $query = $this->db->get();
 
         if ( $query->num_rows() > 0 ) {
             $row = $query->row();
-
-            echo "<p>Results!</p>";
 
             // don't report resolution for nmr structures
             if (preg_match('/NMR/', $row->experimental_technique)) {
@@ -89,8 +83,6 @@ class Ajax_model extends CI_Model {
                         ' or ' .
                         anchor_popup("pdb/$pdb", 'RNA 3D Hub');
         } else {
-            echo "<p>NO results</p>";
-
             // check obsolete files
             $this->db->select('replaced_by')
                      ->from('pdb_obsolete')
