@@ -43,7 +43,7 @@ class Ajax_model extends CI_Model {
         return $query[0]->source;
     }
 
-    function get_pdb_info($ife)
+    function get_pdb_info($pdb)
     {
         $pdb_url = "http://www.pdb.org/pdb/explore/explore.do?structureId=";
 
@@ -52,17 +52,15 @@ class Ajax_model extends CI_Model {
         $this->db->select('pi.title')
                  ->select('pi.experimental_technique')
                  ->select('pi.resolution')
-                 ->select('ii.pdb_id')
-                 ->from('ife_info AS ii')
-                 ->join('pdb_info AS pi', 'ii.pdb_id = pi.pdb_id')
-                 ->where('ii.ife_id', $ife)
+                 #->select('ii.pdb_id')
+                 ->from('pdb_info AS pi')
+                 #->join('ife_info AS ii', 'pi.pdb_id = ii.pdb_id')
+                 ->where('pi.pdb_id', $pdb)
                  ->limit(1);
         $query = $this->db->get();
 
         if ( $query->num_rows() > 0 ) {
             $row = $query->row();
-
-            $pdb = $row->pdb_id;
 
             echo "<p>Results!</p>";
 
@@ -92,7 +90,7 @@ class Ajax_model extends CI_Model {
                         anchor_popup("pdb/$pdb", 'RNA 3D Hub');
         } else {
             echo "<p>NO results</p>";
-            
+
             // check obsolete files
             $this->db->select('replaced_by')
                      ->from('pdb_obsolete')
