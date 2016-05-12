@@ -345,19 +345,24 @@ class Pdb_model extends CI_Model {
         $data['latest_nr_release'] = $this->get_latest_nr_release($pdb_id);
 
         // get nr equivalence classes
-        $this->db->select('nc.nr_class_id')
-                 ->select('nc.rep')
+        $this->db->select('nl.name')
+                 ->select_max('nc.rep')
+                 ->select('COUNT(nl.name) AS count')
                  ->from('nr_chains AS nc')
+                 ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
                  ->join('ife_info AS ii', 'nc.ife_id = ii.ife_id')
                  ->where('ii.pdb_id', $pdb_id)
-                 ->where('nr_release_id', $data['latest_nr_release']);
+                 ->where('nc.nr_release_id', $data['latest_nr_release'])
+                 ->group_by('nc.nr_class_id')
+                 ->group_by('nl.name');
         $query = $this->db->get();
 
         $data = array();
         foreach ($query->result() as $row) {
-            $data['nr_classes'][] = $row->nr_class_id;
-            $data['nr_urls'][$row->nr_class_id] = anchor('nrlist/view/' . $row->nr_class_id, $row->nr_class_id);
-            $data['representatives'][$row->nr_class_id] = $row->rep;
+            $data['nr_classes'][] = $row->name;
+            $data['nr_urls'][$row->name] = anchor('nrlist/view/' . $row->name, $row->name);
+            $data['representatives'][$row->name] = $row->rep;
+            $data['count'][$row->name] = $row->count;
         }
 
         return $data;

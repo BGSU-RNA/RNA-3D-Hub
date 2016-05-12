@@ -151,7 +151,7 @@
                     <ul>
                       <?php foreach ($nr_classes as $nr_class): ?>
                       <li>
-                        <?=$nr_urls[$nr_class]?>
+                        <?=$nr_urls[$nr_class]?> (<?=$count[$nr_class]?>)
                         <?php if ($representatives[$nr_class] == 1): ?>
                         <strong>rep</strong>
                         <?php endif; ?>
