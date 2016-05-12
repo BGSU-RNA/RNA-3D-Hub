@@ -133,9 +133,15 @@
                 <h4>RNA 3D Motifs</h4>
                 In the current release of the <a href="<?=$baseurl?>/motifs">RNA 3D Motif Atlas</a>, <?=$pdb_id?> contains:
                 <ul>
-                  <li><?=$loops['IL']?> internal loops from <?=$il_counts?> motifs</li>
-                  <li><?=$loops['HL']?> hairpin loops from <?=$hl_counts?> motifs</li>
-                  <li><?=$loops['J3']?> three-way junctions</li>
+                  <li>
+                    <?=$loops['IL']?> internal loop<?php if ($loops['IL'] <> 1): ?>s<?php endif; ?> 
+                    from <?=$il_counts?> motif<?php if ($il_counts <> 1): ?>s<?php endif; ?>
+                  </li>
+                  <li>
+                    <?=$loops['HL']?> hairpin loop<?php if ($loops['HL'] <> 1): ?>s<?php endif; ?> 
+                    from <?=$hl_counts?> motif<?php if ($hl_counts <> 1): ?>s<?php endif; ?>
+                  </li>
+                  <li><?=$loops['J3']?> three-way junction<?php if ($loops['J3'] <> 1): ?>s<?php endif; ?></li>
                 </ul>
                 <?=$loops['url']?>
               </div>

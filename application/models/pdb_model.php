@@ -442,21 +442,23 @@ class Pdb_model extends CI_Model {
         $latest_nr_release = $this->get_latest_nr_release($pdb_id);
 
         // choose the equivalence class
-        $this->db->select('np.nr_class_id')
-                 ->from('nr_chains AS np')
-                 ->join('nr_classes AS nc', 'np.nr_class_id = nc.nr_class_id')
-                 ->join('ife_info AS ii', 'np.ife_id = ii.ife_id')
+        $this->db->select('ch.nr_class_id')
+                 ->select('cl.name')
+                 ->from('nr_chains AS ch')
+                 ->join('nr_classes AS cl', 'ch.nr_class_id = cl.nr_class_id AND ch.nr_release_id = cl.nr_release_id')
+                 ->join('ife_info AS ii', 'ch.ife_id = ii.ife_id')
                  ->where('ii.pdb_id', $pdb_id)
-                 ->where('np.nr_release_id', $latest_nr_release)
-                 ->where('nc.resolution', 'all')
-                 ->where('nc.nr_release_id', $latest_nr_release);
+                 ->where('ch.nr_release_id', $latest_nr_release)
+                 ->where('cl.resolution', 'all');
         $result = $this->db->get();
 
         if ( $result->num_rows() == 0 ) {
             $equivalence_class = 'Not a member of any equivalent class, most likely due to the absence of complete nucleotides.';
+            $equivalence_class_name = "";
             $equivalence_class_found = False;
         } else {
             $equivalence_class = $result->row()->nr_class_id;
+            $equivalence_class_name = $result->row()->name;
             $equivalence_class_found = True;
         }
 
@@ -488,7 +490,7 @@ class Pdb_model extends CI_Model {
         }
 
         return array('related_pdbs' => $pdbs,
-                     'eq_class' => $equivalence_class,
+                     'eq_class' => $equivalence_class_name,
                      'representative' => $representative);
     }
 
