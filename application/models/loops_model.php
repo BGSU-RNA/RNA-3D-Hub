@@ -140,7 +140,7 @@ class Loops_model extends CI_Model {
         $result['rna3dhub_link'] = anchor_popup('pdb/' . $result['pdb'] . '/motifs', 'RNA 3D Hub');
         $result['pdb_link'] = anchor_popup('http://www.rcsb.org/pdb/explore.do?structureId=' . $result['pdb'], 'PDB');
 
-        $this->db->select('title, experimental_techinque, resolution')
+        $this->db->select('title, experimental_technique, resolution')
                  ->from('pdb_info')
                  ->where('pdb_id',$result['pdb'])
                  ->limit(1);
@@ -149,7 +149,7 @@ class Loops_model extends CI_Model {
         if ($query->num_rows() > 0) {
             $pdb_info = $query->row();
             $result['pdb_desc'] = $pdb_info->title;
-            $result['pdb_exptechnique'] = $pdb_info->experimental_techinque;
+            $result['pdb_exptechnique'] = $pdb_info->experimental_technique;
 
             if ($pdb_info->resolution == Null) {
                 $result['pdb_resolution'] = '';

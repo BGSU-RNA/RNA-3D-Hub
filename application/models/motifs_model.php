@@ -624,6 +624,7 @@ class Motifs_model extends CI_Model {
 
         $this->db->select('pdb_obsolete_id')
                  ->select('replaced_by')
+                 #->select('COALESCE(NULLIF(replaced_by,""), "None") AS replaced_by', FALSE)
                  ->from('pdb_obsolete')
                  ->where_in('pdb_obsolete_id', $only_old);
         $query = $this->db->get();

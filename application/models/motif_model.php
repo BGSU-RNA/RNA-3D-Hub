@@ -40,9 +40,9 @@ class Motif_model extends CI_Model {
     function _get_aligned_unit_ids($motif_id)
     {
         $this->db->select()
-                 ->from('ml_loop_positions')
-                 ->join('pdb_unit_id_correspondence',
-                        'ml_loop_positions.nt_id = pdb_unit_id_correspondence.old_id')
+                 ->from('ml_loop_positions AS ML')
+                 ->join('pdb_unit_id_correspondence AS UC',
+                        'ML.nt_id = UC.old_id')
                  ->where('motif_id', $motif_id)
                  ->where('release_id', $this->release_id)
                  ->order_by('loop_id, position');
@@ -441,20 +441,24 @@ class Motif_model extends CI_Model {
 
         foreach($this->loops as $loop_id) {
             $index = array();
+            $position = array();
+            $unit_id_arr = array();
 
             // get indexes of bordering nucleotides for loop id
-            $this->db->select('lp.position', 'index')
-                     ->from('loop_positions AS lp')
-                     ->join('unit_info AS ui', 'lp.unit_id = ui.unit_id')
-                     ->join('ml_loops AS ml', 'lp.loop_id = ml.ml_loops_id')
-                     ->where('ml.release_id', $latest_release)
-                     ->where('lp.loop_id', $loop_id)
-                     ->where('lp.border', 1)
-                     ->order_by('lp.position');
+            $this->db->select('ML.position, LP.unit_id')
+                     ->from('loop_positions AS LP')
+                     ->join('unit_info AS UI', 'LP.unit_id = UI.unit_id')
+                     ->join('ml_loop_positions AS ML', 'LP.loop_id = ML.loop_id AND ' .
+                                                       'LP.unit_id = ML.unit_id')
+                     ->where('ML.ml_release_id', $latest_release)
+                     ->where('LP.loop_id', $loop_id)
+                     ->where('LP.border', 1)
+                     ->order_by('ML.position');
             $query = $this->db->get();
 
             foreach($query->result() as $row) {
                 $index[] = $row->position;
+                $unit_id_arr[] = $row->unit_id;
             }
 
             list($loop_type, $pdb, $order) = explode('_', $loop_id);
@@ -466,6 +470,9 @@ class Motif_model extends CI_Model {
                 $seq = array($this->get_strand_fragment($pdb, $index[0], $index[1]),
                              $this->get_strand_fragment($pdb, $index[2], $index[3]));
                 $seq_nwc[] = substr($seq[0], 1, -1) . '*' . substr($seq[1], 1, -1);
+
+                #echo "<p>pdb/i0/i1/i2/i3:  $pdb // $index[0] // $index[1] // $index[2] // $index[3]</p>";
+                #echo "<p>seq: " . var_dump($seq) . "</p>";
             }
 
             $seq_all[] = implode('*', $seq);
@@ -491,26 +498,15 @@ class Motif_model extends CI_Model {
     {
         $rna = array('A', 'C', 'G', 'U');
 
-        ### DEBUGS
-        echo "<p>start/stop/pdb_id = $start/$stop/$pdb---</p>";
-
         $this->db->select('unit')
                  ->from('unit_info')
                  ->where('pdb_id', $pdb)
-                 ->where_in('unit', $rna);
-
-        ### 2016-03-28:  column chain_index is not populated
-        ###     in testing database
-
-        if ( $start > 0 ) {
-            $this->db->where('number >=', $start);
-            #$this->db->where('chain_index >=', $start);
-        }
-
-        if ( $stop > 0 ) {
-            $this->db->where('number <=', $stop);
-            #$this->db->where('chain_index <=', $stop);
-        }
+                 ->where_in('unit', $rna)
+                 #->where('chain_index >=', $start);
+                 #->where('chain_index <=', $stop);
+                 ->where('number >=', $start)
+                 ->where('number <=', $stop)
+                 ->order_by('number');
 
         $query = $this->db->get();
 
@@ -519,6 +515,26 @@ class Motif_model extends CI_Model {
         }
         
         return implode('', $nts);
+    }
+
+    private function get_strand_fragment_unit($unit_1, $unit_2)
+    {
+        //  testing a unit_id-based approach to building sequence variant strings
+        $rna = array('A', 'C', 'G', 'U');
+
+        list($pdb_1, $model_1, $chain_1, $nuc_1, $pos_1, $trash_1_1, $trash_2_1, 
+             $trash_3_1, $ic_1) = explode('_', $unit_1);
+        list($pdb_2, $model_2, $chain_2, $nuc_2, $pos_2, $trash_1_2, $trash_2_2, 
+             $trash_3_2, $ic_2) = explode('_', $unit_2);
+
+        $this->db->select('unit')
+                 ->from('unit_info')
+                 ->where('pdb_id', $pdb_1)
+                 ->where('model', $model_1)
+                 ->where('chain', $chain_1)
+                 ->where('number >=', $pos_1)
+                 ->where('number <=', $pos_2)
+                 ->where_in('unit', $rna);
     }
 
     function get_latest_release_for_motif($motif_id)
@@ -601,8 +617,8 @@ class Motif_model extends CI_Model {
     function make_history_table($result, $motif_id)
     {
         $table = array();
-        for ($i = 0; $i < count($result); $i++) {
 
+        for ($i = 0; $i < count($result); $i++) {
             $table[] = array(
                                 anchor_popup("motif/view/{$result[$i]['motif_id2']}", $result[$i]['motif_id2']) .
                                 '<br>' . anchor_popup("motif/compare/{$result[$i]['motif_id2']}/{$result[$i]['motif_id1']}", 'Compare'),
@@ -611,6 +627,7 @@ class Motif_model extends CI_Model {
                                 $this->make_loop_links($result[$i]['two_minus_one'])
                              );
         }
+
         return $table;
     }
 
@@ -619,16 +636,21 @@ class Motif_model extends CI_Model {
         if ( $loop_list == '' ) {
             return $loop_list;
         }
+
         $loops = explode(',', $loop_list);
+
         for ($i = 0; $i < count($loops); $i++) {
             $loops[$i] = anchor_popup("loops/view/$loops[$i]", $loops[$i]);
         }
+
         return implode(', ', $loops);
     }
 
     // mutual discrepancy matrix widget
     function get_mutual_discrepancy_matrix()
     {
+        ini_set('memory_limit', '512M');
+
         $this->db->select()
                  ->from('ml_mutual_discrepancy')
                  ->where('release_id', $this->release_id)
@@ -640,6 +662,11 @@ class Motif_model extends CI_Model {
         for ($i = 0; $i < count($result); $i++) {
             $disc[$result[$i]['loop_id1']][$result[$i]['loop_id2']] = $result[$i]['discrepancy'];
         }
+
+        ### DEBUG
+        #echo "<p>result count:  $i</p>";
+        #echo "<p>release_id:  $this->release_id</p>";
+        #echo "<p>loops:  " . var_dump($this->loops) . "</p>";
 
         $matrix = array();
         for ($i = 1; $i <= $this->num_loops; $i++) {
@@ -792,15 +819,15 @@ class Motif_model extends CI_Model {
     	$loop_id = $result->ml_loops_id;
 
     	// get chain breaks
-    	$this->db->select('ml.position')
-    	         ->from('loop_positions AS lp')
-    	         ->join('ml_loop_positions AS ml', 'lp.loop_id = ml.loop_id AND ' .
-    	                                           'lp.unit_id = ml.nt_id')
-    	         ->where('lp.loop_id', $loop_id)
-    	         ->where('lp.border', 1)
-    	         ->where('ml.motif_id', $this->motif_id)
-    	         ->where('ml.ml_release_id', $this->release_id)
-    	         ->order_by('ml.position', 'ASC');
+    	$this->db->select('ML.position')
+    	         ->from('loop_positions AS LP')
+    	         ->join('ml_loop_positions AS ML', 'LP.loop_id = ML.loop_id AND ' .
+    	                                           'LP.unit_id = ML.unit_id')
+    	         ->where('LP.loop_id', $loop_id)
+    	         ->where('LP.border', 1)
+    	         ->where('ML.motif_id', $this->motif_id)
+    	         ->where('ML.ml_release_id', $this->release_id)
+    	         ->order_by('ML.position', 'ASC');
         $result = $this->db->get()->result_array();
 
         // take second row
