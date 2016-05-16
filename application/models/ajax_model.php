@@ -69,7 +69,7 @@ class Ajax_model extends CI_Model {
 
             $basepairs = $this->count_basepairs($pdb);
             $nucleotides = $this->count_nucleotides($pdb);
-            $bpnt = number_format($basepairs/$nucleotides, 4);
+            $bpnt = ( $nucleotides == 0 ) ? 0 : number_format($basepairs/$nucleotides, 4);
 
             $pdb_info = "<u>Title</u>: {$row->title}<br>" .
                         $resolution .
