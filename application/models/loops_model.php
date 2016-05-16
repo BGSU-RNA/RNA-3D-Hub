@@ -174,7 +174,7 @@ class Loops_model extends CI_Model {
         // get equivalence classes
         $this->db->select('nr_class_id')
                  ->from('nr_pdbs')
-                 ->where('nr_pdb_id',$result['pdb'])
+                 ->where('pdb_id',$result['pdb'])
                  ->where('nr_release_id', $release->nr_release_id);
         $query = $this->db->get();
 
@@ -196,14 +196,16 @@ class Loops_model extends CI_Model {
                  ->where('type',substr($id, 0, 2))
                  ->limit(1);
         $query = $this->db->get();
+
         $release = $query->row();
 
         // get motif id
         $this->db->select()
                  ->from('ml_loops')
-                 ->where('release_id',$release->id)
+                 ->where('release_id',$release->ml_releases_id)
                  ->where('ml_loops_id',$id);
         $query = $this->db->get();
+
         if ($query->num_rows() > 0) {
             $motif = $query->row();
             return array('motif_id' => $motif->motif_id,
