@@ -288,14 +288,15 @@ class Loops_model extends CI_Model {
         $result = array();
 
         // get nearby protein chains
-        $this->db->select('t3.chain')
+        $this->db->select('UI.chain')
                  ->distinct()
-                 ->from('loop_positions as t1')
-                 ->join('pdb_distances as t2', 't1.nt_id = t2.unit_id_1')
-                 ->join('__pdb_coordinates as t3', 't2.unit_id_2 = t3.pdb_coordinates_id')
-                 ->where('loop_id', $id)
-                 ->where('char_length(t3.unit) = 3')
-                 ->not_like('t3.coordinates','HETATM','after');
+                 ->from('loop_positions AS LP')
+                 ->join('unit_pairs_distances AS UP', 'LP.unit_id = UP.unit_id_1')
+                 ->join('unit_coordinates AS UC', 'UP.unit_id_2 = UC.unit_id')
+                 ->join('unit_info AS UI', 'UC.unit_id = UI.unit_id')
+                 ->where('LP.loop_id', $id)
+                 ->where('char_length(UI.unit) = 3')
+                 ->not_like('UC.coordinates','HETATM','after');
         $query = $this->db->get();
 
         if ($query->num_rows() > 0) {
