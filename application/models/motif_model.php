@@ -799,7 +799,7 @@ class Motif_model extends CI_Model {
     	         ->where('lp.loop_id', $loop_id)
     	         ->where('lp.border', 1)
     	         ->where('ml.motif_id', $this->motif_id)
-    	         ->where('ml.release_id', $this->release_id)
+    	         ->where('ml.ml_release_id', $this->release_id)
     	         ->order_by('ml.position', 'ASC');
         $result = $this->db->get()->result_array();
 
@@ -931,7 +931,7 @@ class Motif_model extends CI_Model {
     {
         $this->db->select('loop_id, nt_id, position')
                  ->from('ml_loop_positions')
-                 ->where('release_id', $this->release_id)
+                 ->where('ml_release_id', $this->release_id)
                  ->where('motif_id', $this->motif_id);
         $result = $this->db->get()->result_array();
 
