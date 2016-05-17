@@ -172,7 +172,7 @@ class Loops_model extends CI_Model {
         $release = $query->row();
 
         // get equivalence classes
-        $this->db->select('nr_class_id')
+        $this->db->select('nr_class_name')
                  ->from('nr_pdbs')
                  ->where('pdb_id',$result['pdb'])
                  ->where('nr_release_id', $release->nr_release_id);
@@ -180,7 +180,7 @@ class Loops_model extends CI_Model {
 
         $nr_classes = array();
         foreach ($query->result() as $row) {
-            $nr_classes[] = anchor_popup('nrlist/view/' . $row->nr_class_id, $row->nr_class_id);
+            $nr_classes[] = anchor_popup('nrlist/view/' . $row->nr_class_name, $row->nr_class_name);
         }
         $result['nr_classes'] = implode(', ', $nr_classes);
 
@@ -306,30 +306,14 @@ class Loops_model extends CI_Model {
                 $chains[] = $row->chain;
             }
             
-            /*
-              TODO:  RESOLVE THE db_name and db_ids fields
-            
-              Neither column is present in updated versions
-              of pdb_info and chain_info.
-            */
             $this->db->select('chain_name, compound')
                      ->from('chain_info')
                      ->where('pdb_id', substr($id,3,4))
                      ->where_in('chain_name', $chains);
             $query = $this->db->get();
             
-            // db_name = 'PDB, Uniprot'
-            // db_ids  = 'PDB_id, Uniprot_id'
             foreach ($query->result() as $row) {
                 $result['proteins'][$row->chain_name]['description'] = $row->compound;
-                $databases = explode(',', $row->db_name);
-                $ids = explode(',', $row->db_id);
-            
-                for ($i = 0; $i < count($databases); $i++) {
-                    if (preg_match('/Uniprot/i', $databases[$i])) {
-                        $result['proteins'][$row->chain_name]['uniprot'] = anchor_popup('http://www.uniprot.org/uniprot/' . trim($ids[$i]), $ids[$i]);
-                    }
-                }
             }
         } else {
             $result['proteins'] = array();
