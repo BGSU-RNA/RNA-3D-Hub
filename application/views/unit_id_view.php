@@ -32,10 +32,6 @@
                 <dd>
                   <?=anchor("unitid/describe/{$unit_id['unit_id']}", $unit_id['unit_id'])?>
                 </dd>
-                <dt>Old id</dt>
-                <dd>
-                  <?=anchor("unitid/describe/{$unit_id['old_id']}", $unit_id['old_id'])?>
-                </dd>
                 <dt>PDB <?=$unit_id['pdb_id']?></dt>
                 <dd>
                   View in
@@ -76,7 +72,7 @@
                 <dt>Symmetry operator</dt>
                 <dd><?=$unit_id['sym_op']?></dd>
                 <dt>PDB file</dt>
-                <dd><?=$unit_id['pdb_id']?>.<?=$unit_id['pdb_file']?></dd>
+                <dd><?=$unit_id['pdb_id']?>.cif</dd>
               </dl>
             </div>
             <?php endforeach; ?>
