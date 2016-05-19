@@ -12,8 +12,8 @@ class Ajax_model extends CI_Model {
     function count_nucleotides($pdb_id)
     {
         // count nucleotides in all chains
-        return $this->db->select('pdb_coordinates_id')
-                        ->from('__pdb_coordinates')
+        return $this->db->select('unit')
+                        ->from('unit_info')
                         ->where('pdb_id', $pdb_id)
                         ->where_in('unit', array('A','C','G','U'))
                         ->count_all_results();
