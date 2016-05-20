@@ -189,14 +189,18 @@ CREATE TABLE `nr_release_diff` (
         return "<span class='rcsb_image' title='{$pdb}|asr|xsmall|'></span><a class='pdb'>$pdb</a>";
     }
 
-    function get_source_organism($pdb_id)
+    function get_source_organism($ife_id)
     {
+        list($pdb_id, $chain) = explode('|', $ife_id);
+
         $this->db->select('source')
                  ->from('chain_info')
                  ->where('pdb_id', $pdb_id)
+                 ->where('chain_name', $chain)
                  ->like('entity_macromolecule_type', 'RNA')
                  ->where("chain_length = (SELECT max(chain_length) FROM chain_info WHERE pdb_id ='$pdb_id' AND entity_macromolecule_type LIKE '%RNA%')");
         $query = $this->db->get();
+        
         if ( $query->num_rows() > 0 ) {
             $result = $query->result();
             return $result[0]->source;
@@ -590,6 +594,8 @@ CREATE TABLE `nr_release_diff` (
         }
     }
 
+/*
+    ### DEFUNCT FUNCTION?
     function get_source_organism_for_class($pdb_list)
     {
         $source = '';
@@ -601,6 +607,7 @@ CREATE TABLE `nr_release_diff` (
         }
         return $source;
     }
+*/
 
     function get_release($id, $resolution)
     {
