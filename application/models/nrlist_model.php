@@ -191,14 +191,17 @@ CREATE TABLE `nr_release_diff` (
 
     function get_source_organism($ife_id)
     {
-        list($pdb_id, $model_num, $chain) = explode('|', $ife_id);
+        if ( 1 == substr_count($ife_id, '|') ) {
+            list($pdb_id, $chain) = explode('|', $ife_id);
+        } else {
+            list($pdb_id, $model_num, $chain) = explode('|', $ife_id);
+        }
 
         $this->db->select('source')
                  ->from('chain_info')
                  ->where('pdb_id', $pdb_id)
                  ->where('chain_name', $chain)
-                 ->like('entity_macromolecule_type', 'RNA')
-                 ->where("chain_length = (SELECT max(chain_length) FROM chain_info WHERE pdb_id ='$pdb_id' AND entity_macromolecule_type LIKE '%RNA%')");
+                 ->like('entity_macromolecule_type', 'RNA');
         $query = $this->db->get();
         
         if ( $query->num_rows() > 0 ) {
