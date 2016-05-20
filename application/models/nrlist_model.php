@@ -191,7 +191,7 @@ CREATE TABLE `nr_release_diff` (
 
     function get_source_organism($ife_id)
     {
-        list($pdb_id, $chain) = explode('|', $ife_id);
+        list($pdb_id, $model_num, $chain) = explode('|', $ife_id);
 
         $this->db->select('source')
                  ->from('chain_info')
