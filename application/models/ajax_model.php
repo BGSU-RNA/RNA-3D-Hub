@@ -296,35 +296,81 @@ class Ajax_model extends CI_Model {
 
         // get their coordinates
         $this->db->select('coordinates')
-                 ->from('__pdb_coordinates')
-                 ->where_in('pdb_coordinates_id',$nt_ids);
+                 ->from('unit_coordinates')
+                 ->where_in('unit_id',$nt_ids);
         $query = $this->db->get();
         if ($query->num_rows() == 0) { return 'Loop coordinates not found'; }
 
-        $final_result = "MODEL     1\n";
+        $headers_cif_fr3d = array (
+
+			//'data_view',
+			'#', 
+			'loop_',
+			'_atom_site.group_PDB', 
+			'_atom_site.id', 
+			'_atom_site.type_symbol', 
+			'_atom_site.label_atom_id', 
+			'_atom_site.label_alt_id', 
+   			'_atom_site.label_comp_id', 
+			'_atom_site.label_asym_id', 
+			'_atom_site.label_entity_id', 
+			'_atom_site.label_seq_id', 
+			'_atom_site.pdbx_PDB_ins_code', 
+			'_atom_site.Cartn_x', 
+			'_atom_site.Cartn_y', 
+			'_atom_site.Cartn_z', 
+			'_atom_site.occupancy', 
+			'_atom_site.B_iso_or_equiv', 
+			'_atom_site.Cartn_x_esd', 
+			'_atom_site.Cartn_y_esd', 
+			'_atom_site.Cartn_z_esd', 
+			'_atom_site.occupancy_esd', 
+			'_atom_site.B_iso_or_equiv_esd', 
+			'_atom_site.pdbx_formal_charge', 
+			'_atom_site.auth_seq_id', 
+			'_atom_site.auth_comp_id', 
+			'_atom_site.auth_asym_id', 
+			'_atom_site.auth_atom_id', 
+			'_atom_site.pdbx_PDB_model_num' 
+
+		);
+
+		$final_result = 'data_view\n';
+
+		foreach ($headers_cif_fr3d as $header) {
+			$final_result .= $header."\n";
+		} 
+
         foreach ($query->result() as $row) {
-            $final_result .= $row->coordinates . "\n";
-        }
-        $final_result .= "ENDMDL\n";
 
-        // get neighborhood
-        $this->db->select('coordinates')
-                 ->distinct()
-                 ->from('__pdb_coordinates')
-                 ->join('unit_pairs_distances','__pdb_coordinates.pdb_coordinates_id = unit_pairs_distances.unit_id_1')
-                 ->where_in('unit_id_2',$nt_ids)
-                 ->where_not_in('unit_id_1',$nt_ids);
-        $query = $this->db->get();
+        	foreach ($row as $line) {
 
-        $final_result .= "MODEL     2\n";
-        if ($query->num_rows() > 0) {
-            foreach ($query->result() as $row) {
-                $final_result .= $row->coordinates . "\n";
-            }
+        		$line= explode('\n', $line);
+
+    			foreach ($line as $line2) {
+    			
+    				$line = trim($line);
+
+    				$model_1_pattern = '/ 1\s*$/';
+
+    				if (!preg_match($model_1_pattern, $line2)) {
+      					$search_pattern = '/([+-]?[0-9]+)\s*$/';
+
+      					$line2 = preg_replace($search_pattern, '1', $line2);
+
+    				}	
+
+    				$final_result .= $line2 . '\n';	
+    			}	
+
+			}
+
         }
-        $final_result .= "ENDMDL";
+
+        $final_result .= '#\n';
 
         return $final_result;
+
     }
 
     function get_loop_pair_coordinates($loop_pair)
