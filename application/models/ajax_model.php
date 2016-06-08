@@ -296,78 +296,68 @@ class Ajax_model extends CI_Model {
 
         // get their coordinates
         $this->db->select('coordinates')
-                 ->from('unit_coordinates')
-                 ->where_in('unit_id',$nt_ids);
+                ->from('unit_coordinates')
+                ->where_in('unit_id', $nt_ids);
         $query = $this->db->get();
-        if ($query->num_rows() == 0) { return 'Loop coordinates not found'; }
 
+        if ($query->num_rows() == 0) { return 'Loop coordinates not found'; }
+        
         $headers_cif_fr3d = array (
 
-			//'data_view',
-			'#', 
-			'loop_',
-			'_atom_site.group_PDB', 
-			'_atom_site.id', 
-			'_atom_site.type_symbol', 
-			'_atom_site.label_atom_id', 
-			'_atom_site.label_alt_id', 
-   			'_atom_site.label_comp_id', 
-			'_atom_site.label_asym_id', 
-			'_atom_site.label_entity_id', 
-			'_atom_site.label_seq_id', 
-			'_atom_site.pdbx_PDB_ins_code', 
-			'_atom_site.Cartn_x', 
-			'_atom_site.Cartn_y', 
-			'_atom_site.Cartn_z', 
-			'_atom_site.occupancy', 
-			'_atom_site.B_iso_or_equiv', 
-			'_atom_site.Cartn_x_esd', 
-			'_atom_site.Cartn_y_esd', 
-			'_atom_site.Cartn_z_esd', 
-			'_atom_site.occupancy_esd', 
-			'_atom_site.B_iso_or_equiv_esd', 
-			'_atom_site.pdbx_formal_charge', 
-			'_atom_site.auth_seq_id', 
-			'_atom_site.auth_comp_id', 
-			'_atom_site.auth_asym_id', 
-			'_atom_site.auth_atom_id', 
-			'_atom_site.pdbx_PDB_model_num' 
+            'data_view',
+            '#', 
+            'loop_',
+            '_atom_site.group_PDB', 
+            '_atom_site.id', 
+            '_atom_site.type_symbol', 
+            '_atom_site.label_atom_id', 
+            '_atom_site.label_alt_id', 
+            '_atom_site.label_comp_id', 
+            '_atom_site.label_asym_id', 
+            '_atom_site.label_entity_id', 
+            '_atom_site.label_seq_id', 
+            '_atom_site.pdbx_PDB_ins_code', 
+            '_atom_site.Cartn_x', 
+            '_atom_site.Cartn_y', 
+            '_atom_site.Cartn_z', 
+            '_atom_site.occupancy', 
+            '_atom_site.B_iso_or_equiv', 
+            '_atom_site.Cartn_x_esd', 
+            '_atom_site.Cartn_y_esd', 
+            '_atom_site.Cartn_z_esd', 
+            '_atom_site.occupancy_esd', 
+            '_atom_site.B_iso_or_equiv_esd', 
+            '_atom_site.pdbx_formal_charge', 
+            '_atom_site.auth_seq_id', 
+            '_atom_site.auth_comp_id', 
+            '_atom_site.auth_asym_id', 
+            '_atom_site.auth_atom_id', 
+            '_atom_site.pdbx_PDB_model_num' 
 
-		);
-
-		$final_result = 'data_view\n';
-
-		foreach ($headers_cif_fr3d as $header) {
-			$final_result .= $header."\n";
-		} 
+        );
 
         foreach ($query->result() as $row) {
-
-        	foreach ($row as $line) {
-
-        		$line= explode('\n', $line);
-
-    			foreach ($line as $line2) {
-    			
-    				$line = trim($line);
-
-    				$model_1_pattern = '/ 1\s*$/';
-
-    				if (!preg_match($model_1_pattern, $line2)) {
-      					$search_pattern = '/([+-]?[0-9]+)\s*$/';
-
-      					$line2 = preg_replace($search_pattern, '1', $line2);
-
-    				}	
-
-    				$final_result .= $line2 . '\n';	
-    			}	
-
-			}
-
+            foreach ($row as $line) {
+                $line= explode("\n", $line);
+                foreach ($line as $line2) {
+                    $model_1_pattern = '/ 1\s*$/';
+                    // If model number is not 1, change to 1
+                    if (!preg_match($model_1_pattern, $line2)) {
+                        $search_pattern = '/([+-]?[0-9]+)\s*$/';
+                        $line2 = preg_replace($search_pattern, '1', $line2);
+                    }      
+                    $lines_arr[] = ($line2);  
+                }   
+            }
         }
 
-        $final_result .= '#\n';
+        $footer = array('#');
+        $combine_result = array_merge($headers_cif_fr3d, $lines_arr,$footer);
+        $final_result = '';
+
+        foreach ($combine_result as $output) {
+            $final_result .= $output . "\n";
+        }
 
         return $final_result;
 
