@@ -205,103 +205,59 @@ class Ajax_model extends CI_Model {
 
     function get_nt_coordinates_approximate($nt_ids)
     {
-        $this->db->select('coordinates')->from('__pdb_coordinates');
+        
+        // get coordinates
+        $this->db->select('coordinates')->from('unit_coordinates');
 
         $nts = explode(',', $nt_ids);
 
         foreach ($nts as $nt) {
-            $this->db->or_like('pdb_coordinates_id', $nt, 'after');
+            $this->db->or_like('unit_id', $nt, 'after');
         }
         
         $query = $this->db->get();
         
-        if ($query->num_rows() == 0) { return 'Loop coordinates not found'; }
+        if ($query->num_rows() == 0) { return 'Nucleotide coordinates not found'; }
 
-        $final_result = "MODEL     1\n";
-                foreach ($query->result() as $row) {
-            $final_result .= $row->coordinates . "\n";
-        }        
-        $final_result .= "ENDMDL\n";
+        foreach ($query->result() as $row) {
+            foreach ($row as $line) {
+                $line= explode("\n", $line);
+                foreach ($line as $line2) {
+                    $model_1_pattern = '/ 1\s*$/';
+                    // If model number is not 1, change to 1
+                    if (!preg_match($model_1_pattern, $line2)) {
+                        $search_pattern = '/([+-]?[0-9]+)\s*$/';
+                        $line2 = preg_replace($search_pattern, '1', $line2);
+                    }      
+                    $lines_arr[] = ($line2);  
+                }   
+            }
+        }
 
         // get neighborhood
         $this->db->select('coordinates')
                  ->distinct()
-                 ->from('__pdb_coordinates')
-                 ->join('unit_pairs_distances','__pdb_coordinates.pdb_coordinates_id = unit_pairs_distances.unit_id_1')
+                 ->from('unit_coordinates')
+                 ->join('unit_pairs_distances','unit_coordinates.unit_id = unit_pairs_distances.unit_id_1')
                  ->where_in('unit_id_2',$nt_ids)
                  ->where_not_in('unit_id_1',$nt_ids);
         $query = $this->db->get();
 
-        $final_result .= "MODEL     2\n";
-                if ($query->num_rows() > 0) {
-            foreach ($query->result() as $row) {
-                $final_result .= $row->coordinates . "\n";
+        foreach ($query->result() as $row) {
+            foreach ($row as $line) {
+                $line= explode("\n", $line);
+                foreach ($line as $line2) {
+                    $model_2_pattern = '/ 2\s*$/';
+                    // If model number is not 2, change to 2
+                    if (!preg_match($model_2_pattern, $line2)) {
+                        $search_pattern = '/([+-]?[0-9]+)\s*$/';
+                        $line2 = preg_replace($search_pattern, '2', $line2);
+                    }      
+                    $lines_arr2[] = ($line2);  
+                }   
             }
         }
-        $final_result .= "ENDMDL";
 
-        return $final_result;
-    }
-
-    function get_nt_coordinates($nt_ids)
-    {
-        $imploded = "'" . implode("','",$nt_ids) . "'";
-
-        $query_string = "coordinates from __pdb_coordinates where pdb_coordinates_id " . 
-                            "IN ($imploded) ORDER BY FIELD(id, $imploded);";
-        $this->db->select($query_string, FALSE);
-        $query = $this->db->get();
-
-        if ($query->num_rows() == 0) { return 'Loop coordinates not found'; }
-
-        $final_result = "MODEL     1\n";
-        foreach ($query->result() as $row) {
-            $final_result .= $row->coordinates . "\n";
-        }
-        $final_result .= "ENDMDL\n";
-
-        // get neighborhood
-        $this->db->select('coordinates')
-                 ->distinct()
-                 ->from('__pdb_coordinates')
-                 ->join('unit_pairs_distances','__pdb_coordinates.pdb_coordinates_id = unit_pairs_distances.unit_id_1')
-                 ->where_in('unit_id_2',$nt_ids)
-                 ->where_not_in('unit_id_1',$nt_ids);
-        $query = $this->db->get();
-
-         $final_result .= "MODEL     2\n";
-         if ($query->num_rows() > 0) {
-            foreach ($query->result() as $row) {
-                $final_result .= $row->coordinates . "\n";
-            }
-         }
-         $final_result .= "ENDMDL";
-
-        return $final_result;
-    }
-
-    function get_loop_coordinates($loop_id)
-    {
-        // find all constituent nucleotides
-        $this->db->select('unit_ids')
-                 ->distinct()
-                 ->from('loop_info')
-                 ->where('loop_id',$loop_id);
-        $query = $this->db->get();
-        if ($query->num_rows() == 0) { return 'Loop id not found'; }
-
-        foreach ($query->result() as $row) {
-            $nt_ids = explode(',',$row->unit_ids);
-        }
-
-        // get their coordinates
-        $this->db->select('coordinates')
-                ->from('unit_coordinates')
-                ->where_in('unit_id', $nt_ids);
-        $query = $this->db->get();
-
-        if ($query->num_rows() == 0) { return 'Loop coordinates not found'; }
-        
         $headers_cif_fr3d = array (
 
             'data_view',
@@ -336,6 +292,34 @@ class Ajax_model extends CI_Model {
 
         );
 
+        $footer = array('#');
+     
+        $combine_result = array_merge($headers_cif_fr3d, $lines_arr, $footer, $headers_cif_fr3d, $lines_arr2, $footer);
+        
+        $final_result = '';
+
+        foreach ($combine_result as $output) {
+            $final_result .= $output . "\n";
+        }
+
+        return $final_result;
+
+    }
+
+    function get_nt_coordinates($nt_ids)
+    {
+         
+        $nt_ids = explode(',', $nt_ids);
+
+        // get their coordinates
+        $this->db->select('coordinates')
+                ->from('unit_coordinates')
+                ->where_in('unit_id', $nt_ids);
+        $query = $this->db->get();
+
+        if ($query->num_rows() == 0) { return 'Nucleotide coordinates not found'; }
+
+        // get coordinates
         foreach ($query->result() as $row) {
             foreach ($row as $line) {
                 $line= explode("\n", $line);
@@ -351,8 +335,177 @@ class Ajax_model extends CI_Model {
             }
         }
 
+        // get neighborhood
+        $this->db->select('coordinates')
+                 ->distinct()
+                 ->from('unit_coordinates')
+                 ->join('unit_pairs_distances','unit_coordinates.unit_id = unit_pairs_distances.unit_id_1')
+                 ->where_in('unit_id_2',$nt_ids)
+                 ->where_not_in('unit_id_1',$nt_ids);
+        $query = $this->db->get();
+
+        foreach ($query->result() as $row) {
+            foreach ($row as $line) {
+                $line= explode("\n", $line);
+                foreach ($line as $line2) {
+                    $model_2_pattern = '/ 2\s*$/';
+                    // If model number is not 2, change to 2
+                    if (!preg_match($model_2_pattern, $line2)) {
+                        $search_pattern = '/([+-]?[0-9]+)\s*$/';
+                        $line2 = preg_replace($search_pattern, '2', $line2);
+                    }      
+                    $lines_arr2[] = ($line2);  
+                }   
+            }
+        }
+
+        $headers_cif_fr3d = array (
+
+            'data_view',
+            '#', 
+            'loop_',
+            '_atom_site.group_PDB', 
+            '_atom_site.id', 
+            '_atom_site.type_symbol', 
+            '_atom_site.label_atom_id', 
+            '_atom_site.label_alt_id', 
+            '_atom_site.label_comp_id', 
+            '_atom_site.label_asym_id', 
+            '_atom_site.label_entity_id', 
+            '_atom_site.label_seq_id', 
+            '_atom_site.pdbx_PDB_ins_code', 
+            '_atom_site.Cartn_x', 
+            '_atom_site.Cartn_y', 
+            '_atom_site.Cartn_z', 
+            '_atom_site.occupancy', 
+            '_atom_site.B_iso_or_equiv', 
+            '_atom_site.Cartn_x_esd', 
+            '_atom_site.Cartn_y_esd', 
+            '_atom_site.Cartn_z_esd', 
+            '_atom_site.occupancy_esd', 
+            '_atom_site.B_iso_or_equiv_esd', 
+            '_atom_site.pdbx_formal_charge', 
+            '_atom_site.auth_seq_id', 
+            '_atom_site.auth_comp_id', 
+            '_atom_site.auth_asym_id', 
+            '_atom_site.auth_atom_id', 
+            '_atom_site.pdbx_PDB_model_num' 
+
+        );
+
         $footer = array('#');
-        $combine_result = array_merge($headers_cif_fr3d, $lines_arr,$footer);
+     
+        $combine_result = array_merge($headers_cif_fr3d, $lines_arr, $footer, $headers_cif_fr3d, $lines_arr2, $footer);
+        
+        $final_result = '';
+
+        foreach ($combine_result as $output) {
+            $final_result .= $output . "\n";
+        }
+
+        return $final_result;
+      
+    }
+
+    function get_loop_coordinates($loop_id)
+    {
+        // find all constituent nucleotides
+        $this->db->select('unit_ids')
+                 ->distinct()
+                 ->from('loop_info')
+                 ->where('loop_id',$loop_id);
+        $query = $this->db->get();
+        if ($query->num_rows() == 0) { return 'Loop id not found'; }
+
+        foreach ($query->result() as $row) {
+            $nt_ids = explode(',',$row->unit_ids);
+        }
+
+        // get their coordinates
+        $this->db->select('coordinates')
+                ->from('unit_coordinates')
+                ->where_in('unit_id', $nt_ids);
+        $query = $this->db->get();
+
+        if ($query->num_rows() == 0) { return 'Loop coordinates not found'; }
+
+        foreach ($query->result() as $row) {
+            foreach ($row as $line) {
+                $line= explode("\n", $line);
+                foreach ($line as $line2) {
+                    $model_1_pattern = '/ 1\s*$/';
+                    // If model number is not 1, change to 1
+                    if (!preg_match($model_1_pattern, $line2)) {
+                        $search_pattern = '/([+-]?[0-9]+)\s*$/';
+                        $line2 = preg_replace($search_pattern, '1', $line2);
+                    }      
+                    $lines_arr[] = ($line2);  
+                }   
+            }
+        }
+
+        // get neighborhood
+        $this->db->select('coordinates')
+                 ->distinct()
+                 ->from('unit_coordinates')
+                 ->join('unit_pairs_distances','unit_coordinates.unit_id = unit_pairs_distances.unit_id_1')
+                 ->where_in('unit_id_2',$nt_ids)
+                 ->where_not_in('unit_id_1',$nt_ids);
+        $query = $this->db->get();
+
+        foreach ($query->result() as $row) {
+            foreach ($row as $line) {
+                $line= explode("\n", $line);
+                foreach ($line as $line2) {
+                    $model_2_pattern = '/ 2\s*$/';
+                    // If model number is not 2, change to 2
+                    if (!preg_match($model_2_pattern, $line2)) {
+                        $search_pattern = '/([+-]?[0-9]+)\s*$/';
+                        $line2 = preg_replace($search_pattern, '2', $line2);
+                    }      
+                    $lines_arr2[] = ($line2);  
+                }   
+            }
+        }
+
+        $headers_cif_fr3d = array (
+
+            'data_view',
+            '#', 
+            'loop_',
+            '_atom_site.group_PDB', 
+            '_atom_site.id', 
+            '_atom_site.type_symbol', 
+            '_atom_site.label_atom_id', 
+            '_atom_site.label_alt_id', 
+            '_atom_site.label_comp_id', 
+            '_atom_site.label_asym_id', 
+            '_atom_site.label_entity_id', 
+            '_atom_site.label_seq_id', 
+            '_atom_site.pdbx_PDB_ins_code', 
+            '_atom_site.Cartn_x', 
+            '_atom_site.Cartn_y', 
+            '_atom_site.Cartn_z', 
+            '_atom_site.occupancy', 
+            '_atom_site.B_iso_or_equiv', 
+            '_atom_site.Cartn_x_esd', 
+            '_atom_site.Cartn_y_esd', 
+            '_atom_site.Cartn_z_esd', 
+            '_atom_site.occupancy_esd', 
+            '_atom_site.B_iso_or_equiv_esd', 
+            '_atom_site.pdbx_formal_charge', 
+            '_atom_site.auth_seq_id', 
+            '_atom_site.auth_comp_id', 
+            '_atom_site.auth_asym_id', 
+            '_atom_site.auth_atom_id', 
+            '_atom_site.pdbx_PDB_model_num' 
+
+        );
+
+        $footer = array('#');
+ 
+        $combine_result = array_merge($headers_cif_fr3d, $lines_arr, $footer, $headers_cif_fr3d, $lines_arr2, $footer);
+        
         $final_result = '';
 
         foreach ($combine_result as $output) {
@@ -439,26 +592,29 @@ class Ajax_model extends CI_Model {
         return $this->get_loop_coordinates($row->loop_id);
     }
 
-    function get_unit_id_coordinates($unit_ids)
-    {
-        $exploded = explode(',', $unit_ids);
-        $imploded = "'" . implode("','",$exploded) . "'";
+    //function get_unit_id_coordinates($unit_ids)
+    //{
+        //$exploded = explode(',', $unit_ids);
+        //$imploded = "'" . implode("','",$exploded) . "'";
 
-        $query_string = "distinct(old_id) from pdb_unit_id_correspondence where unit_id IN ($imploded) ORDER BY FIELD(unit_id, $imploded);";
-        $this->db->select($query_string, FALSE);
-        $query = $this->db->get();
+        //$query_string = "distinct(old_id) from pdb_unit_id_correspondence where unit_id IN ($imploded) ORDER BY FIELD(unit_id, $imploded);";
+        //$this->db->select($query_string, FALSE);
+        //$query = $this->db->get();
 
-        if ($query->num_rows() == 0) {
-            return 'No unit id correspondence found';
-        } else {
-            $nt_ids = array();
-            foreach ($query->result() as $row) {
-                $nt_ids[] = $row->old_id;
-            }
-        }
+        //if ($query->num_rows() == 0) {
+            //return 'No unit id correspondence found';
+        //} else {
+            //$nt_ids = array();
+            //foreach ($query->result() as $row) {
+                //$nt_ids[] = $row->old_id;
+                //echo $nt_ids;
+            //}
 
-        return $this->get_nt_coordinates($nt_ids);
-    }
+
+        //}
+
+        //eturn $this->get_nt_coordinates($nt_ids);
+    //}
 
 }
 

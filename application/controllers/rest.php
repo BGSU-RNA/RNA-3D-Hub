@@ -36,7 +36,9 @@ class Rest extends MY_Controller {
 
         // search POST, then GET
         $query = $this->input->get_post('coord');
-
+        
+        $this->output->enable_profiler(TRUE);
+        
         $query_type = $this->_parseInput($query);
 
         if ( $query_type ) {
@@ -55,6 +57,8 @@ class Rest extends MY_Controller {
         // don't load the database until the input was validated
         $this->load->model('Ajax_model', '', TRUE);
 
+		$this->output->enable_profiler(TRUE);
+		
         switch ($query_type) :
             case 'loop_id':
                 return $this->Ajax_model->get_loop_coordinates($query);
@@ -65,7 +69,8 @@ class Rest extends MY_Controller {
             case 'loop_pair':
                 return $this->Ajax_model->get_loop_pair_coordinates($query);
             case 'unit_id':
-                return $this->Ajax_model->get_unit_id_coordinates($query);
+                //return $this->Ajax_model->get_unit_id_coordinates($query);
+                return $this->Ajax_model->get_nt_coordinates($query);
             default: return $this->messages['error'];
         endswitch;
 
