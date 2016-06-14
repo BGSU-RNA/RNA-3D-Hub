@@ -80,7 +80,7 @@ class Motif extends MY_Controller {
         }
 
         // sequence variability
-        $seq_var = $this->Motif_model->get_sequence_variants($motif_id);
+        //$seq_var = $this->Motif_model->get_sequence_variants($motif_id);
         $this->table->set_heading(array('Sequence', 'Counts'));
         $tmpl = array( 'table_open'  => '<table class="condensed-table zebra-striped" id="complete_seq_var">' );
         $this->table->set_template($tmpl);

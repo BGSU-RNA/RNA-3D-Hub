@@ -65,7 +65,8 @@ class Rest extends MY_Controller {
             case 'motif_id':
                 return $this->Ajax_model->get_exemplar_coordinates($query);
             case 'nt_list':
-                return $this->Ajax_model->get_coordinates($query);
+                //return $this->Ajax_model->get_coordinates($query);
+                return $this->Ajax_model->get_unit_id_coordinates($query);
             case 'loop_pair':
                 return $this->Ajax_model->get_loop_pair_coordinates($query);
             case 'unit_id':
