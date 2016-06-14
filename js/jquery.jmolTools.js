@@ -418,8 +418,7 @@ if ( typeof Object.create !== 'function' ) {
     }
 
     //
-    var loc = window.location.protocol + '//' + 'localhost:8888';
-
+    var loc = window.location.protocol + '//' + window.location.hostname;
     // default options
 	$.fn.jmolTools.options = {
         serverUrl   : loc + '/rna3dhub/rest/getCoordinates',
