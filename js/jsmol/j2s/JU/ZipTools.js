@@ -13,7 +13,7 @@ c$.newZIS = Clazz.defineMethod (c$, "newZIS",
 return (Clazz.instanceOf (is, javajs.api.ZInputStream) ? is : Clazz.instanceOf (is, java.io.BufferedInputStream) ?  new javajs.api.GenericZipInputStream (is) :  new javajs.api.GenericZipInputStream ( new java.io.BufferedInputStream (is)));
 }, "java.io.InputStream");
 Clazz.overrideMethod (c$, "getAllZipData", 
-function (is, subfileList, name0, binaryFileList, fileData) {
+function (is, subfileList, name0, binaryFileList, exclude, fileData) {
 var zis = JU.ZipTools.newZIS (is);
 var ze;
 var listing =  new JU.SB ();
@@ -26,7 +26,7 @@ if (prefixd.length == 0) prefixd = null;
 }try {
 while ((ze = zis.getNextEntry ()) != null) {
 var name = ze.getName ();
-if (prefix != null && prefixd != null && !(name.equals (prefix) || name.startsWith (prefixd))) continue;
+if (prefix != null && prefixd != null && !(name.equals (prefix) || name.startsWith (prefixd)) || exclude != null && name.contains (exclude)) continue;
 listing.append (name).appendC ('\n');
 var sname = "|" + name.substring (name.lastIndexOf ("/") + 1) + "|";
 var asBinaryString = (binaryFileList.indexOf (sname) >= 0);
@@ -38,7 +38,8 @@ name += ":asBinaryString";
 } else {
 str = JU.Rdr.fixUTF (bytes);
 }str = "BEGIN Directory Entry " + name + "\n" + str + "\nEND Directory Entry " + name + "\n";
-fileData.put (name0 + "|" + name, str);
+var key = name0 + "|" + name;
+fileData.put (key, str);
 }
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
@@ -47,7 +48,7 @@ throw e;
 }
 }
 fileData.put ("#Directory_Listing", listing.toString ());
-}, "java.io.InputStream,~A,~S,~S,java.util.Map");
+}, "java.io.InputStream,~A,~S,~S,~S,java.util.Map");
 Clazz.defineMethod (c$, "getBinaryStringForBytes", 
  function (bytes) {
 var ret =  new JU.SB ();
@@ -56,7 +57,7 @@ for (var i = 0; i < bytes.length; i++) ret.append (Integer.toHexString (bytes[i]
 return ret.toString ();
 }, "~A");
 Clazz.overrideMethod (c$, "getZipFileDirectory", 
-function (jzt, bis, list, listPtr, asBufferedInputStream) {
+function (bis, list, listPtr, asBufferedInputStream) {
 var ret;
 if (list == null || listPtr >= list.length) return this.getZipDirectoryAsStringAndClose (bis);
 bis = JU.Rdr.getPngZipStream (bis, true);
@@ -83,7 +84,7 @@ var bytes = (ze == null ? null : JU.Rdr.getLimitedStreamBytes (zis, ze.getSize (
 ze = null;
 zis.close ();
 if (bytes == null) return "";
-if (JU.Rdr.isZipB (bytes) || JU.Rdr.isPngZipB (bytes)) return this.getZipFileDirectory (jzt, JU.Rdr.getBIS (bytes), list, ++listPtr, asBufferedInputStream);
+if (JU.Rdr.isZipB (bytes) || JU.Rdr.isPngZipB (bytes)) return this.getZipFileDirectory (JU.Rdr.getBIS (bytes), list, ++listPtr, asBufferedInputStream);
 if (asBufferedInputStream) return JU.Rdr.getBIS (bytes);
 if (asBinaryString) {
 ret =  new JU.SB ();
@@ -99,7 +100,7 @@ return "";
 throw e;
 }
 }
-}, "javajs.api.GenericZipTools,java.io.BufferedInputStream,~A,~N,~B");
+}, "java.io.BufferedInputStream,~A,~N,~B");
 Clazz.overrideMethod (c$, "getZipFileContentsAsBytes", 
 function (bis, list, listPtr) {
 var ret =  Clazz.newByteArray (0, 0);
@@ -215,18 +216,23 @@ Clazz.overrideMethod (c$, "readFileAsMap",
 function (bis, bdata, name) {
 var pt = (name == null ? -1 : name.indexOf ("|"));
 name = (pt >= 0 ? name.substring (pt + 1) : null);
+var bytes = null;
 try {
 if (JU.Rdr.isPngZipStream (bis)) {
 var isImage = "_IMAGE_".equals (name);
-if (name == null || isImage) bdata.put ((isImage ? "_DATA_" : "_IMAGE_"),  new JU.BArray (JU.ZipTools.getPngImageBytes (bis)));
-if (!isImage) this.cacheZipContents (bis, name, bdata, true);
+if (name == null || isImage) {
+bytes = JU.ZipTools.getPngImageBytes (bis);
+bdata.put ((isImage ? "_DATA_" : "_IMAGE_"),  new JU.BArray (bytes));
+}if (!isImage) this.cacheZipContents (bis, name, bdata, true);
 } else if (JU.Rdr.isZipS (bis)) {
 this.cacheZipContents (bis, name, bdata, true);
 } else if (name == null) {
-bdata.put ("_DATA_",  new JU.BArray (JU.Rdr.getLimitedStreamBytes (bis, -1)));
+bytes = JU.Rdr.getLimitedStreamBytes (JU.Rdr.getUnzippedInputStream (this, bis), -1);
+bdata.put ("_DATA_",  new JU.BArray (bytes));
 } else {
 throw  new java.io.IOException ("ZIP file " + name + " not found");
-}bdata.put ("$_BINARY_$", Boolean.TRUE);
+}if (bytes != null) bdata.put ("_LEN_", Integer.$valueOf (bytes.length));
+bdata.put ("$_BINARY_$", Boolean.TRUE);
 } catch (e) {
 if (Clazz.exceptionOf (e, java.io.IOException)) {
 bdata.clear ();

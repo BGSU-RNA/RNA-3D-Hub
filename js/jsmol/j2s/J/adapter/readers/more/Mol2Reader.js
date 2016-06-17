@@ -74,9 +74,14 @@ for (var i = 0; i < ac; ++i) {
 var atom = this.asc.addNewAtom ();
 var tokens = JU.PT.getTokens (this.rd ());
 var atomType = tokens[5];
-atom.atomName = tokens[1] + '\0' + atomType;
+var name = tokens[1];
 var pt = atomType.indexOf (".");
-atom.elementSymbol = (pt == 0 ? atom.atomName : pt > 0 ? atomType.substring (0, pt) : atomType);
+if (pt >= 0) {
+atom.elementSymbol = atomType.substring (0, pt);
+} else {
+atom.atomName = name;
+atom.elementSymbol = atom.getElementSymbol ();
+}atom.atomName = name + '\0' + atomType;
 atom.set (this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3]), this.parseFloatStr (tokens[4]));
 if (tokens.length > 6) {
 atom.sequenceNumber = this.parseIntStr (tokens[6]);
@@ -104,7 +109,7 @@ isPDB = false;
 for (var i = this.asc.ac; --i >= i0; ) {
 var pt = this.getPDBGroupLength (atoms[i].group3);
 if (pt == 0 || pt > 3) break;
-if (this.vwr.getJBR ().isKnownPDBGroup (g3.substring (0, pt))) {
+if (this.vwr.getJBR ().isKnownPDBGroup (g3.substring (0, pt), 2147483647)) {
 isPDB = this.isPDB = true;
 break;
 }}

@@ -1,5 +1,5 @@
 Clazz.declarePackage ("J.rendersurface");
-Clazz.load (["J.render.MeshRenderer", "JU.P3", "$.P3i"], "J.rendersurface.IsosurfaceRenderer", ["java.lang.Boolean", "$.Float", "JU.V3", "JU.C", "$.Normix"], function () {
+Clazz.load (["J.render.MeshRenderer"], "J.rendersurface.IsosurfaceRenderer", ["java.lang.Boolean", "$.Float", "JU.V3", "JU.C", "$.Normix"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.iHideBackground = false;
 this.isBicolorMap = false;
@@ -16,14 +16,8 @@ this.hasColorRange = false;
 this.meshScale = -1;
 this.mySlabValue = 0;
 this.globalSlabValue = 0;
-this.ptTemp = null;
-this.ptTempi = null;
 Clazz.instantialize (this, arguments);
 }, J.rendersurface, "IsosurfaceRenderer", J.render.MeshRenderer);
-Clazz.prepareFields (c$, function () {
-this.ptTemp =  new JU.P3 ();
-this.ptTempi =  new JU.P3i ();
-});
 Clazz.overrideMethod (c$, "render", 
 function () {
 return this.renderIso ();
@@ -33,7 +27,7 @@ function () {
 this.setGlobals ();
 for (var i = this.isosurface.meshCount; --i >= 0; ) {
 this.mesh = this.imesh = this.isosurface.meshes[i];
-if (this.imesh.connections != null && !this.vwr.ms.at[this.imesh.connections[0]].checkVisible ()) continue;
+if (this.imesh.connectedAtoms != null && !this.vwr.ms.at[this.imesh.connectedAtoms[0]].checkVisible ()) continue;
 this.hasColorRange = false;
 if (this.renderMeshSlab ()) {
 this.renderInfo ();
@@ -52,7 +46,7 @@ this.iShowNormals = this.vwr.getTestFlag (4);
 this.showNumbers = this.vwr.getTestFlag (3);
 this.isosurface = this.shape;
 this.exportPass = (this.isExport ? 2 : 0);
-this.isNavigationMode = this.vwr.getBoolean (603979887);
+this.isNavigationMode = this.vwr.getBoolean (603979889);
 this.showKey = (this.vwr.getBoolean (603979869) ? Boolean.TRUE : null);
 this.isosurface.keyXy = null;
 this.meshScale = -1;
@@ -88,7 +82,7 @@ var dy = Clazz.doubleToInt (Clazz.doubleToInt (height / 2) / (n - 1));
 var y = Clazz.doubleToInt (height / 4) * 3 - dy;
 var x = 10 * factor;
 var dx = 20 * factor;
-this.isosurface.keyXy = [Clazz.doubleToInt (x / factor), 0, Clazz.doubleToInt ((x + dx) / factor), Clazz.doubleToInt ((y + dy) / factor), Clazz.doubleToInt (dy / factor)];
+this.isosurface.keyXy =  Clazz.newIntArray (-1, [Clazz.doubleToInt (x / factor), 0, Clazz.doubleToInt ((x + dx) / factor), Clazz.doubleToInt ((y + dy) / factor), Clazz.doubleToInt (dy / factor)]);
 for (var i = 0; i < n; i++, y -= dy) {
 switch (type) {
 case 0:
@@ -101,7 +95,7 @@ case 2:
 this.vwr.gdata.setColor (colors[i]);
 break;
 }
-this.g3d.fillRect (x, y, 5, -2147483648, dx, dy);
+this.g3d.fillTextRect (x, y, 5, -2147483648, dx, dy);
 }
 this.isosurface.keyXy[1] = Clazz.doubleToInt ((y + dy) / factor);
 });
@@ -110,6 +104,7 @@ Clazz.defineMethod (c$, "renderMeshSlab",
 this.volumeRender = (this.imesh.jvxlData.colorDensity && this.imesh.jvxlData.allowVolumeRender);
 var thisSlabValue = this.mySlabValue;
 this.frontOnly = this.mesh.frontOnly || this.shapeID == 26;
+this.isShell = this.mesh.isShell && this.shapeID != 26;
 if (!this.isNavigationMode) {
 this.meshSlabValue = this.imesh.jvxlData.slabValue;
 if (this.meshSlabValue != -2147483648 && this.imesh.jvxlData.isSlabbable) {
@@ -124,6 +119,7 @@ if (this.pt2f.z > z1) z1 = this.pt2f.z;
 }
 thisSlabValue = Math.round (z0 + (z1 - z0) * (100 - this.meshSlabValue) / 100);
 this.frontOnly = new Boolean (this.frontOnly & (this.meshSlabValue >= 100)).valueOf ();
+this.isShell = new Boolean (this.isShell & (this.meshSlabValue >= 100)).valueOf ();
 }}var tCover = this.vwr.gdata.translucentCoverOnly;
 this.vwr.gdata.translucentCoverOnly = (this.frontOnly || !this.vwr.getBoolean (603979967));
 this.thePlane = this.imesh.jvxlData.jvxlPlane;
@@ -131,10 +127,10 @@ this.vertexValues = this.mesh.vvs;
 var isOK;
 if (thisSlabValue != 2147483647 && this.imesh.jvxlData.isSlabbable) {
 this.g3d.setSlab (thisSlabValue);
-isOK = this.renderMesh (this.mesh);
+isOK = this.renderMesh2 (this.mesh);
 this.g3d.setSlab (this.globalSlabValue);
 } else {
-isOK = this.renderMesh (this.mesh);
+isOK = this.renderMesh2 (this.mesh);
 }this.vwr.gdata.translucentCoverOnly = tCover;
 return isOK;
 });
@@ -197,15 +193,15 @@ var diam = this.getDiameter ();
 for (var j = 6; j < n; j++) {
 var pt1 = v.get (j);
 var pt2 = v.get (++j);
-this.tm.transformPtScr (pt1, this.pt1i);
-this.tm.transformPtScr (pt2, this.pt2i);
 if (Float.isNaN (pt1.x) || Float.isNaN (pt2.x)) break;
-this.pt1i.z -= 2;
-this.pt2i.z -= 2;
+this.tm.transformPtScrT3 (pt1, this.pt1f);
+this.tm.transformPtScrT3 (pt2, this.pt2f);
+this.pt1f.z -= 2;
+this.pt2f.z -= 2;
 if (!this.antialias && diam == 1) {
-this.g3d.drawLineAB (this.pt1i, this.pt2i);
+this.g3d.drawLineAB (this.pt1f, this.pt2f);
 } else {
-this.g3d.fillCylinderXYZ (this.colix, this.colix, 1, diam, this.pt1i.x, this.pt1i.y, this.pt1i.z, this.pt2i.x, this.pt2i.y, this.pt2i.z);
+this.g3d.fillCylinderBits (1, diam, this.pt1f, this.pt2f);
 }}
 }
 });
@@ -218,7 +214,7 @@ var incr = this.imesh.vertexIncrement;
 var diam;
 if (this.mesh.diameter <= 0) {
 diam = this.vwr.getInt (553648144);
-this.frontOnly = false;
+this.frontOnly = this.isShell = false;
 } else {
 diam = Clazz.doubleToInt (this.vwr.getScreenDim () / (this.volumeRender ? 50 : 100));
 }var ptSize = Math.round (Float.isNaN (this.mesh.volumeRenderPointSize) ? 150 : this.mesh.volumeRenderPointSize * 1000);
@@ -227,7 +223,7 @@ var cX = (this.showNumbers ? Clazz.doubleToInt (this.vwr.getScreenWidth () / 2) 
 var cY = (this.showNumbers ? Clazz.doubleToInt (this.vwr.getScreenHeight () / 2) : 0);
 if (this.showNumbers) this.vwr.gdata.setFontFid (this.vwr.gdata.getFontFidFS ("Monospaced", 24));
 for (var i = (!this.imesh.hasGridPoints || this.imesh.firstRealVertex < 0 ? 0 : this.imesh.firstRealVertex); i < this.vertexCount; i += incr) {
-if (this.vertexValues != null && Float.isNaN (this.vertexValues[i]) || this.frontOnly && this.transformedVectors[this.normixes[i]].z < 0 || this.imesh.jvxlData.thisSet >= 0 && this.mesh.vertexSets[i] != this.imesh.jvxlData.thisSet || !this.mesh.isColorSolid && this.mesh.vcs != null && !this.setColix (this.mesh.vcs[i]) || this.haveBsDisplay && !this.mesh.bsDisplay.get (i) || slabPoints && !this.bsPolygons.get (i)) continue;
+if (this.vertexValues != null && Float.isNaN (this.vertexValues[i]) || this.frontOnly && !this.isVisibleNormix (this.normixes[i]) || this.imesh.jvxlData.thisSet >= 0 && this.mesh.vertexSets[i] != this.imesh.jvxlData.thisSet || !this.mesh.isColorSolid && this.mesh.vcs != null && !this.setColix (this.mesh.vcs[i]) || this.haveBsDisplay && !this.mesh.bsDisplay.get (i) || slabPoints && !this.bsPolygons.get (i)) continue;
 this.hasColorRange = true;
 if (this.showNumbers && this.screens[i].z > 10 && Math.abs (this.screens[i].x - cX) < 150 && Math.abs (this.screens[i].y - cY) < 150) {
 var s = i + (this.mesh.isColorSolid ? "" : " " + this.mesh.vvs[i]);
@@ -293,7 +289,7 @@ if (this.haveBsDisplay && (!this.mesh.bsDisplay.get (iA) || !this.mesh.bsDisplay
 var nA = this.normixes[iA];
 var nB = this.normixes[iB];
 var nC = this.normixes[iC];
-var check = this.checkNormals (nA, nB, nC);
+var check = (this.frontOnly || this.isShell ? this.checkFront (nA, nB, nC) : 7);
 if (fill && check == 0) continue;
 var colixA;
 var colixB;
@@ -371,13 +367,13 @@ this.vwr.gdata.setFontFid (this.vwr.gdata.getFontFidFS ("Monospaced", 24));
 var vertexVectors = JU.Normix.getVertexVectors ();
 for (var i = this.vertexCount; --i >= 0; ) {
 if (this.vertexValues != null && Float.isNaN (this.vertexValues[i])) continue;
-if (i > 100) continue;
-this.ptTemp.setT (this.vertices[i]);
+this.pt1f.setT (this.vertices[i]);
 var n = this.mesh.normixes[i];
 if (n >= 0) {
-this.ptTemp.scaleAdd2 (3, vertexVectors[n], this.ptTemp);
-this.tm.transformPtScr (this.ptTemp, this.ptTempi);
-this.g3d.drawLineAB (this.screens[i], this.ptTempi);
+this.pt2f.scaleAdd2 (0.3, vertexVectors[n], this.pt1f);
+this.tm.transformPtScrT3 (this.pt2f, this.pt2f);
+this.pt1f.set (this.screens[i].x, this.screens[i].y, this.screens[i].z);
+this.g3d.drawLineAB (this.pt1f, this.pt2f);
 }}
 });
 });

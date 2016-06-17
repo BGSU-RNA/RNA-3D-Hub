@@ -381,7 +381,7 @@ slater[2] = gaussianCount;
 slater[3] = nZ;
 sdata.addLast (slater);
 gaussianCount += nZ;
-for (var i = 0; i < nZ; i++) gdata.addLast ([zetas[ipt][i], contractionCoefs[ipt][i]]);
+for (var i = 0; i < nZ; i++) gdata.addLast ( Clazz.newFloatArray (-1, [zetas[ipt][i], contractionCoefs[ipt][i]]));
 
 }}
 var garray = JU.AU.newFloat2 (gaussianCount);
@@ -404,24 +404,24 @@ Clazz.defineStatics (c$,
 "objID1", 2,
 "objCls2", 3,
 "objID2", 4,
-"connectorFields", ["objCls1", "objID1", "objCls2", "objID2"],
-"connectorFieldMap", [1, 2, 3, 4],
+"connectorFields",  Clazz.newArray (-1, ["objCls1", "objID1", "objCls2", "objID2"]),
+"connectorFieldMap",  Clazz.newByteArray (-1, [1, 2, 3, 4]),
 "ID", -1,
 "SYM", 1,
 "ANUM", 2,
 "CHRG", 3,
 "XYZ", 4,
 "PCHRG", 5,
-"atomFields", ["ID", "sym", "anum", "chrg", "xyz_coordinates", "pchrg"],
-"atomFieldMap", [-1, 1, 2, 3, 4, 5],
+"atomFields",  Clazz.newArray (-1, ["ID", "sym", "anum", "chrg", "xyz_coordinates", "pchrg"]),
+"atomFieldMap",  Clazz.newByteArray (-1, [-1, 1, 2, 3, 4, 5]),
 "BTYPE", 1,
-"bondFields", ["ID", "type"],
-"bondFieldMap", [-1, 1],
+"bondFields",  Clazz.newArray (-1, ["ID", "type"]),
+"bondFieldMap",  Clazz.newByteArray (-1, [-1, 1]),
 "NORMAL_MODE", 1,
 "VIB_ENERGY", 2,
 "DIPOLE", 3,
-"vibFields", ["ID", "normalMode", "Energy", "transitionDipole"],
-"vibFieldMap", [-1, 1, 2, 3],
+"vibFields",  Clazz.newArray (-1, ["ID", "normalMode", "Energy", "transitionDipole"]),
+"vibFieldMap",  Clazz.newByteArray (-1, [-1, 1, 2, 3]),
 "EIG_VAL", 1,
 "MO_OCC", 2,
 "EIG_VEC", 3,
@@ -432,6 +432,6 @@ Clazz.defineStatics (c$,
 "CONTRACTIONS", 8,
 "GTO_EXP", 9,
 "SHELL", 10,
-"moFields", ["ID", "eig_val", "mo_occ", "eig_vec", "eig_vec_compressed", "coef_indices", "bfxn_ang", "sto_exp", "contractions", "gto_exp", "shell"],
-"moFieldMap", [-1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+"moFields",  Clazz.newArray (-1, ["ID", "eig_val", "mo_occ", "eig_vec", "eig_vec_compressed", "coef_indices", "bfxn_ang", "sto_exp", "contractions", "gto_exp", "shell"]),
+"moFieldMap",  Clazz.newByteArray (-1, [-1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]));
 });

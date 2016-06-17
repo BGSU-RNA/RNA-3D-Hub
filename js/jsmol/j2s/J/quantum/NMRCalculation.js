@@ -1,5 +1,5 @@
 Clazz.declarePackage ("J.quantum");
-Clazz.load (["J.api.JmolNMRInterface", "java.util.Hashtable"], "J.quantum.NMRCalculation", ["java.lang.Double", "$.Float", "$.NullPointerException", "JU.BS", "$.Lst", "$.PT", "$.V3", "J.io.JmolBinary", "JU.Escape", "$.Logger", "$.Tensor"], function () {
+Clazz.load (["J.api.JmolNMRInterface", "java.util.Hashtable"], "J.quantum.NMRCalculation", ["java.lang.Double", "$.Float", "$.NullPointerException", "JU.BS", "$.Lst", "$.PT", "$.V3", "JU.Escape", "$.Logger", "$.Tensor", "JV.FileManager"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.vwr = null;
 this.isotopeData = null;
@@ -142,7 +142,7 @@ Clazz.defineMethod (c$, "getData",
 var br = null;
 try {
 var debugging = JU.Logger.debugging;
-br = J.io.JmolBinary.getBufferedReaderForResource (this.vwr, this, "J/quantum/", "nmr_data.txt");
+br = JV.FileManager.getBufferedReaderForResource (this.vwr, this, "J/quantum/", "nmr_data.txt");
 this.isotopeData =  new java.util.Hashtable ();
 var line;
 while ((line = br.readLine ()) != null) {
@@ -155,7 +155,7 @@ if (debugging) JU.Logger.info (name + " default isotope " + defaultIso);
 for (var i = 3; i < tokens.length; i += 3) {
 var n = Integer.parseInt (tokens[i]);
 var isoname = n + name;
-var dataGQ = [n, Double.parseDouble (tokens[i + 1]), Double.parseDouble (tokens[i + 2])];
+var dataGQ =  Clazz.newDoubleArray (-1, [n, Double.parseDouble (tokens[i + 1]), Double.parseDouble (tokens[i + 2])]);
 if (debugging) JU.Logger.info (isoname + "  " + JU.Escape.eAD (dataGQ));
 this.isotopeData.put (isoname, dataGQ);
 }

@@ -98,7 +98,7 @@ case 2:
 break;
 }
 nGaussians++;
-gdata.addLast ([tokens[ipt], tokens[ipt + 1]]);
+gdata.addLast ( Clazz.newArray (-1, [tokens[ipt], tokens[ipt + 1]]));
 slater[2] = nGaussians;
 }
 if (slater != null) {
@@ -115,7 +115,7 @@ for (var j = 0; j < tokens.length; j++) garray[i][j] = this.parseFloatStr (token
 
 }
 this.moData.put ("gaussians", garray);
-if (JU.Logger.debugging) {
+if (this.debugging) {
 JU.Logger.debug (this.shellCount + " slater shells read");
 JU.Logger.debug (this.gaussianCount + " gaussian primitives read");
 }});
@@ -138,7 +138,7 @@ JU.Logger.error ("slater for atom " + i + " atomType " + atomType + " was not fo
 return;
 }for (var j = 0; j < slaters.size (); j++) {
 var slater = slaters.get (j);
-sdata.addLast ([i, slater[0], slater[1], slater[2]]);
+sdata.addLast ( Clazz.newIntArray (-1, [i, slater[0], slater[1], slater[2]]));
 }
 }
 this.moData.put ("shells", sdata);

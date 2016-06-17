@@ -162,7 +162,7 @@ this.setPropI ("colorRGB", this.lcaoColorPos, null);
 if (this.cappingObject != null) this.setPropI ("cap", this.cappingObject, null);
 this.setPropI ("lcaoType", this.thisType, null);
 this.setPropI ("atomIndex", Integer.$valueOf (iAtom), null);
-var axes = [ new JU.V3 (),  new JU.V3 (), JU.V3.newV (this.ms.at[iAtom]),  new JU.V3 ()];
+var axes =  Clazz.newArray (-1, [ new JU.V3 (),  new JU.V3 (), JU.V3.newV (this.ms.at[iAtom]),  new JU.V3 ()]);
 if (this.rotationAxis != null) axes[3].setT (this.rotationAxis);
 if (this.isMolecular) {
 if (this.thisType.indexOf ("px") >= 0) {
@@ -207,5 +207,5 @@ this.lcaoColorNeg = lc.lcaoColorNeg;
 this.lcaoTranslucent = lc.lcaoTranslucent;
 this.lcaoTranslucentLevel = lc.lcaoTranslucentLevel;
 Clazz.superCall (this, J.shapesurface.LcaoCartoon, "merge", [shape]);
-}, "J.shape.Shape");
+}, "J.shape.MeshCollection");
 });

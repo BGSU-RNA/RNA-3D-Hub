@@ -26,8 +26,8 @@ this.ce = null;
 Clazz.instantialize (this, arguments);
 }, JU, "ColorEncoder");
 Clazz.prepareFields (c$, function () {
-this.userScale = [-8355712];
-this.thisScale = [-8355712];
+this.userScale =  Clazz.newIntArray (-1, [-8355712]);
+this.thisScale =  Clazz.newIntArray (-1, [-8355712]);
 });
 Clazz.makeConstructor (c$, 
 function (ce, vwr) {
@@ -137,7 +137,7 @@ return (this.argbsShapely == null ? this.argbsShapely = this.vwr.getJBR ().getAr
 });
 Clazz.defineMethod (c$, "getAmino", 
  function () {
-return (this.argbsAmino == null ? this.argbsAmino = this.vwr.getJBR ().getArgbs (3145730) : this.argbsAmino);
+return (this.argbsAmino == null ? this.argbsAmino = this.vwr.getJBR ().getArgbs (2097154) : this.argbsAmino);
 });
 Clazz.defineMethod (c$, "createColorScheme", 
 function (colorScheme, defaultToRoygb, isOverloaded) {
@@ -240,7 +240,7 @@ colix = JU.C.getColixTranslucent3 (colix, true, f);
 }return colix;
 }, "~N,~N,~N,~N,~B");
 Clazz.defineMethod (c$, "getPaletteColorCount", 
-function (palette) {
+ function (palette) {
 switch (palette) {
 case -1:
 return this.thisScale.length;
@@ -260,7 +260,7 @@ case -13:
 case -14:
 return this.ce.userScale.length;
 case 2:
-return this.argbsCpk.length;
+return this.ce.argbsCpk.length;
 case 3:
 return JU.ColorEncoder.getRasmolScale ().length;
 case 4:
@@ -407,7 +407,7 @@ return JU.ColorEncoder.rasmolScale;
 });
 Clazz.defineMethod (c$, "getPaletteAC", 
  function () {
-return (this.ce.paletteFriendly == null ? this.ce.paletteFriendly = [0x808080, 0x104BA9, 0xAA00A2, 0xC9F600, 0xFFA200, 0x284A7E, 0x7F207B, 0x9FB82E, 0xBF8B30, 0x052D6E, 0x6E0069, 0x83A000, 0xA66A00, 0x447BD4, 0xD435CD, 0xD8FA3F, 0xFFBA40, 0x6A93D4, 0xD460CF, 0xE1FA71, 0xFFCC73] : this.ce.paletteFriendly);
+return (this.ce.paletteFriendly == null ? this.ce.paletteFriendly =  Clazz.newIntArray (-1, [0x808080, 0x104BA9, 0xAA00A2, 0xC9F600, 0xFFA200, 0x284A7E, 0x7F207B, 0x9FB82E, 0xBF8B30, 0x052D6E, 0x6E0069, 0x83A000, 0xA66A00, 0x447BD4, 0xD435CD, 0xD8FA3F, 0xFFBA40, 0x6A93D4, 0xD460CF, 0xE1FA71, 0xFFCC73]) : this.ce.paletteFriendly);
 });
 Clazz.defineMethod (c$, "getPaletteWB", 
  function () {
@@ -497,7 +497,7 @@ Clazz.defineStatics (c$,
 "RESU", -14,
 "INHERIT", 15,
 "ALT", 16);
-c$.colorSchemes = c$.prototype.colorSchemes = ["roygb", "bgyor", "byelement_jmol", "byelement_rasmol", "byresidue_shapely", "byresidue_amino", "rwb", "bwr", "low", "high", "bw", "wb", "friendly", "user", "resu", "inherit", "rgb", "bgr", "jmol", "rasmol", "byresidue"];
+c$.colorSchemes = c$.prototype.colorSchemes =  Clazz.newArray (-1, ["roygb", "bgyor", "byelement_jmol", "byelement_rasmol", "byresidue_shapely", "byresidue_amino", "rwb", "bwr", "low", "high", "bw", "wb", "friendly", "user", "resu", "inherit", "rgb", "bgr", "jmol", "rasmol", "byresidue"]);
 Clazz.defineStatics (c$,
 "rasmolScale", null,
 "argbsChainAtom", null,

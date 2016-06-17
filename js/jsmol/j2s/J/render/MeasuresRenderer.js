@@ -22,9 +22,13 @@ function () {
 if (!this.g3d.checkTranslucent (false)) return false;
 if (this.atomPt == null) this.atomPt =  new JU.Point3fi ();
 var measures = this.shape;
-this.doJustify = this.vwr.getBoolean (603979871);
+if (measures.ms !== this.ms) {
+System.out.println ("!measure wrong modelset!");
+measures.clear ();
+return false;
+}this.doJustify = this.vwr.getBoolean (603979871);
 this.modulating = this.ms.bsModulated != null;
-this.imageFontScaling = this.vwr.getImageFontScaling ();
+this.imageFontScaling = this.vwr.imageFontScaling;
 this.mad0 = measures.mad;
 this.font3d = this.vwr.gdata.getFont3DScaled (measures.font3d, this.imageFontScaling);
 this.m = measures.mPending;
@@ -32,7 +36,6 @@ if (!this.isExport && this.m != null && (this.count = this.m.count) != 0) this.r
 if (!this.vwr.getBoolean (603979926)) return false;
 var showMeasurementLabels = this.vwr.getBoolean (603979879);
 measures.setVisibilityInfo ();
-this.setZcutoff ();
 for (var i = measures.measurementCount; --i >= 0; ) {
 this.m = measures.measurements.get (i);
 if (!this.m.isVisible || !this.m.$isValid || (this.count = this.m.count) == 1 && this.m.traceX == -2147483648) continue;
@@ -115,12 +118,19 @@ Clazz.defineMethod (c$, "renderDistance",
 function (s, a, b) {
 if ((this.tickInfo = this.m.tickInfo) != null) {
 this.drawLine (a.sX, a.sY, a.sZ, b.sX, b.sY, b.sZ, this.mad);
-this.drawTicks (a, b, this.mad, s != null);
+this.tickA = a;
+this.tickB = b;
+if (this.tickAs == null) {
+this.tickAs =  new JU.P3 ();
+this.tickBs =  new JU.P3 ();
+}this.tickAs.set (a.sX, a.sY, a.sZ);
+this.tickBs.set (b.sX, b.sY, b.sZ);
+this.drawTicks (this.mad, s != null);
 return;
 }var zA = a.sZ - a.sD - 10;
 var zB = b.sZ - b.sD - 10;
 var radius = this.drawLine (a.sX, a.sY, zA, b.sX, b.sY, zB, this.mad);
-if (s == null || zB >= this.zCutoff) return;
+if (s == null) return;
 if (this.mad > 0) radius <<= 1;
 var z = Clazz.doubleToInt ((zA + zB) / 2);
 if (z < 1) z = 1;
@@ -143,7 +153,7 @@ var zB = b.sZ - zOffset;
 var zC = c.sZ - c.sD - 10;
 var radius = this.drawLine (a.sX, a.sY, zA, b.sX, b.sY, zB, this.mad);
 radius += this.drawLine (b.sX, b.sY, zB, c.sX, c.sY, zC, this.mad);
-if (s == null || zB >= this.zCutoff) return;
+if (s == null) return;
 radius = Clazz.doubleToInt ((radius + 1) / 2);
 if (this.m.value > 175) {
 if (this.m.text == null) {
@@ -201,8 +211,8 @@ var zD = d.sZ - d.sD - 10;
 var radius = this.drawLine (a.sX, a.sY, zA, b.sX, b.sY, zB, this.mad);
 radius += this.drawLine (b.sX, b.sY, zB, c.sX, c.sY, zC, this.mad);
 radius += this.drawLine (c.sX, c.sY, zC, d.sX, d.sY, zD, this.mad);
+if (s == null) return;
 var zLabel = Clazz.doubleToInt ((zA + zB + zC + zD) / 4);
-if (s == null || zLabel >= this.zCutoff) return;
 radius /= 3;
 if (this.m.text == null) {
 this.g3d.setC (this.labelColix);
@@ -216,7 +226,16 @@ this.renderLabelOrMeasure (this.m.text, s);
 }}, "~S,JU.Point3fi,JU.Point3fi,JU.Point3fi,JU.Point3fi");
 Clazz.defineMethod (c$, "renderPendingMeasurement", 
  function () {
+try {
 this.getPoints ();
+} catch (e) {
+if (Clazz.exceptionOf (e, Exception)) {
+(this.shape).mPending = null;
+return;
+} else {
+throw e;
+}
+}
 var renderLabel = (this.m.traceX == -2147483648);
 this.g3d.setC (this.labelColix = (renderLabel ? this.vwr.cm.colixRubberband : this.count == 2 ? 20 : 23));
 if ((this.m).haveTarget) {
@@ -230,7 +249,7 @@ var y = this.vwr.getCursorY ();
 if (this.g3d.isAntialiased ()) {
 x <<= 1;
 y <<= 1;
-}this.drawLine (atomLast.sX, atomLast.sY, lastZ, x, y, 0, this.mad);
+}this.drawLine (atomLast.sX, atomLast.sY, lastZ, x, y, lastZ, this.mad);
 });
 Clazz.overrideMethod (c$, "drawLine", 
 function (x1, y1, z1, x2, y2, z2, mad) {

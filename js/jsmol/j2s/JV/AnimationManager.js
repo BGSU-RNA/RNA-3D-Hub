@@ -58,7 +58,7 @@ stopped = true;
 }this.animationPaused = isPaused;
 if (stopped && !this.vwr.tm.spinOn) this.vwr.refresh (3, "Viewer:setAnimationOff");
 this.animation (false);
-this.vwr.setStatusFrameChanged (false, true);
+this.vwr.setStatusFrameChanged (false, false);
 }, "~B");
 Clazz.defineMethod (c$, "setAnimationNext", 
 function () {
@@ -90,6 +90,7 @@ Clazz.defineMethod (c$, "getModelSpecial",
 function (i) {
 switch (i) {
 case -1:
+if (this.animationFrames != null) return "1";
 i = this.firstFrameIndex;
 break;
 case 0:
@@ -97,6 +98,7 @@ if (this.morphCount > 0) return "-" + (1 + this.currentMorphModel);
 i = this.cmi;
 break;
 case 1:
+if (this.animationFrames != null) return "" + this.animationFrames.length;
 i = this.lastFrameIndex;
 break;
 }
@@ -104,7 +106,7 @@ return this.vwr.getModelNumberDotted (i);
 }, "~N");
 Clazz.defineMethod (c$, "setDisplay", 
 function (bs) {
-this.bsDisplay = (bs == null || bs.cardinality () == 0 ? null : JU.BSUtil.copy (bs));
+this.bsDisplay = (bs == null || bs.isEmpty () ? null : JU.BSUtil.copy (bs));
 }, "JU.BS");
 Clazz.defineMethod (c$, "setMorphCount", 
 function (n) {
@@ -229,7 +231,7 @@ this.animationPaused = false;
 if (this.animationThread == null) {
 this.intAnimThread++;
 this.animationThread = J.api.Interface.getOption ("thread.AnimationThread", this.vwr, "script");
-this.animationThread.setManager (this, this.vwr, [this.firstFrameIndex, this.lastFrameIndex, this.intAnimThread]);
+this.animationThread.setManager (this, this.vwr,  Clazz.newIntArray (-1, [this.firstFrameIndex, this.lastFrameIndex, this.intAnimThread]));
 this.animationThread.start ();
 }});
 Clazz.defineMethod (c$, "setAnimationLast", 
@@ -273,6 +275,7 @@ this.animationFrames = null;
 }this.vwr.setBooleanProperty ("_ismovie", this.isMovie);
 this.bsDisplay = null;
 this.currentMorphModel = this.morphCount = 0;
+this.vwr.setFrameVariables ();
 }, "java.util.Map");
 Clazz.defineMethod (c$, "modelIndexForFrame", 
 function (i) {
@@ -305,20 +308,27 @@ this.vwr.ms.setTrajectory (this.cmi);
 this.vwr.tm.setFrameOffset (this.cmi);
 if (this.cmi == -1 && clearBackgroundModel) this.setBackgroundModelIndex (-1);
 this.vwr.setTainted (true);
-this.setFrameRangeVisible ();
-this.vwr.setStatusFrameChanged (false, true);
-if (this.vwr.ms != null && !this.vwr.g.selectAllModels) this.vwr.slm.setSelectionSubset (this.vwr.getModelUndeletedAtomsBitSet (this.cmi));
+var nDisplay = this.setFrameRangeVisible ();
+this.vwr.setStatusFrameChanged (false, false);
+if (!this.vwr.g.selectAllModels) this.setSelectAllSubset (nDisplay < 2);
+}, "~B");
+Clazz.defineMethod (c$, "setSelectAllSubset", 
+function (justOne) {
+if (this.vwr.ms != null) this.vwr.slm.setSelectionSubset (justOne ? this.vwr.ms.getModelAtomBitSetIncludingDeleted (this.cmi, true) : this.vwr.ms.getModelAtomBitSetIncludingDeletedBs (this.bsVisibleModels));
 }, "~B");
 Clazz.defineMethod (c$, "setFrameRangeVisible", 
  function () {
-this.bsVisibleModels.clearAll ();
-if (this.backgroundModelIndex >= 0) this.bsVisibleModels.set (this.backgroundModelIndex);
-if (this.cmi >= 0) {
-this.bsVisibleModels.set (this.cmi);
-return;
-}if (this.frameStep == 0) return;
 var nDisplayed = 0;
+this.bsVisibleModels.clearAll ();
+if (this.backgroundModelIndex >= 0) {
+this.bsVisibleModels.set (this.backgroundModelIndex);
+nDisplayed = 1;
+}if (this.cmi >= 0) {
+this.bsVisibleModels.set (this.cmi);
+return ++nDisplayed;
+}if (this.frameStep == 0) return nDisplayed;
 var frameDisplayed = 0;
+nDisplayed = 0;
 for (var iframe = this.firstFrameIndex; iframe != this.lastFrameIndex; iframe += this.frameStep) {
 var i = this.modelIndexForFrame (iframe);
 if (!this.vwr.ms.isJmolDataFrameForModel (i)) {
@@ -332,6 +342,7 @@ this.bsVisibleModels.set (i);
 if (nDisplayed == 0) this.firstFrameIndex = this.lastFrameIndex;
 nDisplayed = 0;
 }if (nDisplayed == 1 && this.cmi < 0) this.setFrame (frameDisplayed);
+return nDisplayed;
 });
 Clazz.defineMethod (c$, "animation", 
  function (TF) {
@@ -356,7 +367,7 @@ isDone = this.isNotInRange (frameNext);
 switch (this.animationReplayMode) {
 case 1073742070:
 return false;
-case 528410:
+case 528411:
 nextMorphFrame = frameNext = (this.animationDirection == this.currentDirection ? this.firstFrameIndex : this.lastFrameIndex);
 break;
 case 1073742082:

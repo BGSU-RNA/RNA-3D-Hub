@@ -181,8 +181,8 @@ function (v, nPolygons, bsContour, value, colix, color, fData) {
 v.add (0, Integer.$valueOf (nPolygons));
 v.add (1, bsContour);
 v.add (2, Float.$valueOf (value));
-v.add (3, [colix]);
-v.add (4, [color]);
+v.add (3,  Clazz.newShortArray (-1, [colix]));
+v.add (4,  Clazz.newIntArray (-1, [color]));
 v.add (5, fData);
 }, "JU.Lst,~N,JU.BS,~N,~N,~N,JU.SB");
 c$.addContourPoints = Clazz.defineMethod (c$, "addContourPoints", 
@@ -386,13 +386,11 @@ if (this.jvxlData.vertexColorMap.size () == 0) this.jvxlData.vertexColorMap = nu
 }, "~B");
 Clazz.defineMethod (c$, "setColorCommand", 
 function () {
-if (this.colorEncoder == null) return;
-this.colorCommand = this.colorEncoder.getColorScheme ();
+if (this.colorEncoder == null || (this.colorCommand = this.colorEncoder.getColorScheme ()) == null) return;
 if (this.colorCommand.equals ("inherit")) {
 this.colorCommand = "#inherit;";
 return;
-}if (this.colorCommand == null) return;
-this.colorCommand = "color $" + (JU.PT.isLetter (this.thisID.charAt (0)) && this.thisID.indexOf (" ") < 0 ? this.thisID : "\"" + this.thisID + "\"") + " \"" + this.colorCommand + "\" range " + (this.jvxlData.isColorReversed ? this.jvxlData.valueMappedToBlue + " " + this.jvxlData.valueMappedToRed : this.jvxlData.valueMappedToRed + " " + this.jvxlData.valueMappedToBlue);
+}this.colorCommand = "color $" + JU.PT.esc (this.thisID) + JU.PT.esc (this.colorCommand) + " range " + (this.jvxlData.isColorReversed ? this.jvxlData.valueMappedToBlue + " " + this.jvxlData.valueMappedToRed : this.jvxlData.valueMappedToRed + " " + this.jvxlData.valueMappedToBlue);
 });
 Clazz.defineMethod (c$, "setColorsFromJvxlData", 
 function (colorRgb) {
@@ -483,7 +481,8 @@ var isTranslucent = JU.C.isColixTranslucent (this.colix);
 if (ce.isTranslucent) {
 if (!isTranslucent) this.colix = JU.C.getColixTranslucent3 (this.colix, true, 0.5);
 isTranslucent = false;
-}for (var i = this.vc; --i >= this.mergeVertexCount0; ) this.vcs[i] = ce.getColorIndex (this.vvs[i]);
+}this.vcs = JU.AU.ensureLengthShort (this.vcs, this.vc);
+for (var i = this.vc; --i >= this.mergeVertexCount0; ) this.vcs[i] = ce.getColorIndex (this.vvs[i]);
 
 this.setTranslucent (isTranslucent, translucentLevel);
 this.colorEncoder = ce;
@@ -604,7 +603,7 @@ this.addPolygon (p, null);
 var xyzMin =  new JU.P3 ();
 var xyzMax =  new JU.P3 ();
 this.setBox (xyzMin, xyzMax);
-this.jvxlData.boundingBox = [xyzMin, xyzMax];
+this.jvxlData.boundingBox =  Clazz.newArray (-1, [xyzMin, xyzMax]);
 });
 Clazz.overrideMethod (c$, "getMinDistance2ForVertexGrouping", 
 function () {
@@ -622,14 +621,21 @@ return bs;
 });
 Clazz.defineMethod (c$, "updateCoordinates", 
 function (m, bs) {
-var doUpdate = (bs == null);
-if (!doUpdate) for (var i = 0; i < this.connections.length; i++) if (this.connections[i] >= 0 && bs.get (this.connections[i])) {
+var doUpdate = (bs == null || this.isModelConnected);
+if (!doUpdate) for (var i = 0; i < this.connectedAtoms.length; i++) if (this.connectedAtoms[i] >= 0 && bs.get (this.connectedAtoms[i])) {
 doUpdate = true;
 break;
 }
 if (!doUpdate) return;
+if (this.isModelConnected) {
+this.mat4 = this.vwr.ms.am[this.modelIndex].mat4;
+} else {
 if (this.mat4 == null) this.mat4 = JU.M4.newM4 (null);
 this.mat4.mul2 (m, this.mat4);
-this.recalcAltVertices = true;
+}this.recalcAltVertices = true;
 }, "JU.M4,JU.BS");
+Clazz.defineMethod (c$, "getDataRange", 
+function () {
+return (this.jvxlData.jvxlPlane != null && this.colorEncoder == null ? null :  Clazz.newFloatArray (-1, [this.jvxlData.mappedDataMin, this.jvxlData.mappedDataMax, (this.jvxlData.isColorReversed ? this.jvxlData.valueMappedToBlue : this.jvxlData.valueMappedToRed), (this.jvxlData.isColorReversed ? this.jvxlData.valueMappedToRed : this.jvxlData.valueMappedToBlue)]));
+});
 });

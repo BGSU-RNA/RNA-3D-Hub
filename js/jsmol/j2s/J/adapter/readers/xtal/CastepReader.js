@@ -512,7 +512,7 @@ v.z = (cosph * data[6] - sinph * data[7]);
 }, "~A,J.adapter.smarter.Atom,JU.V3,JU.V3,JU.V3");
 Clazz.defineStatics (c$,
 "RAD_TO_DEG", (57.29577951308232),
-"lengthUnitIds", ["bohr", "m", "cm", "nm", "ang", "a0"],
-"lengthUnitFactors", [0.5291772, 1E10, 1E8, 1E1, 1.0, 0.5291772],
+"lengthUnitIds",  Clazz.newArray (-1, ["bohr", "m", "cm", "nm", "ang", "a0"]),
+"lengthUnitFactors",  Clazz.newFloatArray (-1, [0.5291772, 1E10, 1E8, 1E1, 1.0, 0.5291772]),
 "TWOPI", 6.283185307179586);
 });

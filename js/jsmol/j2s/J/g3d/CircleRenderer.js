@@ -99,10 +99,10 @@ var height = g.height;
 var zbuf = g.zbuf;
 var p = g.pixel;
 while (x >= y) {
-g.plotPixelsClipped (c, 2 * x + 1 - sizeCorrection, xCenter - x, yCenter + y - sizeCorrection, zCenter, width, height, zbuf, p);
-g.plotPixelsClipped (c, 2 * x + 1 - sizeCorrection, xCenter - x, yCenter - y, zCenter, width, height, zbuf, p);
-g.plotPixelsClipped (c, 2 * y + 1 - sizeCorrection, xCenter - y, yCenter + x - sizeCorrection, zCenter, width, height, zbuf, p);
-g.plotPixelsClipped (c, 2 * y + 1 - sizeCorrection, xCenter - y, yCenter - x, zCenter, width, height, zbuf, p);
+this.plotPixelsClipped (c, 2 * x + 1 - sizeCorrection, xCenter - x, yCenter + y - sizeCorrection, zCenter, width, height, zbuf, p);
+this.plotPixelsClipped (c, 2 * x + 1 - sizeCorrection, xCenter - x, yCenter - y, zCenter, width, height, zbuf, p);
+this.plotPixelsClipped (c, 2 * y + 1 - sizeCorrection, xCenter - y, yCenter + x - sizeCorrection, zCenter, width, height, zbuf, p);
+this.plotPixelsClipped (c, 2 * y + 1 - sizeCorrection, xCenter - y, yCenter - x, zCenter, width, height, zbuf, p);
 ++y;
 radiusError += yChange;
 yChange += 2;
@@ -112,6 +112,21 @@ radiusError += xChange;
 xChange += 2;
 }}
 }, "~N,~N,~N,~N");
+Clazz.defineMethod (c$, "plotPixelsClipped", 
+ function (argb, count, x, y, z, width, height, zbuf, p) {
+if (y < 0 || y >= height || x >= width) return;
+if (x < 0) {
+count += x;
+x = 0;
+}if (count + x > width) count = width - x;
+if (count <= 0) return;
+var offsetPbuf = y * width + x;
+var offsetMax = offsetPbuf + count;
+while (offsetPbuf < offsetMax) {
+if (z < zbuf[offsetPbuf]) p.addPixel (offsetPbuf, z, argb);
+offsetPbuf++;
+}
+}, "~N,~N,~N,~N,~N,~N,~N,~A,J.g3d.Pixelator");
 Clazz.defineMethod (c$, "plotFilledCircleCenteredUnclipped", 
 function (xCenter, yCenter, zCenter, diameter) {
 var r = Clazz.doubleToInt (diameter / 2);

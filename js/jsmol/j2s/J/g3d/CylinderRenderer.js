@@ -1,5 +1,5 @@
 Clazz.declarePackage ("J.g3d");
-Clazz.load (null, "J.g3d.CylinderRenderer", ["JU.AU"], function () {
+Clazz.load (null, "J.g3d.CylinderRenderer", ["JU.AU", "$.P3"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.g3d = null;
 this.line3d = null;
@@ -39,14 +39,16 @@ this.clipped = false;
 this.rasterCount = 0;
 this.xyztRaster = null;
 this.xyzfRaster = null;
+this.ptA0 = null;
+this.ptB0 = null;
 this.xTip = 0;
 this.yTip = 0;
 this.zTip = 0;
 Clazz.instantialize (this, arguments);
 }, J.g3d, "CylinderRenderer");
 Clazz.prepareFields (c$, function () {
-this.xyztRaster = [ Clazz.newFloatArray (32, 0),  Clazz.newFloatArray (32, 0),  Clazz.newFloatArray (32, 0),  Clazz.newFloatArray (32, 0)];
-this.xyzfRaster = [ Clazz.newIntArray (32, 0),  Clazz.newIntArray (32, 0),  Clazz.newIntArray (32, 0),  Clazz.newIntArray (32, 0)];
+this.xyztRaster =  Clazz.newArray (-1, [ Clazz.newFloatArray (32, 0),  Clazz.newFloatArray (32, 0),  Clazz.newFloatArray (32, 0),  Clazz.newFloatArray (32, 0)]);
+this.xyzfRaster =  Clazz.newArray (-1, [ Clazz.newIntArray (32, 0),  Clazz.newIntArray (32, 0),  Clazz.newIntArray (32, 0),  Clazz.newIntArray (32, 0)]);
 });
 Clazz.makeConstructor (c$, 
 function (g3d) {
@@ -54,7 +56,7 @@ this.g3d = g3d;
 this.line3d = g3d.line3d;
 this.shader = g3d.shader;
 }, "J.g3d.Graphics3D");
-Clazz.defineMethod (c$, "render", 
+Clazz.defineMethod (c$, "renderOld", 
 function (colixA, colixB, screen, endcaps, diameter, xa, ya, za, xb, yb, zb) {
 var r = Clazz.doubleToInt (diameter / 2) + 1;
 var g = this.g3d;
@@ -62,13 +64,14 @@ var codeMinA = g.clipCode3 (xa - r, ya - r, za - r);
 var codeMaxA = g.clipCode3 (xa + r, ya + r, za + r);
 var codeMinB = g.clipCode3 (xb - r, yb - r, zb - r);
 var codeMaxB = g.clipCode3 (xb + r, yb + r, zb + r);
-this.clipped = ((codeMinA | codeMaxA | codeMinB | codeMaxB) != 0);
-if ((codeMinA & codeMaxB & codeMaxA & codeMinB) != 0) return;
+var c = (codeMinA | codeMaxA | codeMinB | codeMaxB);
+this.clipped = (c != 0);
+if (c == -1 || (codeMinA & codeMaxB & codeMaxA & codeMinB) != 0) return;
 this.dxB = xb - xa;
 this.dyB = yb - ya;
 this.dzB = zb - za;
 if (diameter <= 1) {
-this.line3d.plotLineDelta (g.getColorArgbOrGray (colixA), g.getColorArgbOrGray (colixB), xa, ya, za, this.dxB, this.dyB, this.dzB, this.clipped);
+this.line3d.plotLineDeltaOld (g.getColorArgbOrGray (colixA), g.getColorArgbOrGray (colixB), xa, ya, za, this.dxB, this.dyB, this.dzB, this.clipped);
 return;
 }var drawBackside = (screen == 0 && (this.clipped || endcaps == 2 || endcaps == 0));
 this.diameter = diameter;
@@ -106,49 +109,54 @@ g.plotPixelClippedArgb (this.argbEndcap, this.xEndcap - x, this.yEndcap - y, thi
 } else {
 g.plotPixelUnclipped (this.argbEndcap, this.xEndcap + x, this.yEndcap + y, this.zEndcap - z - 1, width, zbuf, p);
 g.plotPixelUnclipped (this.argbEndcap, this.xEndcap - x, this.yEndcap - y, this.zEndcap + z - 1, width, zbuf, p);
-}}this.line3d.plotLineDeltaA (this.shadesA, this.shadesB, screen, fpz, this.xA + x, this.yA + y, this.zA - z, this.dxB, this.dyB, this.dzB, this.clipped);
+}}this.line3d.plotLineDeltaAOld (this.shadesA, this.shadesB, screen, fpz, this.xA + x, this.yA + y, this.zA - z, this.dxB, this.dyB, this.dzB, this.clipped);
 if (drawBackside) {
-this.line3d.plotLineDelta (this.shadesA[fpzBack], this.shadesB[fpzBack], this.xA - x, this.yA - y, this.zA + z, this.dxB, this.dyB, this.dzB, this.clipped);
+this.line3d.plotLineDeltaOld (this.shadesA[fpzBack], this.shadesB[fpzBack], this.xA - x, this.yA - y, this.zA + z, this.dxB, this.dyB, this.dzB, this.clipped);
 }}
 g.setZMargin (0);
 if (endcaps == 3) this.renderSphericalEndcaps ();
 }, "~N,~N,~N,~N,~N,~N,~N,~N,~N,~N,~N");
 Clazz.defineMethod (c$, "renderBits", 
-function (colix, endcaps, diameter, xa, ya, za, xb, yb, zb) {
-var r = Clazz.doubleToInt (diameter / 2) + 1;
-var ixA = Math.round (xa);
-var iyA = Math.round (ya);
-var izA = Math.round (za);
-var ixB = Math.round (xb);
-var iyB = Math.round (yb);
-var izB = Math.round (zb);
+function (colixA, colixB, screen, endcaps, diameter, ptA, ptB) {
 var g = this.g3d;
+if (diameter == 0 || diameter == 1) {
+this.line3d.plotLineBits (g.getColorArgbOrGray (colixA), g.getColorArgbOrGray (colixB), ptA, ptB);
+return;
+}if (this.ptA0 == null) {
+this.ptA0 =  new JU.P3 ();
+this.ptB0 =  new JU.P3 ();
+}this.ptA0.setT (ptA);
+var r = Clazz.doubleToInt (diameter / 2) + 1;
+var ixA = Math.round (ptA.x);
+var iyA = Math.round (ptA.y);
+var izA = Math.round (ptA.z);
+var ixB = Math.round (ptB.x);
+var iyB = Math.round (ptB.y);
+var izB = Math.round (ptB.z);
 var codeMinA = g.clipCode3 (ixA - r, iyA - r, izA - r);
 var codeMaxA = g.clipCode3 (ixA + r, iyA + r, izA + r);
 var codeMinB = g.clipCode3 (ixB - r, iyB - r, izB - r);
 var codeMaxB = g.clipCode3 (ixB + r, iyB + r, izB + r);
-this.clipped = ((codeMinA | codeMaxA | codeMinB | codeMaxB) != 0);
-if ((codeMinA & codeMaxB & codeMaxA & codeMinB) != 0) return;
-this.dxBf = xb - xa;
-this.dyBf = yb - ya;
-this.dzBf = zb - za;
-if (diameter == 0 || diameter == 1) {
-var c = g.getColorArgbOrGray (colix);
-this.line3d.plotLineDelta (c, c, Clazz.floatToInt (xa), Clazz.floatToInt (ya), Clazz.floatToInt (za), Clazz.floatToInt (this.dxBf), Clazz.floatToInt (this.dyBf), Clazz.floatToInt (this.dzBf), this.clipped);
-return;
-}if (diameter > 0) {
+var c = (codeMinA | codeMaxA | codeMinB | codeMaxB);
+this.clipped = (c != 0);
+if (c == -1 || (codeMinA & codeMaxB & codeMaxA & codeMinB) != 0) return;
+this.dxBf = ptB.x - ptA.x;
+this.dyBf = ptB.y - ptA.y;
+this.dzBf = ptB.z - ptA.z;
+if (diameter > 0) {
 this.diameter = diameter;
-this.xAf = xa;
-this.yAf = ya;
-this.zAf = za;
-}var drawBackside = (this.clipped || endcaps == 2 || endcaps == 0);
+this.xAf = ptA.x;
+this.yAf = ptA.y;
+this.zAf = ptA.z;
+}var drawBackside = (screen == 0 && (this.clipped || endcaps == 2 || endcaps == 0));
 this.xA = Clazz.floatToInt (this.xAf);
 this.yA = Clazz.floatToInt (this.yAf);
 this.zA = Clazz.floatToInt (this.zAf);
 this.dxB = Clazz.floatToInt (this.dxBf);
 this.dyB = Clazz.floatToInt (this.dyBf);
 this.dzB = Clazz.floatToInt (this.dzBf);
-this.shadesA = this.shadesB = g.getShades (this.colixA = this.colixB = colix);
+this.shadesA = g.getShades (this.colixA = colixA);
+this.shadesB = g.getShades (this.colixB = colixB);
 this.endcaps = endcaps;
 this.calcArgbEndcap (true, true);
 var xyzf = this.xyzfRaster;
@@ -176,17 +184,27 @@ g.plotPixelClippedArgb (this.argbEndcap, this.xEndcap - x, this.yEndcap - y, thi
 } else {
 g.plotPixelUnclipped (this.argbEndcap, this.xEndcap + x, this.yEndcap + y, this.zEndcap - z - 1, width, zbuf, p);
 g.plotPixelUnclipped (this.argbEndcap, this.xEndcap - x, this.yEndcap - y, this.zEndcap + z - 1, width, zbuf, p);
-}}this.line3d.plotLineDeltaBits (this.shadesA, this.shadesB, fpz, this.xA + x, this.yA + y, this.zA - z, this.dxB, this.dyB, this.dzB, this.clipped);
+}}this.ptA0.set (this.xA + x, this.yA + y, this.zA - z);
+this.ptB0.setT (this.ptA0);
+this.ptB0.x += this.dxB;
+this.ptB0.y += this.dyB;
+this.ptB0.z += this.dzB;
+this.line3d.plotLineDeltaABits (this.shadesA, this.shadesB, fpz, this.ptA0, this.ptB0, screen, this.clipped);
 if (drawBackside) {
-this.line3d.plotLineDelta (this.shadesA[fpzBack], this.shadesB[fpzBack], this.xA - x, this.yA - y, this.zA + z, this.dxB, this.dyB, this.dzB, this.clipped);
+this.ptA0.set (this.xA - x, this.yA - y, this.zA + z);
+this.ptB0.setT (this.ptA0);
+this.ptB0.x += this.dxB;
+this.ptB0.y += this.dyB;
+this.ptB0.z += this.dzB;
+this.line3d.plotLineDeltaABits (this.shadesA, this.shadesB, fpzBack, this.ptA0, this.ptB0, screen, this.clipped);
 }}
 g.setZMargin (0);
 if (endcaps == 3) this.renderSphericalEndcaps ();
 this.xAf += this.dxBf;
 this.yAf += this.dyBf;
 this.zAf += this.dzBf;
-}, "~N,~N,~N,~N,~N,~N,~N,~N,~N");
-Clazz.defineMethod (c$, "renderCone", 
+}, "~N,~N,~N,~N,~N,JU.P3,JU.P3");
+Clazz.defineMethod (c$, "renderConeOld", 
 function (colix, endcap, diameter, xa, ya, za, xtip, ytip, ztip, doFill, isBarb) {
 this.dxBf = (xtip) - (this.xAf = xa);
 this.dyBf = (ytip) - (this.yAf = ya);
@@ -200,8 +218,7 @@ this.dzB = Clazz.doubleToInt (Math.floor (this.dzBf));
 this.xTip = xtip;
 this.yTip = ytip;
 this.zTip = ztip;
-this.colixA = colix;
-this.shadesA = this.g3d.getShades (colix);
+this.shadesA = this.g3d.getShades (this.colixA = colix);
 var shadeIndexTip = this.shader.getShadeIndex (this.dxB, this.dyB, -this.dzB);
 var g3d = this.g3d;
 var p = g3d.pixel;
@@ -210,7 +227,7 @@ var zbuf = g3d.zbuf;
 g3d.plotPixelClippedArgb (this.shadesA[shadeIndexTip], Clazz.floatToInt (xtip), Clazz.floatToInt (ytip), Clazz.floatToInt (ztip), width, zbuf, p);
 this.diameter = diameter;
 if (diameter <= 1) {
-if (diameter == 1) this.line3d.plotLineDelta (this.colixA, this.colixA, this.xA, this.yA, this.zA, this.dxB, this.dyB, this.dzB, this.clipped);
+if (diameter == 1) this.line3d.plotLineDeltaOld (this.colixA, this.colixA, this.xA, this.yA, this.zA, this.dxB, this.dyB, this.dzB, this.clipped);
 return;
 }this.endcaps = endcap;
 this.calcArgbEndcap (false, true);
@@ -239,12 +256,12 @@ if (doOpen) {
 g3d.plotPixelClippedArgb (this.argbEndcap, Clazz.floatToInt (xUp), Clazz.floatToInt (yUp), Clazz.floatToInt (zUp), width, zbuf, p);
 g3d.plotPixelClippedArgb (this.argbEndcap, Clazz.floatToInt (xDn), Clazz.floatToInt (yDn), Clazz.floatToInt (zDn), width, zbuf, p);
 }if (argb != 0) {
-this.line3d.plotLineDeltaA (sA, sA, 0, fpz, Clazz.floatToInt (xUp), Clazz.floatToInt (yUp), Clazz.floatToInt (zUp), Clazz.doubleToInt (Math.ceil (this.xTip - xUp)), Clazz.doubleToInt (Math.ceil (this.yTip - yUp)), Clazz.doubleToInt (Math.ceil (this.zTip - zUp)), true);
+this.line3d.plotLineDeltaAOld (sA, sA, 0, fpz, Clazz.floatToInt (xUp), Clazz.floatToInt (yUp), Clazz.floatToInt (zUp), Clazz.doubleToInt (Math.ceil (this.xTip - xUp)), Clazz.doubleToInt (Math.ceil (this.yTip - yUp)), Clazz.doubleToInt (Math.ceil (this.zTip - zUp)), true);
 if (doFill) {
-this.line3d.plotLineDeltaA (sA, sA, 0, fpz, Clazz.floatToInt (xUp), Clazz.floatToInt (yUp) + 1, Clazz.floatToInt (zUp), Clazz.doubleToInt (Math.ceil (this.xTip - xUp)), Clazz.doubleToInt (Math.ceil (this.yTip - yUp)) + 1, Clazz.doubleToInt (Math.ceil (this.zTip - zUp)), true);
-this.line3d.plotLineDeltaA (sA, sA, 0, fpz, Clazz.floatToInt (xUp) + 1, Clazz.floatToInt (yUp), Clazz.floatToInt (zUp), Clazz.doubleToInt (Math.ceil (this.xTip - xUp)) + 1, Clazz.doubleToInt (Math.ceil (this.yTip - yUp)), Clazz.doubleToInt (Math.ceil (this.zTip - zUp)), true);
+this.line3d.plotLineDeltaAOld (sA, sA, 0, fpz, Clazz.floatToInt (xUp), Clazz.floatToInt (yUp) + 1, Clazz.floatToInt (zUp), Clazz.doubleToInt (Math.ceil (this.xTip - xUp)), Clazz.doubleToInt (Math.ceil (this.yTip - yUp)) + 1, Clazz.doubleToInt (Math.ceil (this.zTip - zUp)), true);
+this.line3d.plotLineDeltaAOld (sA, sA, 0, fpz, Clazz.floatToInt (xUp) + 1, Clazz.floatToInt (yUp), Clazz.floatToInt (zUp), Clazz.doubleToInt (Math.ceil (this.xTip - xUp)) + 1, Clazz.doubleToInt (Math.ceil (this.yTip - yUp)), Clazz.doubleToInt (Math.ceil (this.zTip - zUp)), true);
 }if (!isBarb && !(this.endcaps != 2 && this.dzB > 0)) {
-this.line3d.plotLineDelta (argb, argb, Clazz.floatToInt (xDn), Clazz.floatToInt (yDn), Clazz.floatToInt (zDn), Clazz.doubleToInt (Math.ceil (this.xTip - xDn)), Clazz.doubleToInt (Math.ceil (this.yTip - yDn)), Clazz.doubleToInt (Math.ceil (this.zTip - zDn)), true);
+this.line3d.plotLineDeltaOld (argb, argb, Clazz.floatToInt (xDn), Clazz.floatToInt (yDn), Clazz.floatToInt (zDn), Clazz.doubleToInt (Math.ceil (this.xTip - xDn)), Clazz.doubleToInt (Math.ceil (this.yTip - yDn)), Clazz.doubleToInt (Math.ceil (this.zTip - zDn)), true);
 }}}
 g3d.setZMargin (0);
 }, "~N,~N,~N,~N,~N,~N,~N,~N,~N,~B,~B");

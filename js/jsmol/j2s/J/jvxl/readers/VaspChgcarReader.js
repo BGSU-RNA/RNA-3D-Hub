@@ -1,8 +1,9 @@
 Clazz.declarePackage ("J.jvxl.readers");
-Clazz.load (["J.jvxl.readers.PeriodicVolumeFileReader"], "J.jvxl.readers.VaspChgcarReader", ["java.lang.Float", "JU.SB", "JU.Logger", "$.SimpleUnitCell"], function () {
+Clazz.load (["J.jvxl.readers.PeriodicVolumeFileReader"], "J.jvxl.readers.VaspChgcarReader", ["java.lang.Float", "JU.PT", "$.SB", "JU.Logger", "$.SimpleUnitCell"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.volume = 0;
 this.pt = 0;
+this.nPerLine = 0;
 Clazz.instantialize (this, arguments);
 }, J.jvxl.readers, "VaspChgcarReader", J.jvxl.readers.PeriodicVolumeFileReader);
 Clazz.makeConstructor (c$, 
@@ -44,7 +45,7 @@ JU.Logger.info ("Cutoff set to " + this.params.cutoff);
 }});
 Clazz.overrideMethod (c$, "nextVoxel", 
 function () {
-if ((this.pt++) % 5 == 0) {
+if (this.pt++ % this.nPerLine == 0 && this.nData > 0) {
 this.rd ();
 this.next[0] = 0;
 }return this.parseFloat () / this.volume;
@@ -55,6 +56,7 @@ var ni = this.voxelCounts[0] - 1;
 var nj = this.voxelCounts[1] - 1;
 var nk = this.voxelCounts[2] - 1;
 var downSampling = (this.nSkipX > 0);
+this.nPerLine = JU.PT.countTokens (this.rd (), 0);
 for (var i = 0; i < ni; i++) {
 for (var j = 0; j < nj; j++) {
 for (var k = 0; k < nk; k++) {

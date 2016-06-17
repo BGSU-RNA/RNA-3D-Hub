@@ -1,6 +1,7 @@
 Clazz.declarePackage ("J.shape");
 Clazz.load (null, "J.shape.Shape", ["J.c.PAL", "JU.C", "$.Logger", "JV.JC"], function () {
 c$ = Clazz.decorateAsClass (function () {
+this.myType = null;
 this.vwr = null;
 this.ms = null;
 this.shapeID = 0;
@@ -31,6 +32,9 @@ Clazz.defineMethod (c$, "getSizeG",
 function (group) {
 return 0;
 }, "JM.Group");
+Clazz.defineMethod (c$, "replaceGroup", 
+function (g0, g1) {
+}, "JM.Group,JM.Group");
 Clazz.defineMethod (c$, "setModelSet", 
 function (modelSet) {
 this.ms = modelSet;
@@ -39,16 +43,6 @@ this.initModelSet ();
 Clazz.defineMethod (c$, "initModelSet", 
 function () {
 });
-Clazz.defineMethod (c$, "setShapeVisibility", 
-function (atom, isVisible) {
-atom.setShapeVisibility (this.vf, isVisible);
-}, "JM.Atom,~B");
-Clazz.defineMethod (c$, "initShape", 
-function () {
-});
-Clazz.defineMethod (c$, "merge", 
-function (shape) {
-}, "J.shape.Shape");
 Clazz.defineMethod (c$, "setShapeSizeRD", 
 function (size, rd, bsSelected) {
 if (rd == null) this.setSize (size, bsSelected);
@@ -60,10 +54,6 @@ function (size, bsSelected) {
 Clazz.defineMethod (c$, "setSizeRD", 
 function (rd, bsSelected) {
 }, "J.atomdata.RadiusData,JU.BS");
-Clazz.defineMethod (c$, "getPropertyData", 
-function (property, data) {
-return false;
-}, "~S,~A");
 Clazz.defineMethod (c$, "setPropS", 
 function (propertyName, value, bsSelected) {
 if (propertyName === "setProperties") {
@@ -81,6 +71,18 @@ return;
 return;
 }JU.Logger.warn ("unassigned " + JV.JC.shapeClassBases[this.shapeID] + " + shape setProperty:" + propertyName + ":" + value);
 }, "~S,~O,JU.BS");
+Clazz.defineMethod (c$, "getPropertyData", 
+function (property, data) {
+return this.getPropShape (property, data);
+}, "~S,~A");
+Clazz.defineMethod (c$, "getPropShape", 
+function (property, data) {
+if (Clazz.instanceOf (data[1], Integer)) {
+var index = (data[1]).intValue ();
+data[1] = this.getProperty (property, index);
+return (data[1] != null);
+}return false;
+}, "~S,~A");
 Clazz.defineMethod (c$, "getProperty", 
 function (property, index) {
 return null;

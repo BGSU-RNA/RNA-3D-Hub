@@ -5,6 +5,10 @@ this.useTable = null;
 this.tempQ1 = null;
 this.tempQ2 = null;
 this.htSpheresRendered = null;
+this.fontSize = 0;
+this.fontFace = null;
+this.fontStyle = null;
+this.fontChild = null;
 Clazz.instantialize (this, arguments);
 }, J["export"], "_VrmlExporter", J["export"].__CartesianExporter);
 Clazz.prepareFields (c$, function () {
@@ -274,7 +278,7 @@ var check = J["export"].___Exporter.round (this.scalePt (ptCenter)) + (checkRadi
 if (this.htSpheresRendered.get (check) != null) return;
 this.htSpheresRendered.put (check, Boolean.TRUE);
 this.outputSphereChildUnscaled (ptCenter, radius, colix);
-}, "JU.P3,~N,~N,~B");
+}, "JU.T3,~N,~N,~B");
 Clazz.defineMethod (c$, "outputSphereChildUnscaled", 
 function (ptCenter, radius, colix) {
 var iRad = Clazz.floatToInt (radius * 100);
@@ -290,20 +294,9 @@ this.output ("}");
 } else {
 this.output (child);
 }this.output ("}\n");
-}, "JU.P3,~N,~N");
+}, "JU.T3,~N,~N");
 Clazz.overrideMethod (c$, "outputTextPixel", 
 function (pt, argb) {
-var color = this.rgbFractionalFromArgb (argb);
-this.output ("Transform{translation ");
-this.output (pt);
-this.output (" children ");
-var child = this.useTable.getDef ("p" + argb);
-if (child.charAt (0) == '_') {
-this.output ("DEF " + child + " Shape{geometry Sphere{radius 0.01}");
-this.output (" appearance Appearance{material Material{diffuseColor 0 0 0 specularColor 0 0 0 ambientIntensity 0.0 shininess 0.0 emissiveColor " + color + " }}}");
-} else {
-this.output (child);
-}this.output ("}\n");
 }, "JU.P3,~N");
 Clazz.defineMethod (c$, "outputTransRot", 
 function (pt1, pt2, x, y, z) {
@@ -342,28 +335,32 @@ this.output ("}\n");
 }, "JU.T3,JU.T3,JU.T3,~N");
 Clazz.overrideMethod (c$, "plotText", 
 function (x, y, z, colix, text, font3d) {
-if (z < 3) z = Clazz.floatToInt (this.tm.cameraDistance);
-var useFontStyle = font3d.fontStyle.toUpperCase ();
-var preFontFace = font3d.fontFace.toUpperCase ();
-var useFontFace = (preFontFace.equals ("MONOSPACED") ? "TYPEWRITER" : preFontFace.equals ("SERIF") ? "SERIF" : "SANS");
 this.output ("Transform{translation ");
-this.tempP3.set (x, y, z);
-this.tm.unTransformPoint (this.tempP3, this.tempP1);
-this.output (this.tempP1);
+this.output (this.setFont (x, y, z, colix, text, font3d));
 this.output (" children ");
-var child = this.useTable.getDef ("T" + colix + useFontFace + useFontStyle + "_" + text);
-if (child.charAt (0) == '_') {
-this.output ("DEF " + child + " Billboard{axisOfRotation 0 0 0 children Transform{children Shape{");
+if (this.fontChild.charAt (0) == '_') {
+this.output ("DEF " + this.fontChild + " Billboard{axisOfRotation 0 0 0 children Transform{children Shape{");
 this.outputAppearance (colix, true);
 this.output (" geometry Text{fontStyle ");
-var fontstyle = this.useTable.getDef ("F" + useFontFace + useFontStyle);
+var fontstyle = this.useTable.getDef ("F" + this.fontFace + this.fontStyle);
 if (fontstyle.charAt (0) == '_') {
-this.output ("DEF " + fontstyle + " FontStyle{size 0.4 family \"" + useFontFace + "\" style \"" + useFontStyle + "\"}");
+this.output ("DEF " + fontstyle + " FontStyle{size " + this.fontSize + " family \"" + this.fontFace + "\" style \"" + this.fontStyle + "\"}");
 } else {
 this.output (fontstyle);
 }this.output (" string " + JU.PT.esc (text) + "}}}}");
 } else {
-this.output (child);
+this.output (this.fontChild);
 }this.output ("}\n");
+}, "~N,~N,~N,~N,~S,javajs.awt.Font");
+Clazz.defineMethod (c$, "setFont", 
+function (x, y, z, colix, text, font3d) {
+this.tempP3.set (x, y, this.fixScreenZ (z));
+this.tm.unTransformPoint (this.tempP3, this.tempP1);
+this.fontStyle = font3d.fontStyle.toUpperCase ();
+this.fontFace = font3d.fontFace.toUpperCase ();
+this.fontFace = (this.fontFace.equals ("MONOSPACED") ? "TYPEWRITER" : this.fontFace.equals ("SERIF") ? "SERIF" : "Arial");
+this.fontSize = font3d.fontSize * 0.015;
+this.fontChild = this.useTable.getDef ("T" + colix + this.fontFace + this.fontStyle + this.fontSize + "_" + text);
+return this.tempP1;
 }, "~N,~N,~N,~N,~S,javajs.awt.Font");
 });

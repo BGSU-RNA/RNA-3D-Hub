@@ -11,6 +11,10 @@ this.displayMinX = 0;
 this.displayMaxX = 0;
 this.displayMinY = 0;
 this.displayMaxY = 0;
+this.displayMinX2 = 0;
+this.displayMaxX2 = 0;
+this.displayMinY2 = 0;
+this.displayMaxY2 = 0;
 this.antialiasThisFrame = false;
 this.inGreyscaleMode = false;
 this.changeableColixMap = null;
@@ -225,10 +229,10 @@ return (z != -2147483648 && (z < this.slab || z > this.depth));
 Clazz.defineMethod (c$, "clipCode3", 
 function (x, y, z) {
 var code = 0;
-if (x < 0) code |= 8;
- else if (x >= this.width) code |= 4;
-if (y < 0) code |= 2;
- else if (y >= this.height) code |= 1;
+if (x < 0) code |= (x < this.displayMinX2 ? -1 : 8);
+ else if (x >= this.width) code |= (x > this.displayMaxX2 ? -1 : 4);
+if (y < 0) code |= (y < this.displayMinY2 ? -1 : 2);
+ else if (y >= this.height) code |= (y > this.displayMaxY2 ? -1 : 1);
 if (z < this.slab) code |= 32;
  else if (z > this.depth) code |= 16;
 return code;
@@ -308,6 +312,10 @@ this.displayMinX = -(this.width >> 1);
 this.displayMaxX = this.width - this.displayMinX;
 this.displayMinY = -(this.height >> 1);
 this.displayMaxY = this.height - this.displayMinY;
+this.displayMinX2 = this.displayMinX << 2;
+this.displayMaxX2 = this.displayMaxX << 2;
+this.displayMinY2 = this.displayMinY << 2;
+this.displayMaxY2 = this.displayMaxY << 2;
 this.ht3 = this.height * 3;
 this.bufferSize = this.width * this.height;
 }, "~B");
@@ -340,6 +348,19 @@ function () {
 Clazz.defineMethod (c$, "clearFontCache", 
 function () {
 });
+Clazz.defineMethod (c$, "drawQuadrilateralBits", 
+function (jmolRenderer, colix, screenA, screenB, screenC, screenD) {
+jmolRenderer.drawLineBits (colix, colix, screenA, screenB);
+jmolRenderer.drawLineBits (colix, colix, screenB, screenC);
+jmolRenderer.drawLineBits (colix, colix, screenC, screenD);
+jmolRenderer.drawLineBits (colix, colix, screenD, screenA);
+}, "J.api.JmolRendererInterface,~N,JU.P3,JU.P3,JU.P3,JU.P3");
+Clazz.defineMethod (c$, "drawTriangleBits", 
+function (renderer, screenA, colixA, screenB, colixB, screenC, colixC, check) {
+if ((check & 1) == 1) renderer.drawLineBits (colixA, colixB, screenA, screenB);
+if ((check & 2) == 2) renderer.drawLineBits (colixB, colixC, screenB, screenC);
+if ((check & 4) == 4) renderer.drawLineBits (colixC, colixA, screenC, screenA);
+}, "J.api.JmolRendererInterface,JU.P3,~N,JU.P3,~N,JU.P3,~N,~N");
 Clazz.defineMethod (c$, "plotImage", 
 function (x, y, z, image, jmolRenderer, bgcolix, width, height) {
 }, "~N,~N,~N,~O,J.api.JmolRendererInterface,~N,~N,~N");
@@ -459,6 +480,7 @@ Clazz.defineStatics (c$,
 "xGT", 4,
 "xLT", 8,
 "zGT", 16,
-"zLT", 32);
+"zLT", 32,
+"HUGE", -1);
 c$.normixCount = c$.prototype.normixCount = JU.Normix.getNormixCount ();
 });

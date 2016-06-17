@@ -140,7 +140,8 @@ this.jvxlCutoff = this.parseFloatStr (J.jvxl.readers.XmlReader.getXmlAttrib (dat
 if (!Float.isNaN (this.jvxlCutoff)) JU.Logger.info ("JVXL read: cutoff " + this.jvxlCutoff);
 var nContourData = this.parseIntStr (J.jvxl.readers.XmlReader.getXmlAttrib (data, "nContourData"));
 this.haveContourData = (nContourData > 0);
-this.params.isContoured = J.jvxl.readers.XmlReader.getXmlAttrib (data, "contoured").equals ("true");
+this.params.isContoured = this.jvxlData.isModelConnected = J.jvxl.readers.XmlReader.getXmlAttrib (data, "contoured").equals ("true");
+this.params.isModelConnected = J.jvxl.readers.XmlReader.getXmlAttrib (data, "isModelConnected").equals ("true");
 if (this.params.isContoured) {
 var nContoursRead = this.parseIntStr (J.jvxl.readers.XmlReader.getXmlAttrib (data, "nContours"));
 if (nContoursRead <= 0) {
@@ -223,7 +224,7 @@ if (s.length > 0) this.jvxlData.meshColor = s;
 s = J.jvxl.readers.XmlReader.getXmlAttrib (data, "rendering");
 if (s.length > 0) this.jvxlData.rendering = s;
 this.jvxlData.colorScheme = J.jvxl.readers.XmlReader.getXmlAttrib (data, "colorScheme");
-if (this.jvxlData.colorScheme.length == 0) this.jvxlData.colorScheme = null;
+if (this.jvxlData.colorScheme.length == 0) this.jvxlData.colorScheme = (this.jvxlDataIsColorMapped ? "roygb" : null);
 if (this.jvxlData.thisSet < 0) {
 var n = this.parseIntStr (J.jvxl.readers.XmlReader.getXmlAttrib (data, "set"));
 if (n > 0) this.jvxlData.thisSet = n - 1;
@@ -276,9 +277,8 @@ this.jvxlData.valueMappedToBlue = this.params.valueMappedToBlue;
 this.jvxlData.mappedDataMin = this.params.mappedDataMin;
 this.jvxlData.mappedDataMax = this.params.mappedDataMax;
 this.jvxlData.isColorReversed = this.params.isColorReversed;
-this.jvxlData.insideOut = insideOut;
-if (this.params.insideOut) this.jvxlData.insideOut = !this.jvxlData.insideOut;
-this.params.insideOut = this.jvxlData.insideOut;
+if (this.params.insideOut) insideOut = !insideOut;
+this.params.insideOut = this.jvxlData.insideOut = insideOut;
 }, "~N,~N,~N,~N,~B");
 Clazz.overrideMethod (c$, "readSurfaceData", 
 function (isMapDataIgnored) {
@@ -447,15 +447,17 @@ if (value > contourPlaneMaximumValue) contourPlaneMaximumValue = value;
 if (needContourMinMax) {
 this.params.mappedDataMin = contourPlaneMinimumValue;
 this.params.mappedDataMax = contourPlaneMaximumValue;
-}if (this.jvxlData.colorScheme != null) for (var i = 0; i < vertexCount; i += vertexIncrement) {
+}if (this.jvxlData.colorScheme != null) {
+var setContourValue = (this.marchingSquares != null && this.params.isContoured);
+for (var i = 0; i < vertexCount; i += vertexIncrement) {
 var value = vertexValues[i];
-if (this.marchingSquares != null && this.params.isContoured) {
+if (setContourValue) {
 this.marchingSquares.setContourData (i, value);
 continue;
 }var colix = (!this.params.colorBySign ? this.params.colorEncoder.getColorIndex (value) : (this.params.isColorReversed ? value > 0 : value <= 0) ? colixNeg : colixPos);
 colixes[i] = JU.C.getColixTranslucent3 (colix, true, this.jvxlData.translucency);
 }
-return this.jvxlColorDataRead + "\n";
+}return this.jvxlColorDataRead + "\n";
 });
 c$.getColor = Clazz.defineMethod (c$, "getColor", 
  function (c) {

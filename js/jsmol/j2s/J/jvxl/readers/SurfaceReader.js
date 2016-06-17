@@ -135,8 +135,7 @@ this.nPointsX = this.voxelCounts[0];
 this.nPointsY = this.voxelCounts[1];
 this.nPointsZ = this.voxelCounts[2];
 this.jvxlData.isSlabbable = ((this.params.dataType & 1024) != 0);
-this.jvxlData.insideOut = this.params.insideOut;
-this.jvxlData.dataXYReversed = this.params.dataXYReversed;
+this.jvxlData.insideOut = this.params.isInsideOut ();
 this.jvxlData.isBicolorMap = this.params.isBicolorMap;
 this.jvxlData.nPointsX = this.nPointsX;
 this.jvxlData.nPointsY = this.nPointsY;
@@ -158,11 +157,12 @@ var i = s.indexOf ('\n', s.indexOf ('\n', s.indexOf ('\n') + 1) + 1) + 1;
 this.jvxlData.jvxlFileTitle = s.substring (0, i);
 }if (this.params.contactPair == null) this.setBBoxAll ();
 if (!this.params.isSilent) JU.Logger.info ("boundbox corners " + JU.Escape.eP (this.xyzMin) + " " + JU.Escape.eP (this.xyzMax));
-this.jvxlData.boundingBox = [this.xyzMin, this.xyzMax];
+this.jvxlData.boundingBox =  Clazz.newArray (-1, [this.xyzMin, this.xyzMax]);
 this.jvxlData.dataMin = this.dataMin;
 this.jvxlData.dataMax = this.dataMax;
 this.jvxlData.cutoff = (this.isJvxl ? this.jvxlCutoff : this.params.cutoff);
 this.jvxlData.isCutoffAbsolute = this.params.isCutoffAbsolute;
+this.jvxlData.isModelConnected = this.params.isModelConnected;
 this.jvxlData.pointsPerAngstrom = 1 / this.volumeData.volumetricVectorLengths[0];
 this.jvxlData.jvxlColorData = "";
 this.jvxlData.jvxlPlane = this.params.thePlane;
@@ -264,9 +264,9 @@ return "-";
 });
 Clazz.overrideMethod (c$, "getPlane", 
 function (x) {
-return this.getPlane2 (x);
+return this.getPlaneSR (x);
 }, "~N");
-Clazz.defineMethod (c$, "getPlane2", 
+Clazz.defineMethod (c$, "getPlaneSR", 
 function (x) {
 if (this.yzCount == 0) this.initPlanes ();
 if (this.qpc != null) this.qpc.getPlane (x, this.yzPlanes[x % 2]);
@@ -429,7 +429,7 @@ if (needSource) this.meshData.vertexSource[i] = this.getSurfaceAtomIndex ();
 if (value > max && value != 3.4028235E38) max = value;
 this.meshData.vvs[i] = value;
 }
-if (this.params.rangeSelected && this.minMax == null) this.minMax = [min, max];
+if (this.params.rangeSelected && this.minMax == null) this.minMax =  Clazz.newFloatArray (-1, [min, max]);
 this.finalizeMapping ();
 }this.params.setMapRanges (this, true);
 this.jvxlData.mappedDataMin = this.params.mappedDataMin;
@@ -513,7 +513,7 @@ return 1;
 Clazz.defineMethod (c$, "getMinMaxMappedValues", 
 function (haveData) {
 if (this.minMax != null && this.minMax[0] != 3.4028235E38) return this.minMax;
-if (this.params.colorBySets) return (this.minMax = [0, Math.max (this.meshData.nSets - 1, 0)]);
+if (this.params.colorBySets) return (this.minMax =  Clazz.newFloatArray (-1, [0, Math.max (this.meshData.nSets - 1, 0)]));
 var min = 3.4028235E38;
 var max = -3.4028235E38;
 if (this.params.usePropertyForColorRange && this.params.theProperty != null) {
@@ -524,7 +524,7 @@ if (Float.isNaN (p)) continue;
 if (p < min) min = p;
 if (p > max) max = p;
 }
-return (this.minMax = [min, max]);
+return (this.minMax =  Clazz.newFloatArray (-1, [min, max]));
 }var vertexCount = (this.contourVertexCount > 0 ? this.contourVertexCount : this.meshData.vc);
 var vertexes = this.meshData.vs;
 var useVertexValue = (haveData || this.jvxlDataIs2dContour || this.vertexDataOnly || this.params.colorDensity);
@@ -535,7 +535,7 @@ if (useVertexValue) v = this.meshData.vvs[i];
 if (v < min) min = v;
 if (v > max && v != 3.4028235E38) max = v;
 }
-return (this.minMax = [min, max]);
+return (this.minMax =  Clazz.newFloatArray (-1, [min, max]));
 }, "~B");
 Clazz.defineMethod (c$, "updateTriangles", 
 function () {
@@ -639,5 +639,5 @@ Clazz.defineStatics (c$,
 "defaultMappedDataMin", 0,
 "defaultMappedDataMax", 1.0,
 "defaultCutoff", 0.02,
-"colorPhases", ["_orb", "x", "y", "z", "xy", "yz", "xz", "x2-y2", "z2"]);
+"colorPhases",  Clazz.newArray (-1, ["_orb", "x", "y", "z", "xy", "yz", "xz", "x2-y2", "z2"]));
 });

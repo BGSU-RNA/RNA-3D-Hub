@@ -9,6 +9,7 @@ this.vc = 0;
 this.vs = null;
 this.vvs = null;
 this.vertexSource = null;
+this.surfaceAtoms = null;
 this.pc = 0;
 this.pis = null;
 this.colorsExplicit = false;
@@ -89,12 +90,12 @@ return this.vc++;
 }, "JU.T3,~B");
 Clazz.defineMethod (c$, "addTriangle", 
 function (vertexA, vertexB, vertexC) {
-this.addPolygon ([vertexA, vertexB, vertexC], null);
+this.addPolygon ( Clazz.newIntArray (-1, [vertexA, vertexB, vertexC]), null);
 }, "~N,~N,~N");
 Clazz.defineMethod (c$, "addQuad", 
 function (vertexA, vertexB, vertexC, vertexD) {
 this.haveQuads = true;
-this.addPolygon ([vertexA, vertexB, vertexC, vertexD], null);
+this.addPolygon ( Clazz.newIntArray (-1, [vertexA, vertexB, vertexC, vertexD]), null);
 }, "~N,~N,~N,~N");
 Clazz.defineMethod (c$, "setPolygonCount", 
 function (polygonCount) {
@@ -115,7 +116,7 @@ return (this.vs == null || this.vvs != null && (Float.isNaN (this.vvs[vertexA]) 
 }, "~N,~N,~N,~N,~N,~N");
 Clazz.defineMethod (c$, "addPolygonV3", 
 function (vertexA, vertexB, vertexC, check, iContour, color, bs) {
-return (this.dataOnly ? this.addPolygon ([vertexA, vertexB, vertexC, check], bs) : this.addPolygonC ([vertexA, vertexB, vertexC, check, iContour], color, bs, (iContour < 0)));
+return (this.dataOnly ? this.addPolygon ( Clazz.newIntArray (-1, [vertexA, vertexB, vertexC, check]), bs) : this.addPolygonC ( Clazz.newIntArray (-1, [vertexA, vertexB, vertexC, check, iContour]), color, bs, (iContour < 0)));
 }, "~N,~N,~N,~N,~N,~N,JU.BS");
 Clazz.defineMethod (c$, "addPolygonC", 
 function (polygon, color, bs, isExplicit) {
@@ -168,7 +169,7 @@ return (this.bsSlabGhost != null && this.slabMeshType == 1073742018 ? "mesh" : n
 });
 Clazz.defineMethod (c$, "resetSlab", 
 function () {
-if (this.slicer != null) this.slicer.slabPolygons (JU.TempArray.getSlabObjectType (1048587, null, false, null), false);
+if (this.slicer != null) this.slicer.slabPolygons (JU.TempArray.getSlabObjectType (1073742333, null, false, null), false);
 });
 Clazz.defineMethod (c$, "slabPolygonsList", 
 function (slabInfo, allowCap) {
@@ -192,7 +193,7 @@ var f = JU.Geodesic.getFaceVertexes (lvl);
 var nFaces = Clazz.doubleToInt (f.length / 3);
 var faces = JU.AU.newInt2 (nFaces);
 for (var i = 0, fpt = 0; i < nFaces; i++) {
-faces[i] = [f[fpt++], f[fpt++], f[fpt++]];
+faces[i] =  Clazz.newIntArray (-1, [f[fpt++], f[fpt++], f[fpt++]]);
 }
 var vectors =  new Array (vertexCount);
 for (var i = 0; i < vertexCount; i++) vectors[i] = JU.Geodesic.getVertexVector (i);

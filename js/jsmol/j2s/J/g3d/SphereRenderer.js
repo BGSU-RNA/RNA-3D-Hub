@@ -3,17 +3,6 @@ Clazz.load (["JU.P3"], "J.g3d.SphereRenderer", null, function () {
 c$ = Clazz.decorateAsClass (function () {
 this.g3d = null;
 this.shader = null;
-this.minX = 0;
-this.maxX = 0;
-this.minY = 0;
-this.maxY = 0;
-this.minZ = 0;
-this.maxZ = 0;
-this.x = 0;
-this.y = 0;
-this.z = 0;
-this.diameter = 0;
-this.shades = null;
 this.zroot = null;
 this.mat = null;
 this.coef = null;
@@ -50,21 +39,17 @@ if (this.g3d.isClippedXY (diameter, x, y)) return;
 this.slab = this.g3d.slab;
 this.depth = this.g3d.depth;
 var radius = (diameter + 1) >> 1;
-if ((this.maxZ = z + radius) < this.slab || (this.minZ = z - radius) > this.depth) return;
-this.minX = x - radius;
-this.maxX = x + radius;
-this.minY = y - radius;
-this.maxY = y + radius;
+var minZ = z - radius;
+if (z + radius < this.slab || minZ > this.depth) return;
+var minX = x - radius;
+var maxX = x + radius;
+var minY = y - radius;
+var maxY = y + radius;
 this.shader.nOut = this.shader.nIn = 0;
 this.zbuf = this.g3d.zbuf;
 this.height = this.g3d.height;
 this.width = this.g3d.width;
 this.offsetPbufBeginLine = this.width * y + x;
-this.x = x;
-this.y = y;
-this.z = z;
-this.diameter = diameter;
-this.shades = shades;
 var sh = this.shader;
 this.mat = mat;
 if (mat != null) {
@@ -84,10 +69,10 @@ this.planeShade = this.planeShades[i];
 break;
 }}
 }}if (mat != null || diameter > 128) {
-this.renderQuadrant (-1, -1);
-this.renderQuadrant (-1, 1);
-this.renderQuadrant (1, -1);
-this.renderQuadrant (1, 1);
+this.renderQuadrant (-1, -1, x, y, z, diameter, shades);
+this.renderQuadrant (-1, 1, x, y, z, diameter, shades);
+this.renderQuadrant (1, -1, x, y, z, diameter, shades);
+this.renderQuadrant (1, 1, x, y, z, diameter, shades);
 if (mat != null) {
 this.mat = null;
 this.coef = null;
@@ -132,19 +117,17 @@ ss[offset++] = packed;
 ss[offset - 1] |= 0x80000000;
 }
 sh.sphereShapeCache[diameter - 1] = ss;
-}if (this.minX < 0 || this.maxX >= this.width || this.minY < 0 || this.maxY >= this.height || this.minZ < this.slab || z > this.depth) this.renderSphereClipped (ss, x, y, z, diameter);
- else this.renderSphereUnclipped (ss, z, diameter);
-}this.shades = null;
-this.zbuf = null;
+}if (minX < 0 || maxX >= this.width || minY < 0 || maxY >= this.height || minZ < this.slab || z > this.depth) this.renderSphereClipped (ss, x, y, z, diameter, shades);
+ else this.renderSphereUnclipped (ss, z, diameter, shades);
+}this.zbuf = null;
 }, "~A,~N,~N,~N,~N,JU.M3,~A,JU.M4,~N,~A");
 Clazz.defineMethod (c$, "renderSphereUnclipped", 
- function (sphereShape, z, diameter) {
+ function (sphereShape, z, diameter, shades) {
 var offsetSphere = 0;
 var evenSizeCorrection = 1 - (diameter & 1);
 var offsetSouthCenter = this.offsetPbufBeginLine;
 var offsetNorthCenter = offsetSouthCenter - evenSizeCorrection * this.width;
 var nLines = Clazz.doubleToInt ((diameter + 1) / 2);
-var shades = this.shades;
 var zbuf = this.zbuf;
 var width = this.width;
 var p = this.g3d.pixel;
@@ -169,9 +152,9 @@ if (zPixel < zbuf[offsetNW]) p.addPixel (offsetNW, zPixel, shades[((packed >> 25
 offsetSouthCenter += width;
 offsetNorthCenter -= width;
 } while (--nLines > 0);
-}, "~A,~N,~N");
+}, "~A,~N,~N,~A");
 Clazz.defineMethod (c$, "renderSphereClipped", 
- function (sphereShape, x, y, z, diameter) {
+ function (sphereShape, x, y, z, diameter, shades) {
 var w = this.width;
 var h = this.height;
 var offsetSphere = 0;
@@ -182,7 +165,7 @@ var nLines = Clazz.doubleToInt ((diameter + 1) / 2);
 var ySouth = y;
 var yNorth = y - evenSizeCorrection;
 var randu = (x << 16) + (y << 1) ^ 0x33333333;
-var sh = this.shades;
+var sh = shades;
 var zb = this.zbuf;
 var p = this.g3d.pixel;
 var sl = this.slab;
@@ -239,22 +222,22 @@ offsetNorthCenter -= w;
 ++ySouth;
 --yNorth;
 } while (--nLines > 0);
-}, "~A,~N,~N,~N,~N");
+}, "~A,~N,~N,~N,~N,~A");
 Clazz.defineMethod (c$, "renderQuadrant", 
- function (xSign, ySign) {
-var radius = Clazz.doubleToInt (this.diameter / 2);
-var t = this.x + radius * xSign;
-var xStatus = (this.x < 0 ? -1 : this.x < this.width ? 0 : 1) + (t < 0 ? -2 : t < this.width ? 0 : 2);
+ function (xSign, ySign, x, y, z, diameter, shades) {
+var radius = Clazz.doubleToInt (diameter / 2);
+var t = x + radius * xSign;
+var xStatus = (x < 0 ? -1 : x < this.width ? 0 : 1) + (t < 0 ? -2 : t < this.width ? 0 : 2);
 if (xStatus == -3 || xStatus == 3) return;
-t = this.y + radius * ySign;
-var yStatus = (this.y < 0 ? -1 : this.y < this.height ? 0 : 1) + (t < 0 ? -2 : t < this.height ? 0 : 2);
+t = y + radius * ySign;
+var yStatus = (y < 0 ? -1 : y < this.height ? 0 : 1) + (t < 0 ? -2 : t < this.height ? 0 : 2);
 if (yStatus == -3 || yStatus == 3) return;
-var unclipped = (this.mat == null && xStatus == 0 && yStatus == 0 && this.z - radius >= this.slab && this.z <= this.depth);
-if (unclipped) this.renderQuadrantUnclipped (radius, xSign, ySign);
- else this.renderQuadrantClipped (radius, xSign, ySign);
-}, "~N,~N");
+var unclipped = (this.mat == null && xStatus == 0 && yStatus == 0 && z - radius >= this.slab && z <= this.depth);
+if (unclipped) this.renderQuadrantUnclipped (radius, xSign, ySign, z, shades);
+ else this.renderQuadrantClipped (radius, xSign, ySign, x, y, z, shades);
+}, "~N,~N,~N,~N,~N,~N,~A");
 Clazz.defineMethod (c$, "renderQuadrantUnclipped", 
- function (radius, xSign, ySign) {
+ function (radius, xSign, ySign, z, s) {
 var r2 = radius * radius;
 var dDivisor = radius * 2 + 1;
 var lineIncrement = (ySign < 0 ? -this.width : this.width);
@@ -262,43 +245,41 @@ var ptLine = this.offsetPbufBeginLine;
 var zb = this.zbuf;
 var p = this.g3d.pixel;
 var indexes = this.shader.sphereShadeIndexes;
-var s = this.shades;
 for (var i = 0, i2 = 0; i2 <= r2; i2 += i + (++i), ptLine += lineIncrement) {
 var offset = ptLine;
 var s2 = r2 - i2;
-var z0 = this.z - radius;
+var z0 = z - radius;
 var y8 = Clazz.doubleToInt (((i * ySign + radius) << 8) / dDivisor);
 for (var j = 0, j2 = 0; j2 <= s2; j2 += j + (++j), offset += xSign) {
 if (zb[offset] <= z0) continue;
 var k = Clazz.doubleToInt (Math.sqrt (s2 - j2));
-z0 = this.z - k;
+z0 = z - k;
 if (zb[offset] <= z0) continue;
 var x8 = Clazz.doubleToInt (((j * xSign + radius) << 8) / dDivisor);
 p.addPixel (offset, z0, s[indexes[((y8 << 8) + x8)]]);
 }
 }
-}, "~N,~N,~N");
+}, "~N,~N,~N,~N,~A");
 Clazz.defineMethod (c$, "renderQuadrantClipped", 
- function (radius, xSign, ySign) {
+ function (radius, xSign, ySign, x, y, z, shades) {
 var isEllipsoid = (this.mat != null);
 var checkOctant = (this.selectedOctant >= 0);
 var r2 = radius * radius;
 var dDivisor = radius * 2 + 1;
 var lineIncrement = (ySign < 0 ? -this.width : this.width);
 var ptLine = this.offsetPbufBeginLine;
-var randu = (this.x << 16) + (this.y << 1) ^ 0x33333333;
-var yC = this.y;
+var randu = (x << 16) + (y << 1) ^ 0x33333333;
 var y8 = 0;
 var iShade = 0;
 var p = this.g3d.pixel;
 var z1 = 0;
 var h = this.height;
 var w = this.width;
-var x0 = this.x;
+var x0 = x;
 var zb = this.zbuf;
 var xyz = this.dxyz;
-var y0 = this.y;
-var z0 = this.z;
+var y0 = y;
+var z0 = z;
 var sl = this.slab;
 var de = this.depth;
 var pt = this.ptTemp;
@@ -306,12 +287,11 @@ var c = this.coef;
 var rt = this.zroot;
 var oct = this.selectedOctant;
 var s = this.shader;
-var ss = this.shades;
 var pl = this.planeShades;
 var indexes = s.sphereShadeIndexes;
 var ps = this.planeShade;
 var m = this.mat;
-for (var i = 0, i2 = 0; i2 <= r2; i2 += i + (++i), ptLine += lineIncrement, yC += ySign) {
+for (var i = 0, i2 = 0, yC = y; i2 <= r2; i2 += i + (++i), ptLine += lineIncrement, yC += ySign) {
 if (yC < 0) {
 if (ySign < 0) return;
 continue;
@@ -319,14 +299,11 @@ continue;
 if (ySign > 0) return;
 continue;
 }var s2 = r2 - (isEllipsoid ? 0 : i2);
-var xC = x0;
 if (!isEllipsoid) {
 y8 = Clazz.doubleToInt (((i * ySign + radius) << 8) / dDivisor);
 }randu = ((randu << 16) + (randu << 1) + randu) & 0x7FFFFFFF;
-var iRoot = -1;
-var mode = 1;
-var offset = ptLine;
-for (var j = 0, j2 = 0; j2 <= s2; j2 += j + (++j), offset += xSign, xC += xSign) {
+var xC = x0;
+for (var j = 0, j2 = 0, iRoot = -1, mode = 1, offset = ptLine; j2 <= s2; j2 += j + (++j), offset += xSign, xC += xSign) {
 if (xC < 0) {
 if (xSign < 0) break;
 continue;
@@ -365,7 +342,7 @@ var dz;
 var zMin = 3.4028235E38;
 for (var ii = 0; ii < 3; ii++) {
 if ((dz = xyz[ii][2]) == 0) continue;
-var ptz = z0 + (-xyz[ii][0] * (xC - this.x) - xyz[ii][1] * (yC - y0)) / dz;
+var ptz = z0 + (-xyz[ii][0] * (xC - x) - xyz[ii][1] * (yC - y0)) / dz;
 if (ptz < zMin) {
 zMin = ptz;
 iMin = ii;
@@ -407,11 +384,11 @@ var x8 = Clazz.doubleToInt (((j * xSign + radius) << 8) / dDivisor);
 iShade = indexes[(y8 << 8) + x8];
 break;
 }
-p.addPixel (offset, zPixel, ss[iShade]);
+p.addPixel (offset, zPixel, shades[iShade]);
 }
 randu = ((randu + xC + yC) | 1) & 0x7FFFFFFF;
 }
-}, "~N,~N,~N");
+}, "~N,~N,~N,~N,~N,~N,~A");
 Clazz.defineStatics (c$,
 "maxOddSizeSphere", 49,
 "maxSphereDiameter", 1000,

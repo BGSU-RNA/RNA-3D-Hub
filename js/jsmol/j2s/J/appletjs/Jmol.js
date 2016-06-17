@@ -1,5 +1,5 @@
 Clazz.declarePackage ("J.appletjs");
-Clazz.load (["javajs.api.JSInterface", "JU.GenericApplet"], "J.appletjs.Jmol", ["java.util.Hashtable", "JU.PT", "JU.Logger", "$.Parser"], function () {
+Clazz.load (["javajs.api.JSInterface", "JU.GenericApplet"], "J.appletjs.Jmol", ["java.util.Hashtable", "JU.PT", "J.awtjs2d.Platform", "JU.Logger", "$.Parser"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.htParams = null;
 Clazz.instantialize (this, arguments);
@@ -52,13 +52,13 @@ try {
 if (nX > 0 && nY > 0) {
 for (var i = 0; i < nX; i++) for (var j = 0; j < nY; j++) {
 {
-fxy[i][j] = eval(functionName)(this.htmlName, i, j);
+fxy[i][j] = window.eval(functionName)(this.htmlName, i, j);
 }}
 
 } else if (nY > 0) {
 var data;
 {
-data = eval(functionName)(this.htmlName, nX, nY);
+data = window.eval(functionName)(this.htmlName, nX, nY);
 }nX = Math.abs (nX);
 var fdata =  Clazz.newFloatArray (nX * nY, 0);
 JU.Parser.parseStringInfestedFloatArray (data, null, fdata);
@@ -69,7 +69,7 @@ fxy[i][j] = fdata[ipt];
 }
 } else {
 {
-data = eval(functionName)(this.htmlName, nX, nY, fxy);
+data = window.eval(functionName)(this.htmlName, nX, nY, fxy);
 }}} catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 JU.Logger.error ("Exception " + e + " with nX, nY: " + nX + " " + nY);
@@ -85,7 +85,7 @@ var fxyz =  Clazz.newFloatArray (Math.abs (nX), Math.abs (nY), Math.abs (nZ), 0)
 if (!this.mayScript || !this.haveDocumentAccess || nX == 0 || nY == 0 || nZ == 0) return fxyz;
 try {
 {
-eval(functionName)(this.htmlName, nX, nY, nZ, fxyz);
+window.eval(functionName)(this.htmlName, nX, nY, nZ, fxyz);
 }} catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 JU.Logger.error ("Exception " + e + " for " + functionName + " with nX, nY, nZ: " + nX + " " + nY + " " + nZ);
@@ -115,7 +115,7 @@ for (var i = 1; i < tokens.length; i++)
 o = o[tokens[i]];
 for (var i = 0; i < data.length; i++)
 data[i] && data[i].booleanValue && (data[i] = data[i].booleanValue());
-return o(data[0],data[1],data[2],data[3],data[4],data[5],data[6],data[7]);
+return o.apply(null,data)
 } catch (e) { System.out.println(callback + " failed " + e); }
 }}return "";
 }, "~S,~A,~S");
@@ -123,7 +123,7 @@ Clazz.overrideMethod (c$, "doEval",
 function (strEval) {
 try {
 {
-return "" + eval(strEval);
+return window.eval(strEval);
 }} catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {
 JU.Logger.error ("# error evaluating " + strEval + ":" + e.toString ());
@@ -144,6 +144,14 @@ throw e;
 }
 }
 }, "~S");
+Clazz.defineMethod (c$, "getGLmolView", 
+function () {
+return this.viewer.getGLmolView ();
+});
+Clazz.defineMethod (c$, "openFile", 
+function (fileName) {
+return this.viewer.openFile (fileName);
+}, "~S");
 Clazz.overrideMethod (c$, "cacheFileByName", 
 function (fileName, isAdd) {
 return this.viewer.cacheFileByName (fileName, isAdd);
@@ -152,10 +160,6 @@ Clazz.overrideMethod (c$, "cachePut",
 function (key, data) {
 this.viewer.cachePut (key, data);
 }, "~S,~O");
-Clazz.overrideMethod (c$, "getGLmolView", 
-function () {
-return this.viewer.getGLmolView ();
-});
 Clazz.overrideMethod (c$, "getFullName", 
 function () {
 return this.fullName;
@@ -180,10 +184,6 @@ Clazz.overrideMethod (c$, "update",
 function () {
 this.viewer.updateJS ();
 });
-Clazz.overrideMethod (c$, "openFile", 
-function (fileName) {
-return this.viewer.openFile (fileName);
-}, "~S");
 Clazz.overrideMethod (c$, "openFileAsyncSpecial", 
 function (fileName, flags) {
 this.viewer.openFileAsyncSpecial (fileName, flags);
@@ -195,5 +195,17 @@ this.viewer.processTwoPointGesture (touches);
 Clazz.overrideMethod (c$, "setScreenDimension", 
 function (width, height) {
 this.viewer.setScreenDimension (width, height);
+}, "~N,~N");
+Clazz.overrideMethod (c$, "resizeInnerPanel", 
+function (data) {
+var dims =  Clazz.newFloatArray (2, 0);
+JU.Parser.parseStringInfestedFloatArray (data, null, dims);
+this.resizeDisplay (Clazz.floatToInt (dims[0]), Clazz.floatToInt (dims[1]));
+return  Clazz.newIntArray (-1, [Clazz.floatToInt (dims[0]), Clazz.floatToInt (dims[1])]);
+}, "~S");
+Clazz.defineMethod (c$, "resizeDisplay", 
+function (width, height) {
+var jmol = J.awtjs2d.Platform.Jmol ();
+jmol.resizeApplet (this.viewer.html5Applet,  Clazz.newIntArray (-1, [width, height]));
 }, "~N,~N");
 });

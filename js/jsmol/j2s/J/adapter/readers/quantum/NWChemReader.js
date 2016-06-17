@@ -92,8 +92,8 @@ Clazz.defineMethod (c$, "setEnergies",
  function (key, value, nAtomSets) {
 this.energyKey = key;
 this.energyValue = value;
-this.asc.setAtomSetPropertyForSets (this.energyKey, this.energyValue, this.equivalentAtomSets);
-this.asc.setAtomSetNames (this.energyKey + " = " + this.energyValue, this.equivalentAtomSets, null);
+this.setProps (this.energyKey, this.energyValue, this.equivalentAtomSets);
+this.setNames (this.energyKey + " = " + this.energyValue, null, this.equivalentAtomSets);
 this.asc.setAtomSetEnergy (value, this.parseFloatStr (value));
 this.haveEnergy = true;
 }, "~S,~S,~N");
@@ -108,7 +108,7 @@ this.haveEnergy = true;
 Clazz.defineMethod (c$, "readSymmetry", 
  function () {
 var tokens = JU.PT.getTokens (this.readLines (3));
-this.asc.setAtomSetPropertyForSets ("Symmetry group name", tokens[tokens.length - 1], this.equivalentAtomSets);
+this.setProps ("Symmetry group name", tokens[tokens.length - 1], this.equivalentAtomSets);
 });
 Clazz.defineMethod (c$, "readTotal", 
  function () {
@@ -132,9 +132,19 @@ if (!this.haveEnergy) {
 this.setEnergies ("E", tokens[2], this.equivalentAtomSets);
 } else {
 this.setEnergies (this.energyKey, this.energyValue, this.equivalentAtomSets);
-}this.asc.setAtomSetPropertyForSets ("Step", tokens[1], this.equivalentAtomSets);
+}this.setProps ("Step", tokens[1], this.equivalentAtomSets);
 this.haveAt = true;
 });
+Clazz.defineMethod (c$, "setProps", 
+ function (key, value, n) {
+for (var i = this.asc.iSet; --n >= 0 && i >= 0; --i) this.asc.setAtomSetModelPropertyForSet (key, value, i);
+
+}, "~S,~S,~N");
+Clazz.defineMethod (c$, "setNames", 
+ function (atomSetName, namedSets, n) {
+for (var i = this.asc.iSet; --n >= 0 && i >= 0; --i) if (namedSets == null || !namedSets.get (i)) this.asc.setModelInfoForSet ("name", atomSetName, i);
+
+}, "~S,JU.BS,~N");
 Clazz.defineMethod (c$, "readAtoms", 
  function () {
 var scale = (this.line.indexOf ("angstroms") < 0 ? 0.5291772 : 1);
@@ -258,11 +268,11 @@ this.shellCount = 0;
 this.nBasisFunctions = 0;
 var isD6F10 = (this.line.indexOf ("cartesian") >= 0);
 if (isD6F10) {
-this.getDFMap (J.adapter.readers.quantum.NWChemReader.$DC_LIST, 4, J.adapter.readers.quantum.BasisFunctionReader.CANONICAL_DC_LIST, 3);
-this.getDFMap (J.adapter.readers.quantum.NWChemReader.$FC_LIST, 6, J.adapter.readers.quantum.BasisFunctionReader.CANONICAL_FC_LIST, 3);
+this.getDFMap (J.adapter.readers.quantum.NWChemReader.$DC_LIST, 4, "DXX   DYY   DZZ   DXY   DXZ   DYZ", 3);
+this.getDFMap (J.adapter.readers.quantum.NWChemReader.$FC_LIST, 6, "XXX   YYY   ZZZ   XYY   XXY   XXZ   XZZ   YZZ   YYZ   XYZ", 3);
 } else {
-this.getDFMap (J.adapter.readers.quantum.NWChemReader.$DS_LIST, 3, J.adapter.readers.quantum.BasisFunctionReader.CANONICAL_DS_LIST, 2);
-this.getDFMap (J.adapter.readers.quantum.NWChemReader.$FS_LIST, 5, J.adapter.readers.quantum.BasisFunctionReader.CANONICAL_FS_LIST, 2);
+this.getDFMap (J.adapter.readers.quantum.NWChemReader.$DS_LIST, 3, "d0    d1+   d1-   d2+   d2-", 2);
+this.getDFMap (J.adapter.readers.quantum.NWChemReader.$FS_LIST, 5, "f0    f1+   f1-   f2+   f2-   f3+   f3-", 2);
 }this.shells =  new JU.Lst ();
 var atomInfo =  new java.util.Hashtable ();
 var atomSym = null;
@@ -286,7 +296,7 @@ this.rd ();
 continue;
 }while (this.line != null && this.line.length > 3) {
 var tokens = this.getTokens ();
-var o = [tokens[1], [this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3])]];
+var o =  Clazz.newArray (-1, [tokens[1],  Clazz.newFloatArray (-1, [this.parseFloatStr (tokens[2]), this.parseFloatStr (tokens[3])])]);
 shellData.addLast (o);
 this.rd ();
 }

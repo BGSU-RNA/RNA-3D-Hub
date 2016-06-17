@@ -217,16 +217,23 @@ symmetry = tokens[1];
 this.alphaBeta = tokens[1].toLowerCase ();
 }tokens = this.getMoTokens (null);
 }
+var pt = 0;
 while (tokens != null && tokens.length > 0 && this.parseIntStr (tokens[0]) != -2147483648) {
 if (tokens.length != 2) throw  new Exception ("invalid MO coefficient specification");
+var i = this.parseIntStr (tokens[0]);
+while (i > ++pt) data.addLast ("0");
+
 data.addLast (tokens[1]);
 tokens = this.getMoTokens (null);
 }
-var coefs =  Clazz.newFloatArray (data.size (), 0);
-if (this.orbitalType.equals ("") && coefs.length < this.nCoef) {
+if (this.orbitalType.equals ("") && data.size () < this.nCoef) {
 JU.Logger.info ("too few orbital coefficients for 6D");
 this.checkOrbitalType ("[5D]");
-}for (var i = data.size (); --i >= 0; ) coefs[i] = this.parseFloatStr (data.get (i));
+}while (++pt <= this.nCoef) {
+data.addLast ("0");
+}
+var coefs =  Clazz.newFloatArray (this.nCoef, 0);
+for (var i = data.size (); --i >= 0; ) coefs[i] = this.parseFloatStr (data.get (i));
 
 var l = this.line;
 this.line = "" + symmetry;
@@ -240,11 +247,11 @@ mo.put ("energy", Float.$valueOf (energy));
 if (symmetry != null) mo.put ("symmetry", symmetry);
 if (this.alphaBeta.length > 0) mo.put ("type", this.alphaBeta);
 this.setMO (mo);
-if (JU.Logger.debugging) {
+if (this.debugging) {
 JU.Logger.debug (coefs.length + " coefficients in MO " + this.orbitals.size ());
 }}this.line = l;
 }
-if (JU.Logger.debugging) JU.Logger.debug ("read " + this.orbitals.size () + " MOs");
+if (this.debugging) JU.Logger.debug ("read " + this.orbitals.size () + " MOs");
 this.setMOs ("eV");
 if (this.haveEnergy && this.doSort) this.sortMOs ();
 return false;
@@ -265,6 +272,7 @@ Clazz.defineMethod (c$, "checkOrbitalType",
  function (line) {
 if (line.length > 3 && "5D 6D 7F 10 9G 15 11 21".indexOf (line.substring (1, 3)) >= 0) {
 if (this.orbitalType.indexOf (line) >= 0) return true;
+if (line.indexOf ("G") >= 0 || line.indexOf ("H") >= 0 || line.indexOf ("I") >= 0) this.appendLoadNote ("Unsupported orbital type ignored: " + line);
 this.orbitalType += line;
 JU.Logger.info ("Orbital type set to " + this.orbitalType);
 this.fixOrbitalType ();

@@ -118,7 +118,7 @@ var nBonds = Clazz.floatToInt (this.getValue (1));
 var map =  new java.util.Hashtable ();
 for (var i = 0; i < nAtoms; i++) {
 this.tokens = JU.PT.getTokens (this.rd ());
-if (this.tokens[1].equals ("0")) continue;
+if (this.tokens[1].equals ("0") || this.tokens[1].equals ("2")) continue;
 var a = this.addAtomXYZSymName (this.tokens, 2, null, null);
 a.elementNumber = Clazz.floatToShort (this.getValue (1));
 map.put (this.tokens[0], a);
@@ -133,10 +133,10 @@ Clazz.defineMethod (c$, "readVFI",
 var map =  new java.util.Hashtable ();
 var bonds =  new JU.Lst ();
 while (this.tokens != null && this.tokens.length > 0) {
-for (var i = this.tokens.length; --i >= 11; ) bonds.addLast ([this.tokens[3], this.tokens[i]]);
+for (var i = this.tokens.length; --i >= 11; ) bonds.addLast ( Clazz.newArray (-1, [this.tokens[3], this.tokens[i]]));
 
 var id = this.tokens[3];
-this.tokens = (this.tokens[2].equals ("0") ? [this.tokens[4]] : this.tokens[1].equals ("0") ? [this.tokens[4], this.tokens[2], this.tokens[5]] : this.tokens[0].equals ("0") ? [this.tokens[4], this.tokens[2], this.tokens[5], this.tokens[1], this.tokens[7]] : [this.tokens[4], this.tokens[2], this.tokens[5], this.tokens[1], this.tokens[7], this.tokens[0], this.tokens[9]]);
+this.tokens = (this.tokens[2].equals ("0") ?  Clazz.newArray (-1, [this.tokens[4]]) : this.tokens[1].equals ("0") ?  Clazz.newArray (-1, [this.tokens[4], this.tokens[2], this.tokens[5]]) : this.tokens[0].equals ("0") ?  Clazz.newArray (-1, [this.tokens[4], this.tokens[2], this.tokens[5], this.tokens[1], this.tokens[7]]) :  Clazz.newArray (-1, [this.tokens[4], this.tokens[2], this.tokens[5], this.tokens[1], this.tokens[7], this.tokens[0], this.tokens[9]]));
 var atom = this.getAtom ();
 map.put (id, atom);
 this.tokens = JU.PT.getTokens (this.rd ());
@@ -200,7 +200,7 @@ this.setElementAndIsotope (atom, element);
 if (this.tokens.length > 5 && this.tokens[1].indexOf (".") >= 0) {
 var t = this.tokens;
 var l = t.length;
-this.tokens = (t[l - 3].equals ("0") ? [t[0]] : t[l - 2].equals ("0") ? [t[0], t[l - 3], t[1]] : t[l - 1].equals ("0") ? [t[0], t[l - 3], t[1], t[l - 2], t[3]] : [t[0], t[l - 3], t[1], t[l - 2], t[3], t[l - 1], t[5]]);
+this.tokens = (t[l - 3].equals ("0") ?  Clazz.newArray (-1, [t[0]]) : t[l - 2].equals ("0") ?  Clazz.newArray (-1, [t[0], t[l - 3], t[1]]) : t[l - 1].equals ("0") ?  Clazz.newArray (-1, [t[0], t[l - 3], t[1], t[l - 2], t[3]]) :  Clazz.newArray (-1, [t[0], t[l - 3], t[1], t[l - 2], t[3], t[l - 1], t[5]]));
 }var ia = this.getAtomIndex (1);
 var bondOrder = 0;
 switch (this.tokens.length) {

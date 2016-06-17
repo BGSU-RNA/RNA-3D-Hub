@@ -11,9 +11,8 @@ Clazz.instantialize (this, arguments);
 Clazz.prepareFields (c$, function () {
 this.ptXY =  new JU.P3i ();
 });
-Clazz.defineMethod (c$, "initShape", 
+Clazz.overrideMethod (c$, "initShape", 
 function () {
-Clazz.superCall (this, J.shape.Sticks, "initShape", []);
 this.myMask = 1023;
 this.reportAll = false;
 });
@@ -94,7 +93,7 @@ return;
 Clazz.overrideMethod (c$, "getProperty", 
 function (property, index) {
 if (property.equals ("selectionState")) return (this.selectedBonds != null ? "select BONDS " + JU.Escape.eBS (this.selectedBonds) + "\n" : "");
-if (property.equals ("sets")) return [this.bsOrderSet, this.bsSizeSet, this.bsColixSet];
+if (property.equals ("sets")) return  Clazz.newArray (-1, [this.bsOrderSet, this.bsSizeSet, this.bsColixSet]);
 return null;
 }, "~S,~N");
 Clazz.overrideMethod (c$, "setAtomClickability", 

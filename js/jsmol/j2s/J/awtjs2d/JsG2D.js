@@ -1,5 +1,5 @@
 Clazz.declarePackage ("J.awtjs2d");
-Clazz.load (["J.api.GenericGraphics"], "J.awtjs2d.JsG2D", ["javajs.awt.Color", "JU.CU"], function () {
+Clazz.load (["J.api.GenericGraphics"], "J.awtjs2d.JsG2D", ["javajs.awt.Color", "JU.CU", "J.awtjs2d.Platform"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.windowWidth = 0;
 this.windowHeight = 0;
@@ -24,9 +24,7 @@ return javajs.awt.Color.get1 (rgb);
 }, "~N");
 Clazz.overrideMethod (c$, "newGrayScaleImage", 
 function (context, image, width, height, grayBuffer) {
-{
-image = Jmol._newGrayScaleImage(context, image, width, height, grayBuffer);
-}return image;
+return J.awtjs2d.Platform.Jmol ()._newGrayScaleImage (context, image, width, height, grayBuffer);
 }, "~O,~O,~N,~N,~A");
 Clazz.overrideMethod (c$, "drawGrayScaleImage", 
 function (g, image, destX0, destY0, destX1, destY1, srcX0, srcY0, srcX1, srcY1) {
