@@ -41,10 +41,10 @@ class Motif_model extends CI_Model {
     {
         $this->db->select()
                  ->from('ml_loop_positions AS ML')
-                 ->join('pdb_unit_id_correspondence AS UC',
-                        'ML.nt_id = UC.old_id')
+                 #->join('unit_info AS UI',
+                 #       'ML.unit_id = UI.unit_id')
                  ->where('motif_id', $motif_id)
-                 ->where('release_id', $this->release_id)
+                 ->where('ml_release_id', $this->release_id)
                  ->order_by('loop_id, position');
         $query = $this->db->get();
 
@@ -442,10 +442,10 @@ class Motif_model extends CI_Model {
         foreach($this->loops as $loop_id) {
             $index = array();
             $position = array();
-            $unit_id_arr = array();
+            #$unit_id_arr = array();
 
             // get indexes of bordering nucleotides for loop id
-            $this->db->select('ML.position, LP.unit_id')
+            $this->db->select('ML.position, LP.unit_id, UI.number')
                      ->from('loop_positions AS LP')
                      ->join('unit_info AS UI', 'LP.unit_id = UI.unit_id')
                      ->join('ml_loop_positions AS ML', 'LP.loop_id = ML.loop_id AND ' .
@@ -458,7 +458,7 @@ class Motif_model extends CI_Model {
 
             foreach($query->result() as $row) {
                 $index[] = $row->position;
-                $unit_id_arr[] = $row->unit_id;
+                #$unit_id_arr[] = $row->unit_id;
             }
 
             list($loop_type, $pdb, $order) = explode('_', $loop_id);
@@ -467,9 +467,19 @@ class Motif_model extends CI_Model {
                 $seq = array($this->get_strand_fragment($pdb, $index[0], $index[1]));
                 $seq_nwc[] = substr($seq[0], 1, -1);
             } elseif ( $loop_type == 'IL' ) {
-                $seq = array($this->get_strand_fragment($pdb, $index[0], $index[1]),
-                             $this->get_strand_fragment($pdb, $index[2], $index[3]));
-                $seq_nwc[] = substr($seq[0], 1, -1) . '*' . substr($seq[1], 1, -1);
+                $this->db->select('LI.seq, LI.nwc_seq, LI.r_seq, LI.r_nwc_seq')
+                         ->from('loop_info AS LI')
+                         ->where('LI.loop_id', $loop_id);
+                $query = $this->db->get();
+
+                foreach ( $query->result() as $row ){
+                    $seq_com[] = ( $index[0] < $index[2] ) ? $row->seq : $row->r_seq; ## doesn't quite work
+                    $seq_com[] = $row->seq;
+                    $seq_nwc[] = $row->nwc_seq;
+                }
+                #$seq = array($this->get_strand_fragment($pdb, $index[0], $index[1]),
+                #             $this->get_strand_fragment($pdb, $index[2], $index[3]));
+                #$seq_nwc[] = substr($seq[0], 1, -1) . '*' . substr($seq[1], 1, -1);
 
                 #echo "<p>pdb/i0/i1/i2/i3:  $pdb // $index[0] // $index[1] // $index[2] // $index[3]</p>";
                 #echo "<p>seq: " . var_dump($seq) . "</p>";
@@ -478,7 +488,8 @@ class Motif_model extends CI_Model {
             $seq_all[] = implode('*', $seq);
         }
 
-        $counts = array_count_values($seq_all);
+        #$counts = array_count_values($seq_all);
+        $counts = array_count_values($seq_com);
         arsort($counts);
         foreach($counts as $seq => $count) {
             $complete[] = array($seq, $count);
@@ -956,8 +967,9 @@ class Motif_model extends CI_Model {
 
     function get_nucleotides()
     {
-        $this->db->select('loop_id, nt_id, position')
-                 ->from('ml_loop_positions')
+        $this->db->select('MLP.loop_id, MLP.nt_id, MLP.position, UI.unit_id')
+                 ->from('ml_loop_positions AS MLP')
+                 ->join('unit_info AS UI', 'MLP.unit_id = UI.unit_id')
                  ->where('ml_release_id', $this->release_id)
                  ->where('motif_id', $this->motif_id);
         $result = $this->db->get()->result_array();
@@ -965,9 +977,10 @@ class Motif_model extends CI_Model {
         for ($i = 0; $i < count($result); $i++) {
             $parts = explode("_", $result[$i]['nt_id']);
             $nt_id = $parts[4] . $parts[6] . ' ' . $parts[5];
-            $ic = ( $parts[6] == '' ) ? '' : '||||' . $parts[6];
-            $unit_id = $parts[0] . '|' . $parts[2] . '|' . $parts[3] . '|' . $parts[5] 
-                        . '|' . $parts[4] . $ic;
+            $unit_id = $result[$i]['unit_id'];
+            #$ic = ( $parts[6] == '' ) ? '' : '||||' . $parts[6];
+            #$unit_id = $parts[0] . '|' . $parts[2] . '|' . $parts[3] . '|' . $parts[5] 
+            #            . '|' . $parts[4] . $ic;
 
             $nts[$result[$i]['loop_id']][$result[$i]['position']] = $nt_id;
             $this->full_nts[$result[$i]['loop_id']][$result[$i]['position']] = $result[$i]['nt_id'];
