@@ -440,14 +440,15 @@ class Motif_model extends CI_Model {
         $seq   = array();
 
         foreach($this->loops as $loop_id) {
+            /*
             $index = array();
             $position = array();
             #$unit_id_arr = array();
+            */
 
             // get indexes of bordering nucleotides for loop id
-            $this->db->select('ML.position, LP.unit_id, UI.number')
+            $this->db->select('LP.position')
                      ->from('loop_positions AS LP')
-                     ->join('unit_info AS UI', 'LP.unit_id = UI.unit_id')
                      ->join('ml_loop_positions AS ML', 'LP.loop_id = ML.loop_id AND ' .
                                                        'LP.unit_id = ML.unit_id')
                      ->where('ML.ml_release_id', $latest_release)
@@ -456,16 +457,39 @@ class Motif_model extends CI_Model {
                      ->order_by('ML.position');
             $query = $this->db->get();
 
+            $first = "";
+            $last  = "";
+
             foreach($query->result() as $row) {
-                $index[] = $row->position;
+                if ( $first == "" ){ 
+                    $first = $row->position;
+                }
+
+                $last = $row->position;
+            }
+
+            /*
+            foreach($query->result() as $row) {
+                $index[] = $row->lposition;
                 #$unit_id_arr[] = $row->unit_id;
             }
+            */
 
             list($loop_type, $pdb, $order) = explode('_', $loop_id);
 
             if ( $loop_type == 'HL' ) {
+                $this->db->select('LI.seq, LI.nwc_seq')
+                         ->from('loop_info AS LI')
+                         ->where('LI.loop_id', $loop_id);
+                $query = $this->db->get();
+                /*
                 $seq = array($this->get_strand_fragment($pdb, $index[0], $index[1]));
                 $seq_nwc[] = substr($seq[0], 1, -1);
+                */
+                foreach ( $query->result() as $row ){
+                    $seq_com[] = $row->seq;
+                    $seq_nwc[] = $row->nwc_seq;
+                }
             } elseif ( $loop_type == 'IL' ) {
                 $this->db->select('LI.seq, LI.nwc_seq, LI.r_seq, LI.r_nwc_seq')
                          ->from('loop_info AS LI')
@@ -473,19 +497,23 @@ class Motif_model extends CI_Model {
                 $query = $this->db->get();
 
                 foreach ( $query->result() as $row ){
-                    $seq_com[] = ( $index[0] < $index[2] ) ? $row->seq : $row->r_seq; ## doesn't quite work
-                    $seq_com[] = $row->seq;
-                    $seq_nwc[] = $row->nwc_seq;
+                    if ( $first < $last ){
+                        $seq_com[] = $row->seq;
+                        $seq_nwc[] = $row->nwc_seq;
+                    } else {
+                        $seq_com[] = $row->r_seq;
+                        $seq_nwc[] = $row->r_nwc_seq;
+                    }
+                    #( $first < $last ) ?  :  ## doesn't quite work
+                    #$seq_com[] = $row->seq;
+                    #$seq_nwc[] = $row->nwc_seq;
                 }
                 #$seq = array($this->get_strand_fragment($pdb, $index[0], $index[1]),
                 #             $this->get_strand_fragment($pdb, $index[2], $index[3]));
                 #$seq_nwc[] = substr($seq[0], 1, -1) . '*' . substr($seq[1], 1, -1);
-
-                #echo "<p>pdb/i0/i1/i2/i3:  $pdb // $index[0] // $index[1] // $index[2] // $index[3]</p>";
-                #echo "<p>seq: " . var_dump($seq) . "</p>";
             }
 
-            $seq_all[] = implode('*', $seq);
+            #$seq_all[] = implode('*', $seq);
         }
 
         #$counts = array_count_values($seq_all);
@@ -505,6 +533,7 @@ class Motif_model extends CI_Model {
                      'nwc'      => $nwc);
     }
 
+    /*
     private function get_strand_fragment($pdb, $start, $stop)
     {
         $rna = array('A', 'C', 'G', 'U');
@@ -527,7 +556,9 @@ class Motif_model extends CI_Model {
         
         return implode('', $nts);
     }
+    */
 
+    /*
     private function get_strand_fragment_unit($unit_1, $unit_2)
     {
         //  testing a unit_id-based approach to building sequence variant strings
@@ -547,6 +578,7 @@ class Motif_model extends CI_Model {
                  ->where('number <=', $pos_2)
                  ->where_in('unit', $rna);
     }
+    */
 
     function get_latest_release_for_motif($motif_id)
     {
