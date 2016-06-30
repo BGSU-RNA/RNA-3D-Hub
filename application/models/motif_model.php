@@ -459,6 +459,8 @@ class Motif_model extends CI_Model {
 
             $first = "";
             $last  = "";
+            #   this causes a problem when the query above returns no results
+            #   what is the proper default in that case?
 
             foreach($query->result() as $row) {
                 if ( $first == "" ){ 
@@ -497,7 +499,7 @@ class Motif_model extends CI_Model {
                 $query = $this->db->get();
 
                 foreach ( $query->result() as $row ){
-                    if ( $first < $last ){
+                    if ( $first <= $last ){
                         $seq_com[] = $row->seq;
                         $seq_nwc[] = $row->nwc_seq;
                     } else {
