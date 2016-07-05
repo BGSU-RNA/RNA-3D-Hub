@@ -139,7 +139,7 @@ class Pdb_model extends CI_Model {
 
     function pdb_exists($pdb_id)
     {
-        // does RNA 3D Hub know about this structure?
+        // does BGSU RNA Site know about this structure?
         $this->db->select('pdb_id')
                  ->from('pdb_info')
                  ->where('pdb_id', $pdb_id)

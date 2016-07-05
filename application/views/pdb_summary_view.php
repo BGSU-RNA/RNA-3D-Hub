@@ -113,7 +113,7 @@
 
         </div> <!-- end row -->
 
-        <!-- RNA 3D Hub specific data -->
+        <!-- BGSU RNA Site specific data -->
         <div class="row">
               <!-- pairwise interactions -->
               <div class="span3 well">

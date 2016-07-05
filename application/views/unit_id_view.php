@@ -37,7 +37,7 @@
                   View in
                   <?=anchor_popup("http://www.pdb.org/pdb/explore.do?structureId={$unit_id['pdb_id']}", 'PDB')?>
                   or
-                  <?=anchor("pdb/{$unit_id['pdb_id']}", 'RNA 3D Hub')?>
+                  <?=anchor("pdb/{$unit_id['pdb_id']}", 'BGSU RNA Site')?>
                 </dd>
                 <dt>Model</dt>
                 <dd><?=$unit_id['model']?></dd>

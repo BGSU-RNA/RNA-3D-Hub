@@ -6,7 +6,7 @@
     <div class="topbar" data-dropdown="dropdown">
       <div class="fill">
         <div class="container">
-          <a class="brand" href="<?php echo $baseurl;?>">RNA 3D Hub</a>
+          <a class="brand" href="<?php echo $baseurl;?>">BGSU RNA Site</a>
           <ul class="nav">
 
             <li><a href="<?php echo $baseurl;?>pdb">RNA Structure Atlas</a></li>
