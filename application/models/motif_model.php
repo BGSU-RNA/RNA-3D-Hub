@@ -6,19 +6,19 @@ class Motif_model extends CI_Model {
 
     function __construct()
     {
-        $this->release_id = '';
-        $this->loops      = array(); // loops in the search order
-        $this->nts        = array(); // human-readable nts
-        $this->nt_ids     = array(); // full nt ids
-        $this->unit_ids   = array();
-        $this->full_nts   = array();
-        $this->full_units = array();
-        $this->header     = array();
-        $this->disc       = array();
-        $this->f_lwbp     = array();
-        $this->similarity = array(); // loops in similarity order
+        $this->release_id  = '';
+        $this->loops       = array(); // loops in the search order
+        $this->nts         = array(); // human-readable nts
+        $this->nt_ids      = array(); // full nt ids
+        $this->unit_ids    = array();
+        $this->full_nts    = array();
+        $this->full_units  = array();
+        $this->header      = array();
+        $this->disc        = array();
+        $this->f_lwbp      = array();
+        $this->similarity  = array(); // loops in similarity order
         $this->full_length = array();
-        $this->chainbreak = -1;
+        $this->chainbreak  = -1;
         // Call the Model constructor
         parent::__construct();
     }
@@ -440,12 +440,6 @@ class Motif_model extends CI_Model {
         $seq   = array();
 
         foreach($this->loops as $loop_id) {
-            /*
-            $index = array();
-            $position = array();
-            #$unit_id_arr = array();
-            */
-
             // get indexes of bordering nucleotides for loop id
             $this->db->select('LP.position')
                      ->from('loop_positions AS LP')
@@ -459,8 +453,6 @@ class Motif_model extends CI_Model {
 
             $first = "";
             $last  = "";
-            #   this causes a problem when the query above returns no results
-            #   what is the proper default in that case?
 
             foreach($query->result() as $row) {
                 if ( $first == "" ){ 
@@ -470,13 +462,6 @@ class Motif_model extends CI_Model {
                 $last = $row->position;
             }
 
-            /*
-            foreach($query->result() as $row) {
-                $index[] = $row->lposition;
-                #$unit_id_arr[] = $row->unit_id;
-            }
-            */
-
             list($loop_type, $pdb, $order) = explode('_', $loop_id);
 
             if ( $loop_type == 'HL' ) {
@@ -484,10 +469,7 @@ class Motif_model extends CI_Model {
                          ->from('loop_info AS LI')
                          ->where('LI.loop_id', $loop_id);
                 $query = $this->db->get();
-                /*
-                $seq = array($this->get_strand_fragment($pdb, $index[0], $index[1]));
-                $seq_nwc[] = substr($seq[0], 1, -1);
-                */
+
                 foreach ( $query->result() as $row ){
                     $seq_com[] = $row->seq;
                     $seq_nwc[] = $row->nwc_seq;
@@ -506,19 +488,10 @@ class Motif_model extends CI_Model {
                         $seq_com[] = $row->r_seq;
                         $seq_nwc[] = $row->r_nwc_seq;
                     }
-                    #( $first < $last ) ?  :  ## doesn't quite work
-                    #$seq_com[] = $row->seq;
-                    #$seq_nwc[] = $row->nwc_seq;
                 }
-                #$seq = array($this->get_strand_fragment($pdb, $index[0], $index[1]),
-                #             $this->get_strand_fragment($pdb, $index[2], $index[3]));
-                #$seq_nwc[] = substr($seq[0], 1, -1) . '*' . substr($seq[1], 1, -1);
-            }
-
-            #$seq_all[] = implode('*', $seq);
+           }
         }
 
-        #$counts = array_count_values($seq_all);
         $counts = array_count_values($seq_com);
         arsort($counts);
         foreach($counts as $seq => $count) {
@@ -534,53 +507,6 @@ class Motif_model extends CI_Model {
         return array('complete' => $complete,
                      'nwc'      => $nwc);
     }
-
-    /*
-    private function get_strand_fragment($pdb, $start, $stop)
-    {
-        $rna = array('A', 'C', 'G', 'U');
-
-        $this->db->select('unit')
-                 ->from('unit_info')
-                 ->where('pdb_id', $pdb)
-                 ->where_in('unit', $rna)
-                 #->where('chain_index >=', $start);
-                 #->where('chain_index <=', $stop);
-                 ->where('number >=', $start)
-                 ->where('number <=', $stop)
-                 ->order_by('number');
-
-        $query = $this->db->get();
-
-        foreach($query->result() as $row) {
-            $nts[] = $row->unit;
-        }
-        
-        return implode('', $nts);
-    }
-    */
-
-    /*
-    private function get_strand_fragment_unit($unit_1, $unit_2)
-    {
-        //  testing a unit_id-based approach to building sequence variant strings
-        $rna = array('A', 'C', 'G', 'U');
-
-        list($pdb_1, $model_1, $chain_1, $nuc_1, $pos_1, $trash_1_1, $trash_2_1, 
-             $trash_3_1, $ic_1) = explode('_', $unit_1);
-        list($pdb_2, $model_2, $chain_2, $nuc_2, $pos_2, $trash_1_2, $trash_2_2, 
-             $trash_3_2, $ic_2) = explode('_', $unit_2);
-
-        $this->db->select('unit')
-                 ->from('unit_info')
-                 ->where('pdb_id', $pdb_1)
-                 ->where('model', $model_1)
-                 ->where('chain', $chain_1)
-                 ->where('number >=', $pos_1)
-                 ->where('number <=', $pos_2)
-                 ->where_in('unit', $rna);
-    }
-    */
 
     function get_latest_release_for_motif($motif_id)
     {
@@ -708,11 +634,6 @@ class Motif_model extends CI_Model {
             $disc[$result[$i]['loop_id1']][$result[$i]['loop_id2']] = $result[$i]['discrepancy'];
         }
 
-        ### DEBUG
-        #echo "<p>result count:  $i</p>";
-        #echo "<p>release_id:  $this->release_id</p>";
-        #echo "<p>loops:  " . var_dump($this->loops) . "</p>";
-
         $matrix = array();
         for ($i = 1; $i <= $this->num_loops; $i++) {
             $loop_id1 = $this->similarity[$i];
@@ -772,7 +693,9 @@ class Motif_model extends CI_Model {
         for ($i = 1; $i <= count($loops); $i++) {
             $checkbox_div .= "<li><label><input type='checkbox' id='{$loops[$i]}' class='jmolInline' ";
             ksort($this->full_nts[$loops[$i]]);
-            $checkbox_div .= "data-coord='" . implode(",", $this->full_nts[$loops[$i]]) . "'>";
+            ksort($this->full_units[$loops[$i]]);
+            $checkbox_div .= "data-coord='" . implode(",", $this->full_nts[$loops[$i]]) . "' ";
+            $checkbox_div .= "data-foo='" . implode(",", $this->full_units[$loops[$i]]) . "'>";
             $checkbox_div .= "&nbsp;{$loops[$i]}";
             $checkbox_div .= '</label></li>';
             //<input type='checkbox' id='s1' class='jmolInline' data-coord='1S72_1_0_1095,1S72_1_0_1261'><label for='s1'>IL_1S72_038</label><br>
@@ -784,8 +707,10 @@ class Motif_model extends CI_Model {
     function get_checkbox($i)
     {
         ksort($this->full_nts[$this->loops[$i]]);
+        ksort($this->full_units[$this->loops[$i]]);
         return "<label><input type='checkbox' id='{$this->loops[$i]}' class='jmolInline' " .
-               "data-coord='". implode(",", $this->full_nts[$this->loops[$i]]) ."'>{$this->loops[$i]}</label>"
+               "data-coord='". implode(",", $this->full_nts[$this->loops[$i]]) ."'" . 
+               " data-foo='" . implode(",", $this->full_units[$this->loops[$i]]) . "'>{$this->loops[$i]}</label>"
                . "<span class='loop_link'>" . anchor_popup("loops/view/{$this->loops[$i]}", '&#10140;') . "</span>";
 
     }
@@ -896,7 +821,7 @@ class Motif_model extends CI_Model {
                 $parts = explode("_", $this->loops[$id]);
                 $row[] = '<a class="pdb">' . $parts[1] . '</a>';
             } elseif ( $key == 'Bulges' ) {
-                $row[] = $this->full_length[$this->loops[$id]] - count($this->full_nts[$this->loops[$id]]);
+                $row[] = $this->full_length[$this->loops[$id]] - count($this->full_units[$this->loops[$id]]);
             } elseif ( $key == 'break' ) {
             	$row[] = '*';
             } elseif ( is_int($key) ) {
@@ -1012,9 +937,6 @@ class Motif_model extends CI_Model {
             $parts = explode("_", $result[$i]['nt_id']);
             $nt_id = $parts[4] . $parts[6] . ' ' . $parts[5];
             $unit_id = $result[$i]['unit_id'];
-            #$ic = ( $parts[6] == '' ) ? '' : '||||' . $parts[6];
-            #$unit_id = $parts[0] . '|' . $parts[2] . '|' . $parts[3] . '|' . $parts[5] 
-            #            . '|' . $parts[4] . $ic;
 
             $nts[$result[$i]['loop_id']][$result[$i]['position']] = $nt_id;
             $this->full_nts[$result[$i]['loop_id']][$result[$i]['position']] = $result[$i]['nt_id'];
