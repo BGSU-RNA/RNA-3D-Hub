@@ -705,6 +705,7 @@ class Motif_model extends CI_Model {
 
     function get_checkbox($i)
     {
+        #echo "<p>i: $i // loops: " . $this->loops[$i] . "</p>";
         ksort($this->full_nts[$this->loops[$i]]);
         ksort($this->full_units[$this->loops[$i]]);
         return "<label><input type='checkbox' id='{$this->loops[$i]}' class='jmolInline' " .
@@ -777,6 +778,9 @@ class Motif_model extends CI_Model {
 			return;
 		}
 
+/*
+        // ORIGINAL VERSION:
+
 		// get an internal loop from this motif
 		$this->db->select('ml_loops_id')
 		         ->from('ml_loops')
@@ -802,12 +806,29 @@ class Motif_model extends CI_Model {
 		if ( count($result) > 0 ) {
 	        $this->chainbreak = $result[1]['position'];
         }
+*/
+        // REVISION
+        $this->db->select('ML.position')
+                 ->distinct()
+                 ->from('loop_positions AS LP')
+                 ->join('ml_loop_positions AS ML', 'LP.loop_id = ML.loop_id AND ' .
+                                                   'LP.unit_id = ML.unit_id')
+                 ->where('LP.border', 1)
+                 ->where('ML.motif_id', $this->motif_id)
+                 ->where('ML.ml_release_id', $this->release_id)
+                 ->order_by('ML.position', 'ASC')
+                 ->limit(1,1);
+        $query = $this->db->get();
+        $result = $query->row();
+        $this->chainbreak = $result->position;        
 	}
 
     function generate_row($id)
     {
+        #echo "<p>id: $id</p>";
         for ($i = 0; $i < count($this->header); $i++) {
             $key = $this->header[$i];
+            #echo "<p>key: $key</p>";
 
             if ( $key == '#D' ) {
                 $row[] = $id;
@@ -824,8 +845,9 @@ class Motif_model extends CI_Model {
             	$row[] = '*';
             } elseif ( is_int($key) ) {
                 $parts = explode(' ', $this->nts[$this->loops[$id]][$key]);
-                $row[] = $parts[1];
-                $row[] = $parts[0];
+
+                $row[] = $parts[1]; // ISSUE
+                $row[] = $parts[0]; // ISSUE
             } elseif ( $key == ' ' ) {
                 // do nothing
             } elseif ( $key == 'Disc' ) {
@@ -833,13 +855,11 @@ class Motif_model extends CI_Model {
             }
             else {
                 $parts = explode('-', $key);
-                $nt1 = $this->nts[$this->loops[$id]][$parts[0]];
-                $nt2 = $this->nts[$this->loops[$id]][$parts[1]];
-                $unit_1 = $this->units[$this->loops[$id]][$parts[0]];
-                $unit_2 = $this->units[$this->loops[$id]][$parts[1]];
 
-                #echo "<p>nt1 = $nt1 // nt2 = $nt2</p>";
-                #echo "<p>unit_1 = $unit_1 // unit_2 = $unit_2</p>";
+                $nt1 = $this->nts[$this->loops[$id]][$parts[0]]; // ISSUE
+                $nt2 = $this->nts[$this->loops[$id]][$parts[1]]; // ISSUE
+                $unit_1 = $this->units[$this->loops[$id]][$parts[0]]; // ISSUE
+                $unit_2 = $this->units[$this->loops[$id]][$parts[1]]; // ISSUE
 
                 #if ( isset($this->f_lwbp[$nt1][$nt2]) ) {
                 #    $row[] = $this->f_lwbp[$nt1][$nt2];
@@ -857,15 +877,11 @@ class Motif_model extends CI_Model {
     {
         $this->db->select()
                  ->from('unit_pairs_interactions')
-                 #->where_in('iPdbSig', array_keys($this->nt_ids))
-                 #->where_in('jPdbSig', array_keys($this->nt_ids));
                  ->where_in('unit_id_1', array_keys($this->unit_ids))
                  ->where_in('unit_id_2', array_keys($this->unit_ids));
         $query = $this->db->get();
-
+        
         foreach($query->result() as $row) {
-            #$nt_full1 = $row->iPdbSig;
-            #$nt_full2 = $row->jPdbSig;
             $unit_full_1 = $row->unit_id_1;
             $unit_full_2 = $row->unit_id_2;
 
@@ -932,17 +948,19 @@ class Motif_model extends CI_Model {
         $result = $this->db->get()->result_array();
 
         for ($i = 0; $i < count($result); $i++) {
-            $parts = explode("_", $result[$i]['nt_id']);
-            $nt_id = $parts[4] . $parts[6] . ' ' . $parts[5];
-            $unit_id = $result[$i]['unit_id'];
+            $parts_ntid = explode("_", $result[$i]['nt_id']);
+            $parts_unit = explode("|", $result[$i]['unit_id']);
+            $ic_unit = (isset($parts_unit[8])) ? $parts_unit[8] : "";
+            $nt_id = $parts_ntid[4] . $parts_ntid[6] . ' ' . $parts_ntid[5];
+            $unit_id = $parts_unit[4] . $ic_unit . ' ' . $parts_unit[3];
 
             $nts[$result[$i]['loop_id']][$result[$i]['position']] = $nt_id;
             $this->full_nts[$result[$i]['loop_id']][$result[$i]['position']] = $result[$i]['nt_id'];
             $this->nt_ids[$result[$i]['nt_id']] = $nt_id;
 
             $units[$result[$i]['loop_id']][$result[$i]['position']] = $unit_id;
-            $this->full_units[$result[$i]['loop_id']][$result[$i]['position']] = $unit_id;
-            $this->unit_ids[$unit_id] = $unit_id;
+            $this->full_units[$result[$i]['loop_id']][$result[$i]['position']] = $result[$i]['unit_id'];
+            $this->unit_ids[$result[$i]['unit_id']] = $unit_id;
         }
 
         $this->nts = $nts;
