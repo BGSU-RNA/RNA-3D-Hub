@@ -8,6 +8,7 @@ class Display3D extends CI_Controller {
         $data['coord'] = str_replace('%7C', '|', $coord);
         
         $this->load->view('header_view', $data);
+        $this->load->view('menu_view', $data);
         $this->load->view('display3D_unitid', $data);
         
 	}

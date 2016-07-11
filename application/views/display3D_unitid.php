@@ -1,3 +1,4 @@
+	</br></br></br>
 	<div align = 'center'> 
 
 
@@ -20,8 +21,8 @@
     };
 
     var Info = {
-        width: 700,
-        height: 700,
+        width: 500,
+        height: 500,
         debug: false,
         color: 'white',
         addSelectionOptions: false,
