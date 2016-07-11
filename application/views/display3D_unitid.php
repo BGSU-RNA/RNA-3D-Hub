@@ -1,6 +1,5 @@
-<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js'></script>
-<script src='<?=$baseurl?>/js/jsmol/JSmol.min.nojq.js'></script>
-<script src='<?=$baseurl?>/js/jquery.jmolTools.js'></script>
+	<div align = 'center'> 
+
 
 <script>
 
@@ -21,8 +20,8 @@
     };
 
     var Info = {
-        width: 340,
-        height: 340,
+        width: 700,
+        height: 700,
         debug: false,
         color: 'white',
         addSelectionOptions: false,
@@ -45,12 +44,9 @@
     function jmolScriptWait(cmd) {Jmol.scriptWait(jmolApplet0, cmd)};
 </script>
 
-	</div>
+	
+	<input type="checkbox" id="showNtNums">Nucleotide numbers
     <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
-	<input type='button' id='prev' class='btn' value='Previous'>
-    <input type='button' id='next' class='btn' value="Next">
     <input type='button' id='stereo' class='btn' value="Stereo">
-    <input type='button' id='all' class='btn' value="Show all">
-    <input type='button' id='clear' class='btn' value="Clear all">
-    <br><input type='checkbox' id='example1' class='jmolInline' data-coord="<?= $coord ?>"<label for='example1'>Unit id entered: </label><?= $coord ?>
+    <br><input type='checkbox' id='example1' class='jmolInline' data-coord="<?= $coord ?>"<label for='example1'>UNIT IDs entered: </label><?= $coord ?>
     </div>
