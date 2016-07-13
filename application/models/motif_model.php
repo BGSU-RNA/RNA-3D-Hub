@@ -820,8 +820,12 @@ class Motif_model extends CI_Model {
                  ->limit(1,1);
         $query = $this->db->get();
         $result = $query->row();
-        $this->chainbreak = ( $result === FALSE ) ? 0 : $result->position;
-        if ( $result <> FALSE ) echo "<p>RP: " . $result->position . "</p>";
+
+        if ( $result <> FALSE ){
+            $this->chainbreak = $result->position;
+            echo "<p>RP: " . $result->position . "</p>";
+        }
+
         echo "<p>TC: " . $this->chainbreak . "</p>";
 	}
 
