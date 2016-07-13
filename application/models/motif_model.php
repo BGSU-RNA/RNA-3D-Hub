@@ -820,15 +820,17 @@ class Motif_model extends CI_Model {
                  ->limit(1,1);
         $query = $this->db->get();
         $result = $query->row();
-        $this->chainbreak = $result->position;        
+        $this->chainbreak = ( $result->num_rows == 0 ) ? 0 : $result->position;
+        echo "<p>RP: " . $result->position . "</p>";
+        echo "<p>TC: " . $this->chainbreak . "</p>";
 	}
 
     function generate_row($id)
     {
-        #echo "<p>id: $id</p>";
+        echo "<p>id: $id</p>";
         for ($i = 0; $i < count($this->header); $i++) {
             $key = $this->header[$i];
-            #echo "<p>key: $key</p>";
+            echo "<p>key: $key</p>";
 
             if ( $key == '#D' ) {
                 $row[] = $id;
