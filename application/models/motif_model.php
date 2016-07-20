@@ -19,6 +19,7 @@ class Motif_model extends CI_Model {
         $this->similarity  = array(); // loops in similarity order
         $this->full_length = array();
         $this->chainbreak  = -1;
+        $this->motiflen    = 0;
         // Call the Model constructor
         parent::__construct();
     }
@@ -723,6 +724,7 @@ class Motif_model extends CI_Model {
         $this->get_interactions();
         $this->get_loop_lengths();
         $this->get_chainbreak();
+        $this->get_motiflen();
         $this->get_header();
 
         for ($i = 0; $i < $this->num_loops; $i++) {
@@ -752,7 +754,7 @@ class Motif_model extends CI_Model {
         $header = array('#D', '#S', 'Loop id', 'PDB', 'Disc', 'Bulges');
 
         // 1, 2, ..., N
-        for ($i = 1; $i < $this->num_nt; $i++) {
+        for ($i = 1; $i <= $this->motiflen; $i++) {
 			if ($i == $this->chainbreak + 1) { // insert a column after chainbreak
 				$header[] = 'break';
 			}
@@ -762,8 +764,8 @@ class Motif_model extends CI_Model {
 		}
 
         // 1-2, ..., 1-N, ..., N-1 - N
-        for ($i = 1; $i < $this->num_nt; $i++) {
-            for ($j = $i; $j < $this->num_nt; $j++) {
+        for ($i = 1; $i <= $this->motiflen; $i++) {
+            for ($j = $i; $j <= $this->motiflen; $j++) {
                 $header[] = "$i-$j";
             }
         }
@@ -778,35 +780,6 @@ class Motif_model extends CI_Model {
 			return;
 		}
 
-/*
-        // ORIGINAL VERSION:
-
-		// get an internal loop from this motif
-		$this->db->select('ml_loops_id')
-		         ->from('ml_loops')
-		         ->where('motif_id', $this->motif_id)
-		         ->limit(1);
-        $query = $this->db->get();
-        $result = $query->row();
-    	$loop_id = $result->ml_loops_id;
-
-    	// get chain breaks
-    	$this->db->select('ML.position')
-    	         ->from('loop_positions AS LP')
-    	         ->join('ml_loop_positions AS ML', 'LP.loop_id = ML.loop_id AND ' .
-    	                                           'LP.unit_id = ML.unit_id')
-    	         ->where('LP.loop_id', $loop_id)
-    	         ->where('LP.border', 1)
-    	         ->where('ML.motif_id', $this->motif_id)
-    	         ->where('ML.ml_release_id', $this->release_id)
-    	         ->order_by('ML.position', 'ASC');
-        $result = $this->db->get()->result_array();
-
-        // take second row
-		if ( count($result) > 0 ) {
-	        $this->chainbreak = $result[1]['position'];
-        }
-*/
         // REVISION
         $this->db->select('ML.position')
                  ->distinct()
@@ -823,18 +796,33 @@ class Motif_model extends CI_Model {
 
         if ( $result <> FALSE ){
             $this->chainbreak = $result->position;
-            echo "<p>RP: " . $result->position . "</p>";
         }
 
         echo "<p>TC: " . $this->chainbreak . "</p>";
 	}
+
+    function get_motiflen()
+    {
+        $this->db->select_max('ML.position')
+                 ->from('loop_positions AS LP')
+                 ->join('ml_loop_positions AS ML', 'LP.loop_id = ML.loop_id AND ' .
+                                                   'LP.unit_id = ML.unit_id')
+                 ->where('LP.border', 1)
+                 ->where('ML.motif_id', $this->motif_id)
+                 ->where('ML.ml_release_id', $this->release_id);
+        $query = $this->db->get();
+        $result = $query->row();
+
+        if ( $result <> FALSE ){
+            $this->motiflen = $result->position;
+        }
+    }
 
     function generate_row($id)
     {
         echo "<p>id: $id</p>";
         for ($i = 0; $i < count($this->header); $i++) {
             $key = $this->header[$i];
-            echo "<p>key: $key</p>";
 
             if ( $key == '#D' ) {
                 $row[] = $id;
@@ -973,6 +961,10 @@ class Motif_model extends CI_Model {
         $this->num_nt = count($nts, COUNT_RECURSIVE) / count($nts);
         $this->units = $units;
         $this->num_unit = count($units, COUNT_RECURSIVE) / count($units);
+
+        echo "<p>count_res: " . count($result) . "<br/>count_nt_rec: " . count($nts, COUNT_RECURSIVE) 
+            . "<br/>count_nt: " . count($nts) . "<br/>count_un_rec: " . 
+            count($units, COUNT_RECURSIVE) . "<br/>count_un: " . count($units) . "</p>";
         // $nts['IL_1S72_001'][1] = 'A 102'
         // $nt_ids['1S72_AU_...'] = 'A 102'
         // $full_nts['IL_1S72_001'][1] = '1S72_AU_...'
