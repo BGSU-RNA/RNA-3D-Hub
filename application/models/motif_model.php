@@ -962,9 +962,6 @@ class Motif_model extends CI_Model {
         $this->units = $units;
         $this->num_unit = count($units, COUNT_RECURSIVE) / count($units);
 
-        echo "<p>count_res: " . count($result) . "<br/>count_nt_rec: " . count($nts, COUNT_RECURSIVE) 
-            . "<br/>count_nt: " . count($nts) . "<br/>count_un_rec: " . 
-            count($units, COUNT_RECURSIVE) . "<br/>count_un: " . count($units) . "</p>";
         // $nts['IL_1S72_001'][1] = 'A 102'
         // $nt_ids['1S72_AU_...'] = 'A 102'
         // $full_nts['IL_1S72_001'][1] = '1S72_AU_...'
