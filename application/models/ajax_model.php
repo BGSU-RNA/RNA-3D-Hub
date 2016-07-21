@@ -353,9 +353,13 @@ class Ajax_model extends CI_Model {
         $nt_ids = explode(',', $nt_ids);
 
         // get their coordinates
-        $this->db->select('coordinates')
-                ->from('unit_coordinates')
-                ->where_in('unit_id', $nt_ids);
+        $this->db->select('coordinates')->from('unit_coordinates');
+        $this->db->where_in('unit_id', $nt_ids);
+        $this->db->_protect_identifiers = FALSE;
+        // preserve order as in the where in clause
+        $order = sprintf('FIELD(unit_id, %s)', "'" . implode("','", $nt_ids) . "'");
+        $this->db->order_by($order);
+        $this->db->_protect_identifiers = TRUE;
         $query = $this->db->get();
 
         if ($query->num_rows() == 0) { return 'Nucleotide coordinates not found'; }
