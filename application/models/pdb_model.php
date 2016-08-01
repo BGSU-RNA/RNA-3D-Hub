@@ -128,13 +128,13 @@ class Pdb_model extends CI_Model {
 
     function get_latest_loop_release()
     {
-        $this->db->select('loop_releases_id')
+        $this->db->select('loop_release_id')
                  ->from('loop_releases')
                  ->order_by('date','desc')
                  ->limit(1);
 
         $result = $this->db->get()->result_array();
-        return $result[0]['loop_releases_id'];
+        return $result[0]['loop_release_id'];
     }
 
     function pdb_exists($pdb_id)
@@ -224,7 +224,7 @@ class Pdb_model extends CI_Model {
         $url_parameters = array('basepairs', 'stacking', 'basephosphate', 'baseribose');
         $db_fields      = array('f_lwbp', 'f_stacks', 'f_bphs', 'f_brbs');
         $header_values  = array('Base-pair', 'Base-stacking', 'Base-phosphate', 'Base-ribose');
-        $header = array('#', 'Nucleotide id 1', 'Nucleotide id 2');
+        $header         = array('#', 'Nucleotide id 1', 'Nucleotide id 2');
 
         if ( in_array($interaction_type, $url_parameters) ) {
             $targets = array_keys($url_parameters, $interaction_type);
@@ -247,20 +247,23 @@ class Pdb_model extends CI_Model {
 
         $this->db->select('upi.unit_id_1, upi.unit_id_2,' . $db_field)
                  ->from('unit_pairs_interactions AS upi')
-                 ->join('unit_info AS ui', 'upi.unit_id_1 = ui.unit_id')
+                 ->join('unit_info AS u1', 'upi.unit_id_1 = u1.unit_id')
+                 ->join('unit_info AS u2', 'upi.unit_id_1 = u2.unit_id')
                  ->where('upi.pdb_id', $pdb_id)
                  ->where($where)
-                 ->order_by('number');
+                 #->order_by('number');
+                 ->order_by('u1.chain, u1.chain_index, u2.chain, u2.chain_index');
         $query = $this->db->get();
 
         $i = 1;
         $html = '';
         $csv  = '';
+
         foreach ( $query->result() as $row ) {
             $output_fields = array();
             $csv_fields    = array();
-
             $csv_fields[0] = $unit_ids[$row->unit_id_1];
+
             foreach ($targets as $target) {
                 if ( isset($row->{$db_fields[$target]}) and ($row->{$db_fields[$target]} != '') ) {
                     $output_fields[] = $row->{$db_fields[$target]};
@@ -269,6 +272,7 @@ class Pdb_model extends CI_Model {
                     $csv_fields[] = '';
                 }
             }
+
             $csv_fields[] = $unit_ids[$row->unit_id_2];
 
             $html .= str_pad('<span>' . $unit_ids[$row->unit_id_1] . '</span>', 38, ' ') .
@@ -277,7 +281,9 @@ class Pdb_model extends CI_Model {
                     "</a>" .
                     str_pad('<span>' . $unit_ids[$row->unit_id_2] . '</span>', 38, ' ', STR_PAD_LEFT) .
                     "\n";
+
             $csv .= '"' . implode('","', $csv_fields) . '"' . "\n";
+
             $i++;
         }
 
