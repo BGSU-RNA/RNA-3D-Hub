@@ -118,11 +118,13 @@
  -->
                         </div>
 
+<!--
                         <div class="tab-pane" id='similar'>
                             <div>
                                 <?=$similar_motifs?>
                             </div>
                         </div>
+-->
 
                         <div class="tab-pane" id='history'>
                             <h4>Release history</h4>
