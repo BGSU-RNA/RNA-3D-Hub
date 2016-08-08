@@ -110,21 +110,21 @@
                                 </div>
                             </div>
 
-<!--
+<?/*
                             <h4>Sequence databases</h4>
                             <div class="row block-div span11">
                                 Coming soon.
                             </div>
- -->
+*/?>
                         </div>
 
-<!--
+<?/*
                         <div class="tab-pane" id='similar'>
                             <div>
                                 <?=$similar_motifs?>
                             </div>
                         </div>
--->
+*/?>
 
                         <div class="tab-pane" id='history'>
                             <h4>Release history</h4>
@@ -226,10 +226,7 @@
             </div>
         </div>
 
-
-
-
-<!--
+<?/*
         <br>
 
         <div class="row">
@@ -238,7 +235,7 @@
                 <?php echo $history;?>
             </div>
         </div>
- -->
+*/?>
 
       </div>
 
