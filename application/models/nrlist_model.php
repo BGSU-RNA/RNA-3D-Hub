@@ -232,6 +232,7 @@ CREATE TABLE `nr_release_diff` (
         $query = $this->db->get();
 
         $i = 0;
+        $table = array();
         
         foreach ($query->result() as $row) {
             $link = $this->make_pdb_widget_link($row->ife_id);
