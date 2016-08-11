@@ -820,7 +820,7 @@ class Motif_model extends CI_Model {
 
     function generate_row($id)
     {
-        #echo "<p>id: $id</p>";
+        echo "<p>id: $id</p>";
         for ($i = 0; $i < count($this->header); $i++) {
             $key = $this->header[$i];
 
