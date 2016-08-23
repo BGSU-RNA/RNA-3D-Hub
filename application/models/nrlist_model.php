@@ -16,6 +16,7 @@ class Nrlist_model extends CI_Model {
         $this->last_seen_in    = '';
         $this->first_seen_in   = '';
         $this->current_release = '';
+        $this->tax_url = 'http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=';
         // Call the Model constructor
         parent::__construct();
 
@@ -197,16 +198,18 @@ CREATE TABLE `nr_release_diff` (
             list($pdb_id, $model_num, $chain) = explode('|', $ife_id);
         }
 
-        $this->db->select('source')
+        $this->db->select('source, taxonomy_id')
                  ->from('chain_info')
                  ->where('pdb_id', $pdb_id)
                  ->where('chain_name', $chain)
                  ->like('entity_macromolecule_type', 'RNA');
         $query = $this->db->get();
-        
+
         if ( $query->num_rows() > 0 ) {
             $result = $query->result();
-            return $result[0]->source;
+            $tid = $result[0]->taxonomy_id;
+            $sid = $result[0]->source;
+            return anchor_popup("$this->tax_url$tid", "$sid");
         } else {
             return '';
         }
@@ -752,8 +755,9 @@ CREATE TABLE `nr_release_diff` (
             $nums     = $row->num;
             $ife_id   = $reps[$class_id];
             $pdb_id   = $row->pdb_id;
-            $source   = ( is_null($row->species_name) ) ? "" : '<a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=' 
-                            . $row->species_id . '">' . $row->species_name . '</a>';
+
+            $source   = ( is_null($row->species_name) ) ? "" : 
+                            anchor_popup("$this->tax_url$row->species_id", "$row->species_name");
             $compound = (strlen($row->compound) > 40 ) ? substr($row->compound, 0, 40) . "[...]" : $row->compound;
 
             if (preg_match('/\+/',$ife_id)){
