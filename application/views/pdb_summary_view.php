@@ -135,11 +135,11 @@
                 <ul>
                   <li>
                     <?=$loops['IL']?> internal loop<?php if ($loops['IL'] <> 1): ?>s<?php endif; ?> 
-                    from <?=$il_counts?> motif<?php if ($il_counts <> 1): ?>s<?php endif; ?>
+                    from <?=$il_counts?> motif group<?php if ($il_counts <> 1): ?>s<?php endif; ?>
                   </li>
                   <li>
                     <?=$loops['HL']?> hairpin loop<?php if ($loops['HL'] <> 1): ?>s<?php endif; ?> 
-                    from <?=$hl_counts?> motif<?php if ($hl_counts <> 1): ?>s<?php endif; ?>
+                    from <?=$hl_counts?> motif group<?php if ($hl_counts <> 1): ?>s<?php endif; ?>
                   </li>
                   <li><?=$loops['J3']?> three-way junction<?php if ($loops['J3'] <> 1): ?>s<?php endif; ?></li>
                 </ul>
