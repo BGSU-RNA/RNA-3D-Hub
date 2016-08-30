@@ -40,6 +40,7 @@ class Pdb_model extends CI_Model {
     {
         // $loop_type = IL or HL
         $latest_release = $this->get_latest_motif_release($loop_type);
+        echo "<p>Get Latest Motif Release (Type): $latest_release ($loop_type)</p>"; # DEBUG
 
         $this->db->select()
                  ->from('ml_loops')
@@ -47,6 +48,7 @@ class Pdb_model extends CI_Model {
                  ->like('ml_loops_id', strtoupper($loop_type) . '_' . $pdb_id, 'right');
         $query = $this->db->get();
         $data = array();
+        echo "<p>Number of Results: $query->num_rows</p>"; # DEBUG
         foreach ($query->result() as $row) {
             $data[$row->ml_loops_id] = $row->motif_id;
         }
@@ -55,7 +57,9 @@ class Pdb_model extends CI_Model {
 
     function get_loops($pdb_id)
     {
+        echo "<p>entering get_loops();</p>"; # DEBUG
         $release_id = $this->get_latest_loop_release();
+        echo "<p>ReleaseID: $release_id</p>"; # DEBUG
         $this->db->select('lq.loop_qa_id')
                  ->select('lq.status')
                  ->select('lq.modifications')
@@ -68,6 +72,7 @@ class Pdb_model extends CI_Model {
                  ->where('pdb_id', $pdb_id)
                  ->where('release_id', $release_id);
         $query = $this->db->get();
+        echo "<p>Number of Results: $query->num_rows</p>"; # DEBUG
 
         $loop_types = array('IL','HL','J3');
         foreach ($loop_types as $loop_type) {
@@ -81,6 +86,7 @@ class Pdb_model extends CI_Model {
         foreach ($query->result() as $row) {
             $loop_type = substr($row->loop_qa_id, 0, 2);
             if ($row->status == 1) {
+                echo "<p>Valid entry</p>"; # DEBUG
                 if ( array_key_exists($row->loop_qa_id, $motifs) ) {
                     $motif_id = anchor_popup("motif/view/{$motifs[$row->loop_qa_id]}", $motifs[$row->loop_qa_id]);
                 } else {
@@ -95,6 +101,7 @@ class Pdb_model extends CI_Model {
                                                     $motif_id
                                                     );
             } else {
+                echo "<p>Invalid entry</p>"; # DEBUG
                 if (!is_null($row->complementary)) {
                     $annotation = $row->complementary;
                 } elseif (!is_null($row->modifications)) {
