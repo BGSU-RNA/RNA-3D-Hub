@@ -325,8 +325,8 @@ class Motif_model extends CI_Model {
         $this->db->select_min('t2.disc', 'similarity_level')
                  ->select('t3.motif_id as similar_motif')
                  ->from('ml_loops as t1')
-                 ->join('loop_searches as t2', 't1.ml_loops_id = t2.loop_id_1')
-                 ->join('ml_loops as t3', 't2.loop_id_2 = t3.ml_loops_id')
+                 ->join('loop_searches as t2', 't1.loop_id = t2.loop_id_1')
+                 ->join('ml_loops as t3', 't2.loop_id_2 = t3.loop_id')
                  ->where('t1.motif_id', $motif_id)
                  ->where('t1.release_id', $this->release_id)
                  ->where('t3.release_id', $this->release_id)
@@ -344,8 +344,8 @@ class Motif_model extends CI_Model {
         $this->db->select_min('t2.disc', 'similarity_level')
                  ->select('t3.motif_id as similar_motif')
                  ->from('ml_loops as t1')
-                 ->join('loop_searches as t2', 't1.ml_loops_id = t2.loop_id_2')
-                 ->join('ml_loops as t3', 't2.loop_id_1 = t3.ml_loops_id')
+                 ->join('loop_searches as t2', 't1.loop_id = t2.loop_id_2')
+                 ->join('ml_loops as t3', 't2.loop_id_1 = t3.loop_id')
                  ->where('t1.motif_id', $motif_id)
                  ->where('t1.release_id', $this->release_id)
                  ->where('t3.release_id', $this->release_id)
@@ -394,7 +394,7 @@ class Motif_model extends CI_Model {
     function get_linkage_data( $motif_id )
     {
         // get loop ids from this motif
-        $this->db->select('ml_loops_id')
+        $this->db->select('loop_id')
                  ->from('ml_loops')
                  ->where('motif_id', $motif_id)
                  ->where('release_id', $this->release_id);
@@ -402,7 +402,7 @@ class Motif_model extends CI_Model {
         $loops = array();
 
         foreach ($query->result() as $row) {
-            $loops[] = $row->ml_loops_id;
+            $loops[] = $row->loop_id;
         }
 
         // intraclusteral linkage

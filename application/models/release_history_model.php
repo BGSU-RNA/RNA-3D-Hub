@@ -38,12 +38,12 @@ class Release_history_model extends CI_Model {
 
     function get_loops($rel)
     {
-        $this->db->select('ml_loops_id')
+        $this->db->select('loop_id')
                  ->from('ml_loops')
                  ->where('release_id', $rel);
         $query = $this->db->get();
         foreach ($query->result() as $row) {
-           $loops[] = $row->ml_loops_id;
+           $loops[] = $row->loop_id;
         }
         return $loops;
     }
