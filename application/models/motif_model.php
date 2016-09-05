@@ -59,7 +59,7 @@ class Motif_model extends CI_Model {
         $this->db->select('loop_id')
                  ->from('ml_loop_order')
                  ->where('motif_id', $motif_id)
-                 ->where('release_id', $this->release_id)
+                 ->where('ml_release_id', $this->release_id)
                  ->order_by('original_order');
         $query = $this->db->get();
 
@@ -328,8 +328,8 @@ class Motif_model extends CI_Model {
                  ->join('loop_searches as t2', 't1.loop_id = t2.loop_id_1')
                  ->join('ml_loops as t3', 't2.loop_id_2 = t3.loop_id')
                  ->where('t1.motif_id', $motif_id)
-                 ->where('t1.release_id', $this->release_id)
-                 ->where('t3.release_id', $this->release_id)
+                 ->where('t1.ml_release_id', $this->release_id)
+                 ->where('t3.ml_release_id', $this->release_id)
                  ->where('t3.motif_id !=', $motif_id)
                  ->where('t2.disc >=', 0)
                  ->group_by('t3.motif_id')
@@ -347,8 +347,8 @@ class Motif_model extends CI_Model {
                  ->join('loop_searches as t2', 't1.loop_id = t2.loop_id_2')
                  ->join('ml_loops as t3', 't2.loop_id_1 = t3.loop_id')
                  ->where('t1.motif_id', $motif_id)
-                 ->where('t1.release_id', $this->release_id)
-                 ->where('t3.release_id', $this->release_id)
+                 ->where('t1.ml_release_id', $this->release_id)
+                 ->where('t3.ml_release_id', $this->release_id)
                  ->where('t3.motif_id !=', $motif_id)
                  ->where('t2.disc >=', 0)
                  ->group_by('t3.motif_id')
@@ -397,7 +397,7 @@ class Motif_model extends CI_Model {
         $this->db->select('loop_id')
                  ->from('ml_loops')
                  ->where('motif_id', $motif_id)
-                 ->where('release_id', $this->release_id);
+                 ->where('ml_release_id', $this->release_id);
         $query = $this->db->get();
         $loops = array();
 
@@ -410,7 +410,7 @@ class Motif_model extends CI_Model {
                  ->select_avg('discrepancy', 'intra_avg_disc')
                  ->from('ml_mutual_discrepancy')
                  ->where_in('loop_id1', $loops)
-                 ->where('release_id', $this->release_id);
+                 ->where('ml_release_id', $this->release_id);
         $query = $this->db->get();
 
         $results = array();
@@ -422,7 +422,7 @@ class Motif_model extends CI_Model {
         $this->db->select_min('discrepancy', 'intra_min_disc')
                  ->from('ml_mutual_discrepancy')
                  ->where_in('loop_id1', $loops)
-                 ->where('release_id', $this->release_id)
+                 ->where('ml_release_id', $this->release_id)
                  ->where('discrepancy >', 0);
         $query = $this->db->get();
         foreach ($query->result() as $row) {
@@ -513,7 +513,7 @@ class Motif_model extends CI_Model {
     {
         $this->db->select('MR.ml_release_id')
                  ->from('ml_releases AS MR')
-                 ->join('ml_motifs_info AS MM', 'MR.ml_release_id = MM.release_id')
+                 ->join('ml_motifs_info AS MM', 'MR.ml_release_id = MM.ml_release_id')
                  ->where('MM.motif_id',$motif_id)
                  ->where('MR.type', substr($motif_id, 0, 2))
                  ->order_by('date','desc')
@@ -527,7 +527,7 @@ class Motif_model extends CI_Model {
     {
         $this->db->select()
                  ->from('ml_releases AS MR')
-                 ->join('ml_motifs_info AS MM', 'MR.ml_release_id = MM.release_id')
+                 ->join('ml_motifs_info AS MM', 'MR.ml_release_id = MM.ml_release_id')
                  ->where('MM.motif_id',$motif_id)
                  ->where('MR.type', substr($motif_id, 0, 2))
                  ->order_by('date');
@@ -537,7 +537,7 @@ class Motif_model extends CI_Model {
         $table[1][0] = '<strong>Date</strong>';
         $table[2][0] = '<strong>Status</strong>';
         foreach ($query->result() as $row) {
-            $table[0][] = anchor(base_url("motifs/release/".substr($motif_id,0,2) .'/'.$row->release_id), $row->release_id);
+            $table[0][] = anchor(base_url("motifs/release/".substr($motif_id,0,2) .'/'.$row->ml_release_id), $row->ml_release_id);
             $table[1][] = date('Y-m-d', strtotime($row->date));
 
             if ($row->comment == 'Exact match') {
@@ -558,7 +558,7 @@ class Motif_model extends CI_Model {
     {
         $this->db->select()
                  ->from('ml_releases as MR')
-                 ->join('ml_motifs_info AS MM', 'MR.ml_release_id = MM.release_id')
+                 ->join('ml_motifs_info AS MM', 'MR.ml_release_id = MM.ml_release_id')
                  ->where('MM.motif_id', $motif_id)
                  ->order_by('date');
         $result = $this->db->get();
@@ -625,7 +625,7 @@ class Motif_model extends CI_Model {
 
         $this->db->select()
                  ->from('ml_mutual_discrepancy')
-                 ->where('release_id', $this->release_id)
+                 ->where('ml_release_id', $this->release_id)
                  ->where_in('loop_id1', $this->loops)
                  ->where_in('loop_id2', $this->loops);
         $result = $this->db->get()->result_array();
@@ -895,7 +895,7 @@ class Motif_model extends CI_Model {
     {
         $this->db->select()
                  ->from('ml_mutual_discrepancy')
-                 ->where('release_id', $this->release_id)
+                 ->where('ml_release_id', $this->release_id)
                  ->where('loop_id1', $this->loops[1])
                  ->where_in('loop_id2', $this->loops);
         $result = $this->db->get()->result_array();
@@ -915,7 +915,7 @@ class Motif_model extends CI_Model {
     {
         $this->db->select('loop_id, original_order, similarity_order')
                  ->from('ml_loop_order')
-                 ->where('release_id', $this->release_id)
+                 ->where('ml_release_id', $this->release_id)
                  ->where('motif_id', $this->motif_id)
                  ->order_by('original_order');
         $query = $this->db->get();
