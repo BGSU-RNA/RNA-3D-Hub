@@ -397,8 +397,8 @@ class Motifs_model extends CI_Model {
 
         if ( $query->num_rows() > 0 ) {
             foreach ($query->result() as $row) {
-                $reason[$row->motifs_id]  = $row->comment;
-                $reason_flat[]            = $row->comment;
+                $reason[$row->motif_id]  = $row->comment;
+                $reason_flat[]           = $row->comment;
             }
 
             // count all annotation types
