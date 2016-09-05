@@ -51,7 +51,7 @@ class Release_history_model extends CI_Model {
     function count_motifs($rel)
     {
         $this->db->select('motif_id')
-                 ->from('ml_motifs')
+                 ->from('ml_motifs_info')
                  ->where('release_id', $rel);
         return $this->db->count_all_results();
     }
@@ -63,10 +63,10 @@ class Release_history_model extends CI_Model {
 
     function get_intersection()
     {
-        $this->db->select('ml_motifs.motif_id')
-                 ->from('ml_motifs')
-                 ->join('ml_motifs t', 'ml_motifs.motif_id=t.motif_id')
-                 ->where('ml_motifs.release_id', $this->rel1)
+        $this->db->select('ml_motifs_info.motif_id')
+                 ->from('ml_motifs_info')
+                 ->join('ml_motifs_info t', 'ml_motifs.motif_id=t.motif_id')
+                 ->where('ml_motifs_info.release_id', $this->rel1)
                  ->where('t.release_id', $this->rel2);
         $result = $this->db->get()->result_array();
         $list = array();
@@ -79,7 +79,7 @@ class Release_history_model extends CI_Model {
     function get_diff()
     {
         $this->db->select('motif_id, handle');
-        $this->db->from('ml_motifs');
+        $this->db->from('ml_motifs_info');
         $this->db->where('release_id', $this->rel1);
         $result = $this->db->get()->result_array();
         for ($i = 0; $i < count($result); $i++) {
@@ -87,7 +87,7 @@ class Release_history_model extends CI_Model {
         }
 
         $this->db->select('motif_id, handle');
-        $this->db->from('ml_motifs');
+        $this->db->from('ml_motifs_info');
         $this->db->where('release_id', $this->rel2);
         $result = $this->db->get()->result_array();
         for ($i = 0; $i < count($result); $i++) {
@@ -105,13 +105,13 @@ class Release_history_model extends CI_Model {
 
     function get_updated()
     {
-        $this->db->select('ml_motifs.motif_id');
-        $this->db->from('ml_motifs');
-        $this->db->join('ml_motifs t', 'ml_motifs.handle=t.handle');
-        $this->db->where('ml_motifs.release_id', $this->rel1);
+        $this->db->select('ml_motifs_info.motif_id');
+        $this->db->from('ml_motifs_info');
+        $this->db->join('ml_motifs_info t', 'ml_motifs.handle=t.handle');
+        $this->db->where('ml_motifs_info.release_id', $this->rel1);
         $this->db->where('t.release_id', $this->rel2);
 //        $this->db->where('t.version >', 1);
-        $this->db->where('t.version != ml_motifs.version');
+        $this->db->where('t.version != ml_motifs_info.version');
         $result = $this->db->get()->result_array();
         $list = array();
         for ($i = 0; $i < count($result); $i++) {

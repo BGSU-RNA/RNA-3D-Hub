@@ -69,7 +69,7 @@ class Motifs_model extends CI_Model {
         }
 
         $this->db->select('motif_id')
-                 ->from('ml_motifs')
+                 ->from('ml_motifs_info')
                  ->where('ml_release_id', $release_id)
                  ->where('type', $motif_type);
         $query = $this->db->get();
@@ -387,7 +387,7 @@ class Motifs_model extends CI_Model {
     {
         // get annotations: updated/>2 parents etc
         $this->db->select('motif_id, comment')
-                 ->from('ml_motifs')
+                 ->from('ml_motifs_info')
                  ->where('type',$motif_type)
                  ->where('ml_release_id',$id);
         $query = $this->db->get();
@@ -688,7 +688,7 @@ class Motifs_model extends CI_Model {
         }
 
         $this->db->select('motif_id')
-                 ->from('ml_motifs')
+                 ->from('ml_motifs_info')
                  ->where_in('handle', $handles)
                  ->where('ml_release_id', $rel);
         $query = $this->db->get();
@@ -818,7 +818,7 @@ class Motifs_model extends CI_Model {
     function get_motif_counts($release, $motif_type)
     {
         $this->db->select()
-                 ->from('ml_motifs')
+                 ->from('ml_motifs_info')
                  ->where('ml_release_id', $release)
                  ->where('type', $motif_type);
         $query = $this->db->get();
