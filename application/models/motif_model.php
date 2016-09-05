@@ -511,15 +511,15 @@ class Motif_model extends CI_Model {
 
     function get_latest_release_for_motif($motif_id)
     {
-        $this->db->select('MR.ml_releases_id')
+        $this->db->select('MR.ml_release_id')
                  ->from('ml_releases AS MR')
-                 ->join('ml_motifs AS MM', 'MR.ml_releases_id = MM.release_id')
+                 ->join('ml_motifs AS MM', 'MR.ml_release_id = MM.release_id')
                  ->where('MM.ml_motifs_id',$motif_id)
                  ->where('MR.type', substr($motif_id, 0, 2))
                  ->order_by('date','desc')
                  ->limit(1);
         $result = $this->db->get()->result_array();
-        return $result[0]['ml_releases_id'];
+        return $result[0]['ml_release_id'];
     }
 
     // history tab
@@ -527,7 +527,7 @@ class Motif_model extends CI_Model {
     {
         $this->db->select()
                  ->from('ml_releases AS MR')
-                 ->join('ml_motifs AS MM', 'MR.ml_releases_id = MM.release_id')
+                 ->join('ml_motifs AS MM', 'MR.ml_release_id = MM.release_id')
                  ->where('MM.ml_motifs_id',$motif_id)
                  ->where('MR.type', substr($motif_id, 0, 2))
                  ->order_by('date');
@@ -558,13 +558,13 @@ class Motif_model extends CI_Model {
     {
         $this->db->select()
                  ->from('ml_releases as MR')
-                 ->join('ml_motifs AS MM', 'MR.ml_releases_id = MM.release_id')
+                 ->join('ml_motifs AS MM', 'MR.ml_release_id = MM.release_id')
                  ->where('MM.ml_motifs_id', $motif_id)
                  ->order_by('date');
         $result = $this->db->get();
 
         foreach ($result->result() as $row) {
-            $releases_present[] = $row->ml_releases_id;
+            $releases_present[] = $row->ml_release_id;
         }
 
         $this->db->select()
@@ -1019,7 +1019,7 @@ class Motif_model extends CI_Model {
                  ->order_by('date','desc');
         $row = $this->db->get()->row();
 
-        if ($row->ml_releases_id == $this->release_id) {
+        if ($row->ml_release_id == $this->release_id) {
             return ' <label class="label success">current</label>';
         } else {
             return '';
