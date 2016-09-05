@@ -50,7 +50,7 @@ class Release_history_model extends CI_Model {
 
     function count_motifs($rel)
     {
-        $this->db->select('ml_motifs_id')
+        $this->db->select('motif_id')
                  ->from('ml_motifs')
                  ->where('release_id', $rel);
         return $this->db->count_all_results();
@@ -63,35 +63,35 @@ class Release_history_model extends CI_Model {
 
     function get_intersection()
     {
-        $this->db->select('ml_motifs.ml_motifs_id')
+        $this->db->select('ml_motifs.motif_id')
                  ->from('ml_motifs')
-                 ->join('ml_motifs t', 'ml_motifs.ml_motifs_id=t.ml_motifs_id')
+                 ->join('ml_motifs t', 'ml_motifs.motif_id=t.motif_id')
                  ->where('ml_motifs.release_id', $this->rel1)
                  ->where('t.release_id', $this->rel2);
         $result = $this->db->get()->result_array();
         $list = array();
         for ($i = 0; $i < count($result); $i++) {
-            $list[] = $this->make_link($result[$i]['ml_motifs_id'], $this->rel1);
+            $list[] = $this->make_link($result[$i]['motif_id'], $this->rel1);
         }
         return $list;
     }
 
     function get_diff()
     {
-        $this->db->select('ml_motifs_id, handle');
+        $this->db->select('motif_id, handle');
         $this->db->from('ml_motifs');
         $this->db->where('release_id', $this->rel1);
         $result = $this->db->get()->result_array();
         for ($i = 0; $i < count($result); $i++) {
-            $rel1_ids[$result[$i]['handle']] = $result[$i]['ml_motifs_id'];
+            $rel1_ids[$result[$i]['handle']] = $result[$i]['motif_id'];
         }
 
-        $this->db->select('ml_motifs_id, handle');
+        $this->db->select('motif_id, handle');
         $this->db->from('ml_motifs');
         $this->db->where('release_id', $this->rel2);
         $result = $this->db->get()->result_array();
         for ($i = 0; $i < count($result); $i++) {
-            $rel2_ids[$result[$i]['handle']] = $result[$i]['ml_motifs_id'];
+            $rel2_ids[$result[$i]['handle']] = $result[$i]['motif_id'];
         }
 
         foreach (array_merge(array_diff_key($rel1_ids, $rel2_ids)) as $handle => $id) {
@@ -105,7 +105,7 @@ class Release_history_model extends CI_Model {
 
     function get_updated()
     {
-        $this->db->select('ml_motifs.ml_motifs_id');
+        $this->db->select('ml_motifs.motif_id');
         $this->db->from('ml_motifs');
         $this->db->join('ml_motifs t', 'ml_motifs.handle=t.handle');
         $this->db->where('ml_motifs.release_id', $this->rel1);
@@ -115,7 +115,7 @@ class Release_history_model extends CI_Model {
         $result = $this->db->get()->result_array();
         $list = array();
         for ($i = 0; $i < count($result); $i++) {
-            $list[] = $this->make_link($result[$i]['ml_motifs_id'], $this->rel1);
+            $list[] = $this->make_link($result[$i]['motif_id'], $this->rel1);
         }
         return $list;
     }

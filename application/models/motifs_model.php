@@ -68,7 +68,7 @@ class Motifs_model extends CI_Model {
             $release_id = $this->get_latest_release($motif_type);
         }
 
-        $this->db->select('ml_motifs_id')
+        $this->db->select('motif_id')
                  ->from('ml_motifs')
                  ->where('ml_release_id', $release_id)
                  ->where('type', $motif_type);
@@ -77,7 +77,7 @@ class Motifs_model extends CI_Model {
         $motif_ids = array();
         
         foreach($query->result() as $row) {
-            $motif_ids[] = $row->ml_motifs_id;
+            $motif_ids[] = $row->motif_id;
         }
         
         return $motif_ids;
@@ -386,7 +386,7 @@ class Motifs_model extends CI_Model {
     function get_release($motif_type,$id)
     {
         // get annotations: updated/>2 parents etc
-        $this->db->select('ml_motifs_id, comment')
+        $this->db->select('motif_id, comment')
                  ->from('ml_motifs')
                  ->where('type',$motif_type)
                  ->where('ml_release_id',$id);
@@ -397,8 +397,8 @@ class Motifs_model extends CI_Model {
 
         if ( $query->num_rows() > 0 ) {
             foreach ($query->result() as $row) {
-                $reason[$row->ml_motifs_id]  = $row->comment;
-                $reason_flat[]     = $row->comment;
+                $reason[$row->motifs_id]  = $row->comment;
+                $reason_flat[]            = $row->comment;
             }
 
             // count all annotation types
@@ -687,7 +687,7 @@ class Motifs_model extends CI_Model {
             $handles[] = substr($motif, 3, 5); // XL_@@@@@
         }
 
-        $this->db->select('ml_motifs_id')
+        $this->db->select('motif_id')
                  ->from('ml_motifs')
                  ->where_in('handle', $handles)
                  ->where('ml_release_id', $rel);
@@ -695,7 +695,7 @@ class Motifs_model extends CI_Model {
 
         $updated_new = array();
         foreach($query->result() as $row){
-            $updated_new[] = $row->ml_motifs_id;
+            $updated_new[] = $row->motif_id;
         }
 
         return $updated_new;
