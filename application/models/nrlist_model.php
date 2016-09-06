@@ -263,6 +263,47 @@ CREATE TABLE `nr_release_diff` (
 
         return $table;
     }
+    
+    function get_statistics($id)
+    {
+        
+        $this->db->select('pi.pdb_id')
+                 ->select('ch.ife_id')
+                 ->select('pi.title')
+                 ->select('pi.experimental_technique')
+                 ->select('pi.release_date')
+                 ->select('pi.resolution')
+                 ->from('pdb_info AS pi')
+                 ->join('ife_info AS ii','pi.pdb_id = ii.pdb_id')
+                 ->join('nr_chains AS ch', 'ii.ife_id = ch.ife_id')
+                 ->join('nr_classes AS cl', 'ch.nr_class_id = cl.nr_class_id AND ch.nr_release_id = cl.nr_release_id')
+                 ->where('cl.name',$id)
+                 #->where('nch.nr_release_id',$this->last_seen_in) # what was this doing? still necessary?
+                 ->group_by('pi.pdb_id')
+                 ->group_by('ii.ife_id')
+                 ->order_by('ch.rep','desc');
+        $query = $this->db->get();
+        $i = 0;
+        $table = array();
+        
+        foreach ($query->result() as $row) {
+            $link = $this->make_pdb_widget_link($row->ife_id);
+            if ( $i==0 ) {
+                $link = $link . ' <strong>(rep)</strong>';
+            }
+            $i++;
+            $table[] = array($i,
+                             $link,
+                             $row->title,
+                             //$this->get_source_organism($row->ife_id),
+                             //$this->get_compound_list($row->pdb_id),
+                             $row->experimental_technique,
+                             $row->resolution);
+                             //$row->release_date;
+        }
+        return $table;
+        
+	}
 
     function get_compound_list($id)
     {

@@ -117,7 +117,14 @@ class Nrlist extends CI_Controller {
         $history = $this->Nrlist_model->get_history($id,'children');
         $this->table->set_heading('This class','Descendant classes','Release id','Intersection','Only in this class','Added to child');
         $data['children'] = $this->table->generate($history);
-
+        
+        $statistics = $this->Nrlist_model->get_statistics($id);
+        $tmpl = array( 'table_open'  => "<table class='zebra-striped bordered-table' id='statistics_table'>" );
+        $this->table->set_template($tmpl);
+        $this->table->set_heading('#S','PDB','Title','Method','Resolution','Length', 'Number of bps/nucleotides');
+        $data['statistics'] = $this->table->generate($statistics);
+        
+        
         $data['title'] = $id;
         $data['baseurl'] = base_url();
         $this->load->view('header_view', $data);
