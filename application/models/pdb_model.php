@@ -56,7 +56,7 @@ class Pdb_model extends CI_Model {
     function get_loops($pdb_id)
     {
         $release_id = $this->get_latest_loop_release();
-        $this->db->select('lq.loop_qa_id')
+        $this->db->select('lq.loop_id')
                  ->select('lq.status')
                  ->select('lq.modifications')
                  ->select('lq.nt_signature')
@@ -64,7 +64,7 @@ class Pdb_model extends CI_Model {
                  ->select('li.unit_ids')
                  ->select('li.loop_name')
                  ->from('loop_qa AS lq')
-                 ->join('loop_info AS li', 'li.loop_id = lq.loop_qa_id')
+                 ->join('loop_info AS li', 'li.loop_id = lq.loop_id')
                  ->where('pdb_id', $pdb_id)
                  ->where('release_id', $release_id);
         $query = $this->db->get();
@@ -79,17 +79,17 @@ class Pdb_model extends CI_Model {
         $motifs = array_merge($motifs, $this->get_latest_motif_assignments($pdb_id, 'HL'));
 
         foreach ($query->result() as $row) {
-            $loop_type = substr($row->loop_qa_id, 0, 2);
+            $loop_type = substr($row->loop_id, 0, 2);
             if ($row->status == 1) {
-                if ( array_key_exists($row->loop_qa_id, $motifs) ) {
-                    $motif_id = anchor_popup("motif/view/{$motifs[$row->loop_qa_id]}", $motifs[$row->loop_qa_id]);
+                if ( array_key_exists($row->loop_id, $motifs) ) {
+                    $motif_id = anchor_popup("motif/view/{$motifs[$row->loop_id]}", $motifs[$row->loop_id]);
                 } else {
                     $motif_id = 'NA';
                 }
 
                 $valid_tables[$loop_type][] = array(count($valid_tables[$loop_type]) + 1,
                                                     array( 'class' => 'loop',
-                                                           'data'  => $this->get_checkbox($row->loop_qa_id, $row->unit_ids)
+                                                           'data'  => $this->get_checkbox($row->loop_id, $row->unit_ids)
                                                           ),
                                                     $row->loop_name,
                                                     $motif_id
@@ -105,7 +105,7 @@ class Pdb_model extends CI_Model {
 
                 $invalid_tables[$loop_type][] = array(count($invalid_tables[$loop_type])+1,
                                                       array( 'class' => 'loop',
-                                                             'data'  => $this->get_checkbox($row->loop_qa_id, $row->unit_ids)
+                                                             'data'  => $this->get_checkbox($row->loop_id, $row->unit_ids)
                                                             ),
                                                       $this->make_reason_label($row->status),
                                                       $annotation);
