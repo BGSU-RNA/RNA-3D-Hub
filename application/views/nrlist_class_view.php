@@ -10,6 +10,7 @@
 
             <ul class="tabs" data-tabs="tabs">
                 <li class="active"><a href="#members">Members (<?=$num_members?>)</a></li>
+                <li><a href="#statistics">Statistics</a></li>
                 <li><a href="#history">History</a></li>
             </ul>
 
@@ -22,6 +23,15 @@
                       </div>
                   </div>
                 </div>
+                
+                 <div class="tab-pane active" id="statistics">
+                  <div class="span16">
+                      <div>
+                        <!-- Not sure what this is -->
+                        <?=$statistics?> 
+                      </div>
+                  </div>
+                </div>
 
                 <div class="tab-pane" id="history">
                   <div class="span16">
@@ -30,7 +40,7 @@
                         <?=$releases?>
                       </div>
                   </div>
-                  <br>
+                  <br> 
 
                   <div class="span16">
                       <h3>Parents</h3>
@@ -45,6 +55,9 @@
                         <?=$children?>
                       </div>
                   </div>
+                  
+               
+
 
                 </div>
             </div>
