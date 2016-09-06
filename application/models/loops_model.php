@@ -77,7 +77,7 @@ class Loops_model extends CI_Model {
         // qa info
         $this->db->select('status, modifications, nt_signature, complementary')
                  ->from('loop_qa')
-                 ->where('loop_qa_id',$id)
+                 ->where('loop_id',$id)
                  ->order_by('release_id', 'desc')
                  ->limit(1);
         $query = $this->db->get();
@@ -496,9 +496,9 @@ class Loops_model extends CI_Model {
     {
         $verbose = $type;
         $type = array_search($type, $this->qa_status);
-        $this->db->select('qa.loop_qa_id, qa.modifications, qa.nt_signature, qa.complementary, li.seq')
+        $this->db->select('qa.loop_id, qa.modifications, qa.nt_signature, qa.complementary, li.seq')
                  ->from('loop_qa AS qa')
-                 ->join('loop_info AS li','qa.loop_qa_id = li.loop_id')
+                 ->join('loop_info AS li','qa.loop_id = li.loop_id')
                  ->where('status',$type)
                  ->where('type',$motif_type)
                  ->where('release_id',$release_id)
@@ -526,8 +526,8 @@ class Loops_model extends CI_Model {
             }
 
             $this->table->add_row($offset + $i,
-                                          $this->make_radio_button($row->loop_qa_id),
-                                          '<a class="pdb">' . substr($row->loop_qa_id,3,4) . '</a>',
+                                          $this->make_radio_button($row->loop_id),
+                                          '<a class="pdb">' . substr($row->loop_id,3,4) . '</a>',
                                           $info);
 
             $i++;
