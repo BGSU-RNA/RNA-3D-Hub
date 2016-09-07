@@ -611,7 +611,7 @@ EOT;
         // JOIN loops_all
         // LEFT JOIN ml_loops
         // ON nt_id = `mltest`.`dcc_residues`.`dcc_residues_id` AND loop_info.loop_id=loop_id AND ml_loops.ml_loopsid=LOOP_id
-        // WHERE `ml_loop_positions`.release_id = '0.5' AND ml_loops.release_id='0.5'
+        // WHERE `ml_loop_positions`.release_id = '0.5' AND ml_loops.ml_release_id='0.5'
         // ORDER BY loop_id ASC;
 
         $this->db->select()

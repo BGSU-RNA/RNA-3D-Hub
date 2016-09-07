@@ -68,16 +68,16 @@ class Motifs_model extends CI_Model {
             $release_id = $this->get_latest_release($motif_type);
         }
 
-        $this->db->select('ml_motifs_id')
-                 ->from('ml_motifs')
-                 ->where('release_id', $release_id)
+        $this->db->select('motif_id')
+                 ->from('ml_motifs_info')
+                 ->where('ml_release_id', $release_id)
                  ->where('type', $motif_type);
         $query = $this->db->get();
 
         $motif_ids = array();
         
         foreach($query->result() as $row) {
-            $motif_ids[] = $row->ml_motifs_id;
+            $motif_ids[] = $row->motif_id;
         }
         
         return $motif_ids;
@@ -386,10 +386,10 @@ class Motifs_model extends CI_Model {
     function get_release($motif_type,$id)
     {
         // get annotations: updated/>2 parents etc
-        $this->db->select('ml_motifs_id, comment')
-                 ->from('ml_motifs')
+        $this->db->select('motif_id, comment')
+                 ->from('ml_motifs_info')
                  ->where('type',$motif_type)
-                 ->where('release_id',$id);
+                 ->where('ml_release_id',$id);
         $query = $this->db->get();
 
         $counts_text = '';
@@ -397,7 +397,7 @@ class Motifs_model extends CI_Model {
 
         if ( $query->num_rows() > 0 ) {
             foreach ($query->result() as $row) {
-                $reason[$row->ml_motifs_id]  = $row->comment;
+                $reason[$row->motif_id]  = $row->comment;
                 $reason_flat[]     = $row->comment;
             }
 
@@ -687,15 +687,15 @@ class Motifs_model extends CI_Model {
             $handles[] = substr($motif, 3, 5); // XL_@@@@@
         }
 
-        $this->db->select('ml_motifs_id')
-                 ->from('ml_motifs')
+        $this->db->select('motif_id')
+                 ->from('ml_motifs_info')
                  ->where_in('handle', $handles)
-                 ->where('release_id', $rel);
+                 ->where('ml_release_id', $rel);
         $query = $this->db->get();
 
         $updated_new = array();
         foreach($query->result() as $row){
-            $updated_new[] = $row->ml_motifs_id;
+            $updated_new[] = $row->motif_id;
         }
 
         return $updated_new;
@@ -818,8 +818,8 @@ class Motifs_model extends CI_Model {
     function get_motif_counts($release, $motif_type)
     {
         $this->db->select()
-                 ->from('ml_motifs')
-                 ->where('release_id', $release)
+                 ->from('ml_motifs_info')
+                 ->where('ml_release_id', $release)
                  ->where('type', $motif_type);
         $query = $this->db->get();
 
