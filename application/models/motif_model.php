@@ -556,7 +556,7 @@ class Motif_model extends CI_Model {
 
     function get_history($motif_id)
     {
-        $this->db->select()
+        $this->db->select('MR.ml_release_id')
                  ->from('ml_releases as MR')
                  ->join('ml_motifs_info AS MM', 'MR.ml_release_id = MM.ml_release_id')
                  ->where('MM.motif_id', $motif_id)

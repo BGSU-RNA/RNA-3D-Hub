@@ -52,7 +52,7 @@ class Release_history_model extends CI_Model {
     {
         $this->db->select('motif_id')
                  ->from('ml_motifs_info')
-                 ->where('release_id', $rel);
+                 ->where('ml_release_id', $rel);
         return $this->db->count_all_results();
     }
 
@@ -63,11 +63,11 @@ class Release_history_model extends CI_Model {
 
     function get_intersection()
     {
-        $this->db->select('ml_motifs_info.motif_id')
-                 ->from('ml_motifs_info')
-                 ->join('ml_motifs_info t', 'ml_motifs.motif_id=t.motif_id')
-                 ->where('ml_motifs_info.release_id', $this->rel1)
-                 ->where('t.release_id', $this->rel2);
+        $this->db->select('MM.motif_id')
+                 ->from('ml_motifs_info AS MM')
+                 ->join('ml_motifs_info AS t', 'MM.motif_id=t.motif_id')
+                 ->where('MM.ml_release_id', $this->rel1)
+                 ->where('t.ml_release_id', $this->rel2);
         $result = $this->db->get()->result_array();
         $list = array();
         for ($i = 0; $i < count($result); $i++) {
@@ -80,7 +80,7 @@ class Release_history_model extends CI_Model {
     {
         $this->db->select('motif_id, handle');
         $this->db->from('ml_motifs_info');
-        $this->db->where('release_id', $this->rel1);
+        $this->db->where('ml_release_id', $this->rel1);
         $result = $this->db->get()->result_array();
         for ($i = 0; $i < count($result); $i++) {
             $rel1_ids[$result[$i]['handle']] = $result[$i]['motif_id'];
@@ -88,7 +88,7 @@ class Release_history_model extends CI_Model {
 
         $this->db->select('motif_id, handle');
         $this->db->from('ml_motifs_info');
-        $this->db->where('release_id', $this->rel2);
+        $this->db->where('ml_release_id', $this->rel2);
         $result = $this->db->get()->result_array();
         for ($i = 0; $i < count($result); $i++) {
             $rel2_ids[$result[$i]['handle']] = $result[$i]['motif_id'];
@@ -105,13 +105,13 @@ class Release_history_model extends CI_Model {
 
     function get_updated()
     {
-        $this->db->select('ml_motifs_info.motif_id');
-        $this->db->from('ml_motifs_info');
-        $this->db->join('ml_motifs_info t', 'ml_motifs.handle=t.handle');
-        $this->db->where('ml_motifs_info.release_id', $this->rel1);
-        $this->db->where('t.release_id', $this->rel2);
+        $this->db->select('MM.motif_id');
+        $this->db->from('ml_motifs_info AS MM');
+        $this->db->join('ml_motifs_info AS t', 'MM.handle=t.handle');
+        $this->db->where('MM.ml_release_id', $this->rel1);
+        $this->db->where('t.ml_release_id', $this->rel2);
 //        $this->db->where('t.version >', 1);
-        $this->db->where('t.version != ml_motifs_info.version');
+        $this->db->where('t.version != MM.version');
         $result = $this->db->get()->result_array();
         $list = array();
         for ($i = 0; $i < count($result); $i++) {
@@ -119,7 +119,6 @@ class Release_history_model extends CI_Model {
         }
         return $list;
     }
-
 }
 
 /* End of file history_model.php */
