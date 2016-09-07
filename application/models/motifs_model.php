@@ -48,7 +48,7 @@ class Motifs_model extends CI_Model {
                      ->from('ml_motif_annotations AS MA')
                      ->join('ml_loops AS ML', 'MA.motif_id = ML.motif_id')
                      ->like('MA.common_name', $motif)
-                     ->where('ml_release_id', $release_id)
+                     ->where('ML.ml_release_id', $release_id)
                      ->group_by('ML.motif_id')
                      ->order_by('members', 'desc')
                      ->limit(1);

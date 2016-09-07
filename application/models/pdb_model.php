@@ -43,7 +43,7 @@ class Pdb_model extends CI_Model {
         
         $this->db->select()
                  ->from('ml_loops')
-                 ->where('release_id', $latest_release)
+                 ->where('ml_release_id', $latest_release)
                  ->like('loop_id', strtoupper($loop_type) . '_' . $pdb_id, 'right');
         $query = $this->db->get();
         $data = array();
