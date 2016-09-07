@@ -203,7 +203,7 @@ class Loops_model extends CI_Model {
         $this->db->select()
                  ->from('ml_loops')
                  ->where('ml_release_id',$release->ml_releases_id)
-                 ->where('ml_loops_id',$id);
+                 ->where('loop_id',$id);
         $query = $this->db->get();
 
         if ($query->num_rows() > 0) {
@@ -222,7 +222,7 @@ class Loops_model extends CI_Model {
         $this->db->select('ML.motif_id as motif_id, MR.ml_releases_id as release_id')
                  ->from('ml_loops AS ML')
                  ->join('ml_releases AS MR', 'MR.ml_releases_id=ML.ml_release_id')
-                 ->where('ML.ml_loops_id', $loop_id)
+                 ->where('ML.loop_id', $loop_id)
                  ->where('MR.type', $loop_type)
                  ->order_by('MR.date', 'desc');
         $query = $this->db->get();
@@ -369,7 +369,7 @@ class Loops_model extends CI_Model {
             
             $this->db->select()
                      ->from('ml_loops')
-                     ->where('ml_loops_id',$match)
+                     ->where('loop_id',$match)
                      ->where('ml_release_id',$ml_release_id);
             $q = $this->db->get();
 
@@ -618,7 +618,7 @@ EOT;
                  ->from('ml_loop_positions')
                  ->join('__dcc_residues','nt_id = __dcc_residues.dcc_residues_id')
                  ->join('loop_info','loop_id=loop_info.loop_id')
-                 ->join('ml_loops AS ML','loop_id=ML.ml_loops_id','left')
+                 ->join('ml_loops AS ML','loop_id=ML.loop_id','left')
                  ->where('ml_loop_positions.release_id','0.5')
                  ->where('ML.ml_release_id','0.5')
                  ->group_by('loop_id') // NB! comment out or leave in?
