@@ -48,7 +48,7 @@ class Motifs_model extends CI_Model {
                      ->from('ml_motif_annotations AS MA')
                      ->join('ml_loops AS ML', 'MA.motif_id = ML.motif_id')
                      ->like('MA.common_name', $motif)
-                     ->where('release_id', $release_id)
+                     ->where('ML.ml_release_id', $release_id)
                      ->group_by('ML.motif_id')
                      ->order_by('members', 'desc')
                      ->limit(1);
@@ -87,7 +87,7 @@ class Motifs_model extends CI_Model {
     {
         $this->db->select('STRAIGHT_JOIN MR.*, count(ML.ml_loops_id) AS loops, count(DISTINCT(motif_id)) AS motifs', FALSE)
                  ->from('ml_releases AS MR')
-                 ->join('ml_loops AS ML','MR.ml_releases_id = ML.release_id')
+                 ->join('ml_loops AS ML','MR.ml_releases_id = ML.ml_release_id')
                  ->where('MR.type',$motif_type)
                  ->like('ML.ml_loops_id',$motif_type,'after')
                  ->group_by('MR.ml_releases_id')
@@ -104,7 +104,7 @@ class Motifs_model extends CI_Model {
                 SELECT DISTINCT(seq AND motif_id),seq, length, motif_id FROM ml_loops AS t1
                 JOIN loop_info AS t2
                 ON t1.ml_loops_id = t2.loop_id
-                WHERE t1.release_id = '{$release_id}'
+                WHERE t1.ml_release_id = '{$release_id}'
                 AND t2.`type` = '{$motif_type}'
                 ORDER BY length DESC
             ) AS t3
@@ -427,7 +427,7 @@ class Motifs_model extends CI_Model {
             $this->db->select('motif_id, count(ml_loops_id) AS instances')
                      ->from('ml_loops')
                      ->like('motif_id',strtoupper($motif_type),'after')
-                     ->where('release_id', $id)
+                     ->where('ml_release_id', $id)
                      ->group_by('motif_id')
                      ->order_by('instances','desc');
             $query = $this->db->get();
@@ -500,7 +500,7 @@ class Motifs_model extends CI_Model {
         $this->db->select('LI.length')
                  ->from('ml_loops AS ML')
                  ->join('loop_info AS LI', 'ML.ml_loops_id = LI.loop_id')
-                 ->where('ML.release_id', $release_id)
+                 ->where('ML.ml_release_id', $release_id)
                  ->where('ML.motif_id', $motif_id);
         $query = $this->db->get();
 
@@ -558,7 +558,7 @@ class Motifs_model extends CI_Model {
         // get all loops in the release
         $this->db->select('ml_loops_id')
                  ->from('ml_loops')
-                 ->where('release_id', $release_id)
+                 ->where('ml_release_id', $release_id)
                  ->like('ml_loops_id', $motif_type, 'after');
         $query = $this->db->get();
 
@@ -787,7 +787,7 @@ class Motifs_model extends CI_Model {
         $this->db->select('motif_id, count(ml_loops_id) as instances')
                  ->from('ml_loops')
                  ->where_in('motif_id', $motifs)
-                 ->where('release_id', $release)
+                 ->where('ml_release_id', $release)
                  ->order_by('count(ml_loops_id)', 'desc')
                  ->group_by('motif_id');
         $query = $this->db->get();
