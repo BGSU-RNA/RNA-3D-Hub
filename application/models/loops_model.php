@@ -78,7 +78,7 @@ class Loops_model extends CI_Model {
         $this->db->select('status, modifications, nt_signature, complementary')
                  ->from('loop_qa')
                  ->where('loop_id',$id)
-                 ->order_by('release_id', 'desc')
+                 ->order_by('loop_release_id', 'desc')
                  ->limit(1);
         $query = $this->db->get();
 
@@ -501,7 +501,7 @@ class Loops_model extends CI_Model {
                  ->join('loop_info AS li','qa.loop_id = li.loop_id')
                  ->where('status',$type)
                  ->where('type',$motif_type)
-                 ->where('release_id',$release_id)
+                 ->where('loop_release_id',$release_id)
                  ->order_by('li.loop_id')
                  ->limit($num,$offset);
         $query = $this->db->get();
@@ -556,7 +556,7 @@ class Loops_model extends CI_Model {
         $this->db->from('loop_qa')
                  ->where('status',$type)
                  ->like('loop_id',$motif_type,'after')
-                 ->where('release_id',$release_id);
+                 ->where('loop_release_id',$release_id);
         return $this->db->count_all_results();
     }
 
