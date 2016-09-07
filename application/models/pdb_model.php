@@ -401,7 +401,7 @@ class Pdb_model extends CI_Model {
 
     function get_latest_motif_release($motif_type)
     {
-        $this->db->select('ml_releases_id')
+        $this->db->select('ml_release_id')
                  ->from('ml_releases')
                  ->order_by('date', 'desc')
                  ->where('type', $motif_type)
@@ -409,7 +409,7 @@ class Pdb_model extends CI_Model {
         
         $result = $this->db->get()->row();
         
-        return $result->ml_releases_id;
+        return $result->ml_release_id;
     }
 
     function get_motifs_info($pdb_id, $motif_type)

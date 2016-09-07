@@ -202,14 +202,14 @@ class Loops_model extends CI_Model {
         // get motif id
         $this->db->select()
                  ->from('ml_loops')
-                 ->where('ml_release_id',$release->ml_releases_id)
+                 ->where('ml_release_id',$release->ml_release_id)
                  ->where('loop_id',$id);
         $query = $this->db->get();
 
         if ($query->num_rows() > 0) {
             $motif = $query->row();
             return array('motif_id' => $motif->motif_id,
-                         'release_id' => $release->ml_releases_id);
+                         'release_id' => $release->ml_release_id);
         } else {
             return NULL;
         }
@@ -219,9 +219,9 @@ class Loops_model extends CI_Model {
     function get_most_recent_motif_assignment($loop_id)
     {
         $loop_type = substr($loop_id, 0, 2);
-        $this->db->select('ML.motif_id as motif_id, MR.ml_releases_id as release_id')
+        $this->db->select('ML.motif_id as motif_id, MR.ml_release_id as release_id')
                  ->from('ml_loops AS ML')
-                 ->join('ml_releases AS MR', 'MR.ml_releases_id=ML.ml_release_id')
+                 ->join('ml_releases AS MR', 'MR.ml_release_id=ML.ml_release_id')
                  ->where('ML.loop_id', $loop_id)
                  ->where('MR.type', $loop_type)
                  ->order_by('MR.date', 'desc');
@@ -331,7 +331,7 @@ class Loops_model extends CI_Model {
                  ->limit(1);
         $query = $this->db->get();
         $row = array_shift($query->result());
-        return $row->ml_releases_id;
+        return $row->ml_release_id;
     }
 
     function get_similar_loops($id)
