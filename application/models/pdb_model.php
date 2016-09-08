@@ -520,6 +520,7 @@ class Pdb_model extends CI_Model {
         $this->db->select('unit_id as id, chain, unit as sequence')
                  ->from('unit_info')
                  ->where('pdb_id', $pdb_id)
+                 ->where('unit_type_id', 'rna')
                  ->where_in('chain', $chains)
                  ->order_by('number', 'asc');
 
