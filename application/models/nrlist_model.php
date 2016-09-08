@@ -209,7 +209,12 @@ CREATE TABLE `nr_release_diff` (
             $result = $query->result();
             $tid = $result[0]->taxonomy_id;
             $sid = $result[0]->source;
-            return anchor_popup("$this->tax_url$tid", "$sid");
+
+            if ( $tid != '' ) {
+                return anchor_popup("$this->tax_url$tid", "$sid");
+            } else {
+                return $sid;
+            }
         } else {
             return '';
         }

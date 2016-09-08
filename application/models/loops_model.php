@@ -78,7 +78,7 @@ class Loops_model extends CI_Model {
         $this->db->select('status, modifications, nt_signature, complementary')
                  ->from('loop_qa')
                  ->where('loop_id',$id)
-                 ->order_by('release_id', 'desc')
+                 ->order_by('loop_release_id', 'desc')
                  ->limit(1);
         $query = $this->db->get();
 
@@ -202,7 +202,7 @@ class Loops_model extends CI_Model {
         // get motif id
         $this->db->select()
                  ->from('ml_loops')
-                 ->where('release_id',$release->ml_release_id)
+                 ->where('ml_release_id',$release->ml_releases_id)
                  ->where('loop_id',$id);
         $query = $this->db->get();
 
@@ -219,12 +219,12 @@ class Loops_model extends CI_Model {
     function get_most_recent_motif_assignment($loop_id)
     {
         $loop_type = substr($loop_id, 0, 2);
-        $this->db->select('ml_loops.motif_id as motif_id, ml_releases.ml_release_id as release_id')
-                 ->from('ml_loops')
-                 ->join('ml_releases', 'ml_releases.ml_release_id=ml_loops.release_id')
-                 ->where('ml_loops.loop_id', $loop_id)
-                 ->where('ml_releases.type', $loop_type)
-                 ->order_by('ml_releases.date', 'desc');
+        $this->db->select('ML.motif_id as motif_id, MR.ml_releases_id as release_id')
+                 ->from('ml_loops AS ML')
+                 ->join('ml_releases AS MR', 'MR.ml_releases_id=ML.ml_release_id')
+                 ->where('ML.loop_id', $loop_id)
+                 ->where('MR.type', $loop_type)
+                 ->order_by('MR.date', 'desc');
         $query = $this->db->get();
         if ( $query->num_rows() == 0 ) {
             return NULL;
@@ -265,7 +265,7 @@ class Loops_model extends CI_Model {
             // get number of motif instances
             $this->db->select()
                      ->from('ml_loops')
-                     ->where('release_id',$motif['release_id'])
+                     ->where('ml_release_id',$motif['release_id'])
                      ->where('motif_id', $motif['motif_id']);
             $query = $this->db->get();
             $result['motif_instances'] = $query->num_rows();
@@ -370,7 +370,7 @@ class Loops_model extends CI_Model {
             $this->db->select()
                      ->from('ml_loops')
                      ->where('loop_id',$match)
-                     ->where('release_id',$ml_release_id);
+                     ->where('ml_release_id',$ml_release_id);
             $q = $this->db->get();
 
             if ($q->num_rows() > 0) {
@@ -501,7 +501,7 @@ class Loops_model extends CI_Model {
                  ->join('loop_info AS li','qa.loop_id = li.loop_id')
                  ->where('status',$type)
                  ->where('type',$motif_type)
-                 ->where('release_id',$release_id)
+                 ->where('loop_release_id',$release_id)
                  ->order_by('li.loop_id')
                  ->limit($num,$offset);
         $query = $this->db->get();
@@ -556,7 +556,7 @@ class Loops_model extends CI_Model {
         $this->db->from('loop_qa')
                  ->where('status',$type)
                  ->like('loop_id',$motif_type,'after')
-                 ->where('release_id',$release_id);
+                 ->where('loop_release_id',$release_id);
         return $this->db->count_all_results();
     }
 
@@ -611,18 +611,18 @@ EOT;
         // JOIN loops_all
         // LEFT JOIN ml_loops
         // ON nt_id = `mltest`.`dcc_residues`.`dcc_residues_id` AND loop_info.loop_id=loop_id AND ml_loops.ml_loopsid=LOOP_id
-        // WHERE `ml_loop_positions`.release_id = '0.5' AND ml_loops.release_id='0.5'
+        // WHERE `ml_loop_positions`.release_id = '0.5' AND ml_loops.ml_release_id='0.5'
         // ORDER BY loop_id ASC;
 
         $this->db->select()
                  ->from('ml_loop_positions')
                  ->join('__dcc_residues','nt_id = __dcc_residues.dcc_residues_id')
                  ->join('loop_info','loop_id=loop_info.loop_id')
-                 ->join('ml_loops','loop_id=ml_loops.loop_id','left')
+                 ->join('ml_loops AS ML','loop_id=ML.loop_id','left')
                  ->where('ml_loop_positions.release_id','0.5')
-                 ->where('ml_loops.release_id','0.5')
+                 ->where('ML.ml_release_id','0.5')
                  ->group_by('loop_id') // NB! comment out or leave in?
-                 ->order_by('ml_loops.motif_id','asc')
+                 ->order_by('ML.motif_id','asc')
                  ->order_by('loop_id','asc');
 //                  ->limit(10);
         $query = $this->db->get();

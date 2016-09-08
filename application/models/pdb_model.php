@@ -43,7 +43,7 @@ class Pdb_model extends CI_Model {
         
         $this->db->select()
                  ->from('ml_loops')
-                 ->where('release_id', $latest_release)
+                 ->where('ml_release_id', $latest_release)
                  ->like('loop_id', strtoupper($loop_type) . '_' . $pdb_id, 'right');
         $query = $this->db->get();
         $data = array();
@@ -55,7 +55,7 @@ class Pdb_model extends CI_Model {
 
     function get_loops($pdb_id)
     {
-        $release_id = $this->get_latest_loop_release();
+        $loop_release_id = $this->get_latest_loop_release();
         $this->db->select('lq.loop_id')
                  ->select('lq.status')
                  ->select('lq.modifications')
@@ -66,7 +66,7 @@ class Pdb_model extends CI_Model {
                  ->from('loop_qa AS lq')
                  ->join('loop_info AS li', 'li.loop_id = lq.loop_id')
                  ->where('pdb_id', $pdb_id)
-                 ->where('release_id', $release_id);
+                 ->where('loop_release_id', $loop_release_id);
         $query = $this->db->get();
         
         $loop_types = array('IL','HL','J3');
