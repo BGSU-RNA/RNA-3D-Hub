@@ -24,8 +24,11 @@
                   </div>
                 </div>
                 
-                 <div class="tab-pane active" id="statistics">
+                 <div class="row span16 interactions resizable" id="statistics">
                   <div class="span16">
+                      <span class="muted">
+                         #S - ordering by similarity (same as in the heat map).
+                      </span>
                       <div>
                         <!-- Not sure what this is -->
                         <?=$statistics?> 
