@@ -119,9 +119,9 @@ class Nrlist extends CI_Controller {
         $data['children'] = $this->table->generate($history);
         
         $statistics = $this->Nrlist_model->get_statistics($id);
-        $tmpl = array( 'table_open'  => "<table class='zebra-striped bordered-table' id='statistics_table'>" );
+        $tmpl = array( 'table_open'  => '<table class="condensed-table bordered-table zebra-striped" height=400px id="statistics_table">' );
         $this->table->set_template($tmpl);
-        $this->table->set_heading('#S','PDB','Title','Method','Resolution','Length', 'Number of bps/nucleotides');
+        $this->table->set_heading('#S','PDB','Title','Method','Resolution','Length', 'Number of bps');
         $data['statistics'] = $this->table->generate($statistics);
         
         
