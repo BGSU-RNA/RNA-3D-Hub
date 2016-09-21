@@ -120,8 +120,8 @@ class Loops_model extends CI_Model {
             $bulges = array();
 
             foreach ($query->result() as $row) {
-                $parts = explode('_', $row->unit_id);
-                $bulges[] = $parts[5] . $parts[4];
+                $parts = explode('|', $row->unit_id);
+                $bulges[] = $parts[4] . $parts[3];
             }
 
             $result['bulges'] = implode(', ', $bulges);
