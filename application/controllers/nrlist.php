@@ -8,7 +8,7 @@ class Nrlist extends CI_Controller {
         $this->load->model('Nrlist_model', '', TRUE);
         $result = $this->Nrlist_model->get_all_releases();
 
-        $this->table->set_heading('Release id', 'All changes', 'Date', 'NR PDB files');
+        $this->table->set_heading('Release id', 'All changes', 'Date', 'Number of IFEs');
         $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table'>" );
         $this->table->set_template($tmpl);
         $data['table']   = $this->table->generate($result);
