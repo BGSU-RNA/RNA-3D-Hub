@@ -19,6 +19,7 @@ class Nrlist_model extends CI_Model {
         $this->tax_url = 'http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=';
         // Call the Model constructor
         parent::__construct();
+        //$this->load->database();
 
     }
 
@@ -267,8 +268,7 @@ CREATE TABLE `nr_release_diff` (
     function get_statistics($id)
     {
         
-        $this->db
-        		 ->select('pi.pdb_id')
+        $this->db->select('pi.pdb_id')
                  ->select('ch.ife_id')
                  ->select('pi.title')
                  ->select('pi.experimental_technique')
@@ -276,22 +276,24 @@ CREATE TABLE `nr_release_diff` (
                  ->select('pi.resolution')
                  ->select('ii.length')
                  ->select('ii.bp_count')
+                 ->select('nl.index')
                  ->from('pdb_info AS pi')
                  ->join('ife_info AS ii','pi.pdb_id = ii.pdb_id')
                  ->join('nr_chains AS ch', 'ii.ife_id = ch.ife_id')
-                 //->join('nr_ordering AS no', 'ch.nr_chain_id = no.nr_chain_id')
-                 //->join('nr_classes AS cl', 'no.nr_class_id = cl.nr_class_id AND cl.nr_release_id = 3.0')          
-                 ->join('nr_classes AS cl', 'ch.nr_class_id = cl.nr_class_id AND cl.nr_release_id = 3.0')
+                 ->join('nr_ordering AS nl', 'ch.nr_chain_id = nl.nr_chain_id')
+                 ->join('nr_classes AS cl', 'nl.nr_class_id = cl.nr_class_id AND ch.nr_release_id = cl.nr_release_id')          
                  ->where('cl.name',$id)
                  #->where('nch.nr_release_id',$this->last_seen_in) # what was this doing? still necessary?
                  ->group_by('pi.pdb_id')
                  ->group_by('ii.ife_id')
-                 ->order_by('ch.rep','desc');
+                 ->order_by('nl.index','asc');
+
         $query = $this->db->get();
+
         $i = 0;
         $table = array();
         
-        foreach ($query->result() as $row) {
+        foreach ($query -> result() as $row) {
             $link = $this->make_pdb_widget_link($row->ife_id);
             if ( $i==0 ) {
                 $link = $link . ' <strong>(rep)</strong>';
@@ -306,28 +308,42 @@ CREATE TABLE `nr_release_diff` (
                              $row->resolution,
                              $row->length,
                              $row->bp_count);
-                             //$row->release_date;
+                             
         }
+
         return $table;
-        
+       
 	}
 	
 	function get_heatmap_data($id)
-	{
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+    {
+
+        $this->db->distinct()
+                 ->select('NC1.ife_id AS ife1')
+                 ->select('NO1.index AS ife1_index')
+                 ->select('NC2.ife_id AS ife2')
+                 ->select('NO2.index AS ife2_index')
+                 ->select('CSS.discrepancy')
+                 ->from('nr_classes AS NCL')
+                 ->join('nr_chains as NC1', 'NC1.nr_class_id = NCL.nr_class_id')
+                 ->join('nr_chains as NC2', 'NC2.nr_class_id = NCL.nr_class_id')
+                 ->join('nr_ordering as NO1', 'NO1.nr_chain_id = NC1.nr_chain_id')
+                 ->join('nr_ordering as NO2', 'NO2.nr_chain_id = NC2.nr_chain_id')
+                 ->join('ife_chains as IC1', 'IC1.ife_id = NC1.ife_id and IC1.index = 0')
+                 ->join('ife_chains as IC2', 'IC2.ife_id = NC2.ife_id and IC2.index = 0')
+                 ->join('chain_chain_similarity as CSS', 'CSS.chain_id_1 = IC1.chain_id and CSS.chain_id_2 = IC2.chain_id', 'left outer')
+                 ->where('NC1.nr_chain_id !=', 'NC2.nr_chain_id')
+                 ->where('IC1.chain_id !=', 'IC2.chain_id')
+                 ->where('NCL.name', $id)
+                 ->group_by('NO1.index')
+                 ->group_by('NO2.index');
+
+        $query = $this->db->get();
+
+        $heatmap_data = json_encode($query->result());
+
+        return $heatmap_data;
 	
 	}
 	
