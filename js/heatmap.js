@@ -91,7 +91,7 @@
         .attr("y", function(d) { return d.ife1_index * gridSize; })
         .attr("rx", 4)
         .attr("ry", 4)
-        .attr("class", "bordered")
+        //.attr("class", "bordered")
         .attr("width", gridSize)
         .attr("height", gridSize)
         .style("fill", function(d) {
