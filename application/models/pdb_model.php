@@ -170,11 +170,11 @@ class Pdb_model extends CI_Model {
 
         //$query = "COUNT(IF(`li`.`type` = `$interaction_type`, 1, NULL)) AS numloops";
 
-        $this->db->select('pas.pdb_analysis_status_id, li.type')
+        $this->db->select('pi.pdb_id, li.type')
                  //->select($query, FALSE)
-                 ->from('pdb_analysis_status AS pas')
-                 ->join('loop_info AS li', 'pas.pdb_id = li.pdb_id')
-                 ->where('pas.pdb_id', $pdb_id);
+                 ->from('pdb_info AS pi')
+                 ->join('loop_info AS li', 'pi.pdb_id = li.pdb_id')
+                 ->where('pi.pdb_id', $pdb_id);
 
         if ( $this->db->get()->num_rows() > 0 ) {
             return True;
