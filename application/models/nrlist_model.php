@@ -439,6 +439,8 @@ CREATE TABLE `nr_release_diff` (
         $this->db->select('nch.nr_release_id, count(ii.pdb_id) as num')
                  ->from('ife_info AS ii')
                  ->join('nr_chains AS nch', 'ii.ife_id = nch.ife_id')
+                 ->join('nr_classes AS ncl', 'nch.nr_class_id = ncl.nr_class_id AND nch.nr_release_id = ncl.nr_release_id')
+                 ->where('ncl.resolution', 'all')
                  ->group_by('nch.nr_release_id');
         $query = $this->db->get();
 
