@@ -1,4 +1,4 @@
-  // put this into a function to generate the x/y-axis data labels
+
   // get the unique values of the ife's
   var lookup = {};
   var items = data;
@@ -21,7 +21,8 @@
     width = 600 - margin.left - margin.right,
     height = (660 - margin.top - margin.bottom) + 150,
     gridSize = Math.floor(width / ife_nr_size),
-    legendElementWidth = Math.floor(width / 6);
+    legendElementWidth = Math.floor(width/6);
+
 
       // the unary operator (+) converts a numeric string into a number
       data.forEach(function(d) {
@@ -35,15 +36,15 @@
       // At the moment, the values are hard-coded. Need to find a better alternative
       // Might need to use quantile scale
       var colorScale = d3.scale.linear()
-        .domain([0.0,1.0,2.0,3.0,4.0,5.0])
-        .range(['#ffffb2', '#fed976','#feb24c','#fd8d3c','#f03b20','#bd0026'])
+        .domain([0.0,0.4,0.8,1.2,1.6,2.0])
+        .range(['#eff3ff', '#c6dbef','#9ecae1','#6baed6','#3182bd','#08519c'])
+        .clamp(true)
 
       // Set the svg container
       var svg = d3.select("#chart").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
-        // read on this
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       // Draw the x-axis label
@@ -89,8 +90,6 @@
       heatMap.enter().append("rect")
         .attr("x", function(d) { return d.ife2_index * gridSize; })
         .attr("y", function(d) { return d.ife1_index * gridSize; })
-        .attr("rx", 4)
-        .attr("ry", 4)
         //.attr("class", "bordered")
         .attr("width", gridSize)
         .attr("height", gridSize)
