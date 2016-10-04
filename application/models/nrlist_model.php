@@ -306,8 +306,8 @@ CREATE TABLE `nr_release_diff` (
                              //$this->get_compound_list($row->pdb_id),
                              $row->experimental_technique,
                              $row->resolution,
-                             $row->length,
-                             $row->bp_count);
+                             $row->length);
+                             //$row->bp_count);
                              
         }
 

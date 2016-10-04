@@ -1,8 +1,8 @@
   <style>
-    rect.bordered {
+  	rect.bordered {
       stroke: #E6E6E6;
-      stroke-width: 2px;
-    }
+      stroke-width: 10px;
+    } 
     text.mono {
       font-size: 9pt;
       font-family: Consolas, courier;
@@ -77,8 +77,10 @@
                       </span>
                       <div>
                         <!-- Not sure what this is -->
+                        <div align ="center">
                         <?=$statistics?> 
-                        <div id ='chart'></div>
+                        </div>
+                        <div id ='chart' align = 'center'></div>
                         <script src="http://d3js.org/d3.v3.js"></script>
                         <script type="text/javascript">
                           var data = <? echo $heatmap_data; ?>;

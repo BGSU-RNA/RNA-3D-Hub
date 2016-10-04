@@ -1,4 +1,4 @@
-  // put this into a function to generate the x/y-axis data labels
+
   // get the unique values of the ife's
   var lookup = {};
   var items = data;
@@ -21,7 +21,8 @@
     width = 600 - margin.left - margin.right,
     height = (660 - margin.top - margin.bottom) + 150,
     gridSize = Math.floor(width / ife_nr_size),
-    legendElementWidth = Math.floor(width / 6);
+    legendElementWidth = Math.floor(width/6);
+
 
       // the unary operator (+) converts a numeric string into a number
       data.forEach(function(d) {
@@ -35,15 +36,15 @@
       // At the moment, the values are hard-coded. Need to find a better alternative
       // Might need to use quantile scale
       var colorScale = d3.scale.linear()
-        .domain([0.0,1.0,2.0,3.0,4.0,5.0])
+        .domain([0.0,0.4,0.8,1.2,1.6,2.0])
         .range(['#ffffb2', '#fed976','#feb24c','#fd8d3c','#f03b20','#bd0026'])
+        .clamp(true)
 
       // Set the svg container
       var svg = d3.select("#chart").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
-        // read on this
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
       // Draw the x-axis label
@@ -57,6 +58,7 @@
           })
           .style("text-anchor", "end")
           .attr("transform", "translate(-5," + gridSize / 1.5 + ")")
+          //
           .attr("class", function(d, i) {
             return ((i >= 0)
             ? "dayLabel mono axis axis-workweek" : "dayLabel mono axis");
@@ -64,10 +66,9 @@
 
       // Draw the y-axis label
       // Need to draw this vertically (the data elements can be large!)
-    /*  var timeLabels = svg.selectAll(".timeLabel")
+      var timeLabels = svg.selectAll(".timeLabel")
         .data(ife_nr)
-        .enter().append("text")
-        //.attr(style="writing-mode: tb; glyph-orientation-vertical: 0;")
+        //.enter().append("text")
         .text(function(d) {
           return d;
         })
@@ -76,10 +77,11 @@
         })
         .attr("y", 0)
         .style("text-anchor", "middle")
-        .attr("transform", "translate(" + gridSize / 2 + '-5' + ")")
+        //.attr("transform", "translate(" + gridSize / 2 + '-5' + ")")
+        .attr("transform", "translate(" + gridSize/2 + '-8' + "), rotate(-90)")
         .attr("class", function(d, i) {
           return ((i >= 0) ? "timeLabel mono axis axis-worktime" : "timeLabel mono axis");
-        }); */
+        });
 
       // Create the paired elements
       var heatMap = svg.selectAll(".ife2_index")
@@ -89,18 +91,32 @@
       heatMap.enter().append("rect")
         .attr("x", function(d) { return d.ife2_index * gridSize; })
         .attr("y", function(d) { return d.ife1_index * gridSize; })
-        .attr("rx", 4)
-        .attr("ry", 4)
         //.attr("class", "bordered")
         .attr("width", gridSize)
         .attr("height", gridSize)
         .style("fill", function(d) {
-            return colorScale(d.discrepancy);
+          if ((d.ife1 != d.ife2) && (d.discrepancy == null)) {
+              return "#808080";
+          } else {
+              return colorScale(d.discrepancy);
+
+          }
+
+
         });
 
       // Show the value of discrepancy between two iefe's when the user hovers over a heatmap grid
       heatMap.append("title").text(function(d) {
-        return d.ife1 + ':' + d.ife2 + ' = ' + d.discrepancy;
+        //return d.ife1 + ':' + d.ife2 + ' = ' + d.discrepancy;
+        if ((d.ife1 == d.ife2) && (d.discrepancy == null)) {
+          d.discrepancy = 0;
+          return d.ife1 + ':' + d.ife2 + ' = ' + d.discrepancy;
+        } else if ((d.ife1 != d.ife2) && (d.discrepancy == null)) {
+            return 'No discrepancy value is computed between ' + d.ife1 + ' and ' + d.ife2;
+        } else {
+            return d.ife1 + ':' + d.ife2 + ' = ' + d.discrepancy;
+        }
+
       });
       //
       heatMap.exit().remove();
