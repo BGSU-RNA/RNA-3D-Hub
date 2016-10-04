@@ -37,7 +37,7 @@
       // Might need to use quantile scale
       var colorScale = d3.scale.linear()
         .domain([0.0,0.4,0.8,1.2,1.6,2.0])
-        .range(['#eff3ff', '#c6dbef','#9ecae1','#6baed6','#3182bd','#08519c'])
+        .range(['#ffffb2', '#fed976','#feb24c','#fd8d3c','#f03b20','#bd0026'])
         .clamp(true)
 
       // Set the svg container
@@ -58,6 +58,7 @@
           })
           .style("text-anchor", "end")
           .attr("transform", "translate(-5," + gridSize / 1.5 + ")")
+          //
           .attr("class", function(d, i) {
             return ((i >= 0)
             ? "dayLabel mono axis axis-workweek" : "dayLabel mono axis");
@@ -65,10 +66,9 @@
 
       // Draw the y-axis label
       // Need to draw this vertically (the data elements can be large!)
-    /*  var timeLabels = svg.selectAll(".timeLabel")
+      var timeLabels = svg.selectAll(".timeLabel")
         .data(ife_nr)
-        .enter().append("text")
-        //.attr(style="writing-mode: tb; glyph-orientation-vertical: 0;")
+        //.enter().append("text")
         .text(function(d) {
           return d;
         })
@@ -77,10 +77,11 @@
         })
         .attr("y", 0)
         .style("text-anchor", "middle")
-        .attr("transform", "translate(" + gridSize / 2 + '-5' + ")")
+        //.attr("transform", "translate(" + gridSize / 2 + '-5' + ")")
+        .attr("transform", "translate(" + gridSize/2 + '-8' + "), rotate(-90)")
         .attr("class", function(d, i) {
           return ((i >= 0) ? "timeLabel mono axis axis-worktime" : "timeLabel mono axis");
-        }); */
+        });
 
       // Create the paired elements
       var heatMap = svg.selectAll(".ife2_index")
@@ -94,12 +95,28 @@
         .attr("width", gridSize)
         .attr("height", gridSize)
         .style("fill", function(d) {
-            return colorScale(d.discrepancy);
+          if ((d.ife1 != d.ife2) && (d.discrepancy == null)) {
+              return "#808080";
+          } else {
+              return colorScale(d.discrepancy);
+
+          }
+
+
         });
 
       // Show the value of discrepancy between two iefe's when the user hovers over a heatmap grid
       heatMap.append("title").text(function(d) {
-        return d.ife1 + ':' + d.ife2 + ' = ' + d.discrepancy;
+        //return d.ife1 + ':' + d.ife2 + ' = ' + d.discrepancy;
+        if ((d.ife1 == d.ife2) && (d.discrepancy == null)) {
+          d.discrepancy = 0;
+          return d.ife1 + ':' + d.ife2 + ' = ' + d.discrepancy;
+        } else if ((d.ife1 != d.ife2) && (d.discrepancy == null)) {
+            return 'No discrepancy value is computed between ' + d.ife1 + ' and ' + d.ife2;
+        } else {
+            return d.ife1 + ':' + d.ife2 + ' = ' + d.discrepancy;
+        }
+
       });
       //
       heatMap.exit().remove();

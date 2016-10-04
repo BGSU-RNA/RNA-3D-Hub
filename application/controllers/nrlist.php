@@ -119,10 +119,9 @@ class Nrlist extends CI_Controller {
         $data['children'] = $this->table->generate($history);
         
         $statistics = $this->Nrlist_model->get_statistics($id);
-        $this->output->enable_profiler(TRUE);
-        $tmpl = array( 'table_open'  => '<table class="condensed-table bordered-table zebra-striped" height=400px id="statistics_table">' );
+        $tmpl = array( 'table_open'  => "<table class='condensed-table bordered-table zebra-striped pairwise-interactions' id='sort'>" );
         $this->table->set_template($tmpl);
-        $this->table->set_heading('#S','PDB','Title','Method','Resolution','Length', 'Num of bps');
+        $this->table->set_heading('#S','PDB','Title','Method','Resolution','Length');
         $data['statistics'] = $this->table->generate($statistics);
 
         $heatmap = $this->Nrlist_model->get_heatmap_data($id);
