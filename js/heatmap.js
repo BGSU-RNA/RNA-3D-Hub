@@ -39,7 +39,7 @@
       var colorScale = d3.scaleLinear()
         .domain(linspace(0, domainMax, viridisColor.length))
         .range(viridisColor)
-        .clamp(0, 2)
+        .clamp(true);
       
       //var colorScale = d3.scaleSequential(d3.interpolateViridis)
                          //.domain([0, domainMax])
@@ -169,7 +169,7 @@
       var legendScale = d3.scaleLinear()
         .domain([0, domainMax])
         .range([0, width])
-        .clamp(0, 2);
+        .clamp(true);
 
       var legendAxis = d3.axisBottom()
         .scale(legendScale)
