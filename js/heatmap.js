@@ -34,7 +34,7 @@
       });
 
 
-      var domainMax = d3.max(data, function(d) {return +d.discrepancy;}
+      var domainMax = d3.max(data, function(d) {return +d.discrepancy;});
 
       var colorScale = d3.scaleLinear()
         .domain(linspace(0, domainMax, viridisColor.length))
@@ -168,8 +168,8 @@
       // create a scale and axis for the legend
       var legendScale = d3.scaleLinear()
         .domain([0, domainMax])
-        .range([0, width]);
-        .clamp(0, 2)
+        .range([0, width])
+        .clamp(0, 2);
 
       var legendAxis = d3.axisBottom()
         .scale(legendScale)
