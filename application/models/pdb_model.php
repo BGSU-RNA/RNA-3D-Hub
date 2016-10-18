@@ -508,9 +508,21 @@ class Pdb_model extends CI_Model {
 
     function get_ordered_nts($pdb_id)
     {
-        $this->db->select('best_chains')
-                 ->from('pdb_best_chains_and_models')
-                 ->where('pdb_id', $pdb_id);
+        # version from before Blake's deactivation of the best_chains pipeline routine
+        #$this->db->select('best_chains')
+        #         ->from('pdb_best_chains_and_models')
+        #         ->where('pdb_id', $pdb_id);
+
+        # most feasible replacement -- not 100% identical, and may produce different results
+        # functional when data is present
+        # will require testing to evaluate efficacy
+        $this->db->select('group_concat(DISTINCT ci.chain_name ORDER BY ci.chain_name separator ",") AS best_chains', FALSE)
+                 ->from('ife_info AS ii')
+                 ->join('ife_chains AS ic', 'ic.ife_id = ii.ife_id')
+                 ->join('chain_info AS ci', 'ic.chain_id = ci.chain_id')
+                 ->where('ii.pdb_id', $pdb_id)
+                 ->where('ii.new_style', 1)
+                 ->group_by('ii.pdb_id');
 
         $result = $this->db->get()->row();
         $chains = explode(",", $result->best_chains);
