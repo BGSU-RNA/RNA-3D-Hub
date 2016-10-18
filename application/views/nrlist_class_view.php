@@ -14,6 +14,15 @@
     text.axis-worktime {
       fill: #000;
     }
+
+    .axis path,
+    .axis tick,
+    .axis line {
+      fill: none;
+      stroke: none;
+    }
+
+
   </style> 
 
 
@@ -72,16 +81,16 @@
 
                  <div class="row span16 interactions resizable" id="statistics">
                   <div class="span16">
-                      <span class="muted">
-                         #S - ordering by similarity (same as in the heat map).
-                      </span>
                       <div>
                         <!-- Not sure what this is -->
-                        <div align ="center">
+                        <div id ='chart' style="text-align: center;"></div>
+                         <span class="muted">
+                         #S - ordering by similarity (same as in the heat map).
+                        </span>
+                        <div>
                         <?=$statistics?> 
                         </div>
-                        <div id ='chart' align = 'center'></div>
-                        <script src="http://d3js.org/d3.v3.js"></script>
+                        <script src="//d3js.org/d3.v4.min.js"></script>
                         <script type="text/javascript">
                           var data = <? echo $heatmap_data; ?>;
                         </script>
