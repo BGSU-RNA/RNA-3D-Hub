@@ -176,8 +176,8 @@ class Motif_model extends CI_Model {
                            LQ.status as status,
                            LQ.message as qa_message,
                            LQ.status as qa_status')
-                 ->from('loop_searches', 'LS')
-                 ->join('loop_search_qa', 'LQ', 'LS.loop_id_1 = LQ.loop_id_1 AND LS.loop_id_2 = LQ.loop_id_2', 'left')
+                 ->from('loop_searches AS LS')
+                 ->join('loop_search_qa AS LQ', 'LS.loop_id_1 = LQ.loop_id_1 AND LS.loop_id_2 = LQ.loop_id_2', 'left')
                  ->where_in('LS.loop_id_1', $loop_ids)
                  ->where_in('LS.loop_id_2', $loop_ids);
         $query = $this->db->get();
