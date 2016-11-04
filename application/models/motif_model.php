@@ -409,7 +409,7 @@ class Motif_model extends CI_Model {
         $this->db->select_max('discrepancy', 'intra_max_disc')
                  ->select_avg('discrepancy', 'intra_avg_disc')
                  ->from('ml_mutual_discrepancy')
-                 ->where_in('loop_id1', $loops)
+                 ->where_in('loop_id_1', $loops)
                  ->where('ml_release_id', $this->release_id);
         $query = $this->db->get();
 
@@ -421,7 +421,7 @@ class Motif_model extends CI_Model {
 
         $this->db->select_min('discrepancy', 'intra_min_disc')
                  ->from('ml_mutual_discrepancy')
-                 ->where_in('loop_id1', $loops)
+                 ->where_in('loop_id_1', $loops)
                  ->where('ml_release_id', $this->release_id)
                  ->where('discrepancy >', 0);
         $query = $this->db->get();
@@ -626,25 +626,25 @@ class Motif_model extends CI_Model {
         $this->db->select()
                  ->from('ml_mutual_discrepancy')
                  ->where('ml_release_id', $this->release_id)
-                 ->where_in('loop_id1', $this->loops)
-                 ->where_in('loop_id2', $this->loops);
+                 ->where_in('loop_id_1', $this->loops)
+                 ->where_in('loop_id_2', $this->loops);
         $result = $this->db->get()->result_array();
 
         $disc = array(); // $disc['IL_1S72_001']['IL_1J5E_023'] = 0.2897
         for ($i = 0; $i < count($result); $i++) {
-            $disc[$result[$i]['loop_id1']][$result[$i]['loop_id2']] = $result[$i]['discrepancy'];
+            $disc[$result[$i]['loop_id_1']][$result[$i]['loop_id_2']] = $result[$i]['discrepancy'];
         }
 
         $matrix = array();
         for ($i = 1; $i <= $this->num_loops; $i++) {
-            $loop_id1 = $this->similarity[$i];
+            $loop_id_1 = $this->similarity[$i];
             for ($j = 1; $j <= $this->num_loops; $j++) {
-                $loop_id2 = $this->similarity[$j];
-                $cell = array('data-disc' => $disc[$loop_id1][$loop_id2],
-                              'data-pair' => "$loop_id1:$loop_id2",
-                              'class'     => $this->get_css_class($disc[$loop_id1][$loop_id2]),
+                $loop_id_2 = $this->similarity[$j];
+                $cell = array('data-disc' => $disc[$loop_id_1][$loop_id_2],
+                              'data-pair' => "$loop_id_1:$loop_id_2",
+                              'class'     => $this->get_css_class($disc[$loop_id_1][$loop_id_2]),
                               'rel'       => 'twipsy',
-                              'title'     => "$loop_id1:$loop_id2, {$disc[$loop_id1][$loop_id2]}");
+                              'title'     => "$loop_id_1:$loop_id_2, {$disc[$loop_id_1][$loop_id_2]}");
                 $matrix[] = $cell;
             }
         }
@@ -896,12 +896,12 @@ class Motif_model extends CI_Model {
         $this->db->select()
                  ->from('ml_mutual_discrepancy')
                  ->where('ml_release_id', $this->release_id)
-                 ->where('loop_id1', $this->loops[1])
-                 ->where_in('loop_id2', $this->loops);
+                 ->where('loop_id_1', $this->loops[1])
+                 ->where_in('loop_id_2', $this->loops);
         $result = $this->db->get()->result_array();
         
         for ($i = 0; $i < count($result); $i++) {
-            $disc[$result[$i]['loop_id1']][$result[$i]['loop_id2']] = number_format($result[$i]['discrepancy'],4);
+            $disc[$result[$i]['loop_id_1']][$result[$i]['loop_id_2']] = number_format($result[$i]['discrepancy'],4);
         }
 
         if ( $i == 0 ) {
