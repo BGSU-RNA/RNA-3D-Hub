@@ -352,13 +352,13 @@ class Loops_model extends CI_Model {
 
         foreach ($query->result() as $row) {
             // establish what loop is the match of $id
-            if ($row->loop_id1 == $id) {
-                $match = $row->loop_id2;
+            if ($row->loop_id_1 == $id) {
+                $match = $row->loop_id_2;
             } else {
-                $match = $row->loop_id1;
+                $match = $row->loop_id_1;
             }
             
-            // exclude rows with reversed orientation of loop_id1 and loop_id2
+            // exclude rows with reversed orientation of loop_id_1 and loop_id_2
             if ( array_key_exists($match, $matches) ) {
                 continue;
             } else {
