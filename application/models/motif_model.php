@@ -59,7 +59,7 @@ class Motif_model extends CI_Model {
         $this->db->select('loop_id')
                  ->from('ml_loop_order')
                  ->where('motif_id', $motif_id)
-                 ->where('release_id', $this->release_id)
+                 ->where('ml_release_id', $this->release_id)
                  ->order_by('original_order');
         $query = $this->db->get();
 
@@ -410,7 +410,7 @@ class Motif_model extends CI_Model {
                  ->select_avg('discrepancy', 'intra_avg_disc')
                  ->from('ml_mutual_discrepancy')
                  ->where_in('loop_id1', $loops)
-                 ->where('release_id', $this->release_id);
+                 ->where('ml_release_id', $this->release_id);
         $query = $this->db->get();
 
         $results = array();
@@ -422,7 +422,7 @@ class Motif_model extends CI_Model {
         $this->db->select_min('discrepancy', 'intra_min_disc')
                  ->from('ml_mutual_discrepancy')
                  ->where_in('loop_id1', $loops)
-                 ->where('release_id', $this->release_id)
+                 ->where('ml_release_id', $this->release_id)
                  ->where('discrepancy >', 0);
         $query = $this->db->get();
         foreach ($query->result() as $row) {
@@ -537,7 +537,7 @@ class Motif_model extends CI_Model {
         $table[1][0] = '<strong>Date</strong>';
         $table[2][0] = '<strong>Status</strong>';
         foreach ($query->result() as $row) {
-            $table[0][] = anchor(base_url("motifs/release/".substr($motif_id,0,2) .'/'.$row->release_id), $row->release_id);
+            $table[0][] = anchor(base_url("motifs/release/".substr($motif_id,0,2) .'/'.$row->ml_release_id), $row->ml_release_id);
             $table[1][] = date('Y-m-d', strtotime($row->date));
 
             if ($row->comment == 'Exact match') {
@@ -625,7 +625,7 @@ class Motif_model extends CI_Model {
 
         $this->db->select()
                  ->from('ml_mutual_discrepancy')
-                 ->where('release_id', $this->release_id)
+                 ->where('ml_release_id', $this->release_id)
                  ->where_in('loop_id1', $this->loops)
                  ->where_in('loop_id2', $this->loops);
         $result = $this->db->get()->result_array();
@@ -895,7 +895,7 @@ class Motif_model extends CI_Model {
     {
         $this->db->select()
                  ->from('ml_mutual_discrepancy')
-                 ->where('release_id', $this->release_id)
+                 ->where('ml_release_id', $this->release_id)
                  ->where('loop_id1', $this->loops[1])
                  ->where_in('loop_id2', $this->loops);
         $result = $this->db->get()->result_array();
@@ -915,7 +915,7 @@ class Motif_model extends CI_Model {
     {
         $this->db->select('loop_id, original_order, similarity_order')
                  ->from('ml_loop_order')
-                 ->where('release_id', $this->release_id)
+                 ->where('ml_release_id', $this->release_id)
                  ->where('motif_id', $this->motif_id)
                  ->order_by('original_order');
         $query = $this->db->get();
