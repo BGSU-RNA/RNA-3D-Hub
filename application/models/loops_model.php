@@ -425,14 +425,14 @@ class Loops_model extends CI_Model {
     function get_loop_stats()
     {
         // get release order
-        $this->db->select('loop_releases_id, date')
+        $this->db->select('loop_release_id, date')
                  ->from('loop_releases')
                  ->order_by('date', 'desc');
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
-            $releases[] = $row->loop_releases_id;
-            $dates[$row->loop_releases_id] = substr($row->date,0,10);
+            $releases[] = $row->loop_release_id;
+            $dates[$row->loop_release_id] = substr($row->date,0,10);
         }
 
         // get loop counts group by loop type and release
