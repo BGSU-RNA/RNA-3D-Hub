@@ -516,7 +516,7 @@ class Pdb_model extends CI_Model {
         # most feasible replacement -- not 100% identical, and may produce different results
         # functional when data is present
         # will require testing to evaluate efficacy
-        $this->db->select('group_concat(DISTINCT ci.chain_name ORDER BY ci.chain_name separator ",") AS best_chains', FALSE)
+        $this->db->select("group_concat(DISTINCT ci.chain_name ORDER BY ci.chain_name) AS best_chains", FALSE)
                  ->from('ife_info AS ii')
                  ->join('ife_chains AS ic', 'ic.ife_id = ii.ife_id')
                  ->join('chain_info AS ci', 'ic.chain_id = ci.chain_id')
@@ -535,25 +535,38 @@ class Pdb_model extends CI_Model {
         #         ->where_in('pc.chain', $chains)
         #         ->order_by('uo.index', 'asc');
 
-        $this->db->select('unit_id as id, chain, unit as sequence')
+        $this->db->select('unit_id as id, chain, sym_op, unit as sequence')
                  ->from('unit_info')
                  ->where('pdb_id', $pdb_id)
-                 ->where_in('chain', $chains)
+                 ->where_in('chain', $chains, FALSE)
+                 ->where('unit_type_id', 'rna')
+                 ->order_by('chain', 'asc')
+                 ->order_by('sym_op', 'asc')
                  ->order_by('number', 'asc');
 
         $query = $this->db->get();
         $chain_data = array();
 
-        foreach($chains as $chain) {
-            $chain_data[$chain] = array('id' => 'chain-' + $chain,
-                                        'nts' => array());
-        }
+        # REVISION:  now do this inside the following loop
+        #   to accommodate the sym_op values
+        #foreach($chains as $chain) {
+        #    $chain_data[$chain] = array('id' => 'chain-' + $chain,
+        #                                'nts' => array());
+        #}
 
         foreach($query->result() as $row) {
-            $chain_data[$row->chain]['nts'][] = array('id' => $row->id,
+            $chain = implode("-", array($row->chain, $row->sym_op));
+
+            if ( !array_key_exists($chain, $chain_data) ){
+              $chain_data[$chain] = array('id' => 'chain-' + $chain,
+                                          'nts' => array());
+
+            }
+
+            $chain_data[$chain]['nts'][] = array('id' => $row->id,
                                                       'sequence' => $row->sequence);
         }
-        
+
         return array_values($chain_data);
     }
 
