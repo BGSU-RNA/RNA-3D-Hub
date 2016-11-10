@@ -22,8 +22,8 @@
       var view = views.current();
       if (view) {
         var scale = function(domain, max) {
-            return d3.scale.linear().domain(domain).range([0, max]);
-          };
+          return d3.scale.linear().domain(domain).range([0, max]);
+        };
 
         view.preprocess();
 
@@ -75,19 +75,21 @@
     if (!config.hasOwnProperty('render')) {
       config.render = true;
     }
+
     Rna2D.utils.generateAccessors(this, config);
   }
 
   Component.prototype.attach = function(plot) {
-
     this.plot = plot;
 
     (function(prop) {
       var data = null;
+
       plot[prop] = function(x) {
         if (!arguments.length) {
           return data;
         }
+
         data = x;
         return plot[prop];
       };
@@ -123,7 +125,6 @@
   Rna2D.Component = Component;
 
   function inhert(klass, name, options) {
-
     function Type() {
       klass.call(this, name, options);
     }
@@ -136,9 +137,11 @@
 
   Rna2D.withIdElement = function() {
     var self = this;
+
     this.elementID = function() {
       var getID = self.getID(),
           encodeID = self.encodeID();
+
       return function(d, i) {
         return encodeID(getID(d, i));
       };
@@ -147,9 +150,11 @@
 
   Rna2D.withNTElements = function(plot) {
     var self = this;
+
     this.ntElements = function() {
       var getNTs = self.getNTs(),
           encodeID = plot.nucleotides.encodeID();
+
       return function(d, i) {
         return $.map(getNTs(d, i), encodeID);
       };
@@ -158,6 +163,7 @@
     this.nucleotides = function(d, i) {
       var nts = self.getNTs()(d, i),
           idOf = plot.nucleotides.getID();
+
       return plot.vis.selectAll('.' + plot.nucleotides['class']())
         .filter(function(d, i) { return $.inArray(idOf(d, i), nts) !== -1; });
     };
@@ -169,6 +175,7 @@
     this.interactions = function(d, i) {
       var id = self.getID()(d, i),
           getNTs = plot.interactions.getNTs();
+
       return plot.vis.selectAll('.' + plot.interactions['class']())
         .filter(function(d, _) { return $.inArray(id, getNTs(d)) !== -1; });
     };
@@ -184,6 +191,7 @@
 
     type.visibility = function() {
       var isVisible = type.visible();
+
       return function(d, i) {
         return (isVisible(d, i) ? 'visible' : 'hidden'); };
     };
@@ -195,6 +203,7 @@
 
   Rna2D.asColorable = function() {
     var self = this;
+
     this.colorize = function() {
       return self.all().attr('fill', self.color());
     };
@@ -216,6 +225,7 @@
   Components.prototype.attach = function(plot) {
     var container = this;
     this._plot = plot;
+
     $.each(container._namespace, function(name, fn) {
       var component = fn(plot);
       container.register.call(container, component._name, component);
@@ -238,11 +248,14 @@
             if (!arguments.length) {
               return state[key];
             }
+
             var old = state[key];
             state[key] = x;
+
             if (callback && callback[key]) {
               callback[key](old, x);
             }
+
             return obj;
           };
         }());
@@ -275,6 +288,7 @@
       // Why can't jquery have some more nice functional tools like reduce and
       // compose?
       var funcs = arguments;
+
       return function() {
         var res = arguments;
         $.each(funcs, function(i, fn) { res = [fn.apply(this, res)]; });
@@ -294,7 +308,6 @@
 
   View.prototype = {
     attach: function(plot) {
-
       plot[this._name] = {};
 
       this.plot = plot;
@@ -358,7 +371,6 @@
     },
 
     xDomain: function() { return this.domain.x; },
-
     yDomain: function() { return this.domain.y; },
 
     labels: function() { return false; },
@@ -396,7 +408,6 @@
   Rna2D.Views = Views;
 
   Rna2D.components.brush = function(plot) {
-
     var Brush = inhert(Rna2D.Component, 'brush', {
       enabled: true,
       'class': 'brush',
@@ -423,13 +434,12 @@
     };
 
     Brush.prototype.draw = function() {
-
       var scale = function(given) {
-          return d3.scale.identity().domain(given.domain());
-        }, 
-        brush = d3.svg.brush()
-          .x(scale(plot.xScale()))
-          .y(scale(plot.yScale()));
+            return d3.scale.identity().domain(given.domain());
+          }, 
+          brush = d3.svg.brush()
+            .x(scale(plot.xScale()))
+            .y(scale(plot.yScale()));
 
       brush.on('brushend', function () {
         var nts = [],
@@ -468,7 +478,6 @@
   };
 
   Rna2D.components.chains = function(plot) {
-
     var Chains = inhert(Rna2D.Component, 'chains', {
       getID: function(d, i) { return d.id; },
       'class': 'chain',
@@ -479,18 +488,19 @@
             chainIndex = -1,
             compare = function(d, i, chain) { return ntsOf(chain)[i] === d; };
 
-          if (typeof(d) === "string") {
-            var idOf = plot.nucleotides.getID();
-            compare = function(d, i, chain) {
-              return idOf(ntsOf(chain)[i]) === d;
-            };
-          }
+        if (typeof(d) === "string") {
+          var idOf = plot.nucleotides.getID();
+          compare = function(d, i, chain) {
+            return idOf(ntsOf(chain)[i]) === d;
+          };
+        }
 
         $.each(plot.chains(), function(index, chain) {
           if (compare(d, i, chain)) {
             chainIndex = index;
           }
         });
+
         return chainIndex;
       }
     });
@@ -602,7 +612,6 @@
   };
 
   Rna2D.components.jmol = function(plot) {
-
     var loaded = false,
         showNTGroup = function(type) {
           return function(d, i) {
@@ -777,7 +786,6 @@
   };
 
   Rna2D.components.motifs = function(plot) {
-
     var Motifs = inhert(Rna2D.Component, 'motifs', {
       classOf: function(d) { return [d.id.split("_")[0]]; },
       'class': 'motif',
@@ -864,8 +872,8 @@
 
     return motifs;
   };
-  Rna2D.components.Nucleotides = function(plot) {
 
+  Rna2D.components.Nucleotides = function(plot) {
     var NTs = inhert(Rna2D.Component, 'nucleotides', {
       highlightColor: function() { return 'red'; },
       'class': 'nucleotide',
@@ -886,7 +894,8 @@
       toggleLetters: Object,
       highlightText: function(d, i) {
         return plot.nucleotides.getSequence()(d, i) +
-          plot.nucleotides.getNumber()(d, i);
+          plot.nucleotides.getNumber()(d, i) + 
+          " (" + plot.nucleotides.getChain()(d, i) + ")";
       },
       visible: function(d, i) { return true; }
     });
@@ -896,9 +905,11 @@
     nts.count = function() {
       var count = 0,
           getNTData = plot.chains.getNTData();
+
       $.each(plot.chains(), function(_, chain) {
         count += getNTData(chain).length;
       });
+
       return count;
     };
 
@@ -917,7 +928,6 @@
   };
 
   Rna2D.components.zoom = function(plot) {
-
     var Zoom = inhert(Rna2D.Component, 'zoom', {
       scaleExtent: [1, 10],
       currentScale: 1,
@@ -925,7 +935,6 @@
     });
 
     Zoom.prototype.draw = function() {
-
       var self = this,
           translation = 0,
           zoom = d3.behavior.zoom()
@@ -968,7 +977,6 @@
   };
 
   Rna2D.views.airport = function(plot) {
-
     var Airport = inhert(Rna2D.View, 'airport', { 
       fontSize: 11, 
       gap: 1, 
@@ -1045,7 +1053,6 @@
 
       this.domain = { x: [0, xMax], y: [0, yMax] };
     };
-    
 
     Airport.prototype.xCoord = function() {
       var scale = plot.xScale(),
@@ -1061,7 +1068,6 @@
 
     // Draw the nucleotides
     Airport.prototype.coordinates = function() {
-
       plot.vis.selectAll(plot.chains['class']())
         .append('g')
         .data(plot.chains()).enter()
@@ -1080,7 +1086,6 @@
     };
 
     Airport.prototype.connections = function() {
-
       // Compute the data to use for interactions
       var interactions = plot.interactions.valid()(),
           getNTs = plot.interactions.ntElements(),
@@ -1139,7 +1144,6 @@
     };
 
     Airport.prototype.update = function() {
-
       var self = this;
 
       plot.interactions.highlight(function(d, i) {
@@ -1193,7 +1197,6 @@
   };
 
   Rna2D.views.circular = function(plot) {
-
     // We use the total count in a couple places.
     var ntCount;
 
@@ -1206,7 +1209,7 @@
     // Used to compute the positions of labels
     var labelArcs;
 
-    // Function to generate arcs for both the nucleotides and finding centriods
+    // Function to generate arcs for both the nucleotides and finding centroids
     // for interactions
     var arcGenerator;
 
@@ -1256,7 +1259,6 @@
 
     // Function to draw the arcs.
     Circular.prototype.coordinates = function() {
-
       ntCount = plot.nucleotides.count();
 
       CENTER = this.center()();
@@ -1292,7 +1294,6 @@
 
     // Function to draw all connections.
     Circular.prototype.connections = function() {
-
       var self = this;
 
       // Arc generator for finding the centroid of the nucleotides on the inner
@@ -1306,7 +1307,7 @@
 
       // Figure out the centroid position of the nucleotide with the given id in
       // the innerArc.
-      var centriodPosition = function(ntID) {
+      var centroidPosition = function(ntID) {
         var centroid = centroidOf(ntID);
         return { x: CENTER.x + centroid[0], y: CENTER.y + centroid[1] };
       };
@@ -1326,8 +1327,8 @@
         // which case we flip the order. This lets us always use the sweep and arc
         // flags of 0,0. The code is kinda gross but it works.
         var nts = plot.interactions.getNTs()(d, i).sort(sortFunc),
-            from = centriodPosition(nts[0]),
-            to = centriodPosition(nts[1]),
+            from = centroidPosition(nts[0]),
+            to = centroidPosition(nts[1]),
             angleDiff = startAngleOf(nts[0]) - startAngleOf(nts[1]),
             radius = Math.abs(innerArcInnerRadius * Math.tan(angleDiff/2));
 
@@ -1441,10 +1442,10 @@
         return labelArcs[info.chainIndex].centroid(data, info.ntIndex);
       },
       positionOf = function(data) {
-        var centriodPosition = labelCentroidFor(data);
+        var centroidPosition = labelCentroidFor(data);
         return {
-          x: CENTER.x + centriodPosition[0],
-          y: CENTER.y + centriodPosition[1]
+          x: CENTER.x + centroidPosition[0],
+          y: CENTER.y + centroidPosition[1]
         };
       };
 
@@ -1501,5 +1502,4 @@
 
     return view;
   };
-
 }());
