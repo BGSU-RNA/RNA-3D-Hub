@@ -890,7 +890,11 @@
       getSequence: function(d) { return d.sequence; },
       getNumber: function(d) { return d.id.split('|')[4]; },
       getChain: function(d) { return d.id.split('|')[2]; },
-      getSymop: function(d) { return d.id.split('|')[8]; },
+      getSymop: function(d) { 
+        return ( d.id.split('|')[8] !== null
+          ? ", " + d.id.split('|')[8]
+          : "" );
+      },
       highlight: Object,
       normalize: Object,
       toggleLetters: Object,
@@ -898,7 +902,7 @@
         return plot.nucleotides.getSequence()(d, i) +
           plot.nucleotides.getNumber()(d, i) + 
           " (" + plot.nucleotides.getChain()(d, i) +
-          "|" + plot.nucleotides.getSymop()(d, i) + ")";
+          plot.nucleotides.getSymop()(d, i) + ")";
       },
       visible: function(d, i) { return true; }
     });
