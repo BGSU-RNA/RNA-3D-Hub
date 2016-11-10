@@ -891,7 +891,7 @@
       getNumber: function(d) { return d.id.split('|')[4]; },
       getChain: function(d) { return d.id.split('|')[2]; },
       getSymop: function(d) { 
-        return ( d.id.split('|')[8] !== null
+        return ( typeof d.id.split('|')[8] != 'undefined'
           ? ", " + d.id.split('|')[8]
           : "" );
       },
