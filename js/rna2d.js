@@ -890,13 +890,15 @@
       getSequence: function(d) { return d.sequence; },
       getNumber: function(d) { return d.id.split('|')[4]; },
       getChain: function(d) { return d.id.split('|')[2]; },
+      getSymop: function(d) { return d.id.split('|')[8]; },
       highlight: Object,
       normalize: Object,
       toggleLetters: Object,
       highlightText: function(d, i) {
         return plot.nucleotides.getSequence()(d, i) +
           plot.nucleotides.getNumber()(d, i) + 
-          " (" + plot.nucleotides.getChain()(d, i) + ")";
+          " (" + plot.nucleotides.getChain()(d, i) +
+          "|" + plot.nucleotides.getSymop()(d, i) + ")";
       },
       visible: function(d, i) { return true; }
     });
@@ -914,7 +916,7 @@
       return count;
     };
 
-    // We do not mix this into the prototype becasue if we do so then the methods
+    // We do not mix this into the prototype because if we do so then the methods
     // will not be accessible outside of the prototype. We do not have access the
     // the methods provided by the prototype outside of this function, this is a
     // problem
