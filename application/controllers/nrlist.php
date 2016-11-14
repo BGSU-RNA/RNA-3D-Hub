@@ -12,7 +12,7 @@ class Nrlist extends CI_Controller {
         $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table'>" );
         $this->table->set_template($tmpl);
         $data['table']   = $this->table->generate($result);
-        $data['title']   = 'All Non-redundant List Releases';
+        $data['title']   = 'All Representative Set Releases';
         $data['baseurl'] = base_url();
 
         $data['images'] = $this->Nrlist_model->get_newest_pdb_images();

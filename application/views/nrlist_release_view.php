@@ -2,7 +2,7 @@
 
       <div class="content">
         <div class="page-header">
-          <h1>Non-redundant lists of RNA structures
+          <h1>Representative Sets of RNA structures
           <small>Release <?=$release_id?>, <?=$description?></small>
           </h1>
         </div>

@@ -73,16 +73,16 @@
             <p class="help">
               <span class="label notice">Help</span>
               Every Motif Atlas release is based on
-              <a href="<?=$this->config->item('home_url')?>/rna3dhub/nrlist" target="_blank">a non-redundant list of PDB files</a>.
+              <a href="<?=$this->config->item('home_url')?>/rna3dhub/nrlist" target="_blank">a representative set of PDB files</a>.
               When comparing two releases, it's important to know how
               the input data changed.
             </p>
 
             <p class="help">
-              Non-redundant lists are quite stable in time, but
-              <strong>PDB files from the older release</strong>
-              can be <em>replaced</em> by newer PDB files or <em>removed</em> from the set altogether
-              if the structure is obsoleted by PDB without replacement.
+              Representative sets are quite stable in time, but
+              <strong>PDB files from the older releases</strong>
+              can be <em>replaced</em> by newer PDB files or <em>removed</em> 
+              from the set altogether if the structure is obsoleted by PDB without replacement.
             </p>
 
             <p class="help">
