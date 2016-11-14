@@ -37,7 +37,7 @@ class Nrlist extends CI_Controller {
             show_404();
         }
 
-        $data['title']       = "NR list $id";
+        $data['title']       = "Representative set $id";
         $data['release_id']  = $id;
         $data['description'] = $this->Nrlist_model->get_release_description($id);
         $data['resolution'] = $res;

@@ -163,7 +163,7 @@ class Loops_model extends CI_Model {
         }
 
         // non-redundant equivalence class info
-        // get latest NR release id
+        // get latest Representative Set release id
         $this->db->select('nr_release_id')
                  ->from('nr_releases')
                  ->order_by('date','desc')

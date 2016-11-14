@@ -150,10 +150,10 @@
               <div class="span3 well">
                 <h4>3D Redundancy</h4>
                 <?php if (!isset($nr_classes) ): ?>
-                    This PDB is not included in any NR equivalence class. Most likely, this PDB doesn't contain any
+                    This PDB is not included in any representative set equivalence class. Most likely, this PDB doesn't contain any
                     complete nucleotides.
                 <?php else: ?>
-                    <?=$pdb_id?> belongs to the following equivalence classes in the current NR lists:
+                    <?=$pdb_id?> belongs to the following equivalence classes in the current representative set:
                     <ul>
                       <?php foreach ($nr_classes as $nr_class): ?>
                       <li>

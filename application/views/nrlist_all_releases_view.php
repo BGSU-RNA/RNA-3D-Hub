@@ -19,7 +19,7 @@
                   We are <a href="http://rna.bgsu.edu/main/upgrading-rna-3d-hub/">upgrading the BGSU RNA Site</a>
                   to include new RNA 3D structures distributed in <a href="http://wwpdb.org/news/news.php?year=2014#10-December-2014">mmCIF format</a>.
                   In September of 2016, we calculated release 2.0 and each subsequent weekly release.
-                  From each RNA-containing 3D structure file, we identify Integrated Functional Elements (IFEs, for example, the ribosomal small subunit, the eukaryotic large subunit including the 5.8S rRNA, small duplexes, or other basepaired structures consisting of multiple chains), group them by sequence, structure, and species into equivalence classes, and from each equivalence class, we select a representative.  The collection of representatives is referred to as a non-redundant (NR) list, but note that each NR list will contain one instance of homologous IFEs from different species.
+                  From each RNA-containing 3D structure file, we identify Integrated Functional Elements (IFEs, for example, the ribosomal small subunit, the eukaryotic large subunit including the 5.8S rRNA, small duplexes, or other basepaired structures consisting of multiple chains), group them by sequence, structure, and species into equivalence classes, and from each equivalence class, we select a representative.  The collection of representatives is referred to as a representative set (formerly non-redundant (NR) list), but note that each representative set will contain one instance of homologous IFEs from different species.
                 </p>
               </div>
             </div>
