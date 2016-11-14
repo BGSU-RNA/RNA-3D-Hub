@@ -21,7 +21,7 @@
               <a href="<?=$baseurl?>motifs?">RNA 3D Motif Atlas</a>
             </p>
             <p>
-              - organizes redundant structures into '
+              - organizes redundant structures into 
               <a href="<?=$baseurl?>nrlist">representative sets</a> of 
               equivalence classes
             </p>
