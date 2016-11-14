@@ -36,7 +36,7 @@
  -->
 
             <li class="dropdown">
-                <a href="#" class="dropdown-toggle">Non-redundant Lists</a>
+                <a href="#" class="dropdown-toggle">Representative Sets</a>
                 <ul class="dropdown-menu">
                     <li><a href="<?php echo $baseurl;?>nrlist">Home</a></li>
                     <li><a href="<?php echo $baseurl;?>nrlist/release_history">Release history</a></li>

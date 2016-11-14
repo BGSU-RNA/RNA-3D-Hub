@@ -162,7 +162,7 @@ class Loops_model extends CI_Model {
             $result['pdb_resolution'] = '';
         }
 
-        // non-redundant equivalence class info
+        // representative set equivalence class info
         // get latest Representative Set release id
         $this->db->select('nr_release_id')
                  ->from('nr_releases')

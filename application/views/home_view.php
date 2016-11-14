@@ -27,7 +27,7 @@
              <li>Pairwise interactions produced by <a href="<?=$this->config->item('fr3d_url')?>">FR3D</a></li>
              <li>Hairpin, internal, and three-way junction loops</li>
              <li>Motif annotations from the <a href="<?=$this->config->item('home_url')?>/rna3dhub/motifs">Motif Atlas</a></li>
-             <li>Similar structures from the <a href="<?=$this->config->item('home_url')?>/rna3dhub/nrlist">Non-redundant Lists</a></li>
+             <li>Similar structures from the <a href="<?=$this->config->item('home_url')?>/rna3dhub/nrlist">Representative Sets</a></li>
           </ul>
           <p>Automatic weekly updates <a href="http://rna.bgsu.edu/main/upgrading-rna-3d-hub/">will resume soon</a></p>
           <p><a class="btn primary" href="<?php echo $baseurl;?>pdb">Explore</a></p>
@@ -35,13 +35,13 @@
 
         <div class="span5">
           <h2>RNA 3D Motif Atlas</h2>
-          <p>A representative collection of recurrent RNA 3D internal and hairpin loop motifs extracted from a non-redundant set of structures.</p>
+          <p>A representative collection of recurrent RNA 3D internal and hairpin loop motifs extracted from a representative set of structures.</p>
           <p>Automatic updates <a href="http://rna.bgsu.edu/main/upgrading-rna-3d-hub/">will resume soon</a></p>
           <p><a class="btn primary" href="<?php echo $baseurl;?>motifs">Explore</a></p>
         </div>
 
         <div class="span5">
-          <h2>Non-redundant Lists</h2>
+          <h2>Representative Sets</h2>
           <p>PDB files grouped into equivalence classes by molecule type, organism, and resolution.</p>
           <p>Automatic updates <a href="http://rna.bgsu.edu/main/upgrading-rna-3d-hub/">will resume soon</a></p>
           <p><a class="btn primary" href="<?php echo $baseurl;?>nrlist">Explore</a></p>
