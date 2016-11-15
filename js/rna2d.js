@@ -1493,11 +1493,7 @@
 
       return $.map(plot.chains(), function(chain, chainIndex) {
         var startAngle = (function(shift) {
-              return function(_, i) { 
-                  console.log("--i:", i);
-                  console.log("--shift:", shift);
-                  return i * angleSize + shift; 
-              };
+              return function(_, i) { return i * angleSize + shift; };
             }(offset)),
             endAngle = (function(shift) {
               return function(_, i) { return (i + 1) * angleSize + shift; };
@@ -1508,8 +1504,6 @@
 
         console.log("--chain:", chain);
         console.log("--chainIndex:", chainIndex);
-        //console.log("--startAngle:", startAngle);
-        //console.log("--endAngle:", endAngle);
         console.log("--offset:", offset);
 
         return d3.svg.arc()
