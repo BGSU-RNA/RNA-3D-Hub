@@ -1489,6 +1489,7 @@
       console.log("chainCount:", chainCount);
       console.log("ntCount:", ntCount);
       console.log("offset:", offset);
+      console.log("angleSize:", angleSize);
 
       return $.map(plot.chains(), function(chain, chainIndex) {
         var startAngle = (function(shift) {
