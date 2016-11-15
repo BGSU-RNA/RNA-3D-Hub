@@ -1489,7 +1489,6 @@
 
       console.log("chainCount:", chainCount);
       console.log("ntCount:", ntCount);
-      console.log("offset:", offset);
       console.log("angleSize:", angleSize);
 
       return $.map(plot.chains(), function(chain, chainIndex) {
@@ -1505,8 +1504,10 @@
 
         console.log("--chain:", chain);
         console.log("--chainIndex:", chainIndex);
-        console.log("--startAngle:", startAngle);
-        console.log("--endAngle:", endAngle);
+        console.log("--i:", i);
+        console.log("--shift:", shift);
+        //console.log("--startAngle:", startAngle);
+        //console.log("--endAngle:", endAngle);
         console.log("--offset:", offset);
 
         return d3.svg.arc()
