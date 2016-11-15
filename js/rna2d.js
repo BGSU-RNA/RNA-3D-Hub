@@ -1487,6 +1487,8 @@
           offset = view.arcGap() / 2,
           getNTData = plot.chains.getNTData();
 
+      console.log("chainCount:", chainCount);
+
       return $.map(plot.chains(), function(chain, chainIndex) {
         var startAngle = (function(shift) {
               return function(_, i) { return i * angleSize + shift; };
