@@ -1487,6 +1487,8 @@
           getNTData = plot.chains.getNTData();
 
       console.log("chainCount:", chainCount);
+      console.log("ntCount:", ntCount);
+      console.log("offset:", offset);
 
       return $.map(plot.chains(), function(chain, chainIndex) {
         var startAngle = (function(shift) {
