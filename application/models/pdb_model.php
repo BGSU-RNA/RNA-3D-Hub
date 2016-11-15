@@ -535,14 +535,20 @@ class Pdb_model extends CI_Model {
         #         ->where_in('pc.chain', $chains)
         #         ->order_by('uo.index', 'asc');
 
-        $this->db->select('unit_id as id, chain, sym_op, unit as sequence')
-                 ->from('unit_info')
-                 ->where('pdb_id', $pdb_id)
-                 ->where_in('chain', $chains, FALSE)
+        $this->db->select('ui.unit_id as id, ui.chain, ui.unit as sequence')
+                 ->select_min('ui.sym_op')
+                 ->from('unit_info AS ui')
+                 ->join('ife_info AS ii', 'ui.pdb_id = ii.pdb_id AND ui.model = ii.model')
+                 ->join('ife_chains AS ic', 'ii.ife_id = ic.ife_id AND ii.model = ic.model')
+                 ->join('chain_info AS ci', 'ic.chain_id = ci.chain_id AND ui.pdb_id = ci.pdb_id AND ui.chain = ci.chain_name')
+                 ->where('ui.pdb_id', $pdb_id)
+                 #->where_in('chain', $chains, FALSE)
                  ->where('unit_type_id', 'rna')
-                 ->order_by('chain', 'asc')
-                 ->order_by('sym_op', 'asc')
-                 ->order_by('number', 'asc');
+                 ->group_by('ui.pdb_id, ui.model, ui.chain, ui.number, ui.unit, ui.alt_id')
+                 ->group_by('ui.ins_code, ui.chain_index')
+                 ->order_by('ui.chain', 'asc')
+                 #->order_by('ui.sym_op', 'asc')
+                 ->order_by('ui.number', 'asc');
 
         $query = $this->db->get();
         $chain_data = array();
@@ -564,7 +570,7 @@ class Pdb_model extends CI_Model {
             }
 
             $chain_data[$chain]['nts'][] = array('id' => $row->id,
-                                                      'sequence' => $row->sequence);
+                                                 'sequence' => $row->sequence);
         }
 
         return array_values($chain_data);
