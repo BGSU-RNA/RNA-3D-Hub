@@ -1503,6 +1503,12 @@
         offset += (chainIndex + 1) * view.chainBreakSize() +
           angleSize * getNTData(chain).length;
 
+        console.log("--chain:", chain);
+        console.log("--chainIndex:", chainIndex);
+        console.log("--startAngle:", startAngle);
+        console.log("--endAngle:", endAngle);
+        console.log("--offset:", offset);
+
         return d3.svg.arc()
           .innerRadius(inner)
           .outerRadius(outer)
