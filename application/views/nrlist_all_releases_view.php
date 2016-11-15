@@ -19,19 +19,19 @@
                   We are <a href="http://rna.bgsu.edu/main/upgrading-rna-3d-hub/">upgrading the BGSU RNA Site</a>
                   to include new RNA 3D structures distributed in 
                   <a href="http://wwpdb.org/news/news.php?year=2014#10-December-2014">mmCIF format</a>.
-                  In September of 2016, we calculated release 2.0 and each 
-                  subsequent weekly release. From each RNA-containing 3D 
-                  structure file, we identify Integrated Functional Elements 
-                  (IFEs, for example, the ribosomal small subunit, the 
-                  eukaryotic large subunit including the 5.8S rRNA, small 
-                  duplexes, or other basepaired structures consisting of 
-                  multiple chains), group them by sequence, structure, and 
-                  species into equivalence classes, and from each equivalence 
-                  class, we select a representative.  The collection of 
-                  representatives is referred to as a representative set 
-                  (formerly non-redundant (NR) list), but note that each 
-                  representative set will contain one instance of homologous 
-                  IFEs from different species.
+                  From each RNA-containing 3D structure file, we identify 
+                  Integrated Functional Elements (IFEs, for example, the 
+                  ribosomal small subunit, the eukaryotic large subunit 
+                  including the 5.8S rRNA, small duplexes, or other basepaired 
+                  structures consisting of multiple chains), group them by 
+                  sequence, structure, and species into equivalence classes, 
+                  and from each equivalence class, we select a representative.  
+                  The collection of representatives is referred to as 
+                  a representative set (formerly non-redundant (NR) list), but
+                  note that each representative set will contain one instance 
+                  of homologous IFEs from different species. In September of
+                  2016, we calculated release 2.0 and continued with subsequent 
+                  weekly releases. 
                 </p>
               </div>
             </div>
@@ -40,7 +40,7 @@
               <div class="span7">
                 <p>
                   The BGSU RNA Site hosts representative sets (a.k.a. 
-                  non-redundant sets) of RNA-containing 3D structures obtained
+                  non-redundant lists) of RNA-containing 3D structures obtained
                   according to the methodology described in the book chapter
                   <a href="http://www.springerlink.com/content/u54511012r0344h3/">
                   Nonredundant 3D Structure Datasets for RNA Knowledge 
@@ -65,17 +65,11 @@
                   <a href="http://www.rcsb.org/pdb/explore/explore.do?structureId=1DV4">1DV4</a>.
                 </p>
                 <p>
-                  Unique and stable ids are assigned to all non-redundant 
-                  equivalence classes of structure files. Representative sets 
-                  are updated automatically every week, and a versioning system 
-                  is implemented to provide independent access to data 
-                  snapshots. Full description will appear in a separate 
-                  publication.
-                </p>
-                <p>
-                  The old web interface is no longer developed or supported. It 
-                  can be accessed at 
-                  <a href="<?=$this->config->item('home_url')?>/nrlist/oldsite.html"><?=$this->config->item('home_url')?>/nrlist/oldsite.html</a>.
+                  Unique and stable ids are assigned to all equivalence classes 
+                  of structure files. Representative sets are updated 
+                  automatically every week, and a versioning system is 
+                  implemented to provide independent access to data snapshots. 
+                  Full description will appear in a separate publication.
                 </p>
               </div>
             </div>
