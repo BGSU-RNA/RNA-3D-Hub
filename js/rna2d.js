@@ -1504,7 +1504,7 @@
 
         console.log("--chain:", chain);
         console.log("--chainIndex:", chainIndex);
-        console.log("--i:", i);
+        //console.log("--i:", i);
         console.log("--shift:", shift);
         //console.log("--startAngle:", startAngle);
         //console.log("--endAngle:", endAngle);
