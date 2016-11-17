@@ -512,21 +512,21 @@ class Pdb_model extends CI_Model {
         #$this->db->select('best_chains')
         #         ->from('pdb_best_chains_and_models')
         #         ->where('pdb_id', $pdb_id);
-
+        #
         # most feasible replacement -- not 100% identical, and may produce different results
         # functional when data is present
         # will require testing to evaluate efficacy
-        $this->db->select("group_concat(DISTINCT ci.chain_name ORDER BY ci.chain_name) AS best_chains", FALSE)
-                 ->from('ife_info AS ii')
-                 ->join('ife_chains AS ic', 'ic.ife_id = ii.ife_id')
-                 ->join('chain_info AS ci', 'ic.chain_id = ci.chain_id')
-                 ->where('ii.pdb_id', $pdb_id)
-                 ->where('ii.new_style', 1)
-                 ->group_by('ii.pdb_id');
-
-        $result = $this->db->get()->row();
-        $chains = explode(",", $result->best_chains);
-
+        #$this->db->select("group_concat(DISTINCT ci.chain_name ORDER BY ci.chain_name) AS best_chains", FALSE)
+        #         ->from('ife_info AS ii')
+        #         ->join('ife_chains AS ic', 'ic.ife_id = ii.ife_id')
+        #         ->join('chain_info AS ci', 'ic.chain_id = ci.chain_id')
+        #         ->where('ii.pdb_id', $pdb_id)
+        #         ->where('ii.new_style', 1)
+        #         ->group_by('ii.pdb_id');
+        #
+        #$result = $this->db->get()->row();
+        #$chains = explode(",", $result->best_chains);
+        #
         #$this->db->select('pu.unit_id as id, pc.chain as chain, pc.unit as sequence')
         #         ->from('pdb_unit_ordering AS uo')
         #         ->join('__pdb_coordinates AS pc', 'pc.pdb_coordinates_id = uo.nt_id')
@@ -561,10 +561,10 @@ class Pdb_model extends CI_Model {
         #}
 
         foreach($query->result() as $row) {
-            $chain = implode("-", array($row->chain, $row->sym_op));
+            #$chain = implode("-", array($row->chain, $row->sym_op));
 
             if ( !array_key_exists($chain, $chain_data) ){
-              $chain_data[$chain] = array('id' => 'chain-' + $chain,
+              $chain_data[$chain] = array('id' => 'chain-' + $row->chain,
                                           'nts' => array());
 
             }
