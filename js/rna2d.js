@@ -498,6 +498,10 @@
         $.each(plot.chains(), function(index, chain) {
           if (compare(d, i, chain)) {
             chainIndex = index;
+
+            console.log("epc-index:", index);
+            console.log("epc-chain:", chain);
+            console.log("epc-cindx:", chainIndex);
           }
         });
 
@@ -508,7 +512,7 @@
     var chain = new Chains();
     chain.attach(plot);
 
-    console.log("rcc-chain:", chain);
+    //console.log("rcc-chain:", chain);
 
     return chain;
   };
