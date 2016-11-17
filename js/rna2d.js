@@ -1245,7 +1245,7 @@
       var getNTData = plot.chains.getNTData(),
           idOf = plot.nucleotides.getID();
 
-      console.log("pc:", plot.chains);
+      console.log("pcc:", plot.chains.chain);
 
       $.each(plot.chains(), function(chainIndex, chain) {
         $.each(getNTData(chain), function(ntIndex, nt) {
