@@ -561,10 +561,10 @@ class Pdb_model extends CI_Model {
         #}
 
         foreach($query->result() as $row) {
-            #$chain = implode("-", array($row->chain, $row->sym_op));
+            $chain = $row->chain;
 
             if ( !array_key_exists($chain, $chain_data) ){
-              $chain_data[$chain] = array('id' => 'chain-' + $row->chain,
+              $chain_data[$chain] = array('id' => 'chain-' + $chain,
                                           'nts' => array());
 
             }
