@@ -1247,7 +1247,7 @@
 
 
       $.each(plot.chains(), function(chainIndex, chain) {
-        console.log("pcc:", plot.chains.chain);
+        console.log("pcc-chain:", chain);
         $.each(getNTData(chain), function(ntIndex, nt) {
           var id = idOf(nt);
           computed[id] = {
