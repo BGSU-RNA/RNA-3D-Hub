@@ -916,9 +916,6 @@
         count += getNTData(chain).length;
       });
 
-      //console.log("rcn-chain:", chain);
-      //console.log("rcn-count:", count);
-
       return count;
     };
 
@@ -1504,6 +1501,7 @@
         offset += chainBreakSize + angleSize * getNTData(chain).length;
 
         console.log("--chain:", chain);
+        console.log("---chain.id:", chain.id);
         console.log("--chainIndex:", chainIndex);
         console.log("--offset:", offset);
 
