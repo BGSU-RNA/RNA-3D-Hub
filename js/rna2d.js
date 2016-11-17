@@ -509,8 +509,6 @@
     var chain = new Chains();
     chain.attach(plot);
 
-    console.log("rcc-chain:", plot.chains.getId);
-
     return chain;
   };
 
@@ -1246,6 +1244,8 @@
     Circular.prototype.preprocess = function() {
       var getNTData = plot.chains.getNTData(),
           idOf = plot.nucleotides.getID();
+
+      console.log("pc:", plot.chains);
 
       $.each(plot.chains(), function(chainIndex, chain) {
         $.each(getNTData(chain), function(ntIndex, nt) {
