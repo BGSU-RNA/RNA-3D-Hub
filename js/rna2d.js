@@ -509,7 +509,7 @@
     var chain = new Chains();
     chain.attach(plot);
 
-    console.log("rcc-chain:", plot.chains.chain.id);
+    console.log("rcc-chain:", plot.chains.getId());
 
     return chain;
   };
