@@ -917,6 +917,9 @@
         count += getNTData(chain).length;
       });
 
+      console.log("rcn-chain:", chain);
+      console.log("rcn-count:", count);
+
       return count;
     };
 
@@ -1255,9 +1258,6 @@
           };
           globalIndex++;
         });
-
-        console.log("epc-chain:", chain);
-        console.log("epc-chidx:", chainIndex);
       });
     };
 
@@ -1324,7 +1324,7 @@
         return { x: CENTER.x + centroid[0], y: CENTER.y + centroid[1] };
       };
 
-      // A function to sort nucleotide ids based upon their index amoung all
+      // A function to sort nucleotide ids based upon their index among all
       // nucleotides. This is used to draw arcs correctly.
       var sortFunc = function(nt1, nt2) {
         var i1 = computed[nt1].globalIndex,
@@ -1345,7 +1345,7 @@
             radius = Math.abs(innerArcInnerRadius * Math.tan(angleDiff/2));
 
         return "M "  + from.x + " " + from.y +  // Start point
-          " A " + radius + "," + radius +       // Both radi are the same for a circle
+          " A " + radius + "," + radius +       // Both radii are the same for a circle
           " 0 0,0 " +                           // Rotation and arc flags are always 0
           to.x + "," + to.y;                    // End point
       };
