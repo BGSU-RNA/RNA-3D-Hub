@@ -916,8 +916,8 @@
         count += getNTData(chain).length;
       });
 
-      console.log("rcn-chain:", chain);
-      console.log("rcn-count:", count);
+      //console.log("rcn-chain:", chain);
+      //console.log("rcn-count:", count);
 
       return count;
     };
