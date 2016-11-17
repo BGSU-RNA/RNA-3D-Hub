@@ -1247,7 +1247,6 @@
 
 
       $.each(plot.chains(), function(chainIndex, chain) {
-        console.log("pcc-chain:", chain);
         $.each(getNTData(chain), function(ntIndex, nt) {
           var id = idOf(nt);
           computed[id] = {
@@ -1256,9 +1255,6 @@
             ntIndex: ntIndex
           };
           globalIndex++;
-          console.log("--pcc-chain-id:", chain.getID);
-          console.log("--pcc-chain-class:", chain.class);
-          console.log("--pcc-chain-classof:", chain.classOf);
         });
       });
     };
@@ -1492,9 +1488,9 @@
           offset = view.arcGap() / 2,
           getNTData = plot.chains.getNTData();
 
-      console.log("chainCount:", chainCount);
-      console.log("ntCount:", ntCount);
-      console.log("angleSize:", angleSize);
+      //console.log("chainCount:", chainCount);
+      //console.log("ntCount:", ntCount);
+      //console.log("angleSize:", angleSize);
 
       return $.map(plot.chains(), function(chain, chainIndex) {
         var startAngle = (function(shift) {
@@ -1507,10 +1503,10 @@
         offset += (chainIndex + 1) * view.chainBreakSize() +
           angleSize * getNTData(chain).length;
 
-        console.log("--chain:", chain);
-        console.log("---chain.id:", chain.id);
-        console.log("--chainIndex:", chainIndex);
-        console.log("--offset:", offset);
+        //console.log("--chain:", chain);
+        //console.log("---chain.id:", chain.id);
+        //console.log("--chainIndex:", chainIndex);
+        //console.log("--offset:", offset);
 
         return d3.svg.arc()
           .innerRadius(inner)
