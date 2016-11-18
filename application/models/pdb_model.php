@@ -508,47 +508,21 @@ class Pdb_model extends CI_Model {
 
     function get_ordered_nts($pdb_id)
     {
-        # version from before Blake's deactivation of the best_chains pipeline routine
-        #$this->db->select('best_chains')
-        #         ->from('pdb_best_chains_and_models')
-        #         ->where('pdb_id', $pdb_id);
-
-        # most feasible replacement -- not 100% identical, and may produce different results
-        # functional when data is present
-        # will require testing to evaluate efficacy
-        $this->db->select('group_concat(DISTINCT ci.chain_name ORDER BY ci.chain_name separator ",") AS best_chains', FALSE)
-                 ->from('ife_info AS ii')
-                 ->join('ife_chains AS ic', 'ic.ife_id = ii.ife_id')
-                 ->join('chain_info AS ci', 'ic.chain_id = ci.chain_id')
-                 ->where('ii.pdb_id', $pdb_id)
-                 ->where('ii.new_style', 1)
-                 ->group_by('ii.pdb_id');
-
-        $result = $this->db->get()->row();
-        $chains = explode(",", $result->best_chains);
-
-        #$this->db->select('pu.unit_id as id, pc.chain as chain, pc.unit as sequence')
-        #         ->from('pdb_unit_ordering AS uo')
-        #         ->join('__pdb_coordinates AS pc', 'pc.pdb_coordinates_id = uo.nt_id')
-        #         ->join('__pdb_unit_id_correspondence AS pu', 'pu.old_id = uo.nt_id')
-        #         ->where('uo.pdb', $pdb_id)
-        #         ->where_in('pc.chain', $chains)
-        #         ->order_by('uo.index', 'asc');
-
-        $this->db->select('unit_id as id, chain, unit as sequence')
-                 ->from('unit_info')
-                 ->where('pdb_id', $pdb_id)
+        $this->db->select('ui.unit_id as id, ui.chain, ui.unit as sequence')
+                 ->select_min('ui.sym_op')
+                 ->from('unit_info AS ui')
+                 ->join('ife_info AS ii', 'ui.pdb_id = ii.pdb_id AND ui.model = ii.model')
+                 ->join('ife_chains AS ic', 'ii.ife_id = ic.ife_id AND ii.model = ic.model')
+                 ->join('chain_info AS ci', 'ic.chain_id = ci.chain_id AND ui.pdb_id = ci.pdb_id AND ui.chain = ci.chain_name')
+                 ->where('ui.pdb_id', $pdb_id)
                  ->where('unit_type_id', 'rna')
-                 ->where_in('chain', $chains)
-                 ->order_by('number', 'asc');
+                 ->group_by('ui.pdb_id, ui.model, ui.chain, ui.number, ui.unit, ui.alt_id')
+                 ->group_by('ui.ins_code, ui.chain_index')
+                 ->order_by('ui.chain', 'asc')
+                 ->order_by('ui.number', 'asc');
 
         $query = $this->db->get();
         $chain_data = array();
-
-        foreach($chains as $chain) {
-            $chain_data[$chain] = array('id' => 'chain-' + $chain,
-                                        'nts' => array());
-        }
 
         foreach($query->result() as $row) {
             $chain_data[$row->chain]['nts'][] = array('id' => $row->id,
