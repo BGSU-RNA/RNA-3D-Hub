@@ -1487,10 +1487,6 @@
           offset = arcGap / 2,
           getNTData = plot.chains.getNTData();
 
-      console.log("chainCount:", chainCount);
-      console.log("ntCount:", ntCount);
-      console.log("angleSize:", angleSize);
-
       return $.map(plot.chains(), function(chain, chainIndex) {
         var startAngle = (function(shift) {
               return function(_, i) { return i * angleSize + shift; };
@@ -1500,12 +1496,6 @@
             }(offset));
 
         offset += chainBreakSize + angleSize * getNTData(chain).length;
-
-        console.log("--chain:", chain);
-        console.log("--chainIndex:", chainIndex);
-        console.log("--offset:", offset);
-        console.log("--startAngle:", startAngle(chain, 0));
-        console.log("--endAngle:", endAngle(chain, getNTData(chain).length));
 
         return d3.svg.arc()
           .innerRadius(inner)
