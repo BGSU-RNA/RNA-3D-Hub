@@ -1500,8 +1500,9 @@
               return function(_, i) { return (i + 1) * angleSize + shift; };
             }(offset));
 
-        offset += (chainIndex + 1) * view.chainBreakSize() +
-          angleSize * getNTData(chain).length;
+        //offset += (chainIndex + 1) * view.chainBreakSize() +
+        //  angleSize * getNTData(chain).length;
+        offset += view.chainBreakSize() + angleSize * getNTData(chain).length;
 
         console.log("--chain:", chain);
         console.log("--chainIndex:", chainIndex);
