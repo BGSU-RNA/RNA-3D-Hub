@@ -1506,8 +1506,8 @@
         console.log("--chain:", chain);
         console.log("--chainIndex:", chainIndex);
         console.log("--offset:", offset);
-        console.log("--startAngle:", startAngle(chain, chainIndex));
-        console.log("--endAngle:", endAngle(chain, chainIndex));
+        console.log("--startAngle:", startAngle(chain, 0));
+        console.log("--endAngle:", endAngle(chain, getNTData(chain).length));
 
         return d3.svg.arc()
           .innerRadius(inner)
