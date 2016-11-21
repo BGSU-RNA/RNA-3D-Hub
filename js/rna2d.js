@@ -1487,6 +1487,11 @@
           offset = arcGap / 2,
           getNTData = plot.chains.getNTData();
 
+      console.log("view-arcGap:", view.arcGap());
+      console.log("view-chainBreakSize:", view.chainBreakSize());
+      console.log("here-arcGap:", arcGap);
+      console.log("here-chainBreakSize:", chainBreakSize);
+      
       return $.map(plot.chains(), function(chain, chainIndex) {
         var startAngle = (function(shift) {
               return function(_, i) { return i * angleSize + shift; };
