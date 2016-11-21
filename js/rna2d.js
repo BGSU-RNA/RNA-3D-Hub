@@ -1489,6 +1489,8 @@
 
       console.log("view-arcGap:", view.arcGap());
       console.log("view-chainBreakSize:", view.chainBreakSize());
+      console.log("test-arcGap:", 10 * view.arcGap() / chainCount);
+      console.log("test-chainBreakSize:", 10 * view.chainBreakSize() / chainCount);
       console.log("here-arcGap:", arcGap);
       console.log("here-chainBreakSize:", chainBreakSize);
 
