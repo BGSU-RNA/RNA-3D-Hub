@@ -1493,6 +1493,8 @@
       console.log("test-chainBreakSize:", 10 * view.chainBreakSize() / chainCount);
       console.log("here-arcGap:", arcGap);
       console.log("here-chainBreakSize:", chainBreakSize);
+      console.log("angleSize:", angleSize);
+      console.log("offset:", offset);
 
       return $.map(plot.chains(), function(chain, chainIndex) {
         var startAngle = (function(shift) {
