@@ -1507,7 +1507,7 @@
               return function(_, i) { return (i + 1) * angleSize + shift; };
             }(offset));
 
-        offset += view.chainBreakSize() + angleSize * getNTData(chain).length;
+        offset += chainBreakSize + angleSize * getNTData(chain).length;
 
         return d3.svg.arc()
           .innerRadius(inner)
