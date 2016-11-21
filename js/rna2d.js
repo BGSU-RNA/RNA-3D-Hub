@@ -1228,14 +1228,14 @@
     var Circular = inhert(Rna2D.View, 'circular', {
       radius: function() { return plot.width() / 4; },
       width: 4,
-      arcGap: 0.2,
+      arcGap: 0.1, // original value: 0.2
       interactionGap: 3,
       letterClass: 'nucleotide-letter',
       center: function() {
         return { x: plot.width() / 2, y: plot.height() / 2 };
       },
       letterSize: 20,
-      chainBreakSize: 0.1,
+      chainBreakSize: 0.05, // original value: 0.1
       labelGap: 3,
       labelSize: 10
     });
@@ -1483,11 +1483,18 @@
 
     arcGenerator = function(inner, outer) {
       var chainCount = plot.chains().length,
-          angleSize = (2*Math.PI - view.arcGap() -
-                      (chainCount - 1) * view.chainBreakSize()) / ntCount,
-          offset = view.arcGap() / 2,
+          arcGap = min(view.arcGap(), 10 * view.arcGap() / chainCount),
+          chainBreakSize = min(view.chainBreakSize, 10 * view.chainBreakSize / chainCount),
+          angleSize = (2*Math.PI - arcGap -
+                      (chainCount - 1) * chainBreakSize) / ntCount,
+          offset = arcGap / 2,
           getNTData = plot.chains.getNTData();
 
+      console.log("view-arcGap:", view.arcGap());
+      console.log("view-chainBreakSize:", view.chainBreakSize());
+      console.log("here-arcGap:", arcGap);
+      console.log("here-chainBreakSize:", chainBreakSize);
+      
       return $.map(plot.chains(), function(chain, chainIndex) {
         var startAngle = (function(shift) {
               return function(_, i) { return i * angleSize + shift; };
