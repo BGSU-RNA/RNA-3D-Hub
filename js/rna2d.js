@@ -1473,7 +1473,7 @@
     arcGenerator = function(inner, outer) {
       var chainCount = plot.chains().length,
           arcGap = Math.min(view.arcGap(), 10 * view.arcGap() / chainCount),
-          chainBreakSize = Math.min(view.chainBreakSize, 10 * view.chainBreakSize / chainCount),
+          chainBreakSize = Math.min(view.chainBreakSize(), 10 * view.chainBreakSize() / chainCount),
           angleSize = (2*Math.PI - arcGap -
                       (chainCount - 1) * chainBreakSize) / ntCount,
           offset = arcGap / 2,
