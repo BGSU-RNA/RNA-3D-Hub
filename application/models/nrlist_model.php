@@ -740,22 +740,6 @@ CREATE TABLE `nr_release_diff` (
         $ifes = array_unique($ifes);
         $pdbs = array_unique($pdbs);
 
-/*
-        THIS CODE DOES NOTHING USEFUL
-
-        // get general ife info
-        $this->db->select('ife_id')
-                 ->from('ife_info')
-                 ->where_in('ife_id', $ifes)
-                 ->group_by('ife_id');
-        $query = $this->db->get();
-
-        foreach($query->result() as $row) {
-            $ife[$row->ife_id]['ife_id'] = $row->ife_id;
-            #echo "<p>ife_id: $row->ife_id</p>";
-        }
-*/
-
         // get general pdb info
         $this->db->select('pdb_id, title, resolution, experimental_technique')
                  ->from('pdb_info')
@@ -768,27 +752,6 @@ CREATE TABLE `nr_release_diff` (
             $pdb[$row->pdb_id]['resolution'] = (is_null($row->resolution)) ? '' : number_format($row->resolution, 1) . ' &Aring';
             $pdb[$row->pdb_id]['experimental_technique'] = $row->experimental_technique;
         }
-
-/*
-        // get best chains and models
-        $this->db->select('pdb_id, best_chains, best_models')
-                 ->from('pdb_best_chains_and_models')
-                 ->where_in('pdb_id', $pdbs);
-        $query = $this->db->get();
-
-        foreach($query->result() as $row) {
-            $best_chains[$row->pdb_id] = $row->best_chains;
-            $best_models[$row->pdb_id] = $row->best_models;
-        }
-
-        // cover for missing information
-        foreach($pdbs as $pdb_id) {
-            if (!array_key_exists($pdb_id, $best_chains)) {
-                $best_chains[$pdb_id] = "";
-                $best_models[$pdb_id] = "";
-            }
-        }
-*/
 
         // check if any of the files became obsolete
         $this->db->select('pdb_obsolete_id, replaced_by')
@@ -853,13 +816,14 @@ CREATE TABLE `nr_release_diff` (
 
             if (preg_match('/\+/',$ife_id)){
                 $best_chains = "";
+                $best_models = "";
                 $ife_set     = explode('+', $ife_id);
                 $idx         = 0;
 
                 foreach ($ife_set as $each_ife){
                     $ife_split        = explode('|', $each_ife);
-                    $get_chains[$idx] = $ife_split[1];
-                    $get_models[$idx] = "1"; # get list from multiple ife_ids after rewrite
+                    $get_chains[$idx] = $ife_split[2];
+                    $get_models[$idx] = $ife_split[1];
                     $idx++;
                 }
 
@@ -871,8 +835,8 @@ CREATE TABLE `nr_release_diff` (
                 $best_models = implode(', ', $sort_models);
             } else {
                 $ife_split   = explode('|', $ife_id);
-                $best_chains = $ife_split[1]; #"simple case to write";
-                $best_models = 1; # get from ife_id after rewrite
+                $best_chains = $ife_split[2];
+                $best_models = $ife_split[1];
             }
 
             $table[] = array($i,
