@@ -305,7 +305,7 @@ class Pdb_model extends CI_Model {
         //  NEEDS DATA FROM BOTH pdb_info and chain_info
         $this->db->select()
                  ->from('pdb_info AS pi')
-                 ->join('chain_info AS ci', 'pi.pdb_id = ci.pdb_id')
+                 ->join('chain_info AS ci', 'pi.pdb_id = ci.pdb_id', 'left')
                  ->where('pi.pdb_id', $pdb_id);
         $query = $this->db->get();
 
