@@ -334,6 +334,11 @@ class Pdb_model extends CI_Model {
             // for all chains
             $compounds[] = $row->compound;
         }
+
+        if ( empty($organisms) ) {
+          $organisms[] = 'synthetic';
+        }
+
         $data['non_rna_chains'] = $query->num_rows() - $data['rna_chains'];
         $data['organisms'] = implode(', ', array_unique($organisms));
         $data['compounds'] = implode(', ', $compounds);
