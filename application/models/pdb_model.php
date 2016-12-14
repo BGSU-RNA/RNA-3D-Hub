@@ -545,13 +545,73 @@ class Pdb_model extends CI_Model {
             return false;
         }
 
+        //
+        //  First attempt to hack the new version, using ss_unit_positions.
+        //  This at least executes, even though I'm not doing anything
+        //    with the results.
+        //
+        $this->db->select()
+                 ->from('ss_unit_positions')
+                 ->where('pdb_id', $pdb_id);
+
+        $query = $this->db->get();
+
+        $nts_data = array();
+        $new_json = array();
+        $new_result = '';
+        $model = '';
+        $create = 0;
+
+        foreach ($query->result() as $row) {
+          $create = 1;
+
+          if ($row->unit_id){
+            $rowArr = array(
+              'y' => $row->y_coordinate,
+              'x' => $row->x_coordinate,
+              'id' => $row->unit_id,
+              'sequence' => $row->unit
+            );
+
+            $nts_data[] = $rowArr;
+          }
+
+          $model = !($model) ? $row->model : $model;
+        }
+
+        if ($create == 1) {
+          $new_json = array(
+              'nts'  => $nts_data,
+              'id'   => $row->pdb_id . '|' . $model . '|' . $row->chain,
+              'name' => 'Chain ' . $row->chain
+          );
+
+          #var_dump($new_json);
+          $new_result = '[' . json_encode($new_json, JSON_NUMERIC_CHECK) . ']';
+          #var_dump($new_result);
+        }
+
         $this->db->select('json_structure')
                  ->from($table)
                  ->where('pdb_id', $pdb_id);
 
         $result = $this->db->get()->row();
 
-        return ($result) ? $result->json_structure : false;
+        # DEBUG result sets
+        if ($new_result) {
+          print "<p>NEW RESULT</p>";
+          #return $new_result;
+        } else if ($result) {
+          print "<p>use old pdb_airport results</p>";
+          #return $result->json_structure;
+        } else {
+          print "<p>NO RESULTS</p>";
+          #return false;
+        }
+
+        return ($new_result) ? $new_result : ($result) ? $result->json_structure : false;
+        #return ($new_result) ? $new_result : false;
+        #return ($result) ? $result->json_structure : false;
     }
 
     function get_longrange_bp($pdb)
