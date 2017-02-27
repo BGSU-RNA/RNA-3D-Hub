@@ -174,7 +174,7 @@ CREATE TABLE `nr_release_diff` (
                  ->select('version')
                  ->select('comment')
                  ->from('nr_classes')
-                 ->where('nr_class_id',$id)
+                 ->where('name',$id)
                  ->where('nr_release_id',$current_release);
         $query = $this->db->get();
 
