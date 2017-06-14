@@ -14,7 +14,7 @@ class Pdb_model extends CI_Model {
 
     function get_all_pdbs()
     {
-        print "<p>get_all_pdbs</p>";
+        // print "<p>get_all_pdbs</p>";
         $this->db->select('distinct(pdb_id)')
                  ->from('pdb_info');
         $query = $this->db->get();
@@ -26,7 +26,7 @@ class Pdb_model extends CI_Model {
 
     function get_recent_rna_containing_structures($num)
     {
-        print "<p>get_recent_rna_containing_structures</p>";
+        // print "<p>get_recent_rna_containing_structures</p>";
         $this->db->select('distinct(pdb_id)')
                  ->from('pdb_info')
                  ->order_by('release_date', 'desc')
@@ -40,7 +40,7 @@ class Pdb_model extends CI_Model {
 
     function get_latest_motif_assignments($pdb_id, $loop_type)
     {
-        print "<p>get_latest_motif_assignments</p>";
+        // print "<p>get_latest_motif_assignments</p>";
         // $loop_type = IL or HL
         $latest_release = $this->get_latest_motif_release($loop_type);
         
@@ -127,14 +127,14 @@ class Pdb_model extends CI_Model {
 
     function get_checkbox($id, $nt_ids)
     {
-        print "<p>get_checkbox</p>";
+        //print "<p>get_checkbox</p>";
         return "<label><input type='radio' id='{$id}' class='jmolInline' data-coord='{$id}'>{$id}</label>" .
         "<span class='loop_link'>" . anchor_popup("loops/view/{$id}", '&#10140;') . "</span>" ;
     }
 
     function get_latest_loop_release()
     {
-        print "<p>get_latest_loop_release</p>";
+        //print "<p>get_latest_loop_release</p>";
         $this->db->select('loop_release_id')
                  ->from('loop_releases')
                  ->order_by('date','desc')
@@ -146,7 +146,7 @@ class Pdb_model extends CI_Model {
 
     function pdb_exists($pdb_id)
     {
-        print "<p>pdb_exists</p>";
+        //print "<p>pdb_exists</p>";
         // does BGSU RNA Site know about this structure?
         $this->db->select('pdb_id')
                  ->from('pdb_info')
@@ -171,7 +171,7 @@ class Pdb_model extends CI_Model {
 
     function pdb_is_annotated($pdb_id, $interaction_type)
     {
-        print "<p>pdb_is_annotated</p>";
+        //print "<p>pdb_is_annotated</p>";
         //$this->db->select('pdb_analysis_status_id')
         //         ->from('pdb_analysis_status')
         //         ->where('pdb_id', $pdb_id)
@@ -200,7 +200,7 @@ class Pdb_model extends CI_Model {
 
     function _get_unit_ids($pdb_id)
     {
-        print "<p>_get_unit_ids</p>";
+        //print "<p>_get_unit_ids</p>";
     #    // get correspondences between old and new ids
     #    $this->db->select('old_id, unit_id')
     #             ->from('__pdb_unit_id_correspondence')
@@ -237,7 +237,63 @@ class Pdb_model extends CI_Model {
 
     function get_interactions($pdb_id, $interaction_type)
     {
-        print "<p>get_interactions</p>";
+        
+        if ( $interaction_type == 'baseaa' ) {
+
+            $unit_ids = $this->_get_unit_ids($pdb_id);
+
+            $this->db->select('uai.na_unit_id, uai.aa_unit_id, uai.annotation, uai.value')
+                 ->from('unit_aa_interactions AS uai')
+                 ->join('unit_info AS u1', 'uai.na_unit_id = u1.unit_id')
+                 ->join('unit_info AS u2', 'uai.aa_unit_id = u2.unit_id')
+                 ->where('uai.pdb_id', $pdb_id)
+                 #->order_by('number');
+                 ->order_by('u1.chain, u1.chain_index, u2.chain, u2.chain_index');
+            $query = $this->db->get();
+
+            foreach($query->result() as $row) {
+                $na_unit_id[] = $row->na_unit_id;
+                $aa_unit_id[] = $row->aa_unit_id;
+                $annotation[] = $row->annotation;
+                $value[] = $row->value;
+            }
+
+            $array_size = count($na_unit_id);
+
+            $html = '';
+
+            for ($i = 0; $i <= ($array_size-1); $i++) {
+
+                // Don't display value for cation-pi interactions
+                if ($value[$i] == NULL) {
+                
+                    $html .= str_pad('<span>' . $na_unit_id[$i] . '</span>', 38, ' ') .
+                             "<a class='jmolInline' id='s{$i}'>" .
+                             str_pad( '<span>' . $annotation[$i] . '</span>' , 10, '',STR_PAD_BOTH) .
+                             "</a>" .
+                             str_pad('<span>' . $aa_unit_id[$i] . '</span>', 38, ' ', STR_PAD_LEFT) .
+                             "\n";
+
+                } else {
+
+                    $html .= str_pad('<span>' . $na_unit_id[$i] . '</span>', 38, ' ') .
+                             "<a class='jmolInline' id='s{$i}'>" .
+                             str_pad( '<span>' . $annotation[$i] . '</span>', 10, '', STR_PAD_BOTH) .
+                             "</a>" .
+                             str_pad('<span>' . $aa_unit_id[$i] . '</span>', 38, ' ', STR_PAD_LEFT) .
+                             "\n";
+
+                }
+
+            }
+
+            return array( 'data'   => $html,
+                          'header' => array('#', 'Nucleotide id', 'Amino acid id', "Base-amino acid")
+                     );
+
+
+        } 
+
         $url_parameters = array('basepairs', 'stacking', 'basephosphate', 'baseribose');
         $db_fields      = array('f_lwbp', 'f_stacks', 'f_bphs', 'f_brbs');
         $header_values  = array('Base-pair', 'Base-stacking', 'Base-phosphate', 'Base-ribose');
@@ -245,6 +301,7 @@ class Pdb_model extends CI_Model {
 
         if ( in_array($interaction_type, $url_parameters) ) {
             $targets = array_keys($url_parameters, $interaction_type);
+            //print_r(array_values($targets));
             $db_field = $db_fields[$targets[0]];
             $interaction_description = $header_values[$targets[0]];
             $where = "$db_field IS NOT NULL";
@@ -271,6 +328,8 @@ class Pdb_model extends CI_Model {
                  #->order_by('number');
                  ->order_by('u1.chain, u1.chain_index, u2.chain, u2.chain_index');
         $query = $this->db->get();
+
+        //print $query;
 
         $i = 1;
         $html = '';
@@ -302,7 +361,13 @@ class Pdb_model extends CI_Model {
             $csv .= '"' . implode('","', $csv_fields) . '"' . "\n";
 
             $i++;
+
+          // print $csv;
         }
+
+        $header2 = array_merge( $header, explode(',', $interaction_description) );
+
+        print_r($header2);
 
         return array( 'data'   => $html,
                       'header' => array_merge( $header, explode(',', $interaction_description) ),
@@ -465,6 +530,18 @@ class Pdb_model extends CI_Model {
         } else {
             $this->db->where("char_length($interaction) = 3");
         }
+
+        $result = $this->db->get()->row();
+
+        return number_format($result->counts, 0);
+    }
+
+    function get_baseaa_info($pdb_id)
+    {
+        print "<p>get_pairwise_info</p>";
+        $this->db->select("count(na_unit_id) as counts")
+                 ->from('unit_aa_interactions')
+                 ->where('pdb_id', $pdb_id);
 
         $result = $this->db->get()->row();
 
