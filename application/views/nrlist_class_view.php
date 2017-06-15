@@ -82,7 +82,7 @@
                  <div class="row span16 interactions resizable" id="statistics">
                   <div class="span16">
                       <div>
-                        <p align="center">"Heat map of mutual geometric discrepancy, in Angstroms per nucleotide.  Instances are ordered to put similar structures near each other."</p>
+                        <p align="center">Heat map of mutual geometric discrepancy, in Angstroms per nucleotide.  Instances are ordered to put similar structures near each other.</p>
                         <!-- Not sure what this is -->
                         <div id ='chart' style="text-align: center;"></div>
 
