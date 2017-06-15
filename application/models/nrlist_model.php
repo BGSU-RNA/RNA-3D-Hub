@@ -854,7 +854,8 @@ CREATE TABLE `nr_release_diff` (
         $i = 1;
 
         // get order
-        $this->db->select('nl.name, cr.pdb_id, cr.length, cr.compound, cr.species_name, cr.species_id, nl.nr_class_id, count(DISTINCT ii.ife_id) as num')
+        /*
+        $this->db->select('nl.name, cr.pdb_id, cr.analyzed_length, cr.experimental_length, cr.compound, cr.species_name, cr.species_id, nl.nr_class_id, count(DISTINCT ii.ife_id) as num')
                  ->from('nr_chains AS nc')
                  ->join('ife_info AS ii', 'nc.ife_id = ii.ife_id')
                  ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
@@ -865,6 +866,15 @@ CREATE TABLE `nr_release_diff` (
                  ->order_by('num','desc')
                  ->order_by('nc.rep','desc')
                  ->order_by('ii.ife_id');
+        */
+
+        $this->db->select('cr.name, cr.pdb_id, cr.analyzed_length, cr.experimental_length, cr.compound, cr.species_name, cr.species_id, cr.nr_class_id, rc.num')
+                 ->from('nr_class_reps_bar AS cr')
+                 ->join('nr_class_reps_count AS rc', 'cr.nr_release_id = rc.nr_release_id AND cr.name = rc.name AND cr.ife_id = rc.ife_id')
+                 ->where('cr.nr_release_id', $id)
+                 ->like('cr.name', "NR_{$resolution}", 'after')
+                 ->order_by('rc.num','desc')
+                 ->order_by('cr.ife_id');
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
@@ -913,7 +923,8 @@ CREATE TABLE `nr_release_diff` (
                              '<li>Chain(s): ' . $best_chains . '; model(s): ' . $best_models . '</li>' .
                              '</ul>',
                              $pdb[$pdb_id]['resolution'],
-                             $row->length,
+                             $row->analyzed_length . '&nbsp;(analyzed)<br>' . 
+                             $row->experimental_length . '&nbsp;(experimental)',
                              "(" . $nums . ") " . $this->add_pdb_class($class[$class_id])
                             );
             $i++;

@@ -707,7 +707,7 @@ class Motif_model extends CI_Model {
     function get_checkbox($i)
     {
         #echo "<p>i: $i // loops: " . $this->loops[$i] . "</p>";
-        ksort($this->full_nts[$this->loops[$i]]);
+        #ksort($this->full_nts[$this->loops[$i]]);
         ksort($this->full_units[$this->loops[$i]]);
         return "<label><input type='checkbox' id='{$this->loops[$i]}' class='jmolInline' " .
                "data-coord='". implode(",", $this->full_units[$this->loops[$i]]) . "'>{$this->loops[$i]}</label>"
@@ -838,9 +838,12 @@ class Motif_model extends CI_Model {
             } elseif ( $key == 'break' ) {
             	$row[] = '*';
             } elseif ( is_int($key) ) {
-                $parts = explode(' ', $this->nts[$this->loops[$id]][$key]);
+                #$parts = explode(' ', $this->nts[$this->loops[$id]][$key]);
+                $parts = explode(' ', $this->units[$this->loops[$id]][$key]);
 
-                $row[] = $parts[1]; // ISSUE
+                $foo = count($parts) - 1;
+
+                $row[] = $parts[$foo]; // ISSUE
                 $row[] = $parts[0]; // ISSUE
             } elseif ( $key == ' ' ) {
                 // do nothing
@@ -850,8 +853,8 @@ class Motif_model extends CI_Model {
             else {
                 $parts = explode('-', $key);
 
-                $nt1 = $this->nts[$this->loops[$id]][$parts[0]]; // ISSUE
-                $nt2 = $this->nts[$this->loops[$id]][$parts[1]]; // ISSUE
+                #$nt1 = $this->nts[$this->loops[$id]][$parts[0]]; // ISSUE
+                #$nt2 = $this->nts[$this->loops[$id]][$parts[1]]; // ISSUE
                 $unit_1 = $this->units[$this->loops[$id]][$parts[0]]; // ISSUE
                 $unit_2 = $this->units[$this->loops[$id]][$parts[1]]; // ISSUE
 
@@ -944,21 +947,23 @@ class Motif_model extends CI_Model {
         for ($i = 0; $i < count($result); $i++) {
             $parts_ntid = explode("_", $result[$i]['nt_id']);
             $parts_unit = explode("|", $result[$i]['unit_id']);
-            $ic_unit = (isset($parts_unit[8])) ? $parts_unit[8] : "";
+            $ic_unit = (isset($parts_unit[8])) ? ' ' . $parts_unit[8] : "";
             $nt_id = $parts_ntid[4] . $parts_ntid[6] . ' ' . $parts_ntid[5];
             $unit_id = $parts_unit[4] . $ic_unit . ' ' . $parts_unit[3];
 
-            $nts[$result[$i]['loop_id']][$result[$i]['position']] = $nt_id;
-            $this->full_nts[$result[$i]['loop_id']][$result[$i]['position']] = $result[$i]['nt_id'];
-            $this->nt_ids[$result[$i]['nt_id']] = $nt_id;
+            ###echo "<p>index $i:  nt: [$nt_id] // unit: [$unit_id]</p>"; ### DEBUG
+
+            #$nts[$result[$i]['loop_id']][$result[$i]['position']] = $nt_id;
+            #$this->full_nts[$result[$i]['loop_id']][$result[$i]['position']] = $result[$i]['nt_id'];
+            #$this->nt_ids[$result[$i]['nt_id']] = $nt_id;
 
             $units[$result[$i]['loop_id']][$result[$i]['position']] = $unit_id;
             $this->full_units[$result[$i]['loop_id']][$result[$i]['position']] = $result[$i]['unit_id'];
             $this->unit_ids[$result[$i]['unit_id']] = $unit_id;
         }
 
-        $this->nts = $nts;
-        $this->num_nt = count($nts, COUNT_RECURSIVE) / count($nts);
+        #$this->nts = $nts;
+        #$this->num_nt = count($nts, COUNT_RECURSIVE) / count($nts);
         $this->units = $units;
         $this->num_unit = count($units, COUNT_RECURSIVE) / count($units);
 
