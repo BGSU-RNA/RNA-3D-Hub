@@ -223,6 +223,7 @@ CREATE TABLE `nr_release_diff` (
 
     function get_members($id)
     {
+
         $this->db->select('pi.pdb_id')
                  ->select('ch.ife_id')
                  ->select('pi.title')
@@ -295,9 +296,9 @@ CREATE TABLE `nr_release_diff` (
         
         foreach ($query -> result() as $row) {
             $link = $this->make_pdb_widget_link($row->ife_id);
-            if ( $i==0 ) {
-                $link = $link . ' <strong>(rep)</strong>';
-            }
+            //if ( $i==0 ) {
+                //$link = $link . ' <strong>(rep)</strong>';
+            //}
             $i++;
             $table[] = array($i,
                              $link,
@@ -315,9 +316,19 @@ CREATE TABLE `nr_release_diff` (
        
 	}
 	
-	function get_heatmap_data($id)
+	function get_heatmap_data($id, $release_id)
 	
     {
+
+        
+
+
+        print $id;
+
+        echo "</br>";
+
+        print $release_id;
+
 
         $this->db->distinct()
                  ->select('NC1.ife_id AS ife1')
@@ -341,7 +352,39 @@ CREATE TABLE `nr_release_diff` (
 
         $query = $this->db->get();
 
+        foreach($query->result() as $row) {
+            $ife1[] = $row->ife1;
+            $ife1_index[] = $row->ife1_index;
+            $ife2[] = $row->ife2;
+            $ife2_index[] = $row->ife2_index;
+            $discrepancy[] = $row->discrepancy;
+        }
+
+        $dissimilarity_score[] = array();
+
+        function get_dissimilarity_score () {
+
+
+
+        } 
+
         $heatmap_data = json_encode($query->result());
+
+        print $heatmap_data;
+
+        #$heatmap_array = json_decode($heatmap_data, true);
+
+        #print_r($heatmap_array[0]['discrepancy']);
+
+        #print $heatmap_data;
+
+        #if ($query->num_rows() > 0)  //Ensure that there is at least one result 
+        #{    
+            #foreach ($query->result_array() as $row) //Iterate through results
+            #{
+                #echo $row;
+            #}
+        #}
 
         return $heatmap_data;
 	
