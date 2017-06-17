@@ -321,17 +321,6 @@ CREATE TABLE `nr_release_diff` (
 	function get_heatmap_data($id, $release_id)
 	
     {
-
-        
-
-
-        print $id;
-
-        echo "</br>";
-
-        print $release_id;
-
-
         $this->db->distinct()
                  ->select('NC1.ife_id AS ife1')
                  ->select('NO1.index AS ife1_index')
@@ -339,16 +328,16 @@ CREATE TABLE `nr_release_diff` (
                  ->select('NO2.index AS ife2_index')
                  ->select('CSS.discrepancy')
                  ->from('nr_classes AS NCL')
-                 ->join('nr_chains as NC1', 'NC1.nr_class_id = NCL.nr_class_id')
-                 ->join('nr_chains as NC2', 'NC2.nr_class_id = NCL.nr_class_id')
-                 ->join('nr_ordering as NO1', 'NO1.nr_chain_id = NC1.nr_chain_id')
-                 ->join('nr_ordering as NO2', 'NO2.nr_chain_id = NC2.nr_chain_id')
-                 ->join('ife_chains as IC1', 'IC1.ife_id = NC1.ife_id and IC1.index = 0')
-                 ->join('ife_chains as IC2', 'IC2.ife_id = NC2.ife_id and IC2.index = 0')
+                 ->join('nr_chains as NC1', 'NC1.nr_class_id = NCL.nr_class_id and NC1.nr_release_id = NCL.nr_release_id', 'inner')
+                 ->join('nr_ordering as NO1', 'NO1.nr_chain_id = NC1.nr_chain_id and NO1.nr_class_id = NC1.nr_class_id', 'inner')
+                 ->join('nr_chains as NC2', 'NC2.nr_class_id = NCL.nr_class_id and NC2.nr_release_id = NCL.nr_release_id', 'inner')
+                 ->join('nr_ordering as NO2', 'NO2.nr_chain_id = NC2.nr_chain_id and NO2.nr_class_id = NC2.nr_class_id', 'inner')
+                 ->join('ife_chains as IC1', 'IC1.ife_id = NC1.ife_id and IC1.index = 0', 'inner')
+                 ->join('ife_chains as IC2', 'IC2.ife_id = NC2.ife_id and IC2.index = 0', 'inner')
                  ->join('chain_chain_similarity as CSS', 'CSS.chain_id_1 = IC1.chain_id and CSS.chain_id_2 = IC2.chain_id', 'left outer')
                  ->where('NC1.nr_chain_id !=', 'NC2.nr_chain_id')
-                 ->where('IC1.chain_id !=', 'IC2.chain_id')
                  ->where('NCL.name', $id)
+                 ->where('NCL.nr_release_id', $release_id)
                  ->group_by('NO1.index')
                  ->group_by('NO2.index');
 
@@ -362,31 +351,7 @@ CREATE TABLE `nr_release_diff` (
             $discrepancy[] = $row->discrepancy;
         }
 
-        $dissimilarity_score[] = array();
-
-        function get_dissimilarity_score () {
-
-
-
-        } 
-
         $heatmap_data = json_encode($query->result());
-
-        print $heatmap_data;
-
-        #$heatmap_array = json_decode($heatmap_data, true);
-
-        #print_r($heatmap_array[0]['discrepancy']);
-
-        #print $heatmap_data;
-
-        #if ($query->num_rows() > 0)  //Ensure that there is at least one result 
-        #{    
-            #foreach ($query->result_array() as $row) //Iterate through results
-            #{
-                #echo $row;
-            #}
-        #}
 
         return $heatmap_data;
 	
@@ -912,8 +877,9 @@ CREATE TABLE `nr_release_diff` (
                 $best_models = $ife_split[1];
             }
 
+            // $id refers to the release_id
             $table[] = array($i,
-                             anchor(base_url("nrlist/view/".$class_id),$class_id)
+                             anchor(base_url("nrlist/view/".$class_id."/".$id),$class_id,$id)
                              . '<br>' . $this->add_annotation_label($row->nr_class_id, $reason)
                              . '<br>' . $source,
                              $ife_id . ' (<strong class="pdb">' . $pdb_id . '</strong>)' .
