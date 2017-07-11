@@ -317,8 +317,22 @@ CREATE TABLE `nr_release_diff` (
 	}
 	
 	function get_heatmap_data($id, $release_id)
-	
     {
+        if(is_null($release_id)){
+            ### Look up the most recent release_id for the selected class
+
+            $this->db->select('NR.nr_release_id')
+                     ->from('nr_classes AS NC')
+                     ->join('nr_releases AS NR', 'NC.nr_release_id = NR.nr_release_id')
+                     ->where('NC.name', $id)
+                     ->group_by('NC.name')
+                     ->order_by('NR.index', 'DESC')
+                     ->limit(1);
+            $result = $this->db->get()->result_array();
+
+            $release_id = $result[0]['nr_release_id'];
+        }
+
         $this->db->distinct()
                  ->select('NC1.ife_id AS ife1')
                  ->select('NO1.index AS ife1_index')
