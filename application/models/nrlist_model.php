@@ -320,6 +320,8 @@ CREATE TABLE `nr_release_diff` (
 	
 	function get_heatmap_data($id, $release_id)
     {
+        echo "Incoming release_id: [" . $release_id . "]";
+
         if(is_null($release_id)){
             ### Look up the most recent release_id for the selected class
 
@@ -334,6 +336,8 @@ CREATE TABLE `nr_release_diff` (
 
             $release_id = $result[0]['nr_release_id'];
         }
+
+        echo "Updated release_id: [" . $release_id . "]";
 
         $this->db->distinct()
                  ->select('NC1.ife_id AS ife1')
