@@ -81,7 +81,8 @@ class Nrlist extends CI_Controller {
         $this->load->view('csv_view', $data);
     }
 
-    public function view($id, $nr_release_id)
+    public function view($id)
+    #public function view($id, $nr_release_id)
     {
         
         $this->output->cache(262974); # 6 months
@@ -125,7 +126,8 @@ class Nrlist extends CI_Controller {
         $this->table->set_heading('#S','PDB','Title','Method','Resolution','Length');
         $data['statistics'] = $this->table->generate($statistics);
 
-        $heatmap = $this->Nrlist_model->get_heatmap_data($id, $nr_release_id);
+        $heatmap = $this->Nrlist_model->get_heatmap_data($id);
+        #$heatmap = $this->Nrlist_model->get_heatmap_data($id, $nr_release_id);
         $data['heatmap_data'] = $heatmap;
         
         
