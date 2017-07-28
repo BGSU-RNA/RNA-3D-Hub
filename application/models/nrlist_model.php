@@ -318,9 +318,18 @@ CREATE TABLE `nr_release_diff` (
        
 	}
 	
-	function get_heatmap_data($id, $release_id)
-	
+	function get_heatmap_data($id)
     {
+        $this->db->select('NR.nr_release_id')
+                 ->from('nr_classes AS NC')
+                 ->join('nr_releases AS NR', 'NC.nr_release_id = NR.nr_release_id')
+                 ->where('NC.name', $id)
+                 ->order_by('NR.index', 'DESC')
+                 ->limit(1);
+        $result = $this->db->get()->result_array();
+
+        $release_id = $result[0]['nr_release_id'];
+
         $this->db->distinct()
                  ->select('NC1.ife_id AS ife1')
                  ->select('NO1.index AS ife1_index')
@@ -343,6 +352,8 @@ CREATE TABLE `nr_release_diff` (
 
         $query = $this->db->get();
 
+        //  why do this processing if the results are not used?!?
+        /*
         foreach($query->result() as $row) {
             $ife1[] = $row->ife1;
             $ife1_index[] = $row->ife1_index;
@@ -350,11 +361,11 @@ CREATE TABLE `nr_release_diff` (
             $ife2_index[] = $row->ife2_index;
             $discrepancy[] = $row->discrepancy;
         }
+        */
 
         $heatmap_data = json_encode($query->result());
 
         return $heatmap_data;
-	
 	}
 
 
@@ -879,7 +890,8 @@ CREATE TABLE `nr_release_diff` (
 
             // $id refers to the release_id
             $table[] = array($i,
-                             anchor(base_url("nrlist/view/".$class_id."/".$id),$class_id,$id)
+                             anchor(base_url("nrlist/view/".$class_id),$class_id)
+                             #anchor(base_url("nrlist/view/".$class_id."/".$id),$class_id,$id)
                              . '<br>' . $this->add_annotation_label($row->nr_class_id, $reason)
                              . '<br>' . $source,
                              $ife_id . ' (<strong class="pdb">' . $pdb_id . '</strong>)' .
