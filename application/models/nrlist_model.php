@@ -330,8 +330,7 @@ CREATE TABLE `nr_release_diff` (
 
         $release_id = $result[0]['nr_release_id'];
 
-        $this->db->distinct()
-                 ->select('NC1.ife_id AS ife1')
+        $this->db->select('NC1.ife_id AS ife1')
                  ->select('NO1.index AS ife1_index')
                  ->select('NC2.ife_id AS ife2')
                  ->select('NO2.index AS ife2_index')
@@ -346,9 +345,7 @@ CREATE TABLE `nr_release_diff` (
                  ->join('chain_chain_similarity as CSS', 'CSS.chain_id_1 = IC1.chain_id and CSS.chain_id_2 = IC2.chain_id', 'left outer')
                  ->where('NC1.nr_chain_id !=', 'NC2.nr_chain_id')
                  ->where('NCL.name', $id)
-                 ->where('NCL.nr_release_id', $release_id)
-                 ->group_by('NO1.index')
-                 ->group_by('NO2.index');
+                 ->where('NCL.nr_release_id', $release_id);
 
         $query = $this->db->get();
 
