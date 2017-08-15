@@ -38,21 +38,21 @@ class Release_history_model extends CI_Model {
 
     function get_loops($rel)
     {
-        $this->db->select('id')
+        $this->db->select('loop_id')
                  ->from('ml_loops')
-                 ->where('release_id', $rel);
+                 ->where('ml_release_id', $rel);
         $query = $this->db->get();
         foreach ($query->result() as $row) {
-           $loops[] = $row->id;
+           $loops[] = $row->loop_id;
         }
         return $loops;
     }
 
     function count_motifs($rel)
     {
-        $this->db->select('id')
-                 ->from('ml_motifs')
-                 ->where('release_id', $rel);
+        $this->db->select('motif_id')
+                 ->from('ml_motifs_info')
+                 ->where('ml_release_id', $rel);
         return $this->db->count_all_results();
     }
 
@@ -63,35 +63,35 @@ class Release_history_model extends CI_Model {
 
     function get_intersection()
     {
-        $this->db->select('ml_motifs.id')
-                 ->from('ml_motifs')
-                 ->join('ml_motifs t', 'ml_motifs.id=t.id')
-                 ->where('ml_motifs.release_id', $this->rel1)
-                 ->where('t.release_id', $this->rel2);
+        $this->db->select('MM.motif_id')
+                 ->from('ml_motifs_info AS MM')
+                 ->join('ml_motifs_info AS t', 'MM.motif_id=t.motif_id')
+                 ->where('MM.ml_release_id', $this->rel1)
+                 ->where('t.ml_release_id', $this->rel2);
         $result = $this->db->get()->result_array();
         $list = array();
         for ($i = 0; $i < count($result); $i++) {
-            $list[] = $this->make_link($result[$i]['id'], $this->rel1);
+            $list[] = $this->make_link($result[$i]['motif_id'], $this->rel1);
         }
         return $list;
     }
 
     function get_diff()
     {
-        $this->db->select('id, handle');
-        $this->db->from('ml_motifs');
-        $this->db->where('release_id', $this->rel1);
+        $this->db->select('motif_id, handle');
+        $this->db->from('ml_motifs_info');
+        $this->db->where('ml_release_id', $this->rel1);
         $result = $this->db->get()->result_array();
         for ($i = 0; $i < count($result); $i++) {
-            $rel1_ids[$result[$i]['handle']] = $result[$i]['id'];
+            $rel1_ids[$result[$i]['handle']] = $result[$i]['motif_id'];
         }
 
-        $this->db->select('id, handle');
-        $this->db->from('ml_motifs');
-        $this->db->where('release_id', $this->rel2);
+        $this->db->select('motif_id, handle');
+        $this->db->from('ml_motifs_info');
+        $this->db->where('ml_release_id', $this->rel2);
         $result = $this->db->get()->result_array();
         for ($i = 0; $i < count($result); $i++) {
-            $rel2_ids[$result[$i]['handle']] = $result[$i]['id'];
+            $rel2_ids[$result[$i]['handle']] = $result[$i]['motif_id'];
         }
 
         foreach (array_merge(array_diff_key($rel1_ids, $rel2_ids)) as $handle => $id) {
@@ -105,21 +105,20 @@ class Release_history_model extends CI_Model {
 
     function get_updated()
     {
-        $this->db->select('ml_motifs.id');
-        $this->db->from('ml_motifs');
-        $this->db->join('ml_motifs t', 'ml_motifs.handle=t.handle');
-        $this->db->where('ml_motifs.release_id', $this->rel1);
-        $this->db->where('t.release_id', $this->rel2);
+        $this->db->select('MM.motif_id');
+        $this->db->from('ml_motifs_info AS MM');
+        $this->db->join('ml_motifs_info AS t', 'MM.handle=t.handle');
+        $this->db->where('MM.ml_release_id', $this->rel1);
+        $this->db->where('t.ml_release_id', $this->rel2);
 //        $this->db->where('t.version >', 1);
-        $this->db->where('t.version != ml_motifs.version');
+        $this->db->where('t.version != MM.version');
         $result = $this->db->get()->result_array();
         $list = array();
         for ($i = 0; $i < count($result); $i++) {
-            $list[] = $this->make_link($result[$i]['id'], $this->rel1);
+            $list[] = $this->make_link($result[$i]['motif_id'], $this->rel1);
         }
         return $list;
     }
-
 }
 
 /* End of file history_model.php */

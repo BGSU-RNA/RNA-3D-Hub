@@ -43,20 +43,9 @@ if (shade != 0) jr.plotImagePixel (argb, x + j, y + i, z, shade, bgargb, width, 
 }
 }
 } else {
-var pbufOffset = y * width + x;
-for (var i = 0, off = 0; i < textHeight; i++) {
-for (var j = 0; j < textWidth; j++) {
-var shade = tmap[off++];
-if (shade != 0 && z < zbuf[pbufOffset]) {
-if (shade == 8) {
-p.addPixel (pbufOffset, z, argb);
-} else {
-shade += tLog;
-if (shade <= 7) g3d.shadeTextPixel (pbufOffset, z, argb, bgargb, shade, zbuf);
-}}pbufOffset++;
-}
-pbufOffset += (width - textWidth);
-}
+for (var i = 0, off = 0, pbufOffset = y * width + x; i < textHeight; i++, pbufOffset += (width - textWidth)) for (var j = 0; j < textWidth; j++) p.addImagePixel (tmap[off++], tLog, pbufOffset++, z, argb, bgargb);
+
+
 }return text3d.width;
 }, "~N,~N,~N,~N,~N,~S,javajs.awt.Font,J.g3d.Graphics3D,J.api.JmolRendererInterface,~B");
 c$.plotByCharacter = Clazz.defineMethod (c$, "plotByCharacter", 
@@ -146,7 +135,7 @@ this.tmap[i] = J.g3d.TextRenderer.translucency[p >> 5];
 }}
 }, "~S,javajs.awt.Font,J.g3d.Graphics3D");
 Clazz.defineStatics (c$,
-"translucency", [7, 6, 5, 4, 3, 2, 1, 8],
+"translucency",  Clazz.newByteArray (-1, [7, 6, 5, 4, 3, 2, 1, 8]),
 "working", false);
 c$.htFont3d = c$.prototype.htFont3d =  new java.util.Hashtable ();
 c$.htFont3dAntialias = c$.prototype.htFont3dAntialias =  new java.util.Hashtable ();

@@ -7,7 +7,6 @@ this.inputOnly = false;
 this.mDsimulation = false;
 this.isVersion5 = false;
 this.elementNames = null;
-this.unitCellData = null;
 this.gibbsEnergy = null;
 this.gibbsEntropy = null;
 this.electronEne = null;
@@ -18,7 +17,6 @@ Clazz.instantialize (this, arguments);
 }, J.adapter.readers.xtal, "VaspOutcarReader", J.adapter.smarter.AtomSetCollectionReader);
 Clazz.prepareFields (c$, function () {
 this.elementNames =  new JU.Lst ();
-this.unitCellData =  Clazz.newFloatArray (18, 0);
 });
 Clazz.overrideMethod (c$, "initializeReader", 
 function () {
@@ -79,15 +77,14 @@ if (this.asc.ac > 0) {
 this.setSymmetry ();
 this.asc.newAtomSet ();
 this.setAtomSetInfo ();
-}this.fillFloatArray (null, 0, this.unitCellData);
-this.setUnitCell ();
+}var f =  Clazz.newFloatArray (3, 0);
+for (var i = 0; i < 3; i++) this.addPrimitiveLatticeVector (i, this.fillFloatArray (this.fixMinus (this.rd ()), 0, f), 0);
+
 });
-Clazz.defineMethod (c$, "setUnitCell", 
- function () {
-this.addPrimitiveLatticeVector (0, this.unitCellData, 0);
-this.addPrimitiveLatticeVector (1, this.unitCellData, 6);
-this.addPrimitiveLatticeVector (2, this.unitCellData, 12);
-});
+Clazz.defineMethod (c$, "fixMinus", 
+ function (line) {
+return JU.PT.rep (line, "-", " -");
+}, "~S");
 Clazz.defineMethod (c$, "setSymmetry", 
  function () {
 this.applySymmetryAndSetTrajectory ();
@@ -97,8 +94,9 @@ this.setFractionalCoordinates (false);
 Clazz.defineMethod (c$, "readInitialCoordinates", 
  function () {
 var counter = 0;
-while (this.rd () != null && this.line.length > 10) this.addAtomXYZSymName (this.getTokens (), 0, null, this.atomNames[counter++]);
-
+while (this.rd () != null && this.line.length > 10) {
+this.addAtomXYZSymName (JU.PT.getTokens (this.fixMinus (this.line)), 0, null, this.atomNames[counter++]);
+}
 this.asc.setAtomSetName ("Initial Coordinates");
 });
 Clazz.defineMethod (c$, "readPOSITION", 

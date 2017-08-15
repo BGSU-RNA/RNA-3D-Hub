@@ -53,6 +53,7 @@ Clazz.defineStatics (c$,
 "ORDER_COVALENT_SINGLE", 1,
 "ORDER_COVALENT_DOUBLE", 2,
 "ORDER_COVALENT_TRIPLE", 3,
+"ORDER_COVALENT_QUAD", 4,
 "ORDER_AROMATIC", 515,
 "ORDER_AROMATIC_SINGLE", 513,
 "ORDER_AROMATIC_DOUBLE", 514,
@@ -66,5 +67,5 @@ Clazz.defineStatics (c$,
 "ORDER_UNSPECIFIED", 17,
 "ORDER_PYMOL_SINGLE", 65536,
 "ORDER_PYMOL_MULT", 98304,
-"cellParamNames", ["_cell_length_a", "_cell_length_b", "_cell_length_c", "_cell_angle_alpha", "_cell_angle_beta", "_cell_angle_gamma"]);
+"cellParamNames",  Clazz.newArray (-1, ["_cell_length_a", "_cell_length_b", "_cell_length_c", "_cell_angle_alpha", "_cell_angle_beta", "_cell_angle_gamma"]));
 });

@@ -51,7 +51,7 @@ slater[2] = nGaussians;
 slatersByAtomType.addLast (slater);
 }thisShell = tokens[0];
 this.shellCount++;
-slater = [J.adapter.readers.quantum.BasisFunctionReader.getQuantumShellTagID (this.fixShellTag (tokens[1])), this.gaussianCount, 0];
+slater =  Clazz.newIntArray (-1, [J.adapter.readers.quantum.BasisFunctionReader.getQuantumShellTagID (this.fixShellTag (tokens[1])), this.gaussianCount, 0]);
 nGaussians = 0;
 }++nGaussians;
 ++this.gaussianCount;
@@ -80,10 +80,10 @@ JU.Logger.error ("slater for atom " + i + " atomType " + atomType + " was not fo
 return;
 }for (var j = 0; j < slaters.size (); j++) {
 slater = slaters.get (j);
-this.shells.addLast ([i, slater[0], slater[1], slater[2]]);
+this.shells.addLast ( Clazz.newIntArray (-1, [i, slater[0], slater[1], slater[2]]));
 }
 }
-}if (JU.Logger.debugging) {
+}if (this.debugging) {
 JU.Logger.debug (this.shellCount + " slater shells read");
 JU.Logger.debug (this.gaussianCount + " gaussian primitives read");
 }}, "~S,~S");
@@ -100,7 +100,7 @@ var frequency = this.parseFloatStr (tokens[i]);
 if (tokens[i].equals ("I")) frequencies[frequencyCount - 1] = -frequencies[frequencyCount - 1];
 if (Float.isNaN (frequency)) continue;
 frequencies[frequencyCount++] = frequency;
-if (JU.Logger.debugging) {
+if (this.debugging) {
 JU.Logger.debug ((this.vibrationNumber + 1) + " frequency=" + frequency);
 }}
 var red_masses = null;
@@ -240,7 +240,7 @@ if (!tokens[i].equals ("=")) continue;
 try {
 var key = type + tokens[i - 1];
 var value = (key.equals ("basis_options_SPLIT3") ? tokens[++i] + " " + tokens[++i] + " " + tokens[++i] : tokens[++i]);
-if (JU.Logger.debugging) JU.Logger.debug (key + " = " + value);
+if (this.debugging) JU.Logger.debug (key + " = " + value);
 this.calcOptions.put (key, value);
 } catch (e) {
 if (Clazz.exceptionOf (e, Exception)) {

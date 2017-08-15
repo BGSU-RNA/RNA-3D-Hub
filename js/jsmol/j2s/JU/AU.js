@@ -1,35 +1,29 @@
 Clazz.declarePackage ("JU");
-Clazz.load (null, "JU.AU", ["java.util.Arrays", "JU.Lst"], function () {
+Clazz.load (null, "JU.AU", ["java.lang.reflect.Array", "java.util.Arrays", "JU.Lst"], function () {
 c$ = Clazz.declareType (JU, "AU");
 c$.ensureLength = Clazz.defineMethod (c$, "ensureLength", 
 function (array, minimumLength) {
-if (array != null && JU.AU.getLength (array) >= minimumLength) return array;
-return JU.AU.arrayCopyObject (array, minimumLength);
+return (array != null && JU.AU.getLength (array) >= minimumLength ? array : JU.AU.arrayCopyObject (array, minimumLength));
 }, "~O,~N");
 c$.ensureLengthS = Clazz.defineMethod (c$, "ensureLengthS", 
 function (array, minimumLength) {
-if (array != null && array.length >= minimumLength) return array;
-return JU.AU.arrayCopyS (array, minimumLength);
+return (array != null && array.length >= minimumLength ? array : JU.AU.arrayCopyS (array, minimumLength));
 }, "~A,~N");
 c$.ensureLengthA = Clazz.defineMethod (c$, "ensureLengthA", 
 function (array, minimumLength) {
-if (array != null && array.length >= minimumLength) return array;
-return JU.AU.arrayCopyF (array, minimumLength);
+return (array != null && array.length >= minimumLength ? array : JU.AU.arrayCopyF (array, minimumLength));
 }, "~A,~N");
 c$.ensureLengthI = Clazz.defineMethod (c$, "ensureLengthI", 
 function (array, minimumLength) {
-if (array != null && array.length >= minimumLength) return array;
-return JU.AU.arrayCopyI (array, minimumLength);
+return (array != null && array.length >= minimumLength ? array : JU.AU.arrayCopyI (array, minimumLength));
 }, "~A,~N");
 c$.ensureLengthShort = Clazz.defineMethod (c$, "ensureLengthShort", 
 function (array, minimumLength) {
-if (array != null && array.length >= minimumLength) return array;
-return JU.AU.arrayCopyShort (array, minimumLength);
+return (array != null && array.length >= minimumLength ? array : JU.AU.arrayCopyShort (array, minimumLength));
 }, "~A,~N");
 c$.ensureLengthByte = Clazz.defineMethod (c$, "ensureLengthByte", 
 function (array, minimumLength) {
-if (array != null && array.length >= minimumLength) return array;
-return JU.AU.arrayCopyByte (array, minimumLength);
+return (array != null && array.length >= minimumLength ? array : JU.AU.arrayCopyByte (array, minimumLength));
 }, "~A,~N");
 c$.doubleLength = Clazz.defineMethod (c$, "doubleLength", 
 function (array) {
@@ -73,19 +67,23 @@ return t;
 }, "~O,~N,~N");
 c$.arrayCopyObject = Clazz.defineMethod (c$, "arrayCopyObject", 
 function (array, newLength) {
-if (array == null) {
-return null;
-}var oldLength = JU.AU.getLength (array);
+var oldLength = (array == null ? -1 : JU.AU.getLength (array));
+if (newLength < 0) newLength = oldLength;
 if (newLength == oldLength) return array;
-var t = JU.AU.newInstanceO (array, newLength);
-System.arraycopy (array, 0, t, 0, oldLength < newLength ? oldLength : newLength);
+{
+if (newLength < oldLength) return Clazz.newArray(-1, array, 0, newLength);
+}var t = JU.AU.newInstanceO (array, newLength);
+if (oldLength > 0) System.arraycopy (array, 0, t, 0, oldLength < newLength ? oldLength : newLength);
 return t;
 }, "~O,~N");
 c$.newInstanceO = Clazz.defineMethod (c$, "newInstanceO", 
  function (array, n) {
+if (JU.AU.isAI (array)) return  Clazz.newIntArray (n, 0);
 {
+if (!array.getClass || !array.getClass().getComponentType)
 return new Array(n);
-}}, "~O,~N");
+}return java.lang.reflect.Array.newInstance (array.getClass ().getComponentType (), n);
+}, "~O,~N");
 c$.getLength = Clazz.defineMethod (c$, "getLength", 
 function (array) {
 {
@@ -93,10 +91,12 @@ return array.length
 }}, "~O");
 c$.arrayCopyS = Clazz.defineMethod (c$, "arrayCopyS", 
 function (array, newLength) {
-if (newLength < 0) newLength = array.length;
-var t =  new Array (newLength);
+var oldLength = (array == null ? -1 : array.length);
+if (newLength < 0) newLength = oldLength;
+{
+if (newLength < oldLength) return Clazz.newArray(-1, array, 0, newLength);
+}var t =  new Array (newLength);
 if (array != null) {
-var oldLength = array.length;
 System.arraycopy (array, 0, t, 0, oldLength < newLength ? oldLength : newLength);
 }return t;
 }, "~A,~N");
@@ -119,19 +119,23 @@ System.arraycopy (array, 0, t, 0, oldLength < newLength ? oldLength : newLength)
 }, "~A,~N");
 c$.arrayCopyF = Clazz.defineMethod (c$, "arrayCopyF", 
 function (array, newLength) {
-if (newLength < 0) newLength = array.length;
-var t =  Clazz.newFloatArray (newLength, 0);
+var oldLength = (array == null ? -1 : array.length);
+if (newLength < 0) newLength = oldLength;
+{
+if (newLength < oldLength) return Clazz.newArray(-1, array, 0, newLength);
+}var t =  Clazz.newFloatArray (newLength, 0);
 if (array != null) {
-var oldLength = array.length;
 System.arraycopy (array, 0, t, 0, oldLength < newLength ? oldLength : newLength);
 }return t;
 }, "~A,~N");
 c$.arrayCopyI = Clazz.defineMethod (c$, "arrayCopyI", 
 function (array, newLength) {
-if (newLength < 0) newLength = array.length;
-var t =  Clazz.newIntArray (newLength, 0);
+var oldLength = (array == null ? -1 : array.length);
+if (newLength < 0) newLength = oldLength;
+{
+if (newLength < oldLength) return Clazz.newArray(-1, array, 0, newLength);
+}var t =  Clazz.newIntArray (newLength, 0);
 if (array != null) {
-var oldLength = array.length;
 System.arraycopy (array, 0, t, 0, oldLength < newLength ? oldLength : newLength);
 }return t;
 }, "~A,~N");
@@ -141,44 +145,45 @@ if (array == null) return null;
 var oldLength = array.length;
 if (n == -1) n = oldLength;
 if (n == -2) n = Clazz.doubleToInt (oldLength / 2);
-n = n - i0;
-var t =  Clazz.newIntArray (n, 0);
-System.arraycopy (array, i0, t, 0, n);
-return t;
-}, "~A,~N,~N");
+{
+return Clazz.newArray(-1, array, i0, n);
+}}, "~A,~N,~N");
 c$.arrayCopyRangeRevI = Clazz.defineMethod (c$, "arrayCopyRangeRevI", 
 function (array, i0, n) {
 if (array == null) return null;
-var t = JU.AU.arrayCopyRangeI (array, i0, n);
-if (n < 0) n = array.length;
-for (var i = Clazz.doubleToInt (n / 2); --i >= 0; ) JU.AU.swapInt (t, i, n - 1 - i);
-
-return t;
-}, "~A,~N,~N");
+{
+return Clazz.newArray(-1, array, i0, n).reverse();
+}}, "~A,~N,~N");
 c$.arrayCopyShort = Clazz.defineMethod (c$, "arrayCopyShort", 
 function (array, newLength) {
-if (newLength < 0) newLength = array.length;
-var t =  Clazz.newShortArray (newLength, 0);
+var oldLength = (array == null ? -1 : array.length);
+if (newLength < 0) newLength = oldLength;
+{
+if (newLength < oldLength) return Clazz.newArray(-1, array, 0, newLength);
+}var t =  Clazz.newShortArray (newLength, 0);
 if (array != null) {
-var oldLength = array.length;
 System.arraycopy (array, 0, t, 0, oldLength < newLength ? oldLength : newLength);
 }return t;
 }, "~A,~N");
 c$.arrayCopyByte = Clazz.defineMethod (c$, "arrayCopyByte", 
 function (array, newLength) {
-if (newLength < 0) newLength = array.length;
-var t =  Clazz.newByteArray (newLength, 0);
+var oldLength = (array == null ? -1 : array.length);
+if (newLength < 0) newLength = oldLength;
+{
+if (newLength < oldLength) return Clazz.newArray(-1, array, 0, newLength);
+}var t =  Clazz.newByteArray (newLength, 0);
 if (array != null) {
-var oldLength = array.length;
 System.arraycopy (array, 0, t, 0, oldLength < newLength ? oldLength : newLength);
 }return t;
 }, "~A,~N");
 c$.arrayCopyBool = Clazz.defineMethod (c$, "arrayCopyBool", 
 function (array, newLength) {
-if (newLength < 0) newLength = array.length;
-var t =  Clazz.newBooleanArray (newLength, false);
+var oldLength = (array == null ? -1 : array.length);
+if (newLength < 0) newLength = oldLength;
+{
+if (newLength < oldLength) return Clazz.newArray(-1, array, 0, newLength);
+}var t =  Clazz.newBooleanArray (newLength, false);
 if (array != null) {
-var oldLength = array.length;
 System.arraycopy (array, 0, t, 0, oldLength < newLength ? oldLength : newLength);
 }return t;
 }, "~A,~N");
@@ -278,4 +283,72 @@ for (var i = list.size (); --i >= 0; ) map.remove (list.get (i));
 
 return list.size ();
 }, "java.util.Map,~S");
+c$.isAS = Clazz.defineMethod (c$, "isAS", 
+function (x) {
+{
+return Clazz.isAS(x);
+}}, "~O");
+c$.isASS = Clazz.defineMethod (c$, "isASS", 
+function (x) {
+{
+return Clazz.isASS(x);
+}}, "~O");
+c$.isAP = Clazz.defineMethod (c$, "isAP", 
+function (x) {
+{
+return Clazz.isAP(x);
+}}, "~O");
+c$.isAF = Clazz.defineMethod (c$, "isAF", 
+function (x) {
+{
+return Clazz.isAF(x);
+}}, "~O");
+c$.isAFloat = Clazz.defineMethod (c$, "isAFloat", 
+function (x) {
+{
+return Clazz.isAFloat(x);
+}}, "~O");
+c$.isAD = Clazz.defineMethod (c$, "isAD", 
+function (x) {
+{
+return Clazz.isAF(x);
+}}, "~O");
+c$.isADD = Clazz.defineMethod (c$, "isADD", 
+function (x) {
+{
+return Clazz.isAFF(x);
+}}, "~O");
+c$.isAB = Clazz.defineMethod (c$, "isAB", 
+function (x) {
+{
+return Clazz.isAB(x);
+}}, "~O");
+c$.isAI = Clazz.defineMethod (c$, "isAI", 
+function (x) {
+{
+return Clazz.isAI(x);
+}}, "~O");
+c$.isAII = Clazz.defineMethod (c$, "isAII", 
+function (x) {
+{
+return Clazz.isAII(x);
+}}, "~O");
+c$.isAFF = Clazz.defineMethod (c$, "isAFF", 
+function (x) {
+{
+return Clazz.isAFF(x);
+}}, "~O");
+c$.isAFFF = Clazz.defineMethod (c$, "isAFFF", 
+function (x) {
+{
+return Clazz.isAFFF(x);
+}}, "~O");
+c$.ensureSignedBytes = Clazz.defineMethod (c$, "ensureSignedBytes", 
+function (b) {
+if (b != null) {
+{
+for (var i = b.length; --i >= 0;) { var j = b[i] & 0xFF; if
+(j >= 0x80) j -= 0x100; b[i] = j; }
+}}return b;
+}, "~A");
 });

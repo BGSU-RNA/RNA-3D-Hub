@@ -27,13 +27,16 @@
 
                 <p>
                   <span class="label notice">Help</span>
-                  Internal loops are shown in green, hairpin loops are blue, and three-way junctions
-                  are yellow. Loops not present in RNA 3D Hub are red.
+                  Internal loops are shown in green, hairpin loops are blue, 
+                  and three-way junctions are yellow. Loops not present in the 
+                  BGSU RNA Site are red.
 
-                  Clicking on the colored boxes takes to the page for the respective loop.
-                  If you experience problems with the embedded document, try
+                  Clicking on the colored boxes takes to the page for the 
+                  respective loop. If you experience problems with the embedded 
+                  document, try
                   <a href="<?php echo str_replace('preview', 'edit', $selected['url']); ?>" target="_blank">downloading</a>
-                  the pdf and opening it on your computer. Please don't hesitate to
+                  the pdf and opening it on your computer. Please don't 
+                  hesitate to
                   <a href="<?=$this->config->item('home_url')?>/main/contact-us">contact us</a>
                   with questions or feedback.
                 </p>
@@ -74,26 +77,26 @@
                 </p>
 
                 <p>
-                  Secondary structures provide a convenient way of exploring
+                  Secondary structures provide a convenient way of exploring 
                   ribosomal RNAs and are familiar to many scientists.
 
-                  To facilitate navigating RNA 3D Motif Atlas,
-                  we labeled publicly available 2D diagrams of rRNAs
-                  with links to RNA 3D motif instances from the Motif Atlas.
+                  To facilitate navigating the RNA 3D Motif Atlas, we labeled 
+                  publicly available 2D diagrams of rRNAs with links to RNA 3D 
+                  motif instances from the Motif Atlas.
 
                 </p>
 
                 <p>
-                  We used <a href="<?=$this->config->item('home_url')?>/rna3dhub/nrlist">Non-redundant lists</a>
-                  of RNA 3D structures
-                  to choose representative structures for each molecule type and
-                  linked secondary structure diagrams with their motif instances.
+                  We used <a href="<?=$this->config->item('home_url')?>/rna3dhub/nrlist">Representative sets</a>
+                  of RNA 3D structures to choose representative structures for 
+                  each molecule type and linked secondary structure diagrams 
+                  with their motif instances.
 
-                  All motifs and motif instances are assigned unique and stable identifiers,
-                  so even as new structures become available,
-                  it will be possible to track the current motif
-                  group for each motif instance using the
-                  versioning system built into RNA 3D Motif Atlas .
+                  All motifs and motif instances are assigned unique and stable 
+                  identifiers, so even as new structures become available, it 
+                  will be possible to track the current motif group for each 
+                  motif instance using the versioning system built into the RNA 
+                  3D Motif Atlas.
                 </p>
 
                 <br>

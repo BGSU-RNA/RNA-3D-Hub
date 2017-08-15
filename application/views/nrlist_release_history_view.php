@@ -2,7 +2,7 @@
       <div class="content">
 
         <div class="page-header">
-          <h1>Detailed release history</h1>
+          <h1>Detailed release history of representative sets</h1>
         </div>
 
         <div class="row">

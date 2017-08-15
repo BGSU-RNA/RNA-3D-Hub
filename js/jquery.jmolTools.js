@@ -70,7 +70,8 @@ if ( typeof Object.create !== 'function' ) {
 
         appendData: function(data) {
             var self = this;
-            if ( data.indexOf('MODEL') > -1 ) {
+            // change MODEL to data_view
+            if ( data.indexOf('data_view') > -1 ) {
                 jmolScriptWait("load DATA \"append structure\"\n" + data + 'end "append structure";');
                 self.loaded = true;
             } else {
@@ -416,8 +417,8 @@ if ( typeof Object.create !== 'function' ) {
         return $.fn.jmolTools.elems;
     }
 
+    //
     var loc = window.location.protocol + '//' + window.location.hostname;
-
     // default options
 	$.fn.jmolTools.options = {
         serverUrl   : loc + '/rna3dhub/rest/getCoordinates',

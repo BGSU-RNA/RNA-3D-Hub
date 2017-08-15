@@ -32,16 +32,12 @@
                 <dd>
                   <?=anchor("unitid/describe/{$unit_id['unit_id']}", $unit_id['unit_id'])?>
                 </dd>
-                <dt>Old id</dt>
-                <dd>
-                  <?=anchor("unitid/describe/{$unit_id['old_id']}", $unit_id['old_id'])?>
-                </dd>
                 <dt>PDB <?=$unit_id['pdb_id']?></dt>
                 <dd>
                   View in
                   <?=anchor_popup("http://www.pdb.org/pdb/explore.do?structureId={$unit_id['pdb_id']}", 'PDB')?>
                   or
-                  <?=anchor("pdb/{$unit_id['pdb_id']}", 'RNA 3D Hub')?>
+                  <?=anchor("pdb/{$unit_id['pdb_id']}", 'BGSU RNA Site')?>
                 </dd>
                 <dt>Model</dt>
                 <dd><?=$unit_id['model']?></dd>
@@ -76,7 +72,7 @@
                 <dt>Symmetry operator</dt>
                 <dd><?=$unit_id['sym_op']?></dd>
                 <dt>PDB file</dt>
-                <dd><?=$unit_id['pdb_id']?>.<?=$unit_id['pdb_file']?></dd>
+                <dd><?=$unit_id['pdb_id']?>.cif</dd>
               </dl>
             </div>
             <?php endforeach; ?>

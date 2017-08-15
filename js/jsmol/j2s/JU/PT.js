@@ -3,7 +3,7 @@ Clazz.load (null, "JU.PT", ["java.lang.Boolean", "$.Double", "$.Float", "$.Numbe
 c$ = Clazz.declareType (JU, "PT");
 c$.parseInt = Clazz.defineMethod (c$, "parseInt", 
 function (str) {
-return JU.PT.parseIntNext (str, [0]);
+return JU.PT.parseIntNext (str,  Clazz.newIntArray (-1, [0]));
 }, "~S");
 c$.parseIntNext = Clazz.defineMethod (c$, "parseIntNext", 
 function (str, next) {
@@ -163,18 +163,17 @@ return JU.PT.parseFloatChecked (str, ichMax, next, false);
 c$.parseFloatNext = Clazz.defineMethod (c$, "parseFloatNext", 
 function (str, next) {
 var cch = (str == null ? -1 : str.length);
-if (next[0] < 0 || next[0] >= cch) return NaN;
-return JU.PT.parseFloatChecked (str, cch, next, false);
+return (next[0] < 0 || next[0] >= cch ? NaN : JU.PT.parseFloatChecked (str, cch, next, false));
 }, "~S,~A");
 c$.parseFloatStrict = Clazz.defineMethod (c$, "parseFloatStrict", 
 function (str) {
 var cch = str.length;
 if (cch == 0) return NaN;
-return JU.PT.parseFloatChecked (str, cch, [0], true);
+return JU.PT.parseFloatChecked (str, cch,  Clazz.newIntArray (-1, [0]), true);
 }, "~S");
 c$.parseFloat = Clazz.defineMethod (c$, "parseFloat", 
 function (str) {
-return JU.PT.parseFloatNext (str, [0]);
+return JU.PT.parseFloatNext (str,  Clazz.newIntArray (-1, [0]));
 }, "~S");
 c$.parseIntRadix = Clazz.defineMethod (c$, "parseIntRadix", 
 function (s, i) {
@@ -187,7 +186,7 @@ return JU.PT.getTokensAt (line, 0);
 }, "~S");
 c$.parseToken = Clazz.defineMethod (c$, "parseToken", 
 function (str) {
-return JU.PT.parseTokenNext (str, [0]);
+return JU.PT.parseTokenNext (str,  Clazz.newIntArray (-1, [0]));
 }, "~S");
 c$.parseTrimmed = Clazz.defineMethod (c$, "parseTrimmed", 
 function (str) {
@@ -217,6 +216,13 @@ for (var i = 0; i < tokenCount; ++i) tokens[i] = JU.PT.parseTokenChecked (line, 
 
 return tokens;
 }, "~S,~N");
+c$.countChar = Clazz.defineMethod (c$, "countChar", 
+function (line, c) {
+var n = 0;
+for (var i = line.lastIndexOf (c) + 1; --i >= 0; ) if (line.charAt (i) == c) n++;
+
+return n;
+}, "~S,~S");
 c$.countTokens = Clazz.defineMethod (c$, "countTokens", 
 function (line, ich) {
 var tokenCount = 0;
@@ -236,15 +242,13 @@ do {
 c$.parseTokenNext = Clazz.defineMethod (c$, "parseTokenNext", 
 function (str, next) {
 var cch = str.length;
-if (next[0] < 0 || next[0] >= cch) return null;
-return JU.PT.parseTokenChecked (str, cch, next);
+return (next[0] < 0 || next[0] >= cch ? null : JU.PT.parseTokenChecked (str, cch, next));
 }, "~S,~A");
 c$.parseTokenRange = Clazz.defineMethod (c$, "parseTokenRange", 
 function (str, ichMax, next) {
 var cch = str.length;
 if (ichMax > cch) ichMax = cch;
-if (next[0] < 0 || next[0] >= ichMax) return null;
-return JU.PT.parseTokenChecked (str, ichMax, next);
+return (next[0] < 0 || next[0] >= ichMax ? null : JU.PT.parseTokenChecked (str, ichMax, next));
 }, "~S,~N,~A");
 c$.parseTokenChecked = Clazz.defineMethod (c$, "parseTokenChecked", 
 function (str, ichMax, next) {
@@ -255,8 +259,7 @@ var ichNonWhite = ich;
 while (ich < ichMax && !JU.PT.isWhiteSpace (str, ich)) ++ich;
 
 next[0] = ich;
-if (ichNonWhite == ich) return null;
-return str.substring (ichNonWhite, ich);
+return (ichNonWhite == ich ? null : str.substring (ichNonWhite, ich));
 }, "~S,~N,~A");
 c$.parseTrimmedChecked = Clazz.defineMethod (c$, "parseTrimmedChecked", 
 function (str, ich, ichMax) {
@@ -265,8 +268,7 @@ while (ich < ichMax && JU.PT.isWhiteSpace (str, ich)) ++ich;
 var ichLast = ichMax - 1;
 while (ichLast >= ich && JU.PT.isWhiteSpace (str, ichLast)) --ichLast;
 
-if (ichLast < ich) return "";
-return str.substring (ich, ichLast + 1);
+return (ichLast < ich ? "" : str.substring (ich, ichLast + 1));
 }, "~S,~N,~N");
 c$.dVal = Clazz.defineMethod (c$, "dVal", 
 function (s) {
@@ -287,8 +289,7 @@ c$.parseIntRange = Clazz.defineMethod (c$, "parseIntRange",
 function (str, ichMax, next) {
 var cch = str.length;
 if (ichMax > cch) ichMax = cch;
-if (next[0] < 0 || next[0] >= ichMax) return -2147483648;
-return JU.PT.parseIntChecked (str, ichMax, next);
+return (next[0] < 0 || next[0] >= ichMax ? -2147483648 : JU.PT.parseIntChecked (str, ichMax, next));
 }, "~S,~N,~A");
 c$.parseFloatArrayData = Clazz.defineMethod (c$, "parseFloatArrayData", 
 function (tokens, data) {
@@ -327,7 +328,7 @@ return lines;
 }, "~S,~S");
 c$.getQuotedStringAt = Clazz.defineMethod (c$, "getQuotedStringAt", 
 function (line, ipt0) {
-var next = [ipt0];
+var next =  Clazz.newIntArray (-1, [ipt0]);
 return JU.PT.getQuotedStringNext (line, next);
 }, "~S,~N");
 c$.getQuotedStringNext = Clazz.defineMethod (c$, "getQuotedStringNext", 
@@ -429,6 +430,7 @@ return str;
 }, "~S,~S,~S");
 c$.trim = Clazz.defineMethod (c$, "trim", 
 function (str, chars) {
+if (str == null || str.length == 0) return str;
 if (chars.length == 0) return str.trim ();
 var len = str.length;
 var k = 0;
@@ -464,9 +466,7 @@ s = info;
 {
 if (typeof s == "undefined") s = "null"
 }if (s.indexOf ("{\"") != 0) {
-s = JU.PT.rep (s, "\"", "\\\"");
-s = JU.PT.rep (s, "\n", "\\n");
-s = "\"" + s + "\"";
+s = JU.PT.esc (s);
 }break;
 }if (Clazz.instanceOf (info, javajs.api.JSONEncodable)) {
 if ((s = (info).toJSON ()) == null) s = "null";
@@ -519,8 +519,7 @@ return JU.PT.packageJSON (infoType, (s == null ? sb.toString () : s));
 c$.nonArrayString = Clazz.defineMethod (c$, "nonArrayString", 
 function (x) {
 {
-var s = x.toString(); return (s.startsWith("[object") &&
-s.endsWith("Array]") ? null : s);
+return (x.constructor == Array || x.BYTES_PER_ELEMENT ? null : x.toString());
 }}, "~O");
 c$.byteArrayToJSON = Clazz.defineMethod (c$, "byteArrayToJSON", 
 function (data) {
@@ -538,66 +537,6 @@ c$.packageJSON = Clazz.defineMethod (c$, "packageJSON",
 function (infoType, info) {
 return (infoType == null ? info : "\"" + infoType + "\": " + info);
 }, "~S,~S");
-c$.isAS = Clazz.defineMethod (c$, "isAS", 
-function (x) {
-{
-return Clazz.isAS(x);
-}}, "~O");
-c$.isASS = Clazz.defineMethod (c$, "isASS", 
-function (x) {
-{
-return Clazz.isASS(x);
-}}, "~O");
-c$.isAP = Clazz.defineMethod (c$, "isAP", 
-function (x) {
-{
-return Clazz.isAP(x);
-}}, "~O");
-c$.isAF = Clazz.defineMethod (c$, "isAF", 
-function (x) {
-{
-return Clazz.isAF(x);
-}}, "~O");
-c$.isAFloat = Clazz.defineMethod (c$, "isAFloat", 
-function (x) {
-{
-return Clazz.isAFloat(x);
-}}, "~O");
-c$.isAD = Clazz.defineMethod (c$, "isAD", 
-function (x) {
-{
-return Clazz.isAF(x);
-}}, "~O");
-c$.isADD = Clazz.defineMethod (c$, "isADD", 
-function (x) {
-{
-return Clazz.isAFF(x);
-}}, "~O");
-c$.isAB = Clazz.defineMethod (c$, "isAB", 
-function (x) {
-{
-return Clazz.isAI(x);
-}}, "~O");
-c$.isAI = Clazz.defineMethod (c$, "isAI", 
-function (x) {
-{
-return Clazz.isAI(x);
-}}, "~O");
-c$.isAII = Clazz.defineMethod (c$, "isAII", 
-function (x) {
-{
-return Clazz.isAII(x);
-}}, "~O");
-c$.isAFF = Clazz.defineMethod (c$, "isAFF", 
-function (x) {
-{
-return Clazz.isAFF(x);
-}}, "~O");
-c$.isAFFF = Clazz.defineMethod (c$, "isAFFF", 
-function (x) {
-{
-return Clazz.isAFFF(x);
-}}, "~O");
 c$.escapeUrl = Clazz.defineMethod (c$, "escapeUrl", 
 function (url) {
 url = JU.PT.rep (url, "\n", "");
@@ -673,17 +612,6 @@ if (val == null) for (var e, $e = h.entrySet ().iterator (); $e.hasNext () && ((
 
 return val;
 }, "java.util.Map,~S");
-c$.getMapSubset = Clazz.defineMethod (c$, "getMapSubset", 
-function (h, key, h2) {
-var val = h.get (key);
-if (val != null) {
-h2.put (key, val);
-return;
-}for (var e, $e = h.entrySet ().iterator (); $e.hasNext () && ((e = $e.next ()) || true);) {
-var k = e.getKey ();
-if (JU.PT.isLike (k, key)) h2.put (k, e.getValue ());
-}
-}, "java.util.Map,~S,java.util.Map");
 c$.clean = Clazz.defineMethod (c$, "clean", 
 function (s) {
 return JU.PT.rep (JU.PT.replaceAllCharacters (s, " \t\n\r", " "), "  ", " ").trim ();
@@ -713,7 +641,7 @@ sb.append (f.substring (pt + 1));
 return sb.toString ();
 }, "~S,~N,~N");
 c$.formatString = Clazz.defineMethod (c$, "formatString", 
-function (strFormat, key, strT, floatT, doubleT, doOne) {
+ function (strFormat, key, strT, floatT, doubleT, doOne) {
 if (strFormat == null) return null;
 if ("".equals (strFormat)) return "";
 var len = key.length;
@@ -748,12 +676,12 @@ var isExponential = false;
 if (strFormat.charAt (ich) == '.') {
 ++ich;
 if ((ch = strFormat.charAt (ich)) == '-') {
-isExponential = true;
+isExponential = (strT == null);
 ++ich;
 }if ((ch = strFormat.charAt (ich)) >= '0' && ch <= '9') {
 precision = ch.charCodeAt (0) - 48;
 ++ich;
-}if (isExponential) precision = -precision - (strT == null ? 1 : 0);
+}if (isExponential) precision = -precision;
 }var st = strFormat.substring (ich, ich + len);
 if (!st.equals (key)) {
 ich = ichPercent + 1;
@@ -762,7 +690,7 @@ continue;
 }ich += len;
 if (!Float.isNaN (floatT)) strLabel += JU.PT.formatF (floatT, width, precision, alignLeft, zeroPad);
  else if (strT != null) strLabel += JU.PT.formatS (strT, width, precision, alignLeft, zeroPad);
- else if (!Double.isNaN (doubleT)) strLabel += JU.PT.formatD (doubleT, width, precision, alignLeft, zeroPad, true);
+ else if (!Double.isNaN (doubleT)) strLabel += JU.PT.formatD (doubleT, width, precision - 1, alignLeft, zeroPad, true);
 if (doOne) break;
 } catch (ioobe) {
 if (Clazz.exceptionOf (ioobe, IndexOutOfBoundsException)) {
@@ -1004,8 +932,8 @@ var pt = s.indexOf ("/");
 return (pt < 0 ? JU.PT.parseFloat (s) : JU.PT.parseFloat (s.substring (0, pt)) / JU.PT.parseFloat (s.substring (pt + 1)));
 }, "~S");
 Clazz.defineStatics (c$,
-"tensScale", [10, 100, 1000, 10000, 100000, 1000000],
-"decimalScale", [0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001, 0.000000001],
+"tensScale",  Clazz.newFloatArray (-1, [10, 100, 1000, 10000, 100000, 1000000]),
+"decimalScale",  Clazz.newFloatArray (-1, [0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001, 0.000000001]),
 "FLOAT_MIN_SAFE", 2E-45,
 "escapable", "\\\\\tt\rr\nn\"\"",
 "FRACTIONAL_PRECISION", 100000,

@@ -2,12 +2,12 @@
 
       <div class="content">
         <div class="page-header">
-          <h1>Compare non-redundant list releases</h1>
+          <h1>Compare representative set releases</h1>
         </div>
         <div class="row">
           <div class="span8">
 
-            <form method="post" action="<?=$action?>"  />
+            <form method="post" action="<?=$action?>" />
             <div>
                 <?=$table?>
             </div>

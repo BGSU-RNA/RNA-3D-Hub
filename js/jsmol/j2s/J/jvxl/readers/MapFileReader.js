@@ -52,7 +52,7 @@ JU.Logger.info ("grid parameters: mx,my,mz: " + this.na + "," + this.nb + "," + 
 JU.Logger.info ("grid parameters: a,b,c,alpha,beta,gamma: " + this.a + "," + this.b + "," + this.c + "," + this.alpha + "," + this.beta + "," + this.gamma);
 JU.Logger.info ("grid parameters: mapc,mapr,maps: " + this.mapc + "," + this.mapr + "," + this.maps);
 JU.Logger.info ("grid parameters: originX,Y,Z: " + this.origin);
-var unitCell = JU.SimpleUnitCell.newA ([this.a / this.na, this.b / this.nb, this.c / this.nc, this.alpha, this.beta, this.gamma]);
+var unitCell = JU.SimpleUnitCell.newA ( Clazz.newFloatArray (-1, [this.a / this.na, this.b / this.nb, this.c / this.nc, this.alpha, this.beta, this.gamma]));
 this.vectors[0] = JU.P3.new3 (1, 0, 0);
 this.vectors[1] = JU.P3.new3 (0, 1, 0);
 this.vectors[2] = JU.P3.new3 (0, 0, 1);

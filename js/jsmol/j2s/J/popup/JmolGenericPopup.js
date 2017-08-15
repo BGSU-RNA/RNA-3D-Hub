@@ -1,5 +1,5 @@
 Clazz.declarePackage ("J.popup");
-Clazz.load (["J.popup.GenericSwingPopup", "java.util.Properties", "JU.Lst"], "J.popup.JmolGenericPopup", ["java.lang.Boolean", "java.util.Hashtable", "JU.PT", "J.i18n.GT", "JM.Group", "J.popup.MainPopupResourceBundle", "JU.Elements"], function () {
+Clazz.load (["J.popup.GenericSwingPopup", "java.util.Properties", "JU.Lst"], "J.popup.JmolGenericPopup", ["java.lang.Boolean", "java.util.Arrays", "$.Hashtable", "JU.PT", "J.i18n.GT", "JM.Group", "J.popup.MainPopupResourceBundle", "JU.Elements"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.vwr = null;
 this.updateMode = 0;
@@ -37,7 +37,7 @@ this.isLastFrame = false;
 this.isMultiConfiguration = false;
 this.isMultiFrame = false;
 this.isPDB = false;
-this.isSymmetry = false;
+this.hasSymmetry = false;
 this.isUnitCell = false;
 this.isVibration = false;
 this.isZapped = false;
@@ -66,7 +66,7 @@ this.Special =  new JU.Lst ();
 this.SymmetryOnly =  new JU.Lst ();
 this.ChargesOnly =  new JU.Lst ();
 this.TemperatureOnly =  new JU.Lst ();
-this.noZapped = ["surfaceMenu", "measureMenu", "pickingMenu", "computationMenu", "saveMenu", "exportMenu", "SIGNEDJAVAcaptureMenuSPECIAL"];
+this.noZapped =  Clazz.newArray (-1, ["surfaceMenu", "measureMenu", "pickingMenu", "computationMenu", "saveMenu", "exportMenu", "SIGNEDJAVAcaptureMenuSPECIAL"]);
 });
 Clazz.defineMethod (c$, "initialize", 
 function (vwr, bundle, title) {
@@ -220,12 +220,12 @@ this.menuRemoveAll (this.frankPopup, 0);
 this.menuCreateItem (this.frankPopup, this.getMenuText ("mainMenuText"), "MAIN", "");
 this.currentFrankId = id;
 this.nFrankList = 0;
-this.frankList[this.nFrankList++] = [null, null, null];
+this.frankList[this.nFrankList++] =  Clazz.newArray (-1, [null, null, null]);
 if (id != null) for (var i = id.indexOf (".", 2) + 1; ; ) {
 var iNew = id.indexOf (".", i);
 if (iNew < 0) break;
 var menu = this.htMenus.get (id.substring (i, iNew));
-this.frankList[this.nFrankList++] = [menu.getParent (), menu, Integer.$valueOf (this.vwr.isJS ? 0 : this.menuGetListPosition (menu))];
+this.frankList[this.nFrankList++] =  Clazz.newArray (-1, [menu.getParent (), menu, Integer.$valueOf (this.vwr.isJS ? 0 : this.menuGetListPosition (menu))]);
 this.menuAddSubMenu (this.frankPopup, menu);
 i = iNew + 1;
 }
@@ -241,7 +241,7 @@ this.modelSetName = this.vwr.ms.modelSetName;
 this.modelSetFileName = this.vwr.getModelSetFileName ();
 var i = this.modelSetFileName.lastIndexOf (".");
 this.isZapped = ("zapped".equals (this.modelSetName));
-if (this.isZapped || "string".equals (this.modelSetFileName) || "files".equals (this.modelSetFileName) || "string[]".equals (this.modelSetFileName)) this.modelSetFileName = "";
+if (this.isZapped || "string".equals (this.modelSetFileName) || "String[]".equals (this.modelSetFileName)) this.modelSetFileName = "";
 this.modelSetRoot = this.modelSetFileName.substring (0, i < 0 ? this.modelSetFileName.length : i);
 if (this.modelSetRoot.length == 0) this.modelSetRoot = "Jmol";
 this.modelIndex = this.vwr.am.cmi;
@@ -252,8 +252,8 @@ this.modelInfo = this.vwr.ms.getModelAuxiliaryInfo (this.modelIndex);
 if (this.modelInfo == null) this.modelInfo =  new java.util.Hashtable ();
 this.isPDB = this.checkBoolean ("isPDB");
 this.isMultiFrame = (this.modelCount > 1);
-this.isSymmetry = this.checkBoolean ("hasSymmetry");
-this.isUnitCell = this.modelInfo.containsKey ("notionalUnitcell");
+this.hasSymmetry = this.modelInfo.containsKey ("hasSymmetry");
+this.isUnitCell = this.modelInfo.containsKey ("unitCellParams");
 this.fileHasUnitCell = (this.isPDB && this.isUnitCell || this.checkBoolean ("fileHasUnitCell"));
 this.isLastFrame = (this.modelIndex == this.modelCount - 1);
 this.altlocs = this.vwr.ms.getAltLocListInModel (this.modelIndex);
@@ -433,7 +433,7 @@ for (var i = this.FramesOnly.size (); --i >= 0; ) this.menuEnable (this.FramesOn
 
 for (var i = this.VibrationOnly.size (); --i >= 0; ) this.menuEnable (this.VibrationOnly.get (i), this.isVibration);
 
-for (var i = this.SymmetryOnly.size (); --i >= 0; ) this.menuEnable (this.SymmetryOnly.get (i), this.isSymmetry && this.isUnitCell);
+for (var i = this.SymmetryOnly.size (); --i >= 0; ) this.menuEnable (this.SymmetryOnly.get (i), this.hasSymmetry && this.isUnitCell);
 
 for (var i = this.ChargesOnly.size (); --i >= 0; ) this.menuEnable (this.ChargesOnly.get (i), this.haveCharges);
 
@@ -483,10 +483,25 @@ this.menuEnable (this.htMenus.get ("PDBproteinMenu"), (nItems > 0));
 nItems = this.augmentGroup3List (menu1, "n>", false);
 this.menuEnable (menu1, nItems > 0);
 this.menuEnable (this.htMenus.get ("PDBnucleicMenu"), (nItems > 0));
+var dssr = (nItems > 0 && this.modelIndex >= 0 ? this.vwr.ms.getInfo (this.modelIndex, "dssr") : null);
+if (dssr != null) this.setSecStrucMenu (this.htMenus.get ("aaStructureMenu"), dssr);
 nItems = this.augmentGroup3List (menu2, "c>", false);
 this.menuEnable (menu2, nItems > 0);
 this.menuEnable (this.htMenus.get ("PDBcarboMenu"), (nItems > 0));
 });
+Clazz.defineMethod (c$, "setSecStrucMenu", 
+ function (menu, dssr) {
+var counts = dssr.get ("counts");
+if (counts == null) return false;
+var keys =  new Array (counts.size ());
+counts.keySet ().toArray (keys);
+java.util.Arrays.sort (keys);
+if (keys.length == 0) return false;
+menu.removeAll ();
+for (var i = 0; i < keys.length; i++) this.menuCreateItem (menu, keys[i] + " (" + counts.get (keys[i]) + ")", "select modelIndex=" + this.modelIndex + " && within('dssr', '" + keys[i] + "');", null);
+
+return true;
+}, "javajs.api.SC,java.util.Map");
 Clazz.defineMethod (c$, "updateGroup3List", 
  function (menu, name) {
 var nItems = 0;
@@ -528,7 +543,7 @@ var menu = this.htMenus.get ("SYMMETRYShowComputedMenu");
 if (menu == null) return;
 this.menuRemoveAll (menu, 0);
 this.menuEnable (menu, false);
-if (!this.isSymmetry || this.modelIndex < 0) return;
+if (!this.hasSymmetry || this.modelIndex < 0) return;
 var info = this.vwr.getProperty ("DATA_API", "spaceGroupInfo", null);
 if (info == null) return;
 var infolist = info.get ("operations");
@@ -545,7 +560,8 @@ subMenu = this.menuNewSubMenu ((i + 1) + "..." + Math.min (i + this.itemMax, inf
 this.menuAddSubMenu (menu, subMenu);
 this.htMenus.put (id, subMenu);
 pt = 1;
-}var sym = infolist[i][1];
+}if (i == 0) this.menuEnable (this.menuCreateItem (subMenu, J.i18n.GT._ ("none"), "draw sym_* delete", null), true);
+var sym = infolist[i][1];
 if (sym.indexOf ("x1") < 0) sym = infolist[i][0];
 var entryName = (i + 1) + " " + infolist[i][2] + " (" + sym + ")";
 this.menuEnable (this.menuCreateItem (subMenu, entryName, "draw SYMOP " + (i + 1), null), true);
@@ -558,7 +574,7 @@ var menu = this.htMenus.get ("SYMMETRYSelectComputedMenu");
 if (menu == null) return;
 this.menuRemoveAll (menu, 0);
 this.menuEnable (menu, false);
-if (!this.isSymmetry || this.modelIndex < 0) return;
+if (!this.hasSymmetry || this.modelIndex < 0) return;
 var list = this.modelInfo.get ("symmetryOperations");
 if (list == null) return;
 var cellRange = this.modelInfo.get ("unitCellRange");
@@ -668,7 +684,7 @@ var nBiomolecules = biomolecules.size ();
 for (var i = 0; i < nBiomolecules; i++) {
 var script = (this.isMultiFrame ? "" : "save orientation;load \"\" FILTER \"biomolecule " + (i + 1) + "\";restore orientation;");
 var nAtoms = (biomolecules.get (i).get ("atomCount")).intValue ();
-var entryName = this.gto (this.isMultiFrame ? "biomoleculeText" : "loadBiomoleculeText", [Integer.$valueOf (i + 1), Integer.$valueOf (nAtoms)]);
+var entryName = this.gto (this.isMultiFrame ? "biomoleculeText" : "loadBiomoleculeText",  Clazz.newArray (-1, [Integer.$valueOf (i + 1), Integer.$valueOf (nAtoms)]));
 this.menuCreateItem (submenu, entryName, script, null);
 }
 }}if (this.isApplet && !this.vwr.getBooleanProperty ("hideNameInPopup")) {

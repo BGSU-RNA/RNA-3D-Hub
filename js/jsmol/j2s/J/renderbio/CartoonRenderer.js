@@ -1,5 +1,5 @@
 Clazz.declarePackage ("J.renderbio");
-Clazz.load (["J.renderbio.RocketsRenderer"], "J.renderbio.CartoonRenderer", ["J.api.Interface", "J.c.STR"], function () {
+Clazz.load (["J.renderbio.RocketsRenderer"], "J.renderbio.CartoonRenderer", ["J.api.Interface", "J.c.STR", "JM.ProteinStructure"], function () {
 c$ = Clazz.decorateAsClass (function () {
 this.nucleicRenderer = null;
 Clazz.instantialize (this, arguments);
@@ -7,7 +7,7 @@ Clazz.instantialize (this, arguments);
 Clazz.overrideMethod (c$, "renderBioShape", 
 function (bioShape) {
 if (!this.setupRR (bioShape, false)) return;
-if (this.isNucleic) {
+if (this.isNucleic || this.isPhosphorusOnly) {
 if (this.nucleicRenderer == null) this.nucleicRenderer = J.api.Interface.getInterface ("J.renderbio.NucleicRenderer", this.vwr, "render");
 this.calcScreenControlPoints ();
 this.nucleicRenderer.renderNucleic (this);
@@ -21,8 +21,8 @@ this.ribbonBottomScreens = this.calcScreens (-0.5, this.mads);
 this.calcRopeMidPoints ();
 this.renderProtein ();
 this.vwr.freeTempPoints (this.cordMidPoints);
-this.vwr.freeTempScreens (this.ribbonTopScreens);
-this.vwr.freeTempScreens (this.ribbonBottomScreens);
+this.vwr.freeTempPoints (this.ribbonTopScreens);
+this.vwr.freeTempPoints (this.ribbonBottomScreens);
 }, "J.shapebio.BioShape");
 Clazz.defineMethod (c$, "renderProtein", 
  function () {
@@ -33,7 +33,9 @@ var thisStructure;
 var needRockets = (this.helixRockets || !this.renderArrowHeads);
 var doRockets = false;
 for (var i = this.monomerCount; --i >= 0; ) {
-thisStructure = this.monomers[i].getStructure ();
+if (this.monomers[i].getStructure () != null && !(Clazz.instanceOf (this.monomers[i].getStructure (), JM.ProteinStructure))) {
+System.out.println ("BUG HERE IN CARTOONRENDERER");
+}thisStructure = this.monomers[i].getStructure ();
 if (thisStructure !== previousStructure) {
 lastWasSheet = false;
 }previousStructure = thisStructure;

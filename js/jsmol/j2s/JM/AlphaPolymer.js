@@ -1,12 +1,16 @@
 Clazz.declarePackage ("JM");
-Clazz.load (["java.lang.Enum", "JM.BioPolymer"], "JM.AlphaPolymer", ["JU.BS", "$.Lst", "$.Measure", "$.P3", "J.c.STR", "JM.Helix", "$.Sheet", "$.Turn", "JU.Logger"], function () {
-c$ = Clazz.declareType (JM, "AlphaPolymer", JM.BioPolymer);
+Clazz.load (["java.lang.Enum", "JM.BioPolymer"], "JM.AlphaPolymer", ["JU.Measure", "$.P3", "J.c.STR", "JM.Helix", "$.Sheet", "$.Turn", "JU.Logger"], function () {
+c$ = Clazz.decorateAsClass (function () {
+this.pt0 = 0;
+Clazz.instantialize (this, arguments);
+}, JM, "AlphaPolymer", JM.BioPolymer);
 Clazz.makeConstructor (c$, 
-function (monomers) {
+function (monomers, pt0) {
 Clazz.superConstructor (this, JM.AlphaPolymer, []);
+this.pt0 = pt0;
 this.set (monomers);
 this.hasStructure = true;
-}, "~A");
+}, "~A,~N");
 Clazz.overrideMethod (c$, "getProteinStructure", 
 function (monomerIndex) {
 return this.monomers[monomerIndex].getStructure ();
@@ -63,9 +67,8 @@ return false;
 ps.structureID = structureID;
 ps.serialID = serialID;
 ps.strandCount = strandCount;
-for (var i = indexStart; i <= indexEnd; ++i) {
-(this.monomers[i]).setStructure (ps);
-}
+for (var i = indexStart; i <= indexEnd; ++i) (this.monomers[i]).setStructure (ps);
+
 return true;
 }, "J.c.STR,~S,~N,~N,~N,~N");
 Clazz.overrideMethod (c$, "clearStructures", 
@@ -73,121 +76,6 @@ function () {
 for (var i = 0; i < this.monomerCount; i++) (this.monomers[i]).setStructure (null);
 
 });
-Clazz.overrideMethod (c$, "calculateStruts", 
-function (modelSet, bs1, bs2, vCA, thresh, delta, allowMultiple) {
-return this.calculateStrutsStatic (modelSet, bs1, bs2, vCA, thresh, delta, allowMultiple);
-}, "JM.ModelSet,JU.BS,JU.BS,JU.Lst,~N,~N,~B");
-Clazz.defineMethod (c$, "calculateStrutsStatic", 
- function (modelSet, bs1, bs2, vCA, thresh, delta, allowMultiple) {
-var vStruts =  new JU.Lst ();
-var thresh2 = thresh * thresh;
-var n = vCA.size ();
-var nEndMin = 3;
-var bsStruts =  new JU.BS ();
-var bsNotAvailable =  new JU.BS ();
-var bsNearbyResidues =  new JU.BS ();
-var a1 = vCA.get (0);
-var a2;
-var nBiopolymers = modelSet.getBioPolymerCountInModel (a1.mi);
-var biopolymerStartsEnds =  Clazz.newIntArray (nBiopolymers, nEndMin * 2, 0);
-for (var i = 0; i < n; i++) {
-a1 = vCA.get (i);
-var polymerIndex = a1.getPolymerIndexInModel ();
-var monomerIndex = a1.getMonomerIndex ();
-var bpt = monomerIndex;
-if (bpt < nEndMin) biopolymerStartsEnds[polymerIndex][bpt] = i + 1;
-bpt = (a1.group).getBioPolymerLength () - monomerIndex - 1;
-if (bpt < nEndMin) biopolymerStartsEnds[polymerIndex][nEndMin + bpt] = i + 1;
-}
-var d2 =  Clazz.newFloatArray (Clazz.doubleToInt (n * (n - 1) / 2), 0);
-for (var i = 0; i < n; i++) {
-a1 = vCA.get (i);
-for (var j = i + 1; j < n; j++) {
-var ipt = JM.AlphaPolymer.strutPoint (i, j, n);
-a2 = vCA.get (j);
-var resno1 = a1.getResno ();
-var polymerIndex1 = a1.getPolymerIndexInModel ();
-var resno2 = a2.getResno ();
-var polymerIndex2 = a2.getPolymerIndexInModel ();
-if (polymerIndex1 == polymerIndex2 && Math.abs (resno2 - resno1) < delta) bsNearbyResidues.set (ipt);
-var d = d2[ipt] = a1.distanceSquared (a2);
-if (d >= thresh2) bsNotAvailable.set (ipt);
-}
-}
-for (var t = 5; --t >= 0; ) {
-thresh2 = (thresh - t) * (thresh - t);
-for (var i = 0; i < n; i++) if (allowMultiple || !bsStruts.get (i)) for (var j = i + 1; j < n; j++) {
-var ipt = JM.AlphaPolymer.strutPoint (i, j, n);
-if (!bsNotAvailable.get (ipt) && !bsNearbyResidues.get (ipt) && (allowMultiple || !bsStruts.get (j)) && d2[ipt] <= thresh2) JM.AlphaPolymer.setStrut (i, j, n, vCA, bs1, bs2, vStruts, bsStruts, bsNotAvailable, bsNearbyResidues, delta);
-}
-
-}
-for (var b = 0; b < nBiopolymers; b++) {
-for (var k = 0; k < nEndMin * 2; k++) {
-var i = biopolymerStartsEnds[b][k] - 1;
-if (i >= 0 && bsStruts.get (i)) {
-for (var j = 0; j < nEndMin; j++) {
-var pt = (Clazz.doubleToInt (k / nEndMin)) * nEndMin + j;
-if ((i = biopolymerStartsEnds[b][pt] - 1) >= 0) bsStruts.set (i);
-biopolymerStartsEnds[b][pt] = -1;
-}
-}}
-if (biopolymerStartsEnds[b][0] == -1 && biopolymerStartsEnds[b][nEndMin] == -1) continue;
-var okN = false;
-var okC = false;
-var iN = 0;
-var jN = 0;
-var iC = 0;
-var jC = 0;
-var minN = 3.4028235E38;
-var minC = 3.4028235E38;
-for (var j = 0; j < n; j++) for (var k = 0; k < nEndMin * 2; k++) {
-var i = biopolymerStartsEnds[b][k] - 1;
-if (i == -2) {
-k = (Clazz.doubleToInt (k / nEndMin) + 1) * nEndMin - 1;
-continue;
-}if (j == i || i == -1) continue;
-var ipt = JM.AlphaPolymer.strutPoint (i, j, n);
-if (bsNearbyResidues.get (ipt) || d2[ipt] > (k < nEndMin ? minN : minC)) continue;
-if (k < nEndMin) {
-if (bsNotAvailable.get (ipt)) okN = true;
-jN = j;
-iN = i;
-minN = d2[ipt];
-} else {
-if (bsNotAvailable.get (ipt)) okC = true;
-jC = j;
-iC = i;
-minC = d2[ipt];
-}}
-
-if (okN) JM.AlphaPolymer.setStrut (iN, jN, n, vCA, bs1, bs2, vStruts, bsStruts, bsNotAvailable, bsNearbyResidues, delta);
-if (okC) JM.AlphaPolymer.setStrut (iC, jC, n, vCA, bs1, bs2, vStruts, bsStruts, bsNotAvailable, bsNearbyResidues, delta);
-}
-return vStruts;
-}, "JM.ModelSet,JU.BS,JU.BS,JU.Lst,~N,~N,~B");
-c$.strutPoint = Clazz.defineMethod (c$, "strutPoint", 
- function (i, j, n) {
-return (j < i ? Clazz.doubleToInt (j * (2 * n - j - 1) / 2) + i - j - 1 : Clazz.doubleToInt (i * (2 * n - i - 1) / 2) + j - i - 1);
-}, "~N,~N,~N");
-c$.setStrut = Clazz.defineMethod (c$, "setStrut", 
- function (i, j, n, vCA, bs1, bs2, vStruts, bsStruts, bsNotAvailable, bsNearbyResidues, delta) {
-var a1 = vCA.get (i);
-var a2 = vCA.get (j);
-if (!bs1.get (a1.i) || !bs2.get (a2.i)) return;
-vStruts.addLast ([a1, a2]);
-bsStruts.set (i);
-bsStruts.set (j);
-for (var k1 = Math.max (0, i - delta); k1 <= i + delta && k1 < n; k1++) {
-for (var k2 = Math.max (0, j - delta); k2 <= j + delta && k2 < n; k2++) {
-if (k1 == k2) {
-continue;
-}var ipt = JM.AlphaPolymer.strutPoint (k1, k2, n);
-if (!bsNearbyResidues.get (ipt)) {
-bsNotAvailable.set (ipt);
-}}
-}
-}, "~N,~N,~N,JU.Lst,JU.BS,JU.BS,JU.Lst,JU.BS,JU.BS,JU.BS,~N");
 Clazz.defineMethod (c$, "calculateStructures", 
 function (alphaOnly) {
 if (this.monomerCount < 4) return;
@@ -275,6 +163,15 @@ this.addStructureProtected (tag, null, 0, 0, i, iMax - 1);
 i = iMax;
 }
 }, "~A");
+Clazz.defineMethod (c$, "setStructureBS", 
+function (count, dsspType, type, bs, doOffset) {
+var offset = (doOffset ? this.pt0 : 0);
+for (var pt = 0, i = bs.nextSetBit (offset), i2 = 0, n = this.monomerCount + offset; i >= 0 && i < n; i = bs.nextSetBit (i2 + 1)) {
+if ((i2 = bs.nextClearBit (i)) < 0 || i2 > n) i2 = n;
+this.addStructureProtected (type, JM.AlphaPolymer.dsspTypes[dsspType] + (++pt), count++, (dsspType == 3 ? 1 : 0), i - offset, i2 - 1 - offset);
+}
+return count;
+}, "~N,~N,J.c.STR,JU.BS,~B");
 Clazz.pu$h(self.c$);
 c$ = Clazz.declareType (JM.AlphaPolymer, "Code", Enum);
 Clazz.defineEnumConstant (c$, "NADA", 0, []);
@@ -284,4 +181,6 @@ Clazz.defineEnumConstant (c$, "LEFT_HELIX", 3, []);
 Clazz.defineEnumConstant (c$, "LEFT_TURN", 4, []);
 Clazz.defineEnumConstant (c$, "RIGHT_TURN", 5, []);
 c$ = Clazz.p0p ();
+Clazz.defineStatics (c$,
+"dsspTypes",  Clazz.newArray (-1, ["H", null, "H", "S", "H", null, "T"]));
 });

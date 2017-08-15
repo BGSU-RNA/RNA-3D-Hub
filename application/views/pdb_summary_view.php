@@ -63,12 +63,12 @@
               <!-- section1 -->
               <div class="span4">
                 <dl>
-                  <dt>Structure title</dt>
-                  <dd><?=$structureTitle?></dd>
+                  <dt>Structure Title</dt>
+                  <dd><?=$title?></dd>
                   <dt>Authors</dt>
-                  <dd><?=$structureAuthor?></dd>
+                  <dd><?=$authors?></dd>
                   <dt>Release Date</dt>
-                  <dd><?=$releaseDate?></dd>
+                  <dd><?=$release_date?></dd>
                 </dl>
               </div>
 
@@ -76,7 +76,7 @@
               <div class="span3">
                 <dl>
                   <dt>Experimental technique</dt>
-                  <dd><?=$experimentalTechnique?></dd>
+                  <dd><?=$experimental_technique?></dd>
                   <?php if ($resolution != ''): ?>
                   <dt>Resolution</dt>
                   <dd><?php echo number_format($resolution, 1); ?> &Aring</dd>
@@ -113,12 +113,12 @@
 
         </div> <!-- end row -->
 
-        <!-- RNA 3D Hub specific data -->
+        <!-- BGSU RNA Site specific data -->
         <div class="row">
               <!-- pairwise interactions -->
               <div class="span3 well">
                 <h4>Pairwise Interactions</h4>
-                Interactions annotated by <a href="<?=$baseurl?>/FR3D">FR3D</a>:
+                Interactions annotated by <a href="<?=$this->config->item('fr3d_url')?>/FR3D">FR3D</a>:
                 <ul>
                   <li><?=$bp_counts?> <a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/basepairs">base-pairs</a></li>
                   <li><?=$bst_counts?> <a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/stacking">base-stacking</a></li>
@@ -133,9 +133,15 @@
                 <h4>RNA 3D Motifs</h4>
                 In the current release of the <a href="<?=$baseurl?>/motifs">RNA 3D Motif Atlas</a>, <?=$pdb_id?> contains:
                 <ul>
-                  <li><?=$loops['IL']?> internal loops from <?=$il_counts?> motifs</li>
-                  <li><?=$loops['HL']?> hairpin loops from <?=$hl_counts?> motifs</li>
-                  <li><?=$loops['J3']?> three-way junctions</li>
+                  <li>
+                    <?=$loops['IL']?> internal loop<?php if ($loops['IL'] <> 1): ?>s<?php endif; ?> 
+                    from <?=$il_counts?> motif group<?php if ($il_counts <> 1): ?>s<?php endif; ?>
+                  </li>
+                  <li>
+                    <?=$loops['HL']?> hairpin loop<?php if ($loops['HL'] <> 1): ?>s<?php endif; ?> 
+                    from <?=$hl_counts?> motif group<?php if ($hl_counts <> 1): ?>s<?php endif; ?>
+                  </li>
+                  <li><?=$loops['J3']?> three-way junction<?php if ($loops['J3'] <> 1): ?>s<?php endif; ?></li>
                 </ul>
                 <?=$loops['url']?>
               </div>
@@ -144,14 +150,14 @@
               <div class="span3 well">
                 <h4>3D Redundancy</h4>
                 <?php if (!isset($nr_classes) ): ?>
-                    This PDB is not included in any NR equivalence class. Most likely, this PDB doesn't contain any
+                    This PDB is not included in any representative set equivalence class. Most likely, this PDB doesn't contain any
                     complete nucleotides.
                 <?php else: ?>
-                    <?=$pdb_id?> belongs to the following equivalence classes in the current NR lists:
+                    <?=$pdb_id?> belongs to the following equivalence classes in the current representative set:
                     <ul>
                       <?php foreach ($nr_classes as $nr_class): ?>
                       <li>
-                        <?=$nr_urls[$nr_class]?>
+                        <?=$nr_urls[$nr_class]?> (<?=$count[$nr_class]?>)
                         <?php if ($representatives[$nr_class] == 1): ?>
                         <strong>rep</strong>
                         <?php endif; ?>

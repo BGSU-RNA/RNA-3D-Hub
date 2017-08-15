@@ -35,6 +35,11 @@ if (this.isOutputFile) return;
 if (isOK) this.readMOs ();
 this.continuing = false;
 });
+Clazz.overrideMethod (c$, "finalizeSubclassReader", 
+function () {
+this.appendLoadNote ("NBO type " + this.nboType);
+this.finalizeReaderASCR ();
+});
 Clazz.defineMethod (c$, "readMOs", 
  function () {
 this.nOrbitals0 = this.orbitals.size ();
@@ -223,7 +228,7 @@ if (j > 1) this.gaussians[i][5] += temp[i];
 for (var i = 0; i < this.gaussianCount; i++) {
 if (this.gaussians[i][1] == 0) this.gaussians[i][1] = this.gaussians[i][5];
 }
-if (JU.Logger.debugging) {
+if (this.debugging) {
 JU.Logger.debug (this.shells.size () + " slater shells read");
 JU.Logger.debug (this.gaussians.length + " gaussian primitives read");
 }});
@@ -240,6 +245,7 @@ this.gaussianCount = this.parseIntStr (tokens[2]);
 this.rd ();
 this.asc.newAtomSet ();
 this.asc.setAtomSetName (this.nboType + "s: " + line1.trim ());
+this.asc.setCurrentModelInfo ("nboType", this.nboType);
 for (var i = 0; i < ac; i++) {
 tokens = JU.PT.getTokens (this.rd ());
 var z = this.parseIntStr (tokens[0]);

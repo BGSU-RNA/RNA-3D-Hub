@@ -3,7 +3,7 @@ Clazz.load (["J.rendersurface.IsosurfaceRenderer"], "J.rendersurface.MolecularOr
 c$ = Clazz.declareType (J.rendersurface, "MolecularOrbitalRenderer", J.rendersurface.IsosurfaceRenderer);
 Clazz.overrideMethod (c$, "render", 
 function () {
-this.imageFontScaling = this.vwr.getImageFontScaling ();
+this.imageFontScaling = this.vwr.imageFontScaling;
 this.renderIso ();
 return this.needTranslucent;
 });

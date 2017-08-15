@@ -55,8 +55,7 @@ this.atomSymbolicMap =  new java.util.Hashtable ();
 });
 Clazz.defineMethod (c$, "setCollectionName", 
 function (collectionName) {
-if (collectionName == null || (collectionName = collectionName.trim ()).length == 0) return;
-this.collectionName = collectionName;
+if (collectionName != null && (collectionName = collectionName.trim ()).length > 0) this.collectionName = collectionName;
 }, "~S");
 Clazz.defineMethod (c$, "clearGlobalBoolean", 
 function (globalIndex) {
@@ -320,45 +319,16 @@ this.atomSetBondCounts[i] = 0;
 this.atomSetAuxiliaryInfo[i] = null;
 }
 });
-Clazz.defineMethod (c$, "removeAtomSet", 
-function (imodel) {
-if (this.bsAtoms == null) {
-this.bsAtoms =  new JU.BS ();
-this.bsAtoms.setBits (0, this.ac);
-}var i0 = this.atomSetAtomIndexes[imodel];
-var nAtoms = this.atomSetAtomCounts[imodel];
-var i1 = i0 + nAtoms;
-this.bsAtoms.clearBits (i0, i1);
-for (var i = i1; i < this.ac; i++) this.atoms[i].atomSetIndex--;
-
-for (var i = imodel + 1; i < this.atomSetCount; i++) {
-this.atomSetAuxiliaryInfo[i - 1] = this.atomSetAuxiliaryInfo[i];
-this.atomSetAtomIndexes[i - 1] = this.atomSetAtomIndexes[i];
-this.atomSetBondCounts[i - 1] = this.atomSetBondCounts[i];
-this.atomSetAtomCounts[i - 1] = this.atomSetAtomCounts[i];
-this.atomSetNumbers[i - 1] = this.atomSetNumbers[i];
-}
-var n = 0;
-for (var i = 0; i < this.structureCount; i++) {
-var s = this.structures[i];
-if (s.modelStartEnd[0] == imodel && s.modelStartEnd[1] == imodel) {
-this.structures[i] = null;
-n++;
-}}
-if (n > 0) {
-var ss =  new Array (this.structureCount - n);
-for (var i = 0, pt = 0; i < this.structureCount; i++) if (this.structures[i] != null) ss[pt++] = this.structures[i];
-
-this.structures = ss;
-}for (var i = 0; i < this.bondCount; i++) this.bonds[i].atomSetIndex = this.atoms[this.bonds[i].atomIndex1].atomSetIndex;
-
-this.atomSetAuxiliaryInfo[--this.atomSetCount] = null;
-}, "~N");
 Clazz.defineMethod (c$, "removeCurrentAtomSet", 
 function () {
 if (this.iSet < 0) return;
+var ai = this.atomSetAtomIndexes[this.iSet];
+if (this.bsAtoms != null) this.bsAtoms.clearBits (ai, this.ac);
+this.ac = ai;
+this.atomSetAtomCounts[this.iSet] = 0;
 this.iSet--;
 this.atomSetCount--;
+this.reader.doCheckUnitCell = false;
 });
 Clazz.defineMethod (c$, "getHydrogenAtomCount", 
 function () {
@@ -452,23 +422,20 @@ return (a == null ? -1 : a.index);
 }, "~S");
 Clazz.defineMethod (c$, "addNewBondWithOrder", 
 function (atomIndex1, atomIndex2, order) {
-if (atomIndex1 < 0 || atomIndex1 >= this.ac || atomIndex2 < 0 || atomIndex2 >= this.ac) return null;
-var bond =  new J.adapter.smarter.Bond (atomIndex1, atomIndex2, order);
-this.addBond (bond);
-return bond;
+if (atomIndex1 >= 0 && atomIndex1 < this.ac && atomIndex2 >= 0 && atomIndex2 < this.ac && atomIndex1 != atomIndex2) this.addBond ( new J.adapter.smarter.Bond (atomIndex1, atomIndex2, order));
 }, "~N,~N,~N");
 Clazz.defineMethod (c$, "addNewBondFromNames", 
 function (atomName1, atomName2, order) {
-return this.addNewBondWithOrderA (this.getAtomFromName (atomName1), this.getAtomFromName (atomName2), order);
+this.addNewBondWithOrderA (this.getAtomFromName (atomName1), this.getAtomFromName (atomName2), order);
 }, "~S,~S,~N");
 Clazz.defineMethod (c$, "addNewBondWithOrderA", 
 function (atom1, atom2, order) {
-return (atom1 == null || atom2 == null ? null : this.addNewBondWithOrder (atom1.index, atom2.index, order));
+if (atom1 != null && atom2 != null) this.addNewBondWithOrder (atom1.index, atom2.index, order);
 }, "J.adapter.smarter.Atom,J.adapter.smarter.Atom,~N");
 Clazz.defineMethod (c$, "addBond", 
 function (bond) {
 if (this.trajectoryStepCount > 0) return;
-if (bond.atomIndex1 < 0 || bond.atomIndex2 < 0 || bond.order < 0 || this.atoms[bond.atomIndex1].atomSetIndex != this.atoms[bond.atomIndex2].atomSetIndex) {
+if (bond.atomIndex1 < 0 || bond.atomIndex2 < 0 || bond.order < 0 || bond.atomIndex1 == bond.atomIndex2 || this.atoms[bond.atomIndex1].atomSetIndex != this.atoms[bond.atomIndex2].atomSetIndex) {
 if (JU.Logger.debugging) {
 JU.Logger.debug (">>>>>>BAD BOND:" + bond.atomIndex1 + "-" + bond.atomIndex2 + " order=" + bond.order);
 }return;
@@ -621,11 +588,10 @@ this.newAtomSetClear (true);
 });
 Clazz.defineMethod (c$, "newAtomSetClear", 
 function (doClearMap) {
-if (!this.allowMultiple && this.iSet >= 0) this.discardPreviousAtoms ();
+if (!this.allowMultiple && this.iSet >= 0) this.reader.discardPreviousAtoms ();
 this.bondIndex0 = this.bondCount;
-if (this.isTrajectory) {
-this.discardPreviousAtoms ();
-}this.iSet = this.atomSetCount++;
+if (this.isTrajectory) this.reader.discardPreviousAtoms ();
+this.iSet = this.atomSetCount++;
 if (this.atomSetCount > this.atomSetNumbers.length) {
 this.atomSetAtomIndexes = JU.AU.doubleLengthI (this.atomSetAtomIndexes);
 this.atomSetAtomCounts = JU.AU.doubleLengthI (this.atomSetAtomCounts);
@@ -643,6 +609,7 @@ this.setCurrentModelInfo ("title", this.collectionName);
 }, "~B");
 Clazz.defineMethod (c$, "getAtomSetAtomIndex", 
 function (i) {
+if (i < 0) System.out.println ("??");
 return this.atomSetAtomIndexes[i];
 }, "~N");
 Clazz.defineMethod (c$, "getAtomSetAtomCount", 
@@ -655,10 +622,13 @@ return this.atomSetBondCounts[i];
 }, "~N");
 Clazz.defineMethod (c$, "setAtomSetName", 
 function (atomSetName) {
+if (atomSetName == null) return;
 if (this.isTrajectory) {
 this.setTrajectoryName (atomSetName);
 return;
-}this.setModelInfoForSet ("name", atomSetName, this.iSet);
+}var name0 = (this.iSet < 0 ? null : this.getAtomSetName (this.iSet));
+this.setModelInfoForSet ("name", atomSetName, this.iSet);
+if (this.reader != null && atomSetName.length > 0 && !atomSetName.equals (name0)) this.reader.appendLoadNote (atomSetName);
 if (!this.allowMultiple) this.setCollectionName (atomSetName);
 }, "~S");
 Clazz.defineMethod (c$, "setTrajectoryName", 
@@ -670,11 +640,6 @@ this.trajectoryNames =  new JU.Lst ();
 
 this.trajectoryNames.set (this.trajectoryStepCount - 1, name);
 }, "~S");
-Clazz.defineMethod (c$, "setAtomSetNames", 
-function (atomSetName, n, namedSets) {
-for (var i = this.iSet; --n >= 0 && i >= 0; --i) if (namedSets == null || !namedSets.get (i)) this.setModelInfoForSet ("name", atomSetName, i);
-
-}, "~S,~N,JU.BS");
 Clazz.defineMethod (c$, "setCurrentAtomSetNumber", 
 function (atomSetNumber) {
 this.setAtomSetNumber (this.iSet + (this.isTrajectory ? this.trajectoryStepCount : 0), atomSetNumber);
@@ -727,11 +692,6 @@ if (this.atomSetAuxiliaryInfo[atomSetIndex] == null) this.atomSetAuxiliaryInfo[a
 if (value == null) this.atomSetAuxiliaryInfo[atomSetIndex].remove (key);
  else this.atomSetAuxiliaryInfo[atomSetIndex].put (key, value);
 }, "~S,~O,~N");
-Clazz.defineMethod (c$, "setAtomSetPropertyForSets", 
-function (key, value, n) {
-for (var idx = this.iSet; --n >= 0 && idx >= 0; --idx) this.setAtomSetModelPropertyForSet (key, value, idx);
-
-}, "~S,~S,~N");
 Clazz.defineMethod (c$, "getAtomSetNumber", 
 function (atomSetIndex) {
 return this.atomSetNumbers[atomSetIndex >= this.atomSetCount ? 0 : atomSetIndex];
@@ -770,7 +730,7 @@ Clazz.defineMethod (c$, "getBondList",
 function () {
 var info =  new Array (this.bondCount);
 for (var i = 0; i < this.bondCount; i++) {
-info[i] = [this.atoms[this.bonds[i].atomIndex1].atomName, this.atoms[this.bonds[i].atomIndex2].atomName, "" + this.bonds[i].order];
+info[i] =  Clazz.newArray (-1, [this.atoms[this.bonds[i].atomIndex1].atomName, this.atoms[this.bonds[i].atomIndex2].atomName, "" + this.bonds[i].order]);
 }
 return info;
 });
@@ -796,7 +756,7 @@ for (var i = 0; i < a.trajectoryStepCount; i++) this.trajectorySteps.add (this.t
 this.setInfo ("trajectorySteps", this.trajectorySteps);
 }, "J.adapter.smarter.AtomSetCollection");
 Clazz.defineStatics (c$,
-"globalBooleans", ["someModelsHaveFractionalCoordinates", "someModelsHaveSymmetry", "someModelsHaveUnitcells", "someModelsHaveCONECT", "isPDB", "someModelsHaveDomains", "someModelsHaveValidations"],
+"globalBooleans",  Clazz.newArray (-1, ["someModelsHaveFractionalCoordinates", "someModelsHaveSymmetry", "someModelsHaveUnitcells", "someModelsHaveCONECT", "isPDB", "someModelsHaveDomains", "someModelsHaveValidations"]),
 "GLOBAL_FRACTCOORD", 0,
 "GLOBAL_SYMMETRY", 1,
 "GLOBAL_UNITCELLS", 2,

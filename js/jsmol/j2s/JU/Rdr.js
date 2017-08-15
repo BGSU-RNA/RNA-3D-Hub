@@ -42,11 +42,11 @@ return  String.instantialize (bytes);
 }, "~A");
 c$.getUTFEncoding = Clazz.defineMethod (c$, "getUTFEncoding", 
  function (bytes) {
-if (bytes.length >= 3 && bytes[0] == 0xEF && bytes[1] == 0xBB && bytes[2] == 0xBF) return JU.Encoding.UTF8;
-if (bytes.length >= 4 && bytes[0] == 0 && bytes[1] == 0 && bytes[2] == 0xFE && bytes[3] == 0xFF) return JU.Encoding.UTF_32BE;
-if (bytes.length >= 4 && bytes[0] == 0xFF && bytes[1] == 0xFE && bytes[2] == 0 && bytes[3] == 0) return JU.Encoding.UTF_32LE;
-if (bytes.length >= 2 && bytes[0] == 0xFF && bytes[1] == 0xFE) return JU.Encoding.UTF_16LE;
-if (bytes.length >= 2 && bytes[0] == 0xFE && bytes[1] == 0xFF) return JU.Encoding.UTF_16BE;
+if (bytes.length >= 3 && (bytes[0] & 0xFF) == 0xEF && (bytes[1] & 0xFF) == 0xBB && (bytes[2] & 0xFF) == 0xBF) return JU.Encoding.UTF8;
+if (bytes.length >= 4 && (bytes[0] & 0xFF) == 0 && (bytes[1] & 0xFF) == 0 && (bytes[2] & 0xFF) == 0xFE && (bytes[3] & 0xFF) == 0xFF) return JU.Encoding.UTF_32BE;
+if (bytes.length >= 4 && (bytes[0] & 0xFF) == 0xFF && (bytes[1] & 0xFF) == 0xFE && (bytes[2] & 0xFF) == 0 && (bytes[3] & 0xFF) == 0) return JU.Encoding.UTF_32LE;
+if (bytes.length >= 2 && (bytes[0] & 0xFF) == 0xFF && (bytes[1] & 0xFF) == 0xFE) return JU.Encoding.UTF_16LE;
+if (bytes.length >= 2 && (bytes[0] & 0xFF) == 0xFE && (bytes[1] & 0xFF) == 0xFF) return JU.Encoding.UTF_16BE;
 return JU.Encoding.NONE;
 }, "~A");
 c$.getUTFEncodingForStream = Clazz.defineMethod (c$, "getUTFEncodingForStream", 
@@ -78,7 +78,7 @@ return JU.Rdr.isCompoundDocumentB (JU.Rdr.getMagic (is, 8));
 }, "java.io.InputStream");
 c$.isCompoundDocumentB = Clazz.defineMethod (c$, "isCompoundDocumentB", 
 function (bytes) {
-return (bytes.length >= 8 && bytes[0] == 0xD0 && bytes[1] == 0xCF && bytes[2] == 0x11 && bytes[3] == 0xE0 && bytes[4] == 0xA1 && bytes[5] == 0xB1 && bytes[6] == 0x1A && bytes[7] == 0xE1);
+return (bytes.length >= 8 && (bytes[0] & 0xFF) == 0xD0 && (bytes[1] & 0xFF) == 0xCF && (bytes[2] & 0xFF) == 0x11 && (bytes[3] & 0xFF) == 0xE0 && (bytes[4] & 0xFF) == 0xA1 && (bytes[5] & 0xFF) == 0xB1 && (bytes[6] & 0xFF) == 0x1A && (bytes[7] & 0xFF) == 0xE1);
 }, "~A");
 c$.isGzipS = Clazz.defineMethod (c$, "isGzipS", 
 function (is) {
@@ -86,7 +86,7 @@ return JU.Rdr.isGzipB (JU.Rdr.getMagic (is, 2));
 }, "java.io.InputStream");
 c$.isGzipB = Clazz.defineMethod (c$, "isGzipB", 
 function (bytes) {
-return (bytes != null && bytes.length >= 2 && bytes[0] == 0x1F && bytes[1] == 0x8B);
+return (bytes != null && bytes.length >= 2 && (bytes[0] & 0xFF) == 0x1F && (bytes[1] & 0xFF) == 0x8B);
 }, "~A");
 c$.isPickleS = Clazz.defineMethod (c$, "isPickleS", 
 function (is) {
@@ -94,7 +94,15 @@ return JU.Rdr.isPickleB (JU.Rdr.getMagic (is, 2));
 }, "java.io.InputStream");
 c$.isPickleB = Clazz.defineMethod (c$, "isPickleB", 
 function (bytes) {
-return (bytes != null && bytes.length >= 2 && bytes[0] == 0x7D && bytes[1] == 0x71);
+return (bytes != null && bytes.length >= 2 && (bytes[0] & 0xFF) == 0x7D && (bytes[1] & 0xFF) == 0x71);
+}, "~A");
+c$.isMessagePackS = Clazz.defineMethod (c$, "isMessagePackS", 
+function (is) {
+return JU.Rdr.isMessagePackB (JU.Rdr.getMagic (is, 1));
+}, "java.io.InputStream");
+c$.isMessagePackB = Clazz.defineMethod (c$, "isMessagePackB", 
+function (bytes) {
+return (bytes != null && bytes.length >= 1 && (bytes[0] & 0xFF) == 0xDE);
 }, "~A");
 c$.isPngZipStream = Clazz.defineMethod (c$, "isPngZipStream", 
 function (is) {
@@ -113,7 +121,7 @@ function (bytes) {
 return (bytes.length >= 4 && bytes[0] == 0x50 && bytes[1] == 0x4B && bytes[2] == 0x03 && bytes[3] == 0x04);
 }, "~A");
 c$.getMagic = Clazz.defineMethod (c$, "getMagic", 
- function (is, n) {
+function (is, n) {
 var abMagic =  Clazz.newByteArray (n, 0);
 {
 is.resetStream();
@@ -136,6 +144,21 @@ throw e;
 }
 return abMagic;
 }, "java.io.InputStream,~N");
+c$.guessMimeTypeForBytes = Clazz.defineMethod (c$, "guessMimeTypeForBytes", 
+function (bytes) {
+switch (bytes.length < 2 ? -1 : bytes[1]) {
+case 0:
+return "image/jpg";
+case 0x49:
+return "image/gif";
+case 0x4D:
+return "image/BMP";
+case 0x50:
+return "image/png";
+default:
+return "image/unknown";
+}
+}, "~A");
 c$.getBIS = Clazz.defineMethod (c$, "getBIS", 
 function (bytes) {
 return  new java.io.BufferedInputStream ( new java.io.ByteArrayInputStream (bytes));
@@ -146,7 +169,7 @@ return  new java.io.BufferedReader ( new java.io.StringReader (string));
 }, "~S");
 c$.getUnzippedInputStream = Clazz.defineMethod (c$, "getUnzippedInputStream", 
 function (jzt, bis) {
-while (JU.Rdr.isGzipS (bis)) bis =  new java.io.BufferedInputStream (JU.Rdr.newGZIPInputStream (jzt, bis));
+while (JU.Rdr.isGzipS (bis)) bis =  new java.io.BufferedInputStream (jzt.newGZIPInputStream (bis));
 
 return bis;
 }, "javajs.api.GenericZipTools,java.io.BufferedInputStream");
@@ -288,54 +311,6 @@ throw e;
 }
 return JU.Rdr.getBIS (data);
 }, "java.io.BufferedInputStream,~B");
-c$.readFileAsMap = Clazz.defineMethod (c$, "readFileAsMap", 
-function (jzt, is, bdata, name) {
-jzt.readFileAsMap (is, bdata, name);
-}, "javajs.api.GenericZipTools,java.io.BufferedInputStream,java.util.Map,~S");
-c$.getZipDirectoryAsStringAndClose = Clazz.defineMethod (c$, "getZipDirectoryAsStringAndClose", 
-function (jzt, t) {
-return jzt.getZipDirectoryAsStringAndClose (t);
-}, "javajs.api.GenericZipTools,java.io.BufferedInputStream");
-c$.newGZIPInputStream = Clazz.defineMethod (c$, "newGZIPInputStream", 
-function (jzt, bis) {
-return jzt.newGZIPInputStream (bis);
-}, "javajs.api.GenericZipTools,java.io.BufferedInputStream");
-c$.newZipInputStream = Clazz.defineMethod (c$, "newZipInputStream", 
-function (jzt, $in) {
-return jzt.newZipInputStream ($in);
-}, "javajs.api.GenericZipTools,java.io.InputStream");
-c$.getZipFileDirectory = Clazz.defineMethod (c$, "getZipFileDirectory", 
-function (jzt, bis, subFileList, listPtr, asBufferedInputStream) {
-return jzt.getZipFileDirectory (jzt, bis, subFileList, listPtr, asBufferedInputStream);
-}, "javajs.api.GenericZipTools,java.io.BufferedInputStream,~A,~N,~B");
-c$.getZipDirectoryAndClose = Clazz.defineMethod (c$, "getZipDirectoryAndClose", 
-function (jzt, t, manifestID) {
-return jzt.getZipDirectoryAndClose (t, manifestID);
-}, "javajs.api.GenericZipTools,java.io.BufferedInputStream,~S");
-c$.getAllZipData = Clazz.defineMethod (c$, "getAllZipData", 
-function (jzt, bis, subFileList, replace, string, fileData) {
-jzt.getAllZipData (bis, subFileList, replace, string, fileData);
-}, "javajs.api.GenericZipTools,java.io.BufferedInputStream,~A,~S,~S,java.util.Map");
-c$.getZipFileContentsAsBytes = Clazz.defineMethod (c$, "getZipFileContentsAsBytes", 
-function (jzt, bis, subFileList, i) {
-return jzt.getZipFileContentsAsBytes (bis, subFileList, i);
-}, "javajs.api.GenericZipTools,java.io.BufferedInputStream,~A,~N");
-c$.addZipEntry = Clazz.defineMethod (c$, "addZipEntry", 
-function (jzt, zos, fileName) {
-jzt.addZipEntry (zos, fileName);
-}, "javajs.api.GenericZipTools,~O,~S");
-c$.closeZipEntry = Clazz.defineMethod (c$, "closeZipEntry", 
-function (jzt, zos) {
-jzt.closeZipEntry (zos);
-}, "javajs.api.GenericZipTools,~O");
-c$.getZipOutputStream = Clazz.defineMethod (c$, "getZipOutputStream", 
-function (jzt, bos) {
-return jzt.getZipOutputStream (bos);
-}, "javajs.api.GenericZipTools,~O");
-c$.getCrcValue = Clazz.defineMethod (c$, "getCrcValue", 
-function (jzt, bytes) {
-return jzt.getCrcValue (bytes);
-}, "javajs.api.GenericZipTools,~A");
 c$.getZipRoot = Clazz.defineMethod (c$, "getZipRoot", 
 function (fileName) {
 var pt = fileName.indexOf ("|");

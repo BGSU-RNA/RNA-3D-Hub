@@ -76,7 +76,7 @@ function (onlyIfNull) {
 if (this.surfaceSet == null) return;
 var nNull = 0;
 for (var i = 0; i < this.nSets; i++) {
-if (this.surfaceSet[i] != null && this.surfaceSet[i].cardinality () == 0) this.surfaceSet[i] = null;
+if (this.surfaceSet[i] != null && this.surfaceSet[i].nextSetBit (0) < 0) this.surfaceSet[i] = null;
 if (this.surfaceSet[i] == null) nNull++;
 }
 if (nNull > 0) {

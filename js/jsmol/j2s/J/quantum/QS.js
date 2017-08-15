@@ -1,5 +1,5 @@
 Clazz.declarePackage ("J.quantum");
-Clazz.load (null, "J.quantum.QS", ["java.lang.Character", "$.Float", "JU.SB"], function () {
+Clazz.load (null, "J.quantum.QS", ["java.lang.Character", "$.Float", "JU.PT", "$.SB"], function () {
 c$ = Clazz.declareType (J.quantum, "QS");
 Clazz.makeConstructor (c$, 
 function () {
@@ -10,7 +10,7 @@ return ("SPLDF".indexOf (Character.toUpperCase (ch)) >= 0);
 }, "~S");
 c$.getNewDfCoefMap = Clazz.defineMethod (c$, "getNewDfCoefMap", 
 function () {
-return [ Clazz.newIntArray (1, 0),  Clazz.newIntArray (3, 0),  Clazz.newIntArray (4, 0),  Clazz.newIntArray (5, 0),  Clazz.newIntArray (6, 0),  Clazz.newIntArray (7, 0),  Clazz.newIntArray (10, 0),  Clazz.newIntArray (9, 0),  Clazz.newIntArray (15, 0),  Clazz.newIntArray (11, 0),  Clazz.newIntArray (21, 0),  Clazz.newIntArray (13, 0),  Clazz.newIntArray (28, 0)];
+return  Clazz.newArray (-1, [ Clazz.newIntArray (1, 0),  Clazz.newIntArray (3, 0),  Clazz.newIntArray (4, 0),  Clazz.newIntArray (5, 0),  Clazz.newIntArray (6, 0),  Clazz.newIntArray (7, 0),  Clazz.newIntArray (10, 0),  Clazz.newIntArray (9, 0),  Clazz.newIntArray (15, 0),  Clazz.newIntArray (11, 0),  Clazz.newIntArray (21, 0),  Clazz.newIntArray (13, 0),  Clazz.newIntArray (28, 0)]);
 });
 c$.getItem = Clazz.defineMethod (c$, "getItem", 
 function (i) {
@@ -18,8 +18,7 @@ return (i >= 0 && i < 13 ? i : -1);
 }, "~N");
 c$.getQuantumShellTagID = Clazz.defineMethod (c$, "getQuantumShellTagID", 
 function (tag) {
-if (tag.equals ("L")) return 2;
-return J.quantum.QS.getQuantumShell (tag);
+return (tag.equals ("L") ? 2 : J.quantum.QS.getQuantumShell (tag));
 }, "~S");
 c$.getQuantumShell = Clazz.defineMethod (c$, "getQuantumShell", 
  function (tag) {
@@ -61,6 +60,24 @@ mo.put ("occupancy", Float.$valueOf (type.indexOf ("*") >= 0 || type.indexOf ("(
 return;
 }
 }, "~A,~N,JU.Lst,~N,~S");
+c$.createDFMap = Clazz.defineMethod (c$, "createDFMap", 
+function (map, fileList, jmolList, minLength) {
+var tokens = JU.PT.getTokens (fileList);
+var isOK = true;
+for (var i = 0; i < map.length; i++) {
+var key = tokens[i];
+if (key.length >= minLength) {
+var pt = jmolList.indexOf (key);
+if (pt >= 0) {
+pt /= 6;
+map[pt] = i - pt;
+continue;
+}}isOK = false;
+break;
+}
+if (!isOK) map[0] = -2147483648;
+return isOK;
+}, "~A,~S,~S,~N");
 Clazz.defineStatics (c$,
 "S", 0,
 "P", 1,
@@ -75,8 +92,13 @@ Clazz.defineStatics (c$,
 "HC", 10,
 "IS", 11,
 "IC", 12,
+"MAX_TYPE_SUPPORTED", 6,
 "MAXID", 13,
-"idSpherical", [0, 1, 2, 3, 3, 5, 5, 7, 7, 9, 9, 11, 11],
-"tags", ["S", "P", "SP", "5D", "D", "7F", "F", "9G", "G", "11H", "H", "13I", "I"],
-"tags2", ["S", "X", "SP", "5D", "XX", "7F", "XXX", "9G", "XXXX", "11H", "XXXXX", "13I", "XXXXXX"]);
+"idSpherical",  Clazz.newIntArray (-1, [0, 1, 2, 3, 3, 5, 5, 7, 7, 9, 9, 11, 11]),
+"tags",  Clazz.newArray (-1, ["S", "P", "SP", "5D", "D", "7F", "F", "9G", "G", "11H", "H", "13I", "I"]),
+"tags2",  Clazz.newArray (-1, ["S", "X", "SP", "5D", "XX", "7F", "XXX", "9G", "XXXX", "11H", "XXXXX", "13I", "XXXXXX"]),
+"CANONICAL_DC_LIST", "DXX   DYY   DZZ   DXY   DXZ   DYZ",
+"CANONICAL_DS_LIST", "d0    d1+   d1-   d2+   d2-",
+"CANONICAL_FC_LIST", "XXX   YYY   ZZZ   XYY   XXY   XXZ   XZZ   YZZ   YYZ   XYZ",
+"CANONICAL_FS_LIST", "f0    f1+   f1-   f2+   f2-   f3+   f3-");
 });

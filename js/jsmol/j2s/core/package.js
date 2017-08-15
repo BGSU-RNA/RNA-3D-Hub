@@ -112,7 +112,6 @@ if (!window["java.registered"])
 	]);
 
 	ClazzLoader.jarClasspath (base + "coremin.z.js",	[
-		"J.api.MinimizerInterface", // -- required by J.minimize.Minimizer
 		"JM.Minimizer",
 		"$.MinObject", // -- required by $.MinAngle
 		"$.MinAngle",
@@ -143,14 +142,13 @@ if (!window["java.registered"])
 		"J.adapter.readers.pdb.PdbReader",
 		"J.adapter.smarter.Structure",
 		"J.api.JmolBioResolver",
-		"JMB.Resolver",
+		"JM.Resolver",
 		"$.BioModel"
  ]);
 
 
 	ClazzLoader.jarClasspath (base + "coresurface.z.js",	[
 		"JS.IsoExt",
-		"J.api.VolumeDataInterface",
 		"J.jvxl.api.VertexDataServer",
 		"$.MeshDataServer",
 		"J.jvxl.calc.MarchingCubes",

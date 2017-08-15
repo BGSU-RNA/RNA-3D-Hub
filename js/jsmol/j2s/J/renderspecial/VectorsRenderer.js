@@ -1,14 +1,15 @@
 Clazz.declarePackage ("J.renderspecial");
-Clazz.load (["J.render.ShapeRenderer", "JU.P3", "$.P3i", "$.V3"], "J.renderspecial.VectorsRenderer", ["J.shape.Shape", "JU.Vibration"], function () {
+Clazz.load (["J.render.ShapeRenderer", "JU.P3", "$.V3", "JU.Point3fi"], "J.renderspecial.VectorsRenderer", ["J.shape.Shape", "JU.Vibration"], function () {
 c$ = Clazz.decorateAsClass (function () {
-this.pointVectorStart = null;
 this.ptTemp = null;
+this.pointVectorStart = null;
 this.pointVectorEnd = null;
 this.pointArrowHead = null;
 this.screenVectorStart = null;
 this.screenVectorEnd = null;
 this.screenArrowHead = null;
 this.headOffsetVector = null;
+this.pTemp3 = null;
 this.diameter = 0;
 this.headWidthPixels = 0;
 this.vectorScale = 0;
@@ -21,17 +22,21 @@ this.standardVector = true;
 this.vibrationOn = false;
 this.drawCap = false;
 this.showModVecs = false;
+this.vectorTrail = 0;
+this.ptTemp4 = null;
+this.ptTemp2 = null;
 Clazz.instantialize (this, arguments);
 }, J.renderspecial, "VectorsRenderer", J.render.ShapeRenderer);
 Clazz.prepareFields (c$, function () {
+this.ptTemp =  new JU.Point3fi ();
 this.pointVectorStart =  new JU.P3 ();
-this.ptTemp =  new JU.P3 ();
-this.pointVectorEnd =  new JU.P3 ();
+this.pointVectorEnd =  new JU.Point3fi ();
 this.pointArrowHead =  new JU.P3 ();
-this.screenVectorStart =  new JU.P3i ();
-this.screenVectorEnd =  new JU.P3i ();
-this.screenArrowHead =  new JU.P3i ();
+this.screenVectorStart =  new JU.P3 ();
+this.screenVectorEnd =  new JU.P3 ();
+this.screenArrowHead =  new JU.P3 ();
 this.headOffsetVector =  new JU.V3 ();
+this.pTemp3 =  new JU.P3 ();
 });
 Clazz.overrideMethod (c$, "render", 
 function () {
@@ -42,7 +47,8 @@ if (mads == null) return false;
 var atoms = vectors.atoms;
 var colixes = vectors.colixes;
 var needTranslucent = false;
-this.vectorScale = this.vwr.getFloat (1649410049);
+this.vectorScale = this.vwr.getFloat (1648361473);
+this.vectorTrail = this.vwr.getInt (553648185);
 if (this.vectorScale < 0) this.vectorScale = 1;
 this.vectorSymmetry = this.vwr.getBoolean (603979973);
 this.vectorsCentered = this.vwr.getBoolean (603979972);
@@ -62,24 +68,24 @@ if (!this.transform (mads[i], atom, vib, mod)) continue;
 if (!this.g3d.setC (J.shape.Shape.getColix (colixes, i, atom))) {
 needTranslucent = true;
 continue;
-}this.renderVector (atom);
+}this.renderVector (atom, vib);
 if (this.vectorSymmetry) {
 if (this.vibTemp == null) this.vibTemp =  new JU.Vibration ();
 this.vibTemp.setT (vib);
 this.vibTemp.scale (-1);
 this.transform (mads[i], atom, this.vibTemp, null);
-this.renderVector (atom);
+this.renderVector (atom, vib);
 }}
 if (haveModulations) for (var i = this.ms.ac; --i >= 0; ) {
 var atom = atoms[i];
 if (!this.isVisibleForMe (atom)) continue;
 var mod = this.ms.getModulation (i);
 if (mod == null) continue;
-if (!this.transform (mads[i], atom, null, mod)) continue;
 if (!this.g3d.setC (J.shape.Shape.getColix (colixes, i, atom))) {
 needTranslucent = true;
 continue;
-}this.renderVector (atom);
+}if (!this.transform (mads[i], atom, null, mod)) continue;
+this.renderVector (atom, null);
 }
 return needTranslucent;
 });
@@ -122,27 +128,47 @@ this.pointVectorEnd.scaleAdd2 (0.5 * this.vectorScale, vib, this.ptTemp);
 this.pointVectorStart.scaleAdd2 (-0.5 * this.vectorScale, vib, this.ptTemp);
 } else {
 this.pointVectorEnd.scaleAdd2 (this.vectorScale, vib, this.ptTemp);
-this.screenVectorEnd.setT (this.vibrationOn ? this.tm.transformPtVib (this.pointVectorEnd, vib) : this.tm.transformPt (this.pointVectorEnd));
 this.pointArrowHead.add2 (this.pointVectorEnd, this.headOffsetVector);
-this.screenArrowHead.setT (this.vibrationOn ? this.tm.transformPtVib (this.pointArrowHead, vib) : this.tm.transformPt (this.pointArrowHead));
-}if (!this.standardVector) {
-this.screenVectorEnd.setT (this.tm.transformPt (this.pointVectorEnd));
-this.screenVectorStart.setT (this.tm.transformPt (this.pointVectorStart));
+if (this.vibrationOn) {
+var screen = this.tm.transformPtVib (this.pointVectorEnd, vib);
+this.screenVectorEnd.set (screen.x, screen.y, screen.z);
+screen = this.tm.transformPtVib (this.pointArrowHead, vib);
+this.screenArrowHead.set (screen.x, screen.y, screen.z);
+} else {
+this.tm.transformPtScrT3 (this.pointVectorEnd, this.screenVectorEnd);
+this.tm.transformPtScrT3 (this.pointArrowHead, this.screenArrowHead);
+}}if (!this.standardVector) {
+this.tm.transformPtScrT3 (this.pointVectorEnd, this.screenVectorEnd);
+this.tm.transformPtScrT3 (this.pointVectorStart, this.screenVectorStart);
 if (this.drawCap) this.pointArrowHead.add2 (this.pointVectorEnd, this.headOffsetVector);
  else this.pointArrowHead.setT (this.pointVectorEnd);
-this.screenArrowHead.setT (this.tm.transformPt (this.pointArrowHead));
-}this.diameter = Clazz.floatToInt (mad < 0 ? -mad : mad < 1 ? 1 : this.vwr.tm.scaleToScreen (this.screenVectorEnd.z, mad));
+this.tm.transformPtScrT3 (this.pointArrowHead, this.screenArrowHead);
+}this.diameter = Clazz.floatToInt (mad < 0 ? -mad : mad < 1 ? 1 : this.vwr.tm.scaleToScreen (Clazz.floatToInt (this.screenVectorEnd.z), mad));
 this.headWidthPixels = this.diameter << 1;
 if (this.headWidthPixels < this.diameter + 2) this.headWidthPixels = this.diameter + 2;
 return true;
 }, "~N,JM.Atom,JU.Vibration,J.api.JmolModulationSet");
 Clazz.defineMethod (c$, "renderVector", 
- function (atom) {
-if (this.drawShaft) {
-if (this.standardVector) this.g3d.fillCylinderScreen (1, this.diameter, atom.sX, atom.sY, atom.sZ, this.screenArrowHead.x, this.screenArrowHead.y, this.screenArrowHead.z);
- else this.g3d.fillCylinderScreen (2, this.diameter, this.screenVectorStart.x, this.screenVectorStart.y, this.screenVectorStart.z, this.screenArrowHead.x, this.screenArrowHead.y, this.screenArrowHead.z);
-}if (this.drawCap) this.g3d.fillConeScreen (2, this.headWidthPixels, this.screenArrowHead, this.screenVectorEnd, false);
-}, "JM.Atom");
+ function (atom, vib) {
+if (vib != null && this.vectorTrail > 0) {
+if (this.ptTemp4 == null) {
+this.ptTemp4 =  new JU.P3 ();
+this.ptTemp2 =  new JU.P3 ();
+}var d = Math.max (1, this.diameter >> 2);
+var pts = vib.addTracePt (this.vectorTrail, this.vibrationOn ? this.pointVectorEnd : null);
+this.tm.transformPtScrT3 (atom, this.ptTemp4);
+if (pts != null) for (var i = pts.length, p = this.vectorTrail; --i >= 0; ) {
+var pt = pts[--p];
+if (pt == null) break;
+this.tm.transformPtScrT3 (pt, this.ptTemp2);
+this.g3d.fillCylinderBits (2, d, this.ptTemp4, this.ptTemp2);
+}
+}if (this.drawShaft) {
+this.pTemp3.set (atom.sX, atom.sY, atom.sZ);
+if (this.standardVector) this.g3d.fillCylinderBits (1, this.diameter, this.pTemp3, this.screenArrowHead);
+ else this.g3d.fillCylinderBits (2, this.diameter, this.screenVectorStart, this.screenArrowHead);
+}if (this.drawCap) this.g3d.fillConeScreen3f (2, this.headWidthPixels, this.screenArrowHead, this.screenVectorEnd, false);
+}, "JM.Atom,JU.Vibration");
 Clazz.defineStatics (c$,
 "arrowHeadOffset", -0.2);
 });

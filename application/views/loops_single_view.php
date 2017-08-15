@@ -44,7 +44,7 @@
                                 <dd><?=$pdb_exptechnique?></dd>
                                 <dt>Resolution</dt>
                                 <dd><?=$pdb_resolution?></dd>
-                                <dt>Non-redundant classes</dt>
+                                <dt>Representative set classes</dt>
                                 <dd><?=$nr_classes?></dd>
                             </dl>
                         </div>
