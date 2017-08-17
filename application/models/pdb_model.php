@@ -728,9 +728,9 @@ class Pdb_model extends CI_Model {
                   'name' => 'Chain ' . $row->chain
               );
 
-              #var_dump($new_json);
+              var_dump($new_json);
               $new_result = '[' . json_encode($new_json, JSON_NUMERIC_CHECK) . ']';
-              #var_dump($new_result);
+              var_dump($new_result);
             }
         }
 
