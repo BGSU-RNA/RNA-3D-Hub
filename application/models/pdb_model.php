@@ -616,33 +616,34 @@ class Pdb_model extends CI_Model {
             $model = '';
             $create = 0;
 
-        foreach ($query->result() as $row) {
-          $create = 1;
+            foreach ($query->result() as $row) {
+              $create = 1;
 
-          if ($row->unit_id){
-            $rowArr = array(
-              'y' => $row->y_coordinate,
-              'x' => $row->x_coordinate,
-              'id' => $row->unit_id,
-              'sequence' => $row->unit
-            );
+              if ($row->unit_id){
+                $rowArr = array(
+                  'y' => $row->y_coordinate,
+                  'x' => $row->x_coordinate,
+                  'id' => $row->unit_id,
+                  'sequence' => $row->unit
+                );
 
-            $nts_data[] = $rowArr;
-          }
+                $nts_data[] = $rowArr;
+              }
 
-          $model = !($model) ? $row->model : $model;
-        }
+              $model = !($model) ? $row->model : $model;
+            }
 
-        if ($create == 1) {
-          $new_json = array(
-              'nts'  => $nts_data,
-              'id'   => $row->pdb_id . '|' . $model . '|' . $row->chain,
-              'name' => 'Chain ' . $row->chain
-          );
+            if ($create == 1) {
+              $new_json = array(
+                  'nts'  => $nts_data,
+                  'id'   => $row->pdb_id . '|' . $model . '|' . $row->chain,
+                  'name' => 'Chain ' . $row->chain
+              );
 
-          #var_dump($new_json);
-          $new_result = '[' . json_encode($new_json, JSON_NUMERIC_CHECK) . ']';
-          #var_dump($new_result);
+              var_dump($new_json);
+              $new_result = '[' . json_encode($new_json, JSON_NUMERIC_CHECK) . ']';
+              var_dump($new_result);
+            }
         }
 
         $this->db->select('json_structure')
