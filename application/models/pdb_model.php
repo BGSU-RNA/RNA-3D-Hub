@@ -653,6 +653,7 @@ class Pdb_model extends CI_Model {
         $result = $this->db->get()->row();
 
         # DEBUG result sets
+        #/*
         if ($new_result) {
           print "<p>NEW RESULT</p>";
           #return $new_result;
@@ -663,6 +664,7 @@ class Pdb_model extends CI_Model {
           print "<p>NO RESULTS</p>";
           #return false;
         }
+        #*/
 
         return ($new_result) ? $new_result : ($result) ? $result->json_structure : false;
         #return ($new_result) ? $new_result : false;
