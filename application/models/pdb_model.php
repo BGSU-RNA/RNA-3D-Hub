@@ -669,6 +669,7 @@ class Pdb_model extends CI_Model {
         if ($query->num_rows()) {
             // process ss_unit_positions
 
+            /*
             //
             //  First attempt to hack the new version, using ss_unit_positions.
             //  This at least executes, even though I'm not doing anything
@@ -677,7 +678,25 @@ class Pdb_model extends CI_Model {
             $this->db->select()
                      ->from('ss_unit_positions')
                      ->where('pdb_id', $pdb_id);
+            */
 
+            //  Revision:  performance of view ss_unit_positions is horrible, but
+            //    the underlying query appears to perform better.
+            $this->db->select('UI.unit_id, SPM.pdb_id, UI.model, SPM.chain_name, UI.number')
+                     ->select('UI.unit, UI.alt_id, UI.ins_code, UI.sym_op, UI.chain_index')
+                     ->select('UI.unit_type_id, SP.index, SP.ss_id, SP.x_coordinate')
+                     ->select('SP.y_coordinate')
+                     ->select("IF(UI.unit_id IS NOT NULL, 1, 0) AS 'is_resolved'",false)
+                     ->from('ss_pdb_mapping AS SPM')
+                     ->join('ss_exp_seq_position_mapping AS ESPM', 'ESPM.ss_exp_seq_mapping_id = SPM.ss_exp_seq_mapping_id')
+                     ->join('ss_positions AS SP', 'SP.ss_position_id = ESPM.ss_position_id','left')
+                     ->join('exp_seq_unit_mapping AS ESUM','ESUM.exp_seq_position_id = ESPM.exp_seq_position_id','left')
+                     ->join('unit_info AS UI', 'UI.unit_id = ESUM.unit_id', 'left')
+                     ->where('ISNULL(UI.pdb_id)')
+                     ->or_where('UI.pdb_id = SPM.pdb_id')
+                     ->where('SPM.pdb_id', $pdb_id)
+                     ->group_by('SP.ss_position_id');
+;
             $query = $this->db->get();
 
             $nts_data = array();
