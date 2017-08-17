@@ -705,35 +705,46 @@ class Pdb_model extends CI_Model {
             $create = 0;
 
             foreach ($query->result() as $row) {
-              $create = 1;
+                $create = 1;
 
-              if ($row->unit_id){
-                $rowArr = array(
-                  'y' => $row->y_coordinate,
-                  'x' => $row->x_coordinate,
-                  'id' => $row->unit_id,
-                  'sequence' => $row->unit
-                );
+                if ($row->unit_id){
+                    $rowArr = array(
+                        'y' => $row->y_coordinate,
+                        'x' => $row->x_coordinate,
+                        'id' => $row->unit_id,
+                        'sequence' => $row->unit
+                    );
 
-                $nts_data[] = $rowArr;
-              }
+                    $nts_data[] = $rowArr;
+                }
 
-              $model = !($model) ? $row->model : $model;
+                $model = !($model) ? $row->model : $model;
             }
 
             if ($create == 1) {
-              $new_json = array(
-                'nts'  => $nts_data,
-                'id'   => $row->pdb_id . '|' . $model . '|' . $row->chain,
-                'name' => 'Chain ' . $row->chain
-              );
+                $new_json = array(
+                    'nts'  => $nts_data,
+                    'id'   => $row->pdb_id . '|' . $model . '|' . $row->chain,
+                    'name' => 'Chain ' . $row->chain
+                );
 
-              #var_dump($new_json);
-              $new_result = '[' . json_encode($new_json, JSON_NUMERIC_CHECK) . ']';
-              #var_dump($new_result);
+                #var_dump($new_json);
+                $new_result = '[' . json_encode($new_json, JSON_NUMERIC_CHECK) . ']';
+                #var_dump($new_result);
+
+                $json = $new_result;
             }
+        } else {
+            $this->db->select('json_structure')
+                     ->from($table)
+                     ->where('pdb_id', $pdb_id);
+
+            $result = $this->db->get()->row();
+
+            $json = ($result) ? $result->json_structure : "";
         }
 
+/*
         $this->db->select('json_structure')
                  ->from($table)
                  ->where('pdb_id', $pdb_id);
@@ -745,6 +756,7 @@ class Pdb_model extends CI_Model {
         } else {
           $result = '';
         }
+*/
 
         # DEBUG result sets
         /*
@@ -760,7 +772,8 @@ class Pdb_model extends CI_Model {
         }
         */
 
-        return ($new_result) ? $new_result : ($result) ? $result->json_structure : false;
+        return ($json) ? $json : false;
+        #return ($new_result) ? $new_result : ($result) ? $result->json_structure : false;
     }
 
     function get_longrange_bp($pdb)
