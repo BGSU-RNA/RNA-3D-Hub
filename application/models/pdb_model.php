@@ -594,7 +594,7 @@ class Pdb_model extends CI_Model {
 
             //  Revision:  performance of view ss_unit_positions is horrible, but
             //    the underlying query appears to perform better.
-            $this->db->select('UI.unit_id, SPM.pdb_id, UI.model, SPM.chain_name, UI.number')
+            $this->db->select('UI.unit_id, SPM.pdb_id, UI.model, SPM.chain_name AS chain, UI.number')
                      ->select('UI.unit, UI.alt_id, UI.ins_code, UI.sym_op, UI.chain_index')
                      ->select('UI.unit_type_id, SP.index, SP.ss_id, SP.x_coordinate')
                      ->select('SP.y_coordinate')
