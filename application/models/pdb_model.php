@@ -635,14 +635,14 @@ class Pdb_model extends CI_Model {
 
             if ($create == 1) {
               $new_json = array(
-                  'nts'  => $nts_data,
-                  'id'   => $row->pdb_id . '|' . $model . '|' . $row->chain,
-                  'name' => 'Chain ' . $row->chain
+                'nts'  => $nts_data,
+                'id'   => $row->pdb_id . '|' . $model . '|' . $row->chain,
+                'name' => 'Chain ' . $row->chain
               );
 
-              var_dump($new_json);
+              #var_dump($new_json);
               $new_result = '[' . json_encode($new_json, JSON_NUMERIC_CHECK) . ']';
-              var_dump($new_result);
+              #var_dump($new_result);
             }
         }
 
@@ -650,10 +650,16 @@ class Pdb_model extends CI_Model {
                  ->from($table)
                  ->where('pdb_id', $pdb_id);
 
-        $result = $this->db->get()->row();
+        $query = $this->db->get();
+
+        if ( $query->num_rows() > 0 ) {
+          $result = $query->row();
+        } else {
+          $result = '';
+        }
 
         # DEBUG result sets
-        #/*
+        /*
         if ($new_result) {
           print "<p>NEW RESULT</p>";
           #return $new_result;
@@ -664,11 +670,9 @@ class Pdb_model extends CI_Model {
           print "<p>NO RESULTS</p>";
           #return false;
         }
-        #*/
+        */
 
         return ($new_result) ? $new_result : ($result) ? $result->json_structure : false;
-        #return ($new_result) ? $new_result : false;
-        #return ($result) ? $result->json_structure : false;
     }
 
     function get_longrange_bp($pdb)
