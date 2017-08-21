@@ -14,7 +14,6 @@ class Pdb_model extends CI_Model {
 
     function get_all_pdbs()
     {
-        #print "<p>get_all_pdbs</p>"; ### DEBUG
         $this->db->select('distinct(pdb_id)')
                  ->from('pdb_info');
         $query = $this->db->get();
@@ -26,7 +25,6 @@ class Pdb_model extends CI_Model {
 
     function get_recent_rna_containing_structures($num)
     {
-        #print "<p>get_recent_rna_containing_structures</p>"; ### DEBUG
         $this->db->select('distinct(pdb_id)')
                  ->from('pdb_info')
                  ->order_by('release_date', 'desc')
@@ -40,7 +38,6 @@ class Pdb_model extends CI_Model {
 
     function get_latest_motif_assignments($pdb_id, $loop_type)
     {
-        #print "<p>get_latest_motif_assignments</p>"; ### DEBUG
         // $loop_type = IL or HL
         $latest_release = $this->get_latest_motif_release($loop_type);
         
@@ -58,7 +55,6 @@ class Pdb_model extends CI_Model {
 
     function get_loops($pdb_id)
     {
-        #print "<p>get_loops</p>"; ### DEBUG
         $loop_release_id = $this->get_latest_loop_release();
         $this->db->select('lq.loop_id')
                  ->select('lq.status')
@@ -121,20 +117,17 @@ class Pdb_model extends CI_Model {
 
     function make_reason_label($status)
     {
-        #print "<p>make_reason_label</p>"; ### DEBUG
         return '<label class="label important">' . $this->qa_status[$status] . '</label>';
     }
 
     function get_checkbox($id, $nt_ids)
     {
-        #print "<p>get_checkbox</p>"; ### DEBUG
         return "<label><input type='radio' id='{$id}' class='jmolInline' data-coord='{$id}'>{$id}</label>" .
         "<span class='loop_link'>" . anchor_popup("loops/view/{$id}", '&#10140;') . "</span>" ;
     }
 
     function get_latest_loop_release()
     {
-        #print "<p>get_latest_loop_release</p>"; ### DEBUG
         $this->db->select('loop_release_id')
                  ->from('loop_releases')
                  ->order_by('date','desc')
@@ -146,7 +139,6 @@ class Pdb_model extends CI_Model {
 
     function pdb_exists($pdb_id)
     {
-        #print "<p>pdb_exists</p>"; ### DEBUG
         // does BGSU RNA Site know about this structure?
         $this->db->select('pdb_id')
                  ->from('pdb_info')
@@ -171,7 +163,6 @@ class Pdb_model extends CI_Model {
 
     function pdb_is_annotated($pdb_id, $interaction_type)
     {
-        #print "<p>pdb_is_annotated</p>"; ### DEBUG
         //$this->db->select('pdb_analysis_status_id')
         //         ->from('pdb_analysis_status')
         //         ->where('pdb_id', $pdb_id)
@@ -200,7 +191,6 @@ class Pdb_model extends CI_Model {
 
     function _get_unit_ids($pdb_id)
     {
-        #print "<p>_get_unit_ids</p>"; ### DEBUG
     #    // get correspondences between old and new ids
     #    $this->db->select('old_id, unit_id')
     #             ->from('__pdb_unit_id_correspondence')
@@ -272,18 +262,14 @@ class Pdb_model extends CI_Model {
                              "</a>" .
                              str_pad('<span>' . $aa_unit_id[$i] . '</span>', 38, ' ', STR_PAD_LEFT) .
                              "\n";
-
                 } else {
-
                     $html .= str_pad('<span>' . $na_unit_id[$i] . '</span>', 38, ' ') .
                              "<a class='jmolInline' id='s{$i}'>" .
                              str_pad( '<span>' . $annotation[$i] . '</span>', 10, '', STR_PAD_BOTH) .
                              "</a>" .
                              str_pad('<span>' . $aa_unit_id[$i] . '</span>', 38, ' ', STR_PAD_LEFT) .
                              "\n";
-
                 }
-
             }
 
             return array( 'data'   => $html,
@@ -293,7 +279,6 @@ class Pdb_model extends CI_Model {
 
         } 
 
-        #print "<p>get_interactions</p>"; ### DEBUG
         $url_parameters = array('basepairs', 'stacking', 'basephosphate', 'baseribose');
         $db_fields      = array('f_lwbp', 'f_stacks', 'f_bphs', 'f_brbs');
         $header_values  = array('Base-pair', 'Base-stacking', 'Base-phosphate', 'Base-ribose');
@@ -377,7 +362,6 @@ class Pdb_model extends CI_Model {
 
     function get_general_info($pdb_id)
     {
-        #print "<p>get_general_info</p>"; ### DEBUG
         //  QUERY NEEDS TO BE REWRITTEN
         //  NEEDS DATA FROM BOTH pdb_info and chain_info
         $this->db->select()
@@ -425,7 +409,6 @@ class Pdb_model extends CI_Model {
 
     function get_latest_nr_release($pdb_id)
     {
-        #print "<p>get_latest_nr_release</p>"; ### DEBUG
         $this->db->select('nr_release_id')
                  ->from('nr_releases')
                  ->order_by('date', 'desc')
@@ -436,7 +419,6 @@ class Pdb_model extends CI_Model {
 
     function get_nrlist_info($pdb_id)
     {
-        #print "<p>get_nrlist_info</p>"; ### DEBUG
         // get the latest nr release
         $data['latest_nr_release'] = $this->get_latest_nr_release($pdb_id);
 
@@ -466,7 +448,6 @@ class Pdb_model extends CI_Model {
 
     function get_loops_info($pdb_id)
     {
-        #print "<p>get_loops_info</p>"; ### DEBUG
         $this->db->select('count(loop_id) as counts, type')
                  ->from('loop_info')
                  ->where('pdb_id', $pdb_id)
@@ -492,8 +473,7 @@ class Pdb_model extends CI_Model {
 
     function get_latest_motif_release($motif_type)
     {
-        #print "<p>get_latest_motif_release</p>"; ### DEBUG
-        $this->db->select('ml_release_id')
+\        $this->db->select('ml_release_id')
                  ->from('ml_releases')
                  ->order_by('date', 'desc')
                  ->where('type', $motif_type)
@@ -506,7 +486,6 @@ class Pdb_model extends CI_Model {
 
     function get_motifs_info($pdb_id, $motif_type)
     {
-        #print "<p>get_motifs_info</p>"; ### DEBUG
         $latest_release = $this->get_latest_motif_release($motif_type);
         // count motifs
         $this->db->select('count(distinct motif_id) as counts')
@@ -520,7 +499,6 @@ class Pdb_model extends CI_Model {
 
     function get_pairwise_info($pdb_id, $interaction)
     {
-        #print "<p>get_pairwise_info</p>"; ### DEBUG
         $this->db->select("count($interaction)/2 as counts")
                  ->from('unit_pairs_interactions')
                  ->where('pdb_id', $pdb_id);
@@ -538,7 +516,6 @@ class Pdb_model extends CI_Model {
 
     function get_baseaa_info($pdb_id)
     {
-        print "<p>get_pairwise_info</p>";
         $this->db->select("count(na_unit_id) as counts")
                  ->from('unit_aa_interactions')
                  ->where('pdb_id', $pdb_id);
@@ -550,7 +527,6 @@ class Pdb_model extends CI_Model {
 
     function get_related_structures($pdb_id)
     {
-        #print "<p>get_related_structures</p>"; ### DEBUG
         $pdb_id = strtoupper($pdb_id);
         $latest_nr_release = $this->get_latest_nr_release($pdb_id);
 
@@ -609,7 +585,6 @@ class Pdb_model extends CI_Model {
 
     function get_ordered_nts($pdb_id)
     {
-        #print "<p>get_ordered_nts</p>"; ### DEBUG
         $this->db->select('ui.unit_id as id, ui.chain, ui.unit as sequence')
                  ->select_min('ui.sym_op')
                  ->from('unit_info AS ui')
@@ -639,8 +614,6 @@ class Pdb_model extends CI_Model {
                                                  'sequence' => $row->sequence);
         }
 
-        #print "<p>chain_data: " + var_dump($chain_data) + "</p>"; ### DEBUG
-
         return array_values($chain_data);
     }
 
@@ -669,19 +642,13 @@ class Pdb_model extends CI_Model {
         if ($query->num_rows()) {
             // process ss_unit_positions
 
+            //  Revision:  performance of view ss_unit_positions is horrible, but
+            //    the underlying query appears to perform better.
             /*
-            //
-            //  First attempt to hack the new version, using ss_unit_positions.
-            //  This at least executes, even though I'm not doing anything
-            //    with the results.
-            //
             $this->db->select()
                      ->from('ss_unit_positions')
                      ->where('pdb_id', $pdb_id);
             */
-
-            //  Revision:  performance of view ss_unit_positions is horrible, but
-            //    the underlying query appears to perform better.
             $this->db->select('UI.unit_id, SPM.pdb_id, UI.model, SPM.chain_name AS chain, UI.number')
                      ->select('UI.unit, UI.alt_id, UI.ins_code, UI.sym_op, UI.chain_index')
                      ->select('UI.unit_type_id, SP.index, SP.ss_id, SP.x_coordinate')
@@ -728,11 +695,7 @@ class Pdb_model extends CI_Model {
                     'name' => 'Chain ' . $row->chain
                 );
 
-                #var_dump($new_json);
-                $new_result = '[' . json_encode($new_json, JSON_NUMERIC_CHECK) . ']';
-                #var_dump($new_result);
-
-                $json = $new_result;
+                $json = '[' . json_encode($new_json, JSON_NUMERIC_CHECK) . ']';
             }
         } else {
             $this->db->select('json_structure')
@@ -744,41 +707,11 @@ class Pdb_model extends CI_Model {
             $json = ($result) ? $result->json_structure : "";
         }
 
-/*
-        $this->db->select('json_structure')
-                 ->from($table)
-                 ->where('pdb_id', $pdb_id);
-
-        $query = $this->db->get();
-
-        if ( $query->num_rows() > 0 ) {
-          $result = $query->row();
-        } else {
-          $result = '';
-        }
-*/
-
-        # DEBUG result sets
-        /*
-        if ($new_result) {
-          print "<p>NEW RESULT</p>";
-          #return $new_result;
-        } else if ($result) {
-          print "<p>use old pdb_airport results</p>";
-          #return $result->json_structure;
-        } else {
-          print "<p>NO RESULTS</p>";
-          #return false;
-        }
-        */
-
         return ($json) ? $json : false;
-        #return ($new_result) ? $new_result : ($result) ? $result->json_structure : false;
     }
 
     function get_longrange_bp($pdb)
     {
-        #print "<p>get_longrange_bp</p>"; ### DEBUG
         $this->db->select('U1.unit_id as nt1')
                  ->select('U2.unit_id as nt2')
                  ->select('upi.f_lwbp as family')
