@@ -226,59 +226,7 @@ class Pdb_model extends CI_Model {
     }
 
     function get_interactions($pdb_id, $interaction_type)
-    {   
-        if ( $interaction_type == 'baseaa' ) {
-
-            $unit_ids = $this->_get_unit_ids($pdb_id);
-
-            $this->db->select('uai.na_unit_id, uai.aa_unit_id, uai.annotation, uai.value')
-                 ->from('unit_aa_interactions AS uai')
-                 ->join('unit_info AS u1', 'uai.na_unit_id = u1.unit_id')
-                 ->join('unit_info AS u2', 'uai.aa_unit_id = u2.unit_id')
-                 ->where('uai.pdb_id', $pdb_id)
-                 #->order_by('number');
-                 ->order_by('u1.chain, u1.chain_index, u2.chain, u2.chain_index');
-            $query = $this->db->get();
-
-            foreach($query->result() as $row) {
-                $na_unit_id[] = $row->na_unit_id;
-                $aa_unit_id[] = $row->aa_unit_id;
-                $annotation[] = $row->annotation;
-                $value[] = $row->value;
-            }
-
-            $array_size = count($na_unit_id);
-
-            $html = '';
-
-            for ($i = 0; $i <= ($array_size-1); $i++) {
-
-                // Don't display value for cation-pi interactions
-                if ($value[$i] == NULL) {
-                
-                    $html .= str_pad('<span>' . $na_unit_id[$i] . '</span>', 38, ' ') .
-                             "<a class='jmolInline' id='s{$i}'>" .
-                             str_pad( '<span>' . $annotation[$i] . '</span>' , 10, '',STR_PAD_BOTH) .
-                             "</a>" .
-                             str_pad('<span>' . $aa_unit_id[$i] . '</span>', 38, ' ', STR_PAD_LEFT) .
-                             "\n";
-                } else {
-                    $html .= str_pad('<span>' . $na_unit_id[$i] . '</span>', 38, ' ') .
-                             "<a class='jmolInline' id='s{$i}'>" .
-                             str_pad( '<span>' . $annotation[$i] . '</span>', 10, '', STR_PAD_BOTH) .
-                             "</a>" .
-                             str_pad('<span>' . $aa_unit_id[$i] . '</span>', 38, ' ', STR_PAD_LEFT) .
-                             "\n";
-                }
-            }
-
-            return array( 'data'   => $html,
-                          'header' => array('#', 'Nucleotide id', 'Amino acid id', "Base-amino acid")
-                     );
-
-
-        } 
-
+    {
         $url_parameters = array('basepairs', 'stacking', 'basephosphate', 'baseribose');
         $db_fields      = array('f_lwbp', 'f_stacks', 'f_bphs', 'f_brbs');
         $header_values  = array('Base-pair', 'Base-stacking', 'Base-phosphate', 'Base-ribose');
@@ -499,17 +447,6 @@ class Pdb_model extends CI_Model {
         } else {
             $this->db->where("char_length($interaction) = 3");
         }
-
-        $result = $this->db->get()->row();
-
-        return number_format($result->counts, 0);
-    }
-
-    function get_baseaa_info($pdb_id)
-    {
-        $this->db->select("count(na_unit_id) as counts")
-                 ->from('unit_aa_interactions')
-                 ->where('pdb_id', $pdb_id);
 
         $result = $this->db->get()->row();
 
