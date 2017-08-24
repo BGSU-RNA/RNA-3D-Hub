@@ -546,12 +546,10 @@ class Pdb_model extends CI_Model {
         }
 
         //
-        //  First attempt to hack the new version, using ss_unit_positions.
-        //  This at least executes, even though I'm not doing anything
-        //    with the results.
+        //  Determine if the structure is present in the ss_* tables.
         //
-        $this->db->select()
-                 ->from('ss_unit_positions')
+        $this->db->select('pdb_id')
+                 ->from('ss_pdb_mapping')
                  ->where('pdb_id', $pdb_id);
 
         $query = $this->db->get();
