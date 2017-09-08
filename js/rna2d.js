@@ -952,6 +952,11 @@
             var scale = d3.event.scale,
                 translate = d3.event.translate;
 
+            //  These debugs work but don't provide anything useful.
+            //  This scaling keeps the elements in relative scale,
+            //  but has nothing to do with odd inputs.
+            //console.log("scale: ", scale); // DEBUG
+            //console.log("translate: ", translate); // DEBUG
             self.currentScale(scale);
             self.onChange()();
 
@@ -1057,12 +1062,18 @@
         });
       });
 
+      console.log("xMax (out): ", xMax);
+      console.log("yMax (out): ", yMax);
+
       this.domain = { x: [0, xMax], y: [0, yMax] };
     };
 
     Airport.prototype.xCoord = function() {
       var scale = plot.xScale(),
           getX = plot.nucleotides.getX();
+
+      //console.log("scale: ", scale); //DEBUG not useful
+
       return function(d, i) { return scale(getX(d, i)); };
     };
 
@@ -1089,6 +1100,8 @@
             .attr('font-size', this.fontSize())
             .text(plot.nucleotides.getSequence())
             .attr('fill', plot.nucleotides.color());
+      //console.log("xcoord: ",this.xCoord()); // DEBUG not useful
+      //console.log("ycoord: ",this.yCoord()); // DEBUG not useful
     };
 
     Airport.prototype.connections = function() {
@@ -1097,8 +1110,11 @@
           getNTs = plot.interactions.ntElements(),
           gap = this.gap();
 
+      //console.log("gap: ",this.gap()); // DEBUG -- not accessed ?!?
+
       interactions = $.map(interactions, function(obj, i) {
         try {
+          //console.log("foo");
           var nts = getNTs(obj),
               nt1 = Rna2D.utils.element(nts[0]),
               nt2 = Rna2D.utils.element(nts[1]),
