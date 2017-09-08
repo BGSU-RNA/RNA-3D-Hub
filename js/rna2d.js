@@ -31,6 +31,13 @@
         plot.xScale(scale(view.xDomain(), plot.width() - margin.right));
         plot.yScale(scale(view.yDomain(), plot.height() - margin.above));
 
+        console.log("plot-width: ", plot.width());
+        console.log("margin-right: ", margin.right);
+        console.log("plot-height: ", plot.height());
+        console.log("margin-above: ", margin.above);
+        //console.log("plot-xScale: ", plot.xScale.value());
+        //console.log("plot-yScale: ", plot.yScale.value());
+
         // Generate the components - brush, frame, zoom, etc
         components.generate();
 
