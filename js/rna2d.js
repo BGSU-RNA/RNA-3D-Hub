@@ -529,6 +529,15 @@
   Rna2D.components.frame = function(plot) {
     var Frame = inhert(Rna2D.Component, 'frame', { add: true, 'class': 'frame' });
 
+    console.log("rect-mar-lft: ", plot.margin().left);
+    console.log("rect-mar-abv: ", plot.margin().above);
+    console.log("rect-mar-rgt: ", plot.margin().right);
+    console.log("rect-mar-blw: ", plot.margin().below);
+    console.log("rect-plot-wd: ", plot.width());
+    console.log("rect-plot-ht: ", plot.height());
+    console.log("rect-adj-plot-wd: ", plot.width() + plot.margin().left + plot.margin().right);
+    console.log("rect-adj-plot-ht: ", plot.height() + plot.margin().above + plot.margin().below);
+
     Frame.prototype.draw = function() {
       return plot.vis.append('svg:rect')
         .classed(plot.frame['class'](), true)
@@ -1093,7 +1102,7 @@
       console.log("yMin (out): ", yMin);
       console.log("yMax (out): ", yMax);
 
-      this.domain = { x: [0, xMax], y: [0, yMax] };
+      this.domain = { x: [xMin, xMax], y: [yMin, yMax] };
     };
 
     Airport.prototype.xCoord = function() {
