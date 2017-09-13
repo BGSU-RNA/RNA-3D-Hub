@@ -21,22 +21,30 @@
       // Generate the view
       var view = views.current();
       if (view) {
-        var scale = function(domain, max) {
-          return d3.scale.linear().domain(domain).range([0, max]);
+        var scale = function(domain, max, min = 0) {
+          return d3.scale.linear().domain(domain).range([min, max]);
         };
 
         view.preprocess();
 
         // Setup the scales
-        plot.xScale(scale(view.xDomain(), plot.width() - margin.right));
-        plot.yScale(scale(view.yDomain(), plot.height() - margin.above));
+        plot.xScale(scale(view.xDomain(), plot.width() - margin.right - margin.left));
+        plot.yScale(scale(view.yDomain(), plot.height() - margin.above - margin.below));
 
+        console.log("view-xDomain: ", view.xDomain());
+        console.log("view-yDomain: ", view.yDomain());
         console.log("plot-width: ", plot.width());
-        console.log("margin-right: ", margin.right);
         console.log("plot-height: ", plot.height());
+        console.log("margin-left: ", margin.left);
+        console.log("margin-right: ", margin.right);
         console.log("margin-above: ", margin.above);
-        //console.log("plot-xScale: ", plot.xScale.value());
-        //console.log("plot-yScale: ", plot.yScale.value());
+        console.log("margin-below: ", margin.below);
+        //console.log("xScale (0): ", plot.xScale.linear(0));
+        //console.log("yScale (500): ", plot.yScale.linear(500));
+        //console.log("xScale: ", scale(view.xDomain(), plot.width() - margin.right)); // DEBUG fails
+        //console.log("yScale: ", scale(view.yDomain(), plot.height() - margin.above)); // DEBUG fails
+        //console.log("plot-xScale: ", plot.xScale.value()); // DEBUG fails
+        //console.log("plot-yScale: ", plot.yScale.value()); // DEBUG fails
 
         // Generate the components - brush, frame, zoom, etc
         components.generate();
@@ -1059,7 +1067,9 @@
     Airport.prototype.preprocess = function() {
       // Compute the max and min of x and y coords for the scales.
       var xMax = 0,
-          yMax = 0;
+          yMax = 0,
+          xMin = 15000,
+          yMin = 15000;
 
       $.each(plot.chains(), function(_, chain) {
         var getX = plot.nucleotides.getX(),
@@ -1071,13 +1081,24 @@
           if (x > xMax) {
             xMax = x;
           }
+
           if (y > yMax) {
             yMax = y;
+          }
+
+          if (x < xMin) {
+            xMin = x;
+          }
+
+          if (y < yMin) {
+            yMin = y;
           }
         });
       });
 
+      console.log("xMin (out): ", xMin);
       console.log("xMax (out): ", xMax);
+      console.log("yMin (out): ", yMin);
       console.log("yMax (out): ", yMax);
 
       this.domain = { x: [0, xMax], y: [0, yMax] };
