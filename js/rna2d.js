@@ -27,9 +27,29 @@
 
         view.preprocess();
 
-        // Setup the scales
+        // Determine x and y scaling factor
+
+        var sx = (plot.width()  - margin.right - margin.left ) / (view.xDomain()[1] - view.xDomain()[0]);
+        var sy = (plot.height() - margin.above - margin.below) / (view.yDomain()[1] - view.yDomain()[0]);
+
+/*
+        // Setup the scales -- Blake original
         plot.xScale(scale(view.xDomain(), plot.width() - margin.right - margin.left));
         plot.yScale(scale(view.yDomain(), plot.height() - margin.above - margin.below));
+*/
+
+        // Set up the scales
+
+        if (sx > sy) {
+          plot.xScale(scale(view.xDomain(), (plot.width() - margin.right - margin.left)*sy/sx));
+          plot.yScale(scale(view.yDomain(), plot.height() - margin.above - margin.below));
+        } else {
+          plot.xScale(scale(view.xDomain(), plot.width() - margin.right - margin.left));
+          plot.yScale(scale(view.yDomain(), (plot.height() - margin.above - margin.below)*sx/sy));
+        }
+
+        console.log("sx: ", sx);
+        console.log("sy: ", sy);
 
         console.log("view-xDomain: ", view.xDomain());
         console.log("view-yDomain: ", view.yDomain());
@@ -489,6 +509,9 @@
 
     var brush = new Brush();
     brush.attach(plot);
+
+    //console.log("brush-x: ",brush.x().value);
+    //console.log("brush-y: ",brush.y().value);
 
     return brush;
   };
@@ -1111,6 +1134,11 @@
       console.log("yMax (out): ", yMax);
 
       this.domain = { x: [xMin, xMax], y: [yMin, yMax] };
+
+      console.log("xmin: ", this.domain.x[0]);
+      console.log("xmax: ", this.domain.x[1]);
+      console.log("ymin: ", this.domain.y[0]);
+      console.log("ymax: ", this.domain.y[1]);
     };
     
 
