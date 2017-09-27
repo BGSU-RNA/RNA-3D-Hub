@@ -27,13 +27,16 @@
 
         view.preprocess();
 
-        // Determine x and y scaling factor
+        // Determine x and y scaling factor -- math by CLZ, September 2017
+        // As of 2017-09-26, the revised version is not working correctly.  Needs more review.
 
-        var sx = (plot.width()  - margin.right - margin.left ) / (view.xDomain()[1] - view.xDomain()[0]);
-        var sy = (plot.height() - margin.above - margin.below) / (view.yDomain()[1] - view.yDomain()[0]);
+        var xw = (plot.width()  - margin.right - margin.left );
+        var yh = (plot.height() - margin.above - margin.below);
+        var sx = xw / (view.xDomain()[1] - view.xDomain()[0]);
+        var sy = yh / (view.yDomain()[1] - view.yDomain()[0]);
 
 /*
-        // Setup the scales -- Blake original
+        // Setup the scales -- Blake original (all-purpose)
         plot.xScale(scale(view.xDomain(), plot.width() - margin.right - margin.left));
         plot.yScale(scale(view.yDomain(), plot.height() - margin.above - margin.below));
 */
@@ -41,15 +44,21 @@
         // Set up the scales
 
         if (sx > sy) {
-          plot.xScale(scale(view.xDomain(), (plot.width() - margin.right - margin.left)*sy/sx));
-          plot.yScale(scale(view.yDomain(), plot.height() - margin.above - margin.below));
+          plot.xScale(scale(view.xDomain(), xw*sy/sx)); // original CLZ
+          // plot.xScale(scale(view.xDomain(), (xw * ((sy/sx) + 1) / 2), (xw * (1 - (sy/sx)) / 2)); // revised CLZ
+          // plot.xScale(scale(view.xDomain(), (xw * (1 - (sy/sx)) / 2), (xw * ((sy/sx) + 1) / 2)); // revised CLZ - test reversed params
+          plot.yScale(scale(view.yDomain(), yh));
         } else {
-          plot.xScale(scale(view.xDomain(), plot.width() - margin.right - margin.left));
-          plot.yScale(scale(view.yDomain(), (plot.height() - margin.above - margin.below)*sx/sy));
+          plot.xScale(scale(view.xDomain(), xw));
+          plot.yScale(scale(view.yDomain(), yh*sx/sy));
         }
 
         console.log("sx: ", sx);
         console.log("sy: ", sy);
+        console.log("xw: ", xw);
+        console.log("yh: ", yh);
+        console.log("foo1: ", (xw * ((sy/sx) + 1) / 2));
+        console.log("foo2: ", (xw * (1 - (sy/sx)) / 2));
 
         console.log("view-xDomain: ", view.xDomain());
         console.log("view-yDomain: ", view.yDomain());
@@ -59,12 +68,6 @@
         console.log("margin-right: ", margin.right);
         console.log("margin-above: ", margin.above);
         console.log("margin-below: ", margin.below);
-        //console.log("xScale (0): ", plot.xScale.linear(0));
-        //console.log("yScale (500): ", plot.yScale.linear(500));
-        //console.log("xScale: ", scale(view.xDomain(), plot.width() - margin.right)); // DEBUG fails
-        //console.log("yScale: ", scale(view.yDomain(), plot.height() - margin.above)); // DEBUG fails
-        //console.log("plot-xScale: ", plot.xScale.value()); // DEBUG fails
-        //console.log("plot-yScale: ", plot.yScale.value()); // DEBUG fails
 
         // Generate the components - brush, frame, zoom, etc
         components.generate();
