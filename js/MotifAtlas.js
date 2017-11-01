@@ -2,8 +2,8 @@ function LookUpPDBInfo()
 {
     a = $(this);
     var anchor_text = a.text(),
-	re = /[a-zA-Z0-9]{4}/,
-	pdb = re.exec(anchor_text),
+        re = /[a-zA-Z0-9]{4}/,
+        pdb = re.exec(anchor_text),
         loc = window.location.protocol + '//' + window.location.host +
             '/rna3dhub/rest/getPdbInfo';
 
@@ -19,7 +19,7 @@ function LookUpPDBInfo()
           offset: 10,
           content: function(){return data;},
           title: function(){return pdb;},
-          delayOut: 1200,
+          //delayOut: 1200,
           html: true,
           animate: true,
           placement: a.offset().top - $(window).scrollTop() < 500 ? 'below' : 'above'
