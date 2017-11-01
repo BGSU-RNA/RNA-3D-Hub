@@ -71,16 +71,29 @@ class Ajax_model extends CI_Model {
             $nucleotides = $this->count_nucleotides($pdb);
             $bpnt = ( $nucleotides == 0 ) ? 0 : number_format($basepairs/$nucleotides, 4);
 
-            $pdb_info = "<u>Title</u>: {$row->title}<br>" .
+            $pdb_info = "<u>Title</u>: {$row->title}<br/>" .
+                        "<u>Method</u>: {$row->experimental_technique}<br/>" .
+                        "<u>Organism</u>: {$source}<br/>" .
+                        "<hr/>" . 
+                        "<i>$nucleotides nucleotides, $basepairs basepairs, $bpnt basepairs/nucleotide</i><br/>" .
+                        "<hr/>" . 
+                        "Composite Quality Score (CQS)<br/>" .
                         $resolution .
-                        "<u>Method</u>: {$row->experimental_technique}<br>" .
-                        "<u>Organism</u>: {$source}<br>" .
-                        "<i>$nucleotides nucleotides, $basepairs basepairs, $bpnt basepairs/nucleotide</i><br><br>" .
+                        "Average RSR" .  
+                        "Percent Clash" .  
+                        "Average RSCC" .  
+                        "Rfree" .  
+                        "Fraction Unobserved" .  
+                        "Percentage Observed" .  
+                        "foo" .  
+                        "foo" .  
+                        "foo" .  
+                        "<hr/>" . 
                         'Explore in ' .
                         anchor_popup("$pdb_url$pdb", 'PDB') .
                         ',  ' .
                         anchor_popup("http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget=$pdb", 'NDB') .
-                        ' or ' .
+                        ', or ' .
                         anchor_popup("pdb/$pdb", 'BGSU RNA Site');
         } else {
             // check obsolete files
