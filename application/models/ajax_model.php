@@ -77,17 +77,14 @@ class Ajax_model extends CI_Model {
                         "<hr/>" . 
                         "<i>$nucleotides nucleotides, $basepairs basepairs, $bpnt basepairs/nucleotide</i><br/>" .
                         "<hr/>" . 
-                        "Composite Quality Score (CQS)<br/>" .
+                        "<u>Composite Quality Score (CQS)</u>: foo<br/>" .
                         $resolution .
-                        "Average RSR" .  
-                        "Percent Clash" .  
-                        "Average RSCC" .  
-                        "Rfree" .  
-                        "Fraction Unobserved" .  
-                        "Percentage Observed" .  
-                        "foo" .  
-                        "foo" .  
-                        "foo" .  
+                        "<u>Average RSR</u>: foo<br/>" .  
+                        "<u>Percent Clash</u>: foo<br/>" .  
+                        "<u>Average RSCC</u>: foo<br/>" .  
+                        "<u>Rfree</u>: foo<br/>" .  
+                        "<u>Fraction Unobserved</u>: foo<br/>" .  
+                        "<u>Percentage Observed</u>: foo<br/>" .  
                         "<hr/>" . 
                         'Explore in ' .
                         anchor_popup("$pdb_url$pdb", 'PDB') .
