@@ -898,8 +898,9 @@ CREATE TABLE `nr_release_diff` (
                              '<li>Chain(s): ' . $best_chains . '; model(s): ' . $best_models . '</li>' .
                              '</ul>',
                              $pdb[$pdb_id]['resolution'],
-                             $row->analyzed_length . '&nbsp;(analyzed)<br>' . 
-                             $row->experimental_length . '&nbsp;(experimental)',
+                             $row->analyzed_length,
+                             #$row->analyzed_length . '&nbsp;(analyzed)<br>' . 
+                             #$row->experimental_length . '&nbsp;(experimental)',
                              "(" . $nums . ") " . $this->add_pdb_class($class[$class_id])
                             );
             $i++;
