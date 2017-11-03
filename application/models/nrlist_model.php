@@ -846,7 +846,8 @@ CREATE TABLE `nr_release_diff` (
                  ->join('nr_class_reps_count AS rc', 'cr.nr_release_id = rc.nr_release_id AND cr.name = rc.name AND cr.ife_id = rc.ife_id')
                  ->where('cr.nr_release_id', $id)
                  ->like('cr.name', "NR_{$resolution}", 'after')
-                 ->order_by('rc.num','desc')
+                 ->order_by('cr.analyzed_length','desc')
+                 #->order_by('rc.num','desc')
                  ->order_by('cr.ife_id');
         $query = $this->db->get();
 
