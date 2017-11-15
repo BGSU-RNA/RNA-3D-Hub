@@ -122,8 +122,47 @@ class Pdb_model extends CI_Model {
 
     function get_checkbox($id, $nt_ids)
     {
-        return "<label><input type='radio' id='{$id}' class='jmolInline' data-coord='{$id}'>{$id}</label>" .
-        "<span class='loop_link'>" . anchor_popup("loops/view/{$id}", '&#10140;') . "</span>" ;
+
+        $RSRZ_score = $this->get_RSRZ_score($id);
+
+        return "<label><input type='radio' id='{$id}' class='jmolInline' data-coord='{$id}'> {$id} </label>" .
+        "<span class='loop_link'>" . anchor_popup("loops/view/{$id}", '&#10140;') . "</span>";
+
+    }
+
+    function get_RSRZ_score($id) {
+
+        // find all constituent unit IDs of the loop
+        $this->db->select('unit_ids')
+                 ->distinct()
+                 ->from('loop_info')
+                 ->where_in('loop_id',$id);
+        $query = $this->db->get();
+        if ($query->num_rows() == 0) { return 'Loop id not found'; }
+
+        foreach ($query->result() as $row) {
+            $total_unit_ids = explode(',', $row->unit_ids);
+        }
+
+        // get the RSRZ score of each unit IDs forming the loop
+        $this->db->select('*')
+                 //->distinct()
+                 ->from('unit_quality')
+                 ->where_in('unit_id',$total_unit_ids);
+        $query = $this->db->get();
+        
+        if ($query->num_rows() == 0) {
+            return 'No RSRZ is correspondence found';
+        } else {
+            $RSRZ_score = array();
+            foreach ($query->result() as $row) {
+                $RSRZ_score[$row->unit_id] = $row->real_space_r_z_score;
+                // $comma_separated_rsrz_score = implode(",", $RSRZ_score);
+            }
+ 
+        }
+
+        return $RSRZ_score;
     }
 
     function get_latest_loop_release()
