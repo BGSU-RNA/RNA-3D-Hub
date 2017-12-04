@@ -145,7 +145,7 @@ class Pdb_model extends CI_Model {
         }
 
         // get the RSRZ score of each unit IDs forming the loop
-        $this->db->select('*')
+        $this->db->select('unit_id, real_space_r_z_score')
                  //->distinct()
                  ->from('unit_quality')
                  ->where_in('unit_id',$total_unit_ids);
@@ -162,7 +162,13 @@ class Pdb_model extends CI_Model {
  
         }
 
-        return $RSRZ_score;
+        foreach ($RSRZ_score as $key => $value) {
+          $tag[$key] = $key .":". $value;
+        }
+
+        $out = implode(“,”, $tag);
+
+        print_r($tag);
     }
 
     function get_latest_loop_release()
