@@ -73,25 +73,31 @@ class Ajax_model extends CI_Model {
 
             $pdb_info = "<u>Title</u>: {$row->title}<br/>" .
                         "<u>Method</u>: {$row->experimental_technique}<br/>" .
-                        "<u>Organism</u>: {$source}<br/>" .
-                        "<hr/>" . 
-                        "<i>$nucleotides nucleotides, $basepairs basepairs, $bpnt basepairs/nucleotide</i><br/>" .
-                        "<hr/>" . 
-                        "<u>Composite Quality Score (CQS)</u>: foo<br/>" .
-                        $resolution .
-                        "<u>Average RSR</u>: foo<br/>" .  
-                        "<u>Percent Clash</u>: foo<br/>" .  
-                        "<u>Average RSCC</u>: foo<br/>" .  
-                        "<u>Rfree</u>: foo<br/>" .  
-                        "<u>Fraction Unobserved</u>: foo<br/>" .  
-                        "<u>Percentage Observed</u>: foo<br/>" .  
-                        "<hr/>" . 
-                        'Explore in ' .
-                        anchor_popup("$pdb_url$pdb", 'PDB') .
-                        ',  ' .
-                        anchor_popup("http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget=$pdb", 'NDB') .
-                        ', or ' .
-                        anchor_popup("pdb/$pdb", 'BGSU RNA Site');
+                        "<u>Organism</u>: {$source}<br/>";
+
+            //  Isolate nt/bp in preparation for removal.
+            $pdb_info .= "<hr/>" . 
+                         "<i>$nucleotides nucleotides, $basepairs basepairs, $bpnt basepairs/nucleotide</i><br/>";
+
+            //  Separate the CQS values.
+            $pdb_info .= "<hr/>" . 
+                         "<u>Composite Quality Score (CQS)</u>: foo<br/>" .
+                         $resolution .
+                         "<u>Average RSR</u>: foo<br/>" .  
+                         "<u>Percent Clash</u>: foo<br/>" .  
+                         "<u>Average RSCC</u>: foo<br/>" .  
+                         "<u>Rfree</u>: foo<br/>" .  
+                         "<u>Fraction Unobserved</u>: foo<br/>" .  
+                         "<u>Percentage Observed</u>: foo<br/>";
+
+            //  Add the structure website links.
+            $pdb_info .= "<hr/>" . 
+                         'Explore in ' .
+                         anchor_popup("$pdb_url$pdb", 'PDB') .
+                         ',  ' .
+                         anchor_popup("http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget=$pdb", 'NDB') .
+                         ', or ' .
+                         anchor_popup("pdb/$pdb", 'BGSU RNA Site');
         } else {
             // check obsolete files
             $this->db->select('replaced_by')
