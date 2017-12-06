@@ -47,6 +47,11 @@ class Ajax_model extends CI_Model {
     {
         $pdb_url = "http://www.rcsb.org/pdb/explore/explore.do?structureId=";
 
+        //  Is the input $pdb a pdb_id or an ife_id?
+        //  Assess and set the variables accordingly.
+        $pdb = substr($inp,0,4);
+        if ( strlen($inp) > 4) { $ife = $inp; }
+
         $this->db->select('pi.title')
                  ->select('pi.experimental_technique')
                  ->select('pi.resolution')
