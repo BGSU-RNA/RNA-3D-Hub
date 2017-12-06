@@ -80,6 +80,11 @@ class Ajax_model extends CI_Model {
                         "<u>Method</u>: {$row->experimental_technique}<br/>" .
                         "<u>Organism</u>: {$source}<br/>";
 
+            //  Debugging info
+            $pdb_info .= "<hr/>" . 
+                         "<u>PDB</u>: _$pdb_<br/>" .
+                         "<u>IFE</u>: _$ife_<br/>"
+
             //  Isolate nt/bp in preparation for removal.
             $pdb_info .= "<hr/>" . 
                          "<i>$nucleotides nucleotides, $basepairs basepairs, $bpnt basepairs/nucleotide</i><br/>";
