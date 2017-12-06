@@ -43,7 +43,7 @@ class Ajax_model extends CI_Model {
         return $query[0]->source;
     }
 
-    function get_pdb_info($pdb)
+    function get_pdb_info($inp)
     {
         $pdb_url = "http://www.rcsb.org/pdb/explore/explore.do?structureId=";
 
