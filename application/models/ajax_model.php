@@ -62,7 +62,7 @@ class Ajax_model extends CI_Model {
             if (preg_match('/NMR/', $row->experimental_technique)) {
                 $resolution = '';
             } else {
-                $resolution = "<u>Resolution:</u> {$row->resolution} &Aring<br>";
+                $resolution = "<u>Resolution:</u> {$row->resolution} &Aring;<br>";
             }
 
             $source = $this->get_source_organism($pdb);
