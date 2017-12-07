@@ -3,10 +3,14 @@ function LookUpPDBInfo()
     a = $(this);
     var anchor_text = a.text(),
         //re = /[a-zA-Z0-9]{4}/,
-        re = /[a-zA-Z0-9\+|]/,
+        re = /[a-zA-Z0-9\+\|]/,
         pdb = re.exec(anchor_text),
         loc = window.location.protocol + '//' + window.location.host +
             '/rna3dhub/rest/getPdbInfo';
+
+    console.log("anchor: " anchor_text);
+    console.log("re: " re);
+    console.log("pdb: " pdb);
 
     $.post(loc, { pdb: pdb[0] }, function(data) {
         // hide all previously displayed popovers
