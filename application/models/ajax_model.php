@@ -91,18 +91,16 @@ class Ajax_model extends CI_Model {
 
             //  Separate the CQS logic, and conditionally display these values
             if ( $ife != "foo" ){
-                $pdb_info .= "<hr/><u>CQS ROUTINE</u><br/>";
+                $pdb_info .= "<hr/>" . 
+                             "<u>Composite Quality Score (CQS)</u>: foo<br/>" .
+                             $resolution .
+                             "<u>Average RSR</u>: foo<br/>" .  
+                             "<u>Percent Clash</u>: foo<br/>" .  
+                             "<u>Average RSCC</u>: foo<br/>" .  
+                             "<u>Rfree</u>: foo<br/>" .  
+                             "<u>Fraction Unobserved</u>: foo<br/>" .  
+                             "<u>Percentage Observed</u>: foo<br/>";
             }
-
-            $pdb_info .= "<hr/>" . 
-                         "<u>Composite Quality Score (CQS)</u>: foo<br/>" .
-                         $resolution .
-                         "<u>Average RSR</u>: foo<br/>" .  
-                         "<u>Percent Clash</u>: foo<br/>" .  
-                         "<u>Average RSCC</u>: foo<br/>" .  
-                         "<u>Rfree</u>: foo<br/>" .  
-                         "<u>Fraction Unobserved</u>: foo<br/>" .  
-                         "<u>Percentage Observed</u>: foo<br/>";
 
             //  Add the structure website links.
             $pdb_info .= "<hr/>" . 
