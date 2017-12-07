@@ -82,8 +82,8 @@ class Ajax_model extends CI_Model {
 
             //  Debugging info
             $pdb_info .= "<hr/>" . 
-                         "<u>PDB</u>: _$pdb_<br/>" .
-                         "<u>IFE</u>: _$ife_<br/>"
+                         "<u>PDB</u>: [ $pdb ]<br/>" .
+                         "<u>IFE</u>: [ $ife ]<br/>"
 
             //  Isolate nt/bp in preparation for removal.
             $pdb_info .= "<hr/>" . 
