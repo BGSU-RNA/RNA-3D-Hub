@@ -50,7 +50,7 @@ class Ajax_model extends CI_Model {
         //  Is the input $pdb a pdb_id or an ife_id?
         //  Assess and set the variables accordingly.
         $pdb = substr($inp,0,4);
-        if ( strlen($inp) > 4) { $ife = $inp; }
+        $ife = ( strlen($inp) > 4) ? $inp : "foo";
 
         $this->db->select('pi.title')
                  ->select('pi.experimental_technique')
@@ -90,10 +90,10 @@ class Ajax_model extends CI_Model {
                          "<i>$nucleotides nucleotides, $basepairs basepairs, $bpnt basepairs/nucleotide</i><br/>";
 
             //  Separate the CQS logic, and conditionally display these values
-            if ( !is_null($ife) ){
+            if ( $ife != "foo" ){
                 $pdb_info .= "<hr/><u>CQS ROUTINE</u><br/>";
             }
-            
+
             $pdb_info .= "<hr/>" . 
                          "<u>Composite Quality Score (CQS)</u>: foo<br/>" .
                          $resolution .
