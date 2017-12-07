@@ -128,12 +128,12 @@ class Ajax_model extends CI_Model {
                 $pdb_info .= "<hr/>" . 
                              "<u>Composite Quality Score (CQS)</u>: $cqs<br/>" .
                              $resolution .
-                             "<u>Average RSR</u>: foo<br/>" .  
-                             "<u>Percent Clash</u>: foo<br/>" .  
-                             "<u>Average RSCC</u>: foo<br/>" .  
-                             "<u>Rfree</u>: foo<br/>" .  
-                             "<u>Fraction Unobserved</u>: foo<br/>" .  
-                             "<u>Percentage Observed</u>: foo<br/>";
+                             "<u>Average RSR</u>: $arsr<br/>" .  
+                             "<u>Percent Clash</u>: $pclash<br/>" .  
+                             "<u>Average RSCC</u>: $arscc<br/>" .  
+                             "<u>Rfree</u>: $rfree<br/>" .  
+                             "<u>Fraction Unobserved</u>: $fracu<br/>" .  
+                             "<u>Percentage Observed</u>: $pobs<br/>";
             }
 
             //  Add the structure website links.
