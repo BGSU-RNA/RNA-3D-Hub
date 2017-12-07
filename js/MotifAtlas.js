@@ -8,10 +8,6 @@ function LookUpPDBInfo()
         loc = window.location.protocol + '//' + window.location.host +
             '/rna3dhub/rest/getPdbInfo';
 
-    console.log("anchor: " + anchor_text);
-    console.log("re: " + re);
-    console.log("pdb: " + pdb);
-
     $.post(loc, { pdb: pdb[0] }, function(data) {
         // hide all previously displayed popovers
         $('.popover-displayed').removeClass('popover-displayed')
