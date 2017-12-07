@@ -81,15 +81,19 @@ class Ajax_model extends CI_Model {
                         "<u>Organism</u>: {$source}<br/>";
 
             //  Debugging info
-            $pdb_info .= "<hr/>" . 
-                         "<u>PDB</u>: [ $pdb ]<br/>" .
-                         "<u>IFE</u>: [ $ife ]<br/>";
+            //$pdb_info .= "<hr/>" . 
+            //             "<u>PDB</u>: [ $pdb ]<br/>" .
+            //             "<u>IFE</u>: [ $ife ]<br/>";
 
             //  Isolate nt/bp in preparation for removal.
             $pdb_info .= "<hr/>" . 
                          "<i>$nucleotides nucleotides, $basepairs basepairs, $bpnt basepairs/nucleotide</i><br/>";
 
-            //  Separate the CQS values.
+            //  Separate the CQS logic, and conditionally display these values
+            if ( !is_null($ife) ){
+                $pdb_info .= "<hr/><u>CQS ROUTINE</u><br/>";
+            }
+            
             $pdb_info .= "<hr/>" . 
                          "<u>Composite Quality Score (CQS)</u>: foo<br/>" .
                          $resolution .
