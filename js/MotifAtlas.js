@@ -23,6 +23,7 @@ function LookUpPDBInfo()
           //delayOut: 1200,
           html: true,
           animate: true,
+          trigger: 'manual',
           placement: a.offset().top - $(window).scrollTop() < 500 ? 'below' : 'above'
         });
         a.addClass('popover-displayed');
