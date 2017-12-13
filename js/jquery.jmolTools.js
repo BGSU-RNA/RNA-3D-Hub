@@ -229,6 +229,14 @@ if ( typeof Object.create !== 'function' ) {
             }
         },
 
+        toggleRSRZ: function() {
+            if ( $(this).is(':checked') ) {
+                jmolScript("select *; color green;");
+            } else {
+                jmolScript("select *; color CPK;");
+            }
+        },
+
         toggleNeighborhood: function() {
             // update button text
             if ($.jmolTools.neighborhood) {
@@ -341,6 +349,7 @@ if ( typeof Object.create !== 'function' ) {
             $('#' + $.fn.jmolTools.options.showStereoId).on('click', Helpers.toggleStereo);
             $('#' + $.fn.jmolTools.options.showNeighborhoodId).on('click', Helpers.toggleNeighborhood);
             $('#' + $.fn.jmolTools.options.showNumbersId).on('click', Helpers.toggleNumbers);
+            $('#' + $.fn.jmolTools.options.colorByRSRZ).on('click', Helpers.toggleRSRZ);
             $('#' + $.fn.jmolTools.options.showAllId)
                     .toggle(Helpers.showAll, Helpers.hideAll)
                     .toggle(
@@ -430,6 +439,7 @@ if ( typeof Object.create !== 'function' ) {
         showPrevId:         false,
         showAllId:          false,
         showNumbersId:      false,
+        colorByRSRZ:      false,
         showStereoId:       false,
         clearId:            false
 	};
