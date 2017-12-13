@@ -102,6 +102,7 @@
             showStereoId: 'stereo',
             showNeighborhoodId: 'neighborhood',
             showNumbersId: 'showNtNums',
+            colorByRSRZ: 'colorRSRZ',
             showNextId: 'next',
             showPrevId: 'prev'
         });
@@ -136,7 +137,8 @@
                 <input type='button' id='prev' class='btn' value='Previous'>
                 <input type='button' id='next' class='btn' value="Next">
                 <br>
-                <label><input type="checkbox" id="showNtNums">Nucleotide numbers</label>
+                <label><input type="checkbox" id="showNtNums">Nucleotide numbers</label> 
+                <label><input type="checkbox" id="colorRSRZ">Color RSRZ</label>
            </div>
 
            <?php endif; ?>
