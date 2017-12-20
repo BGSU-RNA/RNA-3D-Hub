@@ -20,10 +20,9 @@ function LookUpPDBInfo()
           offset: 10,
           content: function(){return data;},
           title: function(){return pdb;},
-          //delayOut: 1200,
+          delayOut: 5000,
           html: true,
           animate: true,
-          trigger: 'manual',
           placement: a.offset().top - $(window).scrollTop() < 500 ? 'below' : 'above'
         });
         a.addClass('popover-displayed');
