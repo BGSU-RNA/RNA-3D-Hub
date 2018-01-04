@@ -436,7 +436,7 @@ class Ajax_model extends CI_Model {
 
     function get_loop_coordinates($loop_id)
     {
-        
+
         $headers_cif_fr3d = array (
 
             'data_view',
@@ -664,6 +664,74 @@ class Ajax_model extends CI_Model {
         }
 
         return $this->get_nt_coordinates($comma_separated_nt_ids);
+    }
+
+    function get_loop_quality_RSR($loop_id)
+    {
+
+         // find all constituent unit IDs of the loop
+        $this->db->select('unit_ids')
+                 ->distinct()
+                 ->from('loop_info')
+                 ->where_in('loop_id',$loop_id);
+        $query = $this->db->get();
+        if ($query->num_rows() == 0) { return 'Loop id not found'; }
+
+        foreach ($query->result() as $row) {
+            $total_unit_ids = explode(',', $row->unit_ids);
+        }
+
+        $this->db->select('unit_id, real_space_r')
+                 ->from('unit_quality')
+                 ->where_in('unit_id',$total_unit_ids);
+        $query = $this->db->get();
+        
+        if ($query->num_rows() == 0) {
+            return 'No RSR correspondence found';
+        } else {
+            $RSR = array();
+            foreach ($query->result_array() as $row) {
+                $RSR[] = $row["unit_id"]. "=" . $row["real_space_r"];   
+            }
+ 
+        }
+
+        return json_encode($RSR);
+
+    }
+
+    function get_loop_quality_RSRZ($loop_id)
+    {
+
+         // find all constituent unit IDs of the loop
+        $this->db->select('unit_ids')
+                 ->distinct()
+                 ->from('loop_info')
+                 ->where_in('loop_id',$loop_id);
+        $query = $this->db->get();
+        if ($query->num_rows() == 0) { return 'Loop id not found'; }
+
+        foreach ($query->result() as $row) {
+            $total_unit_ids = explode(',', $row->unit_ids);
+        }
+
+        $this->db->select('unit_id, real_space_r_z_score')
+                 ->from('unit_quality')
+                 ->where_in('unit_id',$total_unit_ids);
+        $query = $this->db->get();
+        
+        if ($query->num_rows() == 0) {
+            return 'No RSRZ correspondence is found';
+        } else {
+            $RSRZ = array();
+            foreach ($query->result_array() as $row) {
+                $RSRZ[] = $row["unit_id"] . "=" . $row["real_space_r_z_score"];   
+            }
+ 
+        }
+
+        return json_encode($RSRZ);
+
     }
 
 }
