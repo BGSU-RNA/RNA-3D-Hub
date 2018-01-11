@@ -52,10 +52,9 @@ class Rest extends MY_Controller {
 
     }
 
-    public function getQualityRSR()
+    public function getRSR()
     {
-        // should be able to accept loop_id, nt_ids, motif_id, short_nt_id
-        // and loop pairs (returns the first loop of the two)
+        // should be able to accept loop_id and unit_id
 
         // search POST, then GET
         $query = $this->input->get_post('quality');
@@ -67,7 +66,7 @@ class Rest extends MY_Controller {
         if ( $query_type ) {
             $this->output->set_header("Access-Control-Allow-Origin: *");
             $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
-            $data['csv'] = $this->_database_lookup_quality_RSR($query, $query_type);
+            $data['csv'] = $this->_database_lookup_RSR($query, $query_type);
             $this->load->view('csv_view', $data);
         } else {
             echo $this->messages['invalid'];
@@ -75,10 +74,9 @@ class Rest extends MY_Controller {
 
     }
 
-    public function getQualityRSRZ()
+    public function getRSRZ()
     {
-        // should be able to accept loop_id, nt_ids, motif_id, short_nt_id
-        // and loop pairs (returns the first loop of the two)
+        // should be able to accept loop_id and unit_id
 
         // search POST, then GET
         $query = $this->input->get_post('quality');
@@ -90,7 +88,7 @@ class Rest extends MY_Controller {
         if ( $query_type ) {
             $this->output->set_header("Access-Control-Allow-Origin: *");
             $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
-            $data['csv'] = $this->_database_lookup_quality_RSRZ($query, $query_type);
+            $data['csv'] = $this->_database_lookup_RSRZ($query, $query_type);
             $this->load->view('csv_view', $data);
         } else {
             echo $this->messages['invalid'];
@@ -123,7 +121,7 @@ class Rest extends MY_Controller {
 
     }
 
-    private function _database_lookup_quality_RSR($query, $query_type)
+    private function _database_lookup_RSR($query, $query_type)
     {
         // don't load the database until the input was validated
         $this->load->model('Ajax_model', '', TRUE);
@@ -132,23 +130,15 @@ class Rest extends MY_Controller {
         
         switch ($query_type) :
             case 'loop_id':
-                return $this->Ajax_model->get_loop_quality_RSR($query);
-            case 'motif_id':
-                return $this->Ajax_model->get_exemplar_quality_RSR($query);
-            case 'nt_list':
-                //return $this->Ajax_model->get_coordinates($query);
-                return $this->Ajax_model->get_unit_id_quality_RSR($query);
-            case 'loop_pair':
-                return $this->Ajax_model->get_loop_pair_quality_RSR($query);
+                return $this->Ajax_model->get_loop_RSR($query);
             case 'unit_id':
-                //return $this->Ajax_model->get_unit_id_coordinates($query);
-                return $this->Ajax_model->get_nt_quality_RSR($query);
+                return $this->Ajax_model->get_unit_id_RSR($query);
             default: return $this->messages['error'];
         endswitch;
 
     }
 
-    private function _database_lookup_quality_RSRZ($query, $query_type)
+    private function _database_lookup_RSRZ($query, $query_type)
     {
         // don't load the database until the input was validated
         $this->load->model('Ajax_model', '', TRUE);
@@ -157,17 +147,9 @@ class Rest extends MY_Controller {
         
         switch ($query_type) :
             case 'loop_id':
-                return $this->Ajax_model->get_loop_quality_RSRZ($query);
-            case 'motif_id':
-                return $this->Ajax_model->get_exemplar_quality_RSRZ($query);
-            case 'nt_list':
-                //return $this->Ajax_model->get_coordinates($query);
-                return $this->Ajax_model->get_unit_id_quality_RSRZ($query);
-            case 'loop_pair':
-                return $this->Ajax_model->get_loop_pair_quality_RSRZ($query);
+                return $this->Ajax_model->get_loop_RSRZ($query);
             case 'unit_id':
-                //return $this->Ajax_model->get_unit_id_coordinates($query);
-                return $this->Ajax_model->get_nt_quality_RSRZ($query);
+                return $this->Ajax_model->get_unit_id_RSRZ($query);
             default: return $this->messages['error'];
         endswitch;
 
