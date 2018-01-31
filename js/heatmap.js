@@ -1,4 +1,4 @@
-/////////////////////////////////////////////////////////////////////////////////////////////  
+/////////////////////////////////////////////////////////////////////////////////////////
 
   (function() {
   /**
@@ -101,16 +101,19 @@
       // the unary operator (+) converts a numeric string into a number
       data.forEach(function(d) {
         ife1 = d.ife1;
+        //ife1_len = +d.ife1_len
         ife1_index = +d.ife1_index
         ife2 = d.ife2;
+        //ife2_len = +d.ife2_len
         ife2_index = +d.ife2_index
+        //match_count = +d.match_count
         discrepancy = +d.discrepancy;
       });
 
       var domainMax = d3.max(data, function(d) {return +d.discrepancy;});
       var domainMin = d3.min(data, function(d) {return +d.discrepancy;});
 
-      
+      // Check the maximum discrepancy value. Use 0.5 if max discrepancy is above 0.5
       if (domainMax < 0.5) {
         var colorScale = d3.scaleLinear()
           .domain(linspace(domainMin, domainMax, viridisColor.length))

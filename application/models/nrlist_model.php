@@ -271,6 +271,16 @@ CREATE TABLE `nr_release_diff` (
     
     function get_statistics($id)
     {
+        $this->db->select('NR.nr_release_id')
+                 ->from('nr_classes AS NC')
+                 ->join('nr_releases AS NR', 'NC.nr_release_id = NR.nr_release_id')
+                 ->where('NC.name', $id)
+                 ->order_by('NR.index', 'DESC')
+                 ->limit(1);
+        $result = $this->db->get()->result_array();
+
+        $release_id = $result[0]['nr_release_id'];
+
         $this->db->select('pi.pdb_id')
                  ->select('ch.ife_id')
                  ->select('pi.title')
@@ -286,9 +296,10 @@ CREATE TABLE `nr_release_diff` (
                  ->join('nr_ordering AS nl', 'ch.nr_chain_id = nl.nr_chain_id')
                  ->join('nr_classes AS cl', 'nl.nr_class_id = cl.nr_class_id AND ch.nr_release_id = cl.nr_release_id')          
                  ->where('cl.name',$id)
+                 ->where('cl.nr_release_id', $release_id)
                  #->where('nch.nr_release_id',$this->last_seen_in) # what was this doing? still necessary?
-                 ->group_by('pi.pdb_id')
-                 ->group_by('ii.ife_id')
+                 //->group_by('pi.pdb_id')
+                 //->group_by('ii.ife_id')
                  ->order_by('nl.index','asc');
 
         $query = $this->db->get();
@@ -331,9 +342,12 @@ CREATE TABLE `nr_release_diff` (
         $release_id = $result[0]['nr_release_id'];
 
         $this->db->select('NC1.ife_id AS ife1')
+                 //->select('ESI1.length AS len_seq_ife1')
                  ->select('NO1.index AS ife1_index')
                  ->select('NC2.ife_id AS ife2')
+                 //->select('ESI2.length AS len_seq_ife2')
                  ->select('NO2.index AS ife2_index')
+                 //->select('CRI.match_count AS match_count')
                  ->select('CSS.discrepancy')
                  ->from('nr_classes AS NCL')
                  ->join('nr_chains as NC1', 'NC1.nr_class_id = NCL.nr_class_id and NC1.nr_release_id = NCL.nr_release_id', 'inner')
@@ -341,29 +355,59 @@ CREATE TABLE `nr_release_diff` (
                  ->join('nr_chains as NC2', 'NC2.nr_class_id = NCL.nr_class_id and NC2.nr_release_id = NCL.nr_release_id', 'inner')
                  ->join('nr_ordering as NO2', 'NO2.nr_chain_id = NC2.nr_chain_id and NO2.nr_class_id = NC2.nr_class_id', 'inner')
                  ->join('ife_chains as IC1', 'IC1.ife_id = NC1.ife_id and IC1.index = 0', 'inner')
+                 ->join('exp_seq_chain_mapping as ESC1', 'IC1.chain_id = ESC1.chain_id', 'inner')
+                 ->join('exp_seq_info as ESI1', 'ESC1.exp_seq_id = ESI1.exp_seq_id', 'inner')
                  ->join('ife_chains as IC2', 'IC2.ife_id = NC2.ife_id and IC2.index = 0', 'inner')
+                 ->join('exp_seq_chain_mapping as ESC2', 'IC2.chain_id = ESC2.chain_id', 'inner')
+                 ->join('exp_seq_info as ESI2', 'ESC2.exp_seq_id = ESI2.exp_seq_id', 'inner')
+                 ->join('correspondence_info as CRI', 'ESI1.exp_seq_id = CRI.exp_seq_id_1 and ESI2.exp_seq_id = CRI.exp_seq_id_2', 'inner')
                  ->join('chain_chain_similarity as CSS', 'CSS.chain_id_1 = IC1.chain_id and CSS.chain_id_2 = IC2.chain_id', 'left outer')
                  ->where('NC1.nr_chain_id !=', 'NC2.nr_chain_id')
                  ->where('NCL.name', $id)
-                 ->where('NCL.nr_release_id', $release_id);
+                 ->where('NCL.nr_release_id', $release_id)
+                 ->group_by('ife1_index', 'ASC')
+                 ->group_by('ife2_index', 'ASC');
 
         $query = $this->db->get();
 
         //  why do this processing if the results are not used?!?
-        /*
+        
+        
         foreach($query->result() as $row) {
             $ife1[] = $row->ife1;
             $ife1_index[] = $row->ife1_index;
             $ife2[] = $row->ife2;
             $ife2_index[] = $row->ife2_index;
             $discrepancy[] = $row->discrepancy;
+            //$ife1_len[] = $row->len_seq_ife1;
+            // $combined_id[] = ($row->ife1_index, $row->ife2_index);
         }
-        */
+        
+        // print_r($ife1_len);
+       
+        //$sequence_len = $this->calc_min_seq_len(50, 49); 
+
+        //print $sequence_len;
 
         $heatmap_data = json_encode($query->result());
 
+        // print_r($heatmap_data);
+
         return $heatmap_data;
-	}
+    }
+
+    function calc_min_seq_len($seq1_len, $seq2_len) 
+    {
+        if ($seq1_len < $seq2_len) {
+            $min_seq_len = $seq1_len;
+
+        } else {
+            $min_seq_len = $seq2_len;
+        }
+
+        return $min_seq_len;
+
+    }
 
 
     function get_compound_single($ife)

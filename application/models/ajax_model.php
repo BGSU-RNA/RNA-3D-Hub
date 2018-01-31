@@ -750,12 +750,12 @@ class Ajax_model extends CI_Model {
         } else {
             $RSR = array();
             foreach ($query->result_array() as $row) {
-                $RSR[] = $row["unit_id"]. "=" . $row["real_space_r"];   
+                $RSR[] = $row["unit_id"]. ":" . $row["real_space_r"];   
             }
  
         }
 
-        return json_encode($RSR);
+        return $RSR;
 
     }
 
@@ -781,11 +781,7 @@ class Ajax_model extends CI_Model {
         if ($query->num_rows() == 0) {
             return 'No RSRZ correspondence is found';
         } else {
-            $RSRZ = array();
-            foreach ($query->result_array() as $row) {
-                $RSRZ[] = $row["unit_id"] . "=" . $row["real_space_r_z_score"];   
-            }
- 
+            $RSRZ = $query->result();
         }
 
         return json_encode($RSRZ);
@@ -807,7 +803,7 @@ class Ajax_model extends CI_Model {
         } else {
             $RSR = array();
             foreach ($query->result_array() as $row) {
-                $RSR[] = $row["unit_id"]. "=" . $row["real_space_r"];   
+                $RSR[] = $row["unit_id"]. ":" . $row["real_space_r"];   
             }
  
         }
@@ -830,7 +826,7 @@ class Ajax_model extends CI_Model {
         } else {
             $RSRZ = array();
             foreach ($query->result_array() as $row) {
-                $RSRZ[] = $row["unit_id"]. "=" . $row["real_space_r_z_score"];   
+                $RSRZ[] = $row["unit_id"]. ":" . $row["real_space_r_z_score"];   
             }
  
         }

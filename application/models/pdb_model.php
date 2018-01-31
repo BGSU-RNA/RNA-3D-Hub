@@ -123,9 +123,7 @@ class Pdb_model extends CI_Model {
     function get_checkbox($id, $nt_ids)
     {
 
-        $RSRZ_score = $this->get_RSRZ_score($id);
-
-        return "<label><input type='radio' id='{$id}' class='jmolInline' data-coord='{$id}'> {$id} </label>" .
+        return "<label><input type='radio' id='{$id}' class='jmolInline' data-coord='{$id}' data-quality='{$id}'> {$id} </label>" .
         "<span class='loop_link'>" . anchor_popup("loops/view/{$id}", '&#10140;') . "</span>";
 
     }
@@ -144,6 +142,10 @@ class Pdb_model extends CI_Model {
             $total_unit_ids = explode(',', $row->unit_ids);
         }
 
+        // $loop_id = explode(',', $id);
+
+        // var_dump($loop_id);
+
         // get the RSRZ score of each unit IDs forming the loop
         $this->db->select('unit_id, real_space_r_z_score')
                  //->distinct()
@@ -155,20 +157,57 @@ class Pdb_model extends CI_Model {
             return 'No RSRZ is correspondence found';
         } else {
             $RSRZ_score = array();
-            foreach ($query->result() as $row) {
-                $RSRZ_score[$row->unit_id] = $row->real_space_r_z_score;
-                // $comma_separated_rsrz_score = implode(",", $RSRZ_score);
+            foreach ($query->result_array() as $row) {
+                $RSRZ_score[] = $row["unit_id"]. ":" . $row["real_space_r_z_score"];
+                
             }
  
         }
 
+        // $RSRZ_score = json_encode($RSRZ_score);
+
+        //print_r($RSRZ_score);
+
+        // print_r($RSRZ_score);
+
+        // echo count($RSRZ_score);
+
+        
+        /*
+        foreach ($RSRZ_score as $key1 => $value1) {
+            print $key1 . "<br>"."<br>";
+        } 
+        */
+
+        // print_r(array_values($RSRZ_score));
+
+        // print_r($RSRZ_score[0]);
+
+
+
+        /*
         foreach ($RSRZ_score as $key => $value) {
-          $tag[$key] = $key .":". $value;
+          $tag[] = $key .":". $value;
         }
 
-        $out = implode(“,”, $tag);
+        $tag = array_values($tag);
+        */
 
-        print_r($tag);
+
+        //print_r($tag);
+
+        //$out = implode(“,”, $tag);
+
+
+        // $RSRZ_score = array_values($RSRZ_score)
+
+
+        // print_r($RSRZ_score);
+
+        //$c = array_combine($loop_id, $RSRZ_score);
+
+        //print_r($c);
+
     }
 
     function get_latest_loop_release()
@@ -396,8 +435,6 @@ class Pdb_model extends CI_Model {
         }
 
         $header2 = array_merge( $header, explode(',', $interaction_description) );
-
-        print_r($header2);
 
         return array( 'data'   => $html,
                       'header' => array_merge( $header, explode(',', $interaction_description) ),
