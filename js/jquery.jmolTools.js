@@ -49,16 +49,16 @@ if ( typeof Object.create !== 'function' ) {
         },
 
         loadData: function() {
-
             var self = this;
             if ( self.loaded ) { return; }
 
             $.ajax({
-                url: $.fn.jmolTools.options.serverUrl,
+                url: $.fn.jmolTools.options.serverUrl1,
                 type: 'POST',
-                data: {'coord' : self.$elem.data($.fn.jmolTools.options.dataAttribute)}
+                data: {'coord' : self.$elem.data($.fn.jmolTools.options.dataAttribute1)}
             }).done(function(data) {
                 self.appendData(data);
+                //console.log(data);
                 if ( self.loaded ) {
                     self.updateModelCounts();
                     self.superimpose();
@@ -66,8 +66,21 @@ if ( typeof Object.create !== 'function' ) {
                     self.show();
                 }
             });
+
+            
+            $.ajax({
+                url: $.fn.jmolTools.options.serverUrl2,
+                type: 'GET',
+                dataType: 'json',
+                //contentType: 'application/json',
+                data: {'quality' : self.$elem.data($.fn.jmolTools.options.dataAttribute2)},
+                success: (function(data) {
+                    Helpers.toggleRSRZ(data);              
+                })
+            });
         },
 
+      
         appendData: function(data) {
             var self = this;
             // change MODEL to data_view
@@ -81,6 +94,25 @@ if ( typeof Object.create !== 'function' ) {
 
         updateModelCounts: function() {
             this.modelNumber = ++$.jmolTools.numModels;
+        },
+
+        // colors the nts by RSRZ 
+        // input would be a JSON obj of unit_ids and RSRZ scores
+        colorRSRZ: function(m) {
+            var command = "";
+            for (var i=0; i<m.length; i++) {
+                var RSRZ = (Math.round(parseFloat(m[i].real_space_r_z_score)*100)/100);
+                if (RSRZ < 1.00) {
+                    command += "select " + "'" + m[i].unit_id + "';" + " color green; ";
+                } else if (RSRZ < 2.00) {
+                    command += "select " + "'" + m[i].unit_id + "';" + " color yellow; ";
+                } else if (RSRZ < 3.00) {
+                    command += "select " + "'" + m[i].unit_id + "';" + " color orange; ";
+                } else {
+                    command += "select " + "'" + m[i].unit_id + "';" + " color red; ";
+                }
+            }
+            jmolScript(command);
         },
 
 		// superimpose this model onto the first one using phosphate atoms
@@ -208,7 +240,7 @@ if ( typeof Object.create !== 'function' ) {
 		    if ( !self.hidden && self.loaded ) {
                 self.show();
             }
-		}
+		},
 
     };
 
@@ -221,6 +253,7 @@ if ( typeof Object.create !== 'function' ) {
             $.jmolTools.stereo = !$.jmolTools.stereo;
         },
 
+        
         toggleNumbers: function() {
             if ( $(this).is(':checked') ) {
                 jmolScript("select {*.C1'},{*.CA};label %[sequence]%[resno];color labels black;");
@@ -229,13 +262,19 @@ if ( typeof Object.create !== 'function' ) {
             }
         },
 
-        toggleRSRZ: function() {
+        toggleRSRZ: function(data) {
+            /*
+            if the checkbox is clicked, the colorRSRZ function
+            should be run with the data parameter
+            */
             if ( $(this).is(':checked') ) {
+                // this should be colorRSRZ(data);
                 jmolScript("select *; color green;");
             } else {
                 jmolScript("select *; color CPK;");
             }
         },
+        
 
         toggleNeighborhood: function() {
             // update button text
@@ -430,8 +469,10 @@ if ( typeof Object.create !== 'function' ) {
     var loc = window.location.protocol + '//' + window.location.hostname;
     // default options
 	$.fn.jmolTools.options = {
-        serverUrl   : loc + '/rna3dhub/rest/getCoordinates',
-        dataAttribute: 'coord',
+        serverUrl1   : loc + '/rna3dhub/rest/getCoordinates',
+        dataAttribute1: 'coord',
+        serverUrl2   : loc + '/rna3dhub/rest/getRSRZ',
+        dataAttribute2: 'quality',
         toggleCheckbox: true,      // by default each model will monitor the checked state of its corresponding checkbox
         mutuallyExclusive:  false, // by default will set to false for checkboxes and false for radiobuttons
         showNeighborhoodId: false,

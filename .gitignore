@@ -21,3 +21,13 @@ remove_cache.workflow
 
 # VM
 .vagrant
+
+application/controllers/.idea/controllers.iml
+
+application/controllers/.idea/modules.xml
+
+application/controllers/.idea/vcs.xml
+
+application/controllers/.idea/workspace.xml
+
+application/controllers/nrlist.php

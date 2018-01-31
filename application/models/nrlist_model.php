@@ -268,7 +268,7 @@ CREATE TABLE `nr_release_diff` (
     
     function get_statistics($id)
     {
-        
+
         $this->db->select('pi.pdb_id')
                  ->select('ch.ife_id')
                  ->select('pi.title')
@@ -328,7 +328,7 @@ CREATE TABLE `nr_release_diff` (
 
         $release_id = $result[0]['nr_release_id'];
 
-        $this->db->select('NC1.ife_id AS ife1')
+          $this->db->select('NC1.ife_id AS ife1')
                  ->select('NO1.index AS ife1_index')
                  ->select('NC2.ife_id AS ife2')
                  ->select('NO2.index AS ife2_index')
@@ -348,7 +348,8 @@ CREATE TABLE `nr_release_diff` (
         $query = $this->db->get();
 
         //  why do this processing if the results are not used?!?
-        /*
+        
+        
         foreach($query->result() as $row) {
             $ife1[] = $row->ife1;
             $ife1_index[] = $row->ife1_index;
@@ -356,14 +357,13 @@ CREATE TABLE `nr_release_diff` (
             $ife2_index[] = $row->ife2_index;
             $discrepancy[] = $row->discrepancy;
         }
-        */
 
         $heatmap_data = json_encode($query->result());
 
         return $heatmap_data;
-	}
-	
 
+    }
+	
     function get_compound_list($id)
     {
         $this->db->select('group_concat(compound separator ", ") as compounds', FALSE)

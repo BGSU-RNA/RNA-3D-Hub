@@ -12,8 +12,19 @@ class Ajax extends CI_Controller {
         }
 	}
 
-	public function get_loop_coordinates()
+	public function get_loop_RSRZ()
 	{
+        $input = $this->input->post('loop_id');
+        if ($input != FALSE) {
+            $this->load->model('Ajax_model', '', TRUE);
+            echo $this->Ajax_model->get_loop_RSRZ($input);
+        } else {
+            echo 'No input';
+        }
+	}
+
+    public function get_loop_coordinates()
+    {
         $input = $this->input->post('loop_id');
         if ($input != FALSE) {
             $this->load->model('Ajax_model', '', TRUE);
@@ -21,7 +32,7 @@ class Ajax extends CI_Controller {
         } else {
             echo 'No input';
         }
-	}
+    }
 
     public function get_nt_coordinates_approximate()
     {

@@ -122,8 +122,8 @@ class Pdb_model extends CI_Model {
 
     function get_checkbox($id, $nt_ids)
     {
-        return "<label><input type='radio' id='{$id}' class='jmolInline' data-coord='{$id}'>{$id}</label>" .
-        "<span class='loop_link'>" . anchor_popup("loops/view/{$id}", '&#10140;') . "</span>" ;
+        return "<label><input type='radio' id='{$id}' class='jmolInline' data-coord='{$id}' data-quality='{$id}'> {$id} </label>" .
+        "<span class='loop_link'>" . anchor_popup("loops/view/{$id}", '&#10140;') . "</span>";
     }
 
     function get_latest_loop_release()
