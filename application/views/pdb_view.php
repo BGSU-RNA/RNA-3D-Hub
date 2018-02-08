@@ -50,43 +50,43 @@
               <ul class="media-grid">
                 <li>
                   <a href="<?=$baseurl?>pdb/1FJG">1FJG
-                    <img src="http://www.pdb.org/pdb/images/1FJG_bio1_r_250.jpg" class="thumbnail span2" alt="Asymmetric unit 1FJG">
+                    <img src="http://cdn.rcsb.org/images/rutgers/fj/1fjg/1fjg.pdb-250.jpg" class="thumbnail span2" alt="Asymmetric unit 1FJG">
                     T. th. 16S rRNA
                   </a>
                 </li>
                 <li>
                   <a href="<?=$baseurl?>pdb/3V2F">3V2F
-                    <img src="http://www.pdb.org/pdb/images/3V2F_bio1_r_250.jpg" class="thumbnail span2" alt="Asymmetric unit 3V2F">
+                    <img src="http://cdn.rcsb.org/images/rutgers/v2/3v2f/3v2f.pdb-250.jpg" class="thumbnail span2" alt="Asymmetric unit 3V2F">
                     T. th. 23S rRNA
                   </a>
                 </li>
                 <li>
                   <a href="<?=$baseurl?>pdb/1S72">1S72
-                    <img src="http://www.pdb.org/pdb/images/1S72_bio1_r_250.jpg" class="thumbnail span2" alt="Asymmetric unit 1S72">
+                    <img src="http://cdn.rcsb.org/images/rutgers/s7/1s72/1s72.pdb-250.jpg" class="thumbnail span2" alt="Asymmetric unit 1S72">
                     H. m. 23S rRNA
                   </a>
                 </li>
                 <li>
                   <a href="<?=$baseurl?>pdb/2QBG">2QBG
-                    <img src="http://www.pdb.org/pdb/images/2QBG_bio1_r_250.jpg" class="thumbnail span2" alt="Asymmetric unit 2QBG">
+                    <img src="http://cdn.rcsb.org/images/rutgers/qb/2qbg/2qbg.pdb-250.jpg" class="thumbnail span2" alt="Asymmetric unit 2QBG">
                     E. coli 23S rRNA
                   </a>
                 </li>
                 <li>
                   <a href="<?=$baseurl?>pdb/2AW7">2AW7
-                    <img src="http://www.pdb.org/pdb/images/2AW7_bio1_r_250.jpg" class="thumbnail span2" alt="Asymmetric unit 2AW7">
+                    <img src="http://cdn.rcsb.org/images/rutgers/aw/2aw7/2aw7.pdb-250.jpg" class="thumbnail span2" alt="Asymmetric unit 2AW7">
                     E. coli 16S rRNA
                   </a>
                 </li>
                 <li>
                   <a href="<?=$baseurl?>pdb/3U5F">3U5F
-                    <img src="http://www.pdb.org/pdb/images/3U5F_bio1_r_250.jpg" class="thumbnail span2" alt="Asymmetric unit 3U5F">
+                    <img src="http://cdn.rcsb.org/images/rutgers/u5/3u5f/3u5f.pdb-250.jpg" class="thumbnail span2" alt="Asymmetric unit 3U5F">
                     S. c. 40S rRNA
                   </a>
                 </li>
                 <li>
                   <a href="<?=$baseurl?>pdb/4A1B">4A1B
-                    <img src="http://www.pdb.org/pdb/images/4A1B_bio1_r_250.jpg" class="thumbnail span2" alt="Asymmetric unit 4A1B">
+                    <img src="http://cdn.rcsb.org/images/rutgers/a1/4a1b/4a1b.pdb-250.jpg" class="thumbnail span2" alt="Asymmetric unit 4A1B">
                     Tetr. th. 26S rRNA
                   </a>
                 </li>
@@ -103,7 +103,7 @@
                 <?php foreach($recent as $pdb): ?>
                 <li>
                   <a href="<?=$baseurl?>pdb/<?=$pdb?>"><?=$pdb?>
-                    <img src="http://www.pdb.org/pdb/images/<?=$pdb?>_bio1_r_250.jpg" class="thumbnail span2" alt="Asymmetric unit <?=$pdb?>">
+                    <img src="http://cdn.rcsb.org/images/rutgers/<?=strtolower(substr($pdb, 1, 2));?>/<?=strtolower($pdb);?>/<?=strtolower($pdb);?>.pdb-250.jpg" class="thumbnail span2" alt="Asymmetric unit <?=$pdb?>">
                   </a>
                 </li>
                 <?php endforeach; ?>
