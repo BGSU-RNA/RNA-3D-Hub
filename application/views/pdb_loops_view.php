@@ -103,6 +103,7 @@
             showNeighborhoodId: 'neighborhood',
             showNumbersId: 'showNtNums',
             colorByRSRZ: 'colorRSRZ',
+            colorByRSR: 'colorRSR',
             showNextId: 'next',
             showPrevId: 'prev'
         });
@@ -138,8 +139,16 @@
                 <input type='button' id='next' class='btn' value="Next">
                 <br>
                 <label><input type="checkbox" id="showNtNums">Nucleotide numbers</label> 
-                <label><input type="checkbox" id="colorRSRZ">Color RSRZ</label>
-           </div>
+                <label>
+                    <input type="checkbox" id="colorRSRZ">Color RSRZ
+                    <input type="checkbox" id="colorRSR">Color by RSR
+                </label>
+                <!--<div>
+                    <br><br><input type="radio" id="colorRSRZ" name="color"> <label for="colorByRSRZ">Colour by RSRZ</label>
+
+                    <br><br><input type="radio" id="colorRSR" name="color"> <label for="colorbyRSR">Colour by RSR</label><br>
+
+                </div>-->
 
            <?php endif; ?>
 

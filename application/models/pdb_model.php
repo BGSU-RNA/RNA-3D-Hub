@@ -1,17 +1,13 @@
 <?php
 class Pdb_model extends CI_Model {
-
     function __construct()
     {
         $CI = & get_instance();
         $CI->load->helper('url');
-
         $this->qa_status = array(NULL,'valid','missing','modified','abnormal','incomplete','complementary');
-
         // Call the Model constructor
         parent::__construct();
     }
-
     function get_all_pdbs()
     {
         $this->db->select('distinct(pdb_id)')
@@ -22,7 +18,6 @@ class Pdb_model extends CI_Model {
         }
         return $pdbs;
     }
-
     function get_recent_rna_containing_structures($num)
     {
         $this->db->select('distinct(pdb_id)')
@@ -35,7 +30,6 @@ class Pdb_model extends CI_Model {
         }
         return $pdbs;
     }
-
     function get_latest_motif_assignments($pdb_id, $loop_type)
     {
         // $loop_type = IL or HL
@@ -52,7 +46,6 @@ class Pdb_model extends CI_Model {
         }
         return $data;
     }
-
     function get_loops($pdb_id)
     {
         $loop_release_id = $this->get_latest_loop_release();
@@ -74,10 +67,8 @@ class Pdb_model extends CI_Model {
             $valid_tables[$loop_type] = array();
             $invalid_tables[$loop_type] = array();
         }
-
         $motifs = $this->get_latest_motif_assignments($pdb_id, 'IL');
         $motifs = array_merge($motifs, $this->get_latest_motif_assignments($pdb_id, 'HL'));
-
         foreach ($query->result() as $row) {
             $loop_type = substr($row->loop_id, 0, 2);
             if ($row->status == 1) {
@@ -86,7 +77,6 @@ class Pdb_model extends CI_Model {
                 } else {
                     $motif_id = 'NA';
                 }
-
                 $valid_tables[$loop_type][] = array(count($valid_tables[$loop_type]) + 1,
                                                     array( 'class' => 'loop',
                                                            'data'  => $this->get_checkbox($row->loop_id, $row->unit_ids)
@@ -102,7 +92,6 @@ class Pdb_model extends CI_Model {
                 } else {
                     $annotation = $row->nt_signature;
                 }
-
                 $invalid_tables[$loop_type][] = array(count($invalid_tables[$loop_type])+1,
                                                       array( 'class' => 'loop',
                                                              'data'  => $this->get_checkbox($row->loop_id, $row->unit_ids)
@@ -111,32 +100,27 @@ class Pdb_model extends CI_Model {
                                                       $annotation);
             }
         }
-
         return array('valid' => $valid_tables, 'invalid' => $invalid_tables);
     }
-
     function make_reason_label($status)
     {
         return '<label class="label important">' . $this->qa_status[$status] . '</label>';
     }
-
     function get_checkbox($id, $nt_ids)
     {
         return "<label><input type='radio' id='{$id}' class='jmolInline' data-coord='{$id}' data-quality='{$id}'> {$id} </label>" .
         "<span class='loop_link'>" . anchor_popup("loops/view/{$id}", '&#10140;') . "</span>";
-    }
 
+    }
     function get_latest_loop_release()
     {
         $this->db->select('loop_release_id')
                  ->from('loop_releases')
                  ->order_by('date','desc')
                  ->limit(1);
-
         $result = $this->db->get()->result_array();
         return $result[0]['loop_release_id'];
     }
-
     function pdb_exists($pdb_id)
     {
         // does BGSU RNA Site know about this structure?
@@ -144,15 +128,12 @@ class Pdb_model extends CI_Model {
                  ->from('pdb_info')
                  ->where('pdb_id', $pdb_id)
                  ->limit(1);
-
         if ( $this->db->get()->num_rows() > 0 ) {
             return true;
         }
-
         // if not, is it in PDB itself?
         $pdb_rest_url = 'http://www.pdb.org/pdb/rest/describePDB?structureId=';
         $pdb_description = file_get_contents($pdb_rest_url . $pdb_id);
-
         // when a pdb doesn't exist, $pdb_description == '</PDBdescription>'
         if ( strpos($pdb_description, '<PDBdescription>') === false ) {
             return false;
@@ -160,20 +141,16 @@ class Pdb_model extends CI_Model {
             return true;
         }
     }
-
     function pdb_is_annotated($pdb_id, $interaction_type)
     {
         //$this->db->select('pdb_analysis_status_id')
         //         ->from('pdb_analysis_status')
         //         ->where('pdb_id', $pdb_id)
         //         ->where("$interaction_type IS NOT NULL");
-
         //$query = "COUNT(IF(`li`.`type` = `$interaction_type`, 1, NULL)) AS numloops";
-
         $this->db->select('pi.pdb_id')
                  ->from('pdb_info AS pi')
                  ->where('pi.pdb_id', $pdb_id);
-
 /*
         $this->db->select('pi.pdb_id, li.type')
                  //->select($query, FALSE)
@@ -181,14 +158,12 @@ class Pdb_model extends CI_Model {
                  ->join('loop_info AS li', 'pi.pdb_id = li.pdb_id')
                  ->where('pi.pdb_id', $pdb_id);
 */
-
         if ( $this->db->get()->num_rows() > 0 ) {
             return True;
         } else {
             return False;
         }
     }
-
     function _get_unit_ids($pdb_id)
     {
     #    // get correspondences between old and new ids
@@ -211,7 +186,6 @@ class Pdb_model extends CI_Model {
     #            $unit_ids[$row->pdb_coordinates_id] = $row->pdb_coordinates_id;
     #        }
     #    }
-
         // retrieve new-style IDs from unit_info
         $this->db->select('unit_id')
                  ->from('unit_info')
@@ -221,17 +195,15 @@ class Pdb_model extends CI_Model {
         foreach ( $query->result() as $row ) {
             $unit_ids[$row->unit_id] = $row->unit_id;
         }
-
         return $unit_ids;
     }
-
     function get_interactions($pdb_id, $interaction_type)
-    {
+    {   
         $url_parameters = array('basepairs', 'stacking', 'basephosphate', 'baseribose');
         $db_fields      = array('f_lwbp', 'f_stacks', 'f_bphs', 'f_brbs');
         $header_values  = array('Base-pair', 'Base-stacking', 'Base-phosphate', 'Base-ribose');
         $header         = array('#', 'Nucleotide id 1', 'Nucleotide id 2');
-
+        
         if ( in_array($interaction_type, $url_parameters) ) {
             $targets = array_keys($url_parameters, $interaction_type);
             $db_field = $db_fields[$targets[0]];
@@ -248,9 +220,7 @@ class Pdb_model extends CI_Model {
                           'csv'    => ''
                          );
         }
-
         $unit_ids = $this->_get_unit_ids($pdb_id);
-
         $this->db->select('upi.unit_id_1, upi.unit_id_2,' . $db_field)
                  ->from('unit_pairs_interactions AS upi')
                  ->join('unit_info AS u1', 'upi.unit_id_1 = u1.unit_id')
@@ -264,12 +234,10 @@ class Pdb_model extends CI_Model {
         $i = 1;
         $html = '';
         $csv  = '';
-
         foreach ( $query->result() as $row ) {
             $output_fields = array();
             $csv_fields    = array();
             $csv_fields[0] = $unit_ids[$row->unit_id_1];
-
             foreach ($targets as $target) {
                 if ( isset($row->{$db_fields[$target]}) and ($row->{$db_fields[$target]} != '') ) {
                     $output_fields[] = $row->{$db_fields[$target]};
@@ -278,18 +246,14 @@ class Pdb_model extends CI_Model {
                     $csv_fields[] = '';
                 }
             }
-
             $csv_fields[] = $unit_ids[$row->unit_id_2];
-
             $html .= str_pad('<span>' . $unit_ids[$row->unit_id_1] . '</span>', 38, ' ') .
                     "<a class='jmolInline' id='s{$i}'>" .
                       str_pad(implode(', ', $output_fields), 10, ' ', STR_PAD_BOTH) .
                     "</a>" .
                     str_pad('<span>' . $unit_ids[$row->unit_id_2] . '</span>', 38, ' ', STR_PAD_LEFT) .
                     "\n";
-
             $csv .= '"' . implode('","', $csv_fields) . '"' . "\n";
-
             $i++;
         }
 
@@ -298,7 +262,6 @@ class Pdb_model extends CI_Model {
                       'csv'    => $csv
                      );
     }
-
     function get_general_info($pdb_id)
     {
         //  QUERY NEEDS TO BE REWRITTEN
@@ -308,7 +271,6 @@ class Pdb_model extends CI_Model {
                  ->join('chain_info AS ci', 'pi.pdb_id = ci.pdb_id', 'left')
                  ->where('pi.pdb_id', $pdb_id);
         $query = $this->db->get();
-
         $data['rna_chains'] = 0;
         foreach ($query->result() as $row) {
             // get this info only once because it applies to all chains
@@ -334,18 +296,14 @@ class Pdb_model extends CI_Model {
             // for all chains
             $compounds[] = $row->compound;
         }
-
         if ( empty($organisms) ) {
           $organisms[] = 'synthetic';
         }
-
         $data['non_rna_chains'] = $query->num_rows() - $data['rna_chains'];
         $data['organisms'] = implode(', ', array_unique($organisms));
         $data['compounds'] = implode(', ', $compounds);
-
         return $data;
     }
-
     function get_latest_nr_release($pdb_id)
     {
         $this->db->select('nr_release_id')
@@ -355,12 +313,10 @@ class Pdb_model extends CI_Model {
         $result = $this->db->get()->row();
         return $result->nr_release_id;
     }
-
     function get_nrlist_info($pdb_id)
     {
         // get the latest nr release
         $data['latest_nr_release'] = $this->get_latest_nr_release($pdb_id);
-
         // get nr equivalence classes
         $this->db->select('nl.name')
                  ->select_max('nc.rep')
@@ -373,7 +329,6 @@ class Pdb_model extends CI_Model {
                  ->group_by('nc.nr_class_id')
                  ->group_by('nl.name');
         $query = $this->db->get();
-
         $data = array();
         foreach ($query->result() as $row) {
             $data['nr_classes'][] = $row->name;
@@ -381,10 +336,8 @@ class Pdb_model extends CI_Model {
             $data['representatives'][$row->name] = $row->rep;
             $data['count'][$row->name] = $row->count;
         }
-
         return $data;
     }
-
     function get_loops_info($pdb_id)
     {
         $this->db->select('count(loop_id) as counts, type')
@@ -392,7 +345,6 @@ class Pdb_model extends CI_Model {
                  ->where('pdb_id', $pdb_id)
                  ->group_by('type');
         $query = $this->db->get();
-
         $data['loops'] = array();
         foreach ($query->result() as $row) {
             $data['loops'][$row->type] = $row->counts;
@@ -409,7 +361,6 @@ class Pdb_model extends CI_Model {
         
         return $data;
     }
-
     function get_latest_motif_release($motif_type)
     {
         $this->db->select('ml_release_id')
@@ -422,7 +373,6 @@ class Pdb_model extends CI_Model {
         
         return $result->ml_release_id;
     }
-
     function get_motifs_info($pdb_id, $motif_type)
     {
         $latest_release = $this->get_latest_motif_release($motif_type);
@@ -432,24 +382,19 @@ class Pdb_model extends CI_Model {
                  ->where('ml_release_id', $latest_release)
                  ->like('loop_id', $motif_type . '_' . $pdb_id, 'right');
         $result = $this->db->get()->row();
-
         return $result->counts;
     }
-
     function get_pairwise_info($pdb_id, $interaction)
     {
         $this->db->select("count($interaction)/2 as counts")
                  ->from('unit_pairs_interactions')
                  ->where('pdb_id', $pdb_id);
-
         if ( $interaction == 'f_bphs' ) {
             $this->db->where("char_length($interaction) = 4");
         } else {
             $this->db->where("char_length($interaction) = 3");
         }
-
         $result = $this->db->get()->row();
-
         return number_format($result->counts, 0);
     }
 
@@ -457,7 +402,6 @@ class Pdb_model extends CI_Model {
     {
         $pdb_id = strtoupper($pdb_id);
         $latest_nr_release = $this->get_latest_nr_release($pdb_id);
-
         // choose the equivalence class
         $this->db->select('ch.nr_class_id')
                  ->select('cl.name')
@@ -468,7 +412,6 @@ class Pdb_model extends CI_Model {
                  ->where('ch.nr_release_id', $latest_nr_release)
                  ->where('cl.resolution', 'all');
         $result = $this->db->get();
-
         if ( $result->num_rows() == 0 ) {
             $equivalence_class = 'Not a member of any equivalent class, most likely due to the absence of complete nucleotides.';
             $equivalence_class_name = "";
@@ -478,10 +421,8 @@ class Pdb_model extends CI_Model {
             $equivalence_class_name = $result->row()->name;
             $equivalence_class_found = True;
         }
-
         $pdbs = array();
         $representative = Null;
-
         if ( $equivalence_class_found ) {
             // choose all structures from the selected equivalence class
             $this->db->select('ii.pdb_id')
@@ -491,26 +432,21 @@ class Pdb_model extends CI_Model {
                      ->where('nr_class_id', $equivalence_class)
                      ->order_by('rep', 'desc');
             $query = $this->db->get();
-
             $isFirst = True;
-
             foreach($query->result() as $row) {
                 if ( $isFirst ) {
                     $representative = $row->pdb_id;
                     $isFirst = False;
                 }
-
                 if ( $row->pdb_id != $pdb_id ) {
                     $pdbs[] = $row->pdb_id;
                 }
             }
         }
-
         return array('related_pdbs' => $pdbs,
                      'eq_class' => $equivalence_class_name,
                      'representative' => $representative);
     }
-
     function get_ordered_nts($pdb_id)
     {
         $this->db->select('ui.unit_id as id, ui.chain, ui.unit as sequence')
@@ -525,38 +461,31 @@ class Pdb_model extends CI_Model {
                  ->group_by('ui.ins_code, ui.chain_index')
                  ->order_by('ui.chain', 'asc')
                  ->order_by('ui.number', 'asc');
-
         $query = $this->db->get();
         $chain_data = array();
-
+        
         foreach($query->result() as $row) {
+
             $chain_data[$row->chain]['nts'][] = array('id' => $row->id,
                                                       'sequence' => $row->sequence);
         }
-
         return array_values($chain_data);
     }
-
     function get_airport($pdb_id)
     {
         $table = 'pdb_airport';
-
         if (! $this->db->table_exists($table)) {
             return false;
         }
-
         //
         //  Determine if the structure is present in the ss_* tables.
         //
         $this->db->select('pdb_id')
                  ->from('ss_pdb_mapping')
                  ->where('pdb_id', $pdb_id);
-
         $query = $this->db->get();
-
         if ($query->num_rows()) {
             // process ss_unit_positions
-
             //  Revision:  performance of view ss_unit_positions is horrible, but
             //    the underlying query appears to perform better.
             /*
@@ -580,15 +509,12 @@ class Pdb_model extends CI_Model {
                      ->group_by('SP.ss_position_id');
 ;
             $query = $this->db->get();
-
             $nts_data = array();
             $new_json = array();
             $model = '';
             $create = 0;
-
             foreach ($query->result() as $row) {
                 $create = 1;
-
                 if ($row->unit_id){
                     $rowArr = array(
                         'y' => $row->y_coordinate,
@@ -596,35 +522,27 @@ class Pdb_model extends CI_Model {
                         'id' => $row->unit_id,
                         'sequence' => $row->unit
                     );
-
                     $nts_data[] = $rowArr;
                 }
-
                 $model = !($model) ? $row->model : $model;
             }
-
             if ($create == 1) {
                 $new_json = array(
                     'nts'  => $nts_data,
                     'id'   => $row->pdb_id . '|' . $model . '|' . $row->chain,
                     'name' => 'Chain ' . $row->chain
                 );
-
                 $json = '[' . json_encode($new_json, JSON_NUMERIC_CHECK) . ']';
             }
         } else {
             $this->db->select('json_structure')
                      ->from($table)
                      ->where('pdb_id', $pdb_id);
-
             $result = $this->db->get()->row();
-
             $json = ($result) ? $result->json_structure : "";
         }
-
         return ($json) ? $json : false;
     }
-
     function get_longrange_bp($pdb)
     {
         $this->db->select('U1.unit_id as nt1')
@@ -637,20 +555,15 @@ class Pdb_model extends CI_Model {
                  ->where('upi.pdb_id', $pdb)
                  ->where('f_crossing > 3')
                  ->where('f_lwbp is not null');
-
         $query = $this->db->get();
-
         if (!$query->num_rows()) {
             return array();
         }
-
         foreach($query->result() as $row) {
             $longrange[] = $row;
         }
-
         return $longrange;
     }
 }
-
 /* End of file pdb_model.php */
 /* Location: ./application/model/pdb_model.php */
