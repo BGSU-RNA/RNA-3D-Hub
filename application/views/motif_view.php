@@ -154,6 +154,8 @@
             showNextId: 'next',
             showPrevId: 'prev',
             showAllId: 'all',
+            colorByRSRZ: 'colorRSRZ',
+            colorByRSR: 'colorRSR',
             clearId: 'clear',
             insertionsId: 'insertions'                
         });
@@ -193,7 +195,11 @@
                             <input type='button' id='clear' class='btn' value="Clear all">
                             <br>
                             <label><input type="checkbox" id="showNtNums">Nucleotide numbers</label>
-                    </div>
+                            <br><br>
+                            <label><input type="checkbox" id="colorRSRZ">Color by RSRZ</label>
+                            <br><br>
+                            <label><input type="checkbox" id="colorRSR">Color by RSR</label>
+                            </div>
                     <div class="span6 jmolheight mdmatrix" id="mdBlock">
                             <?php echo $matrix;?>
 

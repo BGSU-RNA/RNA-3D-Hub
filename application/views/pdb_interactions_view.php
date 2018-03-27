@@ -69,7 +69,8 @@
             </script>
             <label><input type="checkbox" id="showNtNums">Nucleotide numbers</label>
             <input type="button" class="btn" id="neighborhood" value="Show neighborhood">
-            <label><input type="checkbox" id="colorRSRZ">Color RSRZ</label>
+            <label><input type="checkbox" id="colorRSRZ">Color by RSRZ</label>
+            <label><input type="checkbox" id="colorRSR">Color by RSR</label>
           </div>
         </div>
       </div>
@@ -125,13 +126,15 @@
 
           var data_coord = $this.prev().html() + ',' + $this.next().html();
           data_coord = data_coord.replace(/\s+/g, '');
+          console.log(data_coord);
           $('#tempJmolToolsObj').remove();
-          $('body').append("<input type='radio' id='tempJmolToolsObj' data-coord='" + data_coord + "'>");
+          $('body').append("<input type='radio' id='tempJmolToolsObj' data-coord='" + data_coord + "' data-quality='" + data_coord + "'>");
           $('#tempJmolToolsObj').hide();
           $('#tempJmolToolsObj').jmolTools({
             showNeighborhoodId: 'neighborhood',
             showNumbersId: 'showNtNums',
             colorByRSRZ: 'colorRSRZ',
+            colorByRSR: 'colorRSR'
           }).jmolToggle();
         });
 

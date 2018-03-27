@@ -59,15 +59,15 @@ class Rest extends MY_Controller {
         // search POST, then GET
         $query = $this->input->get_post('quality');
         
-        $this->output->enable_profiler(TRUE);
+        //$this->output->enable_profiler(TRUE);
         
         $query_type = $this->_parseInput($query);
 
         if ( $query_type ) {
             $this->output->set_header("Access-Control-Allow-Origin: *");
             $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
-            $data['csv'] = $this->_database_lookup_RSR($query, $query_type);
-            $this->load->view('csv_view', $data);
+            $data['json'] = $this->_database_lookup_RSR($query, $query_type);
+            $this->load->view('json_view', $data);
         } else {
             echo $this->messages['invalid'];
         }
@@ -126,7 +126,7 @@ class Rest extends MY_Controller {
         // don't load the database until the input was validated
         $this->load->model('Ajax_model', '', TRUE);
 
-        $this->output->enable_profiler(TRUE);
+        //$this->output->enable_profiler(TRUE);
         
         switch ($query_type) :
             case 'loop_id':

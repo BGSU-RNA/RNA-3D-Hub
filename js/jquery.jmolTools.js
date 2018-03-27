@@ -4,13 +4,16 @@
  *
  */
 
+ var RSRZ_data = {};
+ var RSR_data = {};
+
 // Utility
 if ( typeof Object.create !== 'function' ) {
-	Object.create = function( obj ) {
-		function F() {};
-		F.prototype = obj;
-		return new F();
-	};
+    Object.create = function( obj ) {
+        function F() {};
+        F.prototype = obj;
+        return new F();
+    };
 }
 
 ;(function($) {
@@ -20,27 +23,27 @@ if ( typeof Object.create !== 'function' ) {
         neighborhood : false,
         stereo: false,
         models : {}, // all model objects, both loaded and not
-        numModels: 0 // number of loaded models
+        numModels: 0, // number of loaded models
+        showNumbers: false,
+        showRSR: false,
+        showRSRZ: false
     };
 
     // an object for keeping track of each individual model's state
     var jmolModel = {
 
         init: function (options, elem) {
-			var self = this; // each element
-			self.elem = elem;
-			self.$elem = $( elem );
-
+            var self = this; // each element
+            self.elem = elem;
+            self.$elem = $( elem );
             self.modelNumber = null;
-
             self.loaded       = false;
             self.neighborhood = false;
             self.superimposed = false;
-            self.styled       = false;
+            //self.styled       = false;
             self.checked      = false;
             self.hidden       = false;
-
-			self.bindEvents();
+            self.bindEvents();
         },
 
         bindEvents: function() {
@@ -49,46 +52,62 @@ if ( typeof Object.create !== 'function' ) {
         },
 
         loadData: function() {
+
             var self = this;
             if ( self.loaded ) { return; }
 
+            // This AJAX call gets the RSRZ data
             $.ajax({
-                url: $.fn.jmolTools.options.serverUrl1,
+                url: $.fn.jmolTools.options.serverUrlRSRZ,
+                type: 'GET',
+                dataType: 'json',
+                //contentType: 'application/json',
+                data: {'quality' : self.$elem.data($.fn.jmolTools.options.dataAttributeRSRZ)}
+                }).done(function(data) {
+                    RSRZ_JSON = data;      
+                    RSRZ_data[$.jmolTools.numModels+1] = data;
+            });
+
+            // This AJAX call gets the RSR data
+            $.ajax({
+                url: $.fn.jmolTools.options.serverUrlRSR,
+                type: 'GET',
+                dataType: 'json',
+                //contentType: 'application/json',
+                data: {'quality' : self.$elem.data($.fn.jmolTools.options.dataAttributeRSR)}
+                }).done(function(data) {
+                    RSR_JSON = data;
+                    RSR_data[$.jmolTools.numModels+1] = data;
+            });
+
+            // This AJAX call gets the coordinate data
+            $.ajax({
+                url: $.fn.jmolTools.options.serverUrlCoord,
                 type: 'POST',
-                data: {'coord' : self.$elem.data($.fn.jmolTools.options.dataAttribute1)}
+                data: {'coord' : self.$elem.data($.fn.jmolTools.options.dataAttributeCoord)}
             }).done(function(data) {
                 self.appendData(data);
-                //console.log(data);
                 if ( self.loaded ) {
                     self.updateModelCounts();
+                    modelNum = self.modelNumber;
                     self.superimpose();
-                    self.styleModel();
+                    self.labelnucleotides();
+                    self.colorOneModel();
                     self.show();
                 }
             });
 
-            
-            $.ajax({
-                url: $.fn.jmolTools.options.serverUrl2,
-                type: 'GET',
-                dataType: 'json',
-                //contentType: 'application/json',
-                data: {'quality' : self.$elem.data($.fn.jmolTools.options.dataAttribute2)},
-                success: (function(data) {
-                    Helpers.toggleRSRZ(data);              
-                })
-            });
+               
         },
 
-      
         appendData: function(data) {
             var self = this;
             // change MODEL to data_view
             if ( data.indexOf('data_view') > -1 ) {
                 jmolScriptWait("load DATA \"append structure\"\n" + data + 'end "append structure";');
+                //console.log(data);
                 self.loaded = true;
-            } else {
-                console.error('Server returned: ' + data);
+                //console.error('Server returned: ' + data);
             }
         },
 
@@ -96,29 +115,15 @@ if ( typeof Object.create !== 'function' ) {
             this.modelNumber = ++$.jmolTools.numModels;
         },
 
-        // colors the nts by RSRZ 
-        // input would be a JSON obj of unit_ids and RSRZ scores
-        colorRSRZ: function(m) {
-            var command = "";
-            for (var i=0; i<m.length; i++) {
-                var RSRZ = (Math.round(parseFloat(m[i].real_space_r_z_score)*100)/100);
-                if (RSRZ < 1.00) {
-                    command += "select " + "'" + m[i].unit_id + "';" + " color green; ";
-                } else if (RSRZ < 2.00) {
-                    command += "select " + "'" + m[i].unit_id + "';" + " color yellow; ";
-                } else if (RSRZ < 3.00) {
-                    command += "select " + "'" + m[i].unit_id + "';" + " color orange; ";
-                } else {
-                    command += "select " + "'" + m[i].unit_id + "';" + " color red; ";
-                }
-            }
-            jmolScript(command);
+        returnModelNumber: function() {
+            var self=this;
+            return self.modelNumber;
         },
 
-		// superimpose this model onto the first one using phosphate atoms
-		superimpose: function() {
-		    var self = this;
-		    if ( self.superimposed ) { return; }
+        // superimpose this model onto the first one using phosphate atoms
+        superimpose: function() {
+            var self = this;
+            if ( self.superimposed ) { return; }
             var m = self.modelNumber;
             if ( m < 2 ) { return; } // m == 1; nothing to superimpose on
 
@@ -133,31 +138,132 @@ if ( typeof Object.create !== 'function' ) {
                 }
 
             self.superimposed = true;
-		},
+        },
 
-        styleModel: function() {
-            if ( this.styled ) { return; }
-            var self = this;
-            var m = self.modelNumber;
-            command = 'select [U]/' + m + '.1; color navy;' +
-                      'select [G]/' + m + '.1; color chartreuse;' +
-                      'select [C]/' + m + '.1; color gold;' +
-                      'select [A]/' + m + '.1; color red;' +
-                      'select nucleic and ' + m + '.2; color grey;' +
-                      'select protein and ' + m + '.2; color purple;' +
-                      'select hetero  and ' + m + '.2; color pink;' +
-                      'select ' + m + '.2; color translucent 0.8;' +
-                      'select ' + m + '.1,' + m + '.2;' +
-                      'spacefill off;' +
-                      'center ' + m + '.1;' +
-                      'zoom {'  + m + '.1} 0;';
+        labelnucleotides: function () {
+
+            if ( $.jmolTools.showNumbers ) {
+                jmolScript("select {*.C1'},{*.CA};label %[sequence]%[resno];color labels black;");
+            } else {
+                jmolScript('label off;');
+            }
+
+        },
+
+        colorOneModel: function () {
+
+            k = $.jmolTools.numModels;
+
+            console.log("Color one model: " + k)
+            
+            if ($('#colorRSRZ').is(':checked')) {
+                jmolModel.styleModelRSRZ(k, k);
+            } else if ($('#colorRSR').is(':checked')) {
+                jmolModel.styleModelRSR(k, k);
+            } else {
+                jmolModel.styleModel(k, k);
+            }
+                           
+        },
+
+        styleModel: function(a,b) {
+            
+            for (var k=a; k <= b; k++) {
+            
+                command = 'select [U]/' + k + '.1; color navy;' +
+                        'select [G]/' + k + '.1; color chartreuse;' +
+                        'select [C]/' + k + '.1; color gold;' +
+                        'select [A]/' + k + '.1; color red;' +
+                        'select nucleic and ' + k + '.2; color grey;' +
+                        'select protein and ' + k + '.2; color purple;' +
+                        'select hetero  and ' + k + '.2; color pink;' +
+                        'select ' + k + '.2; color translucent 0.8;' +
+                        'select ' + k + '.1,' + k + '.2;' +
+                        'spacefill off;' +
+                        'center ' + k + '.1;' +
+                        'zoom {'  + k + '.1} 0;';
+         
+                jmolScript(command);
+
+            }
+
+            
+        },
+
+        styleModelRSRZ: function(a,b) {
+
+            var mod_num1 = a;
+
+            var mod_num2 = b;
+
+            console.log("RSRZ mod_num1: " + mod_num1);
+
+            console.log("RSRZ mod_num2: " + mod_num2);
+
+            command = "";
+
+            for (var i = mod_num1; i <= mod_num2; i++) {
+                for (var k = 0; k < Object.keys(RSRZ_data[i]).length; k++){
+                    var RSRZ = (parseFloat(RSRZ_data[i][k].real_space_r_z_score)*100)/100;
+                    var split_unitid = RSRZ_data[i][k].unit_id.split("|");
+                    if (RSRZ !== RSRZ) {
+                        command += "select " + split_unitid[4] + "/" + i + ".1;" + " color grey; ";     
+                    } else if (RSRZ < 1.00) {
+                        command += "select " + split_unitid[4] + "/" + i + ".1;" + " color green; ";   
+                    } else if (RSRZ < 2.00) {
+                        command += "select " + split_unitid[4] + "/" + i + ".1;" + " color yellow; ";  
+                    } else if (RSRZ < 3.00) {
+                        command += "select " + split_unitid[4] + "/" + i + ".1;" + " color orange; ";  
+                    } else {
+                        command += "select " + split_unitid[4] + "/" + i + ".1;" + " color red; ";  
+                    }
+                    command += "select " + i + ".1, " + i + ".2;" +
+                       " spacefill off; ";
+                }
+            }
+
+            console.log(command);
             jmolScript(command);
-            self.styled = true;
+        },
+
+        styleModelRSR: function (a,b) {
+
+            var mod_num1 = a;
+
+            var mod_num2 = b;
+
+            // RGB color for white is (255, 255, 255)
+            // RGB color for red is (255, 0, 0)
+            var diffRed = 0;
+            var diffGreen = -255;
+            var diffBlue = -255;
+           
+            command = "";
+            
+            // Need to tk into account RSR values <0, >1, and NaN
+            for (var i = mod_num1; i <= mod_num2; i++) {
+                for (var k = 0; k < Object.keys(RSR_data[i]).length; k++) {
+                    var RSR = parseFloat(RSR_data[i][k].real_space_r);
+                    var split_unitid = RSR_data[i][k].unit_id.split("|");
+                    diffRed = Math.round((0 * RSR) + 255);
+                    diffGreen = Math.round((-255 * RSR) + 255);
+                    diffBlue = Math.round((-255 * RSR) + 255);
+                    command += "select " + split_unitid[4] + "/" + i + ".1;" + " color " + "[" + diffRed + "," + diffGreen + "," + diffBlue + "];";   
+                }
+                command += "select " + i + ".1, " + i + ".2;" +
+                       " spacefill off; ";
+            }
+               
+            console.log(command);
+            jmolScript(command);
+
         },
 
         show: function() {
             var self = this;
             var m = self.modelNumber;
+
+            //console.log(m);
 
             if ( $.fn.jmolTools.options.mutuallyExclusive ) {
                 self.hideAll();
@@ -175,17 +281,17 @@ if ( typeof Object.create !== 'function' ) {
             self.toggleCheckbox();
         },
 
-		hide: function () {
-		    var self = this;
-		    m = self.modelNumber;
-		    if ( self.loaded ) {
-		        command = 'frame *;display displayed and not ' + m + '.1;' +
-		                          'display displayed and not ' + m + '.2;'
+        hide: function () {
+            var self = this;
+            m = self.modelNumber;
+            if ( self.loaded ) {
+                command = 'frame *;display displayed and not ' + m + '.1;' +
+                                  'display displayed and not ' + m + '.2;'
                 jmolScript(command);
                 self.hidden  = true;
                 self.toggleCheckbox();
             }
-		},
+        },
 
         hideAll: function() {
             jmolScript('hide *');
@@ -197,6 +303,7 @@ if ( typeof Object.create !== 'function' ) {
 
         jmolToggle: function() {
             var self = $.jmolTools.models[this.id];
+            //console.log(self);
 
             if ( ! self.loaded ) {
                 self.loadData();
@@ -229,18 +336,18 @@ if ( typeof Object.create !== 'function' ) {
             }
         },
 
-		toggleCheckbox: function() {
-		    if ( !$.fn.jmolTools.options.toggleCheckbox ) { return; }
+        toggleCheckbox: function() {
+            if ( !$.fn.jmolTools.options.toggleCheckbox ) { return; }
             this.$elem.prop('checked', !this.hidden);
-		},
+        },
 
-		toggleNeighborhood: function() {
-		    var self = this;
-		    self.neighborhood = !self.neighborhood;
-		    if ( !self.hidden && self.loaded ) {
+        toggleNeighborhood: function() {
+            var self = this;
+            self.neighborhood = !self.neighborhood;
+            if ( !self.hidden && self.loaded ) {
                 self.show();
             }
-		},
+        },
 
     };
 
@@ -256,22 +363,38 @@ if ( typeof Object.create !== 'function' ) {
         
         toggleNumbers: function() {
             if ( $(this).is(':checked') ) {
+                $.jmolTools.showNumbers = true;
                 jmolScript("select {*.C1'},{*.CA};label %[sequence]%[resno];color labels black;");
             } else {
+                 $.jmolTools.showNumbers = false;
                 jmolScript('label off;');
             }
         },
+        
 
-        toggleRSRZ: function(data) {
-            /*
-            if the checkbox is clicked, the colorRSRZ function
-            should be run with the data parameter
-            */
-            if ( $(this).is(':checked') ) {
-                // this should be colorRSRZ(data);
-                jmolScript("select *; color green;");
+        toggleRSRZ: function() {
+
+            n = $.jmolTools.numModels;
+
+            if ( $('#colorRSRZ').is(':checked') ) {
+                $('#colorRSR').prop('checked', false);
+                //$.jmolTools.showRSRZ = true;
+                jmolModel.styleModelRSRZ(1, n);                
             } else {
-                jmolScript("select *; color CPK;");
+                jmolModel.styleModel(1, n);
+            }
+        },
+
+        
+        toggleRSR: function() { 
+
+            n = $.jmolTools.numModels;
+            
+            if ( $('#colorRSR').is(':checked') ) {
+                $('#colorRSRZ').prop('checked', false); 
+                jmolModel.styleModelRSR(1, n);
+            } else {
+                jmolModel.styleModel(1, n);
             }
         },
         
@@ -389,6 +512,7 @@ if ( typeof Object.create !== 'function' ) {
             $('#' + $.fn.jmolTools.options.showNeighborhoodId).on('click', Helpers.toggleNeighborhood);
             $('#' + $.fn.jmolTools.options.showNumbersId).on('click', Helpers.toggleNumbers);
             $('#' + $.fn.jmolTools.options.colorByRSRZ).on('click', Helpers.toggleRSRZ);
+            $('#' + $.fn.jmolTools.options.colorByRSR).on('click', Helpers.toggleRSR);
             $('#' + $.fn.jmolTools.options.showAllId)
                     .toggle(Helpers.showAll, Helpers.hideAll)
                     .toggle(
@@ -468,11 +592,16 @@ if ( typeof Object.create !== 'function' ) {
     //
     var loc = window.location.protocol + '//' + window.location.hostname;
     // default options
-	$.fn.jmolTools.options = {
-        serverUrl1   : loc + '/rna3dhub/rest/getCoordinates',
-        dataAttribute1: 'coord',
-        serverUrl2   : loc + '/rna3dhub/rest/getRSRZ',
-        dataAttribute2: 'quality',
+    $.fn.jmolTools.options = {
+        serverUrlCoord   : loc + '/rna3dhub/rest/getCoordinates',
+        dataAttributeCoord: 'coord',
+
+        serverUrlRSR   : loc + '/rna3dhub/rest/getRSR',
+        dataAttributeRSR: 'quality',
+
+        serverUrlRSRZ   : loc + '/rna3dhub/rest/getRSRZ',
+        dataAttributeRSRZ: 'quality',
+
         toggleCheckbox: true,      // by default each model will monitor the checked state of its corresponding checkbox
         mutuallyExclusive:  false, // by default will set to false for checkboxes and false for radiobuttons
         showNeighborhoodId: false,
@@ -480,9 +609,9 @@ if ( typeof Object.create !== 'function' ) {
         showPrevId:         false,
         showAllId:          false,
         showNumbersId:      false,
-        colorByRSRZ:      false,
+        colorByRSRZ:        false,
         showStereoId:       false,
         clearId:            false
-	};
+    };
 
 })(jQuery);

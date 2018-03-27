@@ -748,14 +748,10 @@ class Ajax_model extends CI_Model {
         if ($query->num_rows() == 0) {
             return 'No RSR correspondence found';
         } else {
-            $RSR = array();
-            foreach ($query->result_array() as $row) {
-                $RSR[] = $row["unit_id"]. ":" . $row["real_space_r"];   
-            }
- 
+            $RSR = $query->result();
         }
 
-        return $RSR;
+        return json_encode($RSR);
 
     }
 
@@ -801,10 +797,7 @@ class Ajax_model extends CI_Model {
         if ($query->num_rows() == 0) {
             return 'No RSR correspondence found';
         } else {
-            $RSR = array();
-            foreach ($query->result_array() as $row) {
-                $RSR[] = $row["unit_id"]. ":" . $row["real_space_r"];   
-            }
+            $RSR = $query->result();
  
         }
 
@@ -822,13 +815,9 @@ class Ajax_model extends CI_Model {
         $query = $this->db->get();
         
         if ($query->num_rows() == 0) {
-            return 'No RSRZ correspondence found';
+            return 'No RSRZ correspondence is found';
         } else {
-            $RSRZ = array();
-            foreach ($query->result_array() as $row) {
-                $RSRZ[] = $row["unit_id"]. ":" . $row["real_space_r_z_score"];   
-            }
- 
+            $RSRZ = $query->result();
         }
 
         return json_encode($RSRZ);
