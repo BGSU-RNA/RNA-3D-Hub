@@ -110,8 +110,8 @@ class Pdb_model extends CI_Model {
     {
         return "<label><input type='radio' id='{$id}' class='jmolInline' data-coord='{$id}' data-quality='{$id}'> {$id} </label>" .
         "<span class='loop_link'>" . anchor_popup("loops/view/{$id}", '&#10140;') . "</span>";
-
     }
+
     function get_latest_loop_release()
     {
         $this->db->select('loop_release_id')
@@ -199,11 +199,12 @@ class Pdb_model extends CI_Model {
     }
     function get_interactions($pdb_id, $interaction_type)
     {   
+
         $url_parameters = array('basepairs', 'stacking', 'basephosphate', 'baseribose');
         $db_fields      = array('f_lwbp', 'f_stacks', 'f_bphs', 'f_brbs');
         $header_values  = array('Base-pair', 'Base-stacking', 'Base-phosphate', 'Base-ribose');
         $header         = array('#', 'Nucleotide id 1', 'Nucleotide id 2');
-        
+
         if ( in_array($interaction_type, $url_parameters) ) {
             $targets = array_keys($url_parameters, $interaction_type);
             $db_field = $db_fields[$targets[0]];
@@ -255,8 +256,9 @@ class Pdb_model extends CI_Model {
                     "\n";
             $csv .= '"' . implode('","', $csv_fields) . '"' . "\n";
             $i++;
-        }
 
+        }
+      
         return array( 'data'   => $html,
                       'header' => array_merge( $header, explode(',', $interaction_description) ),
                       'csv'    => $csv
@@ -394,10 +396,10 @@ class Pdb_model extends CI_Model {
         } else {
             $this->db->where("char_length($interaction) = 3");
         }
+
         $result = $this->db->get()->row();
         return number_format($result->counts, 0);
     }
-
     function get_related_structures($pdb_id)
     {
         $pdb_id = strtoupper($pdb_id);
@@ -463,11 +465,13 @@ class Pdb_model extends CI_Model {
                  ->order_by('ui.number', 'asc');
         $query = $this->db->get();
         $chain_data = array();
+
         
         foreach($query->result() as $row) {
 
             $chain_data[$row->chain]['nts'][] = array('id' => $row->id,
                                                       'sequence' => $row->sequence);
+
         }
         return array_values($chain_data);
     }
@@ -477,6 +481,7 @@ class Pdb_model extends CI_Model {
         if (! $this->db->table_exists($table)) {
             return false;
         }
+
         //
         //  Determine if the structure is present in the ss_* tables.
         //
