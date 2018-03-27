@@ -726,10 +726,12 @@ class Ajax_model extends CI_Model {
         return $this->get_nt_coordinates($comma_separated_nt_ids);
     }
 
+//// New codes dealing with obtaining RSRZ/RSR values for loops and unit_ids ///
+
     function get_loop_RSR($loop_id)
     {
 
-         // find all constituent unit IDs of the loop
+        // find all constituent unit IDs of the loop
         $this->db->select('unit_ids')
                  ->from('loop_info')
                  ->where_in('loop_id',$loop_id);
@@ -758,7 +760,7 @@ class Ajax_model extends CI_Model {
     function get_loop_RSRZ($loop_id)
     {
 
-         // find all constituent unit IDs of the loop
+        // find all constituent unit IDs of the loop
         $this->db->select('unit_ids')
                  ->from('loop_info')
                  ->where_in('loop_id',$loop_id);
