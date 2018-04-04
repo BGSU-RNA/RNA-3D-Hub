@@ -156,13 +156,30 @@ if ( typeof Object.create !== 'function' ) {
 
             console.log("Color one model: " + k)
             
-            if ($('#colorRSRZ').is(':checked')) {
+            
+            //if ($('#colorRSRZ').is(':checked')) {
+              //  jmolModel.styleModelRSRZ(k, k);
+            //} else if ($('#colorRSR').is(':checked')) {
+              //  jmolModel.styleModelRSR(k, k);
+            //} else {
+              //  jmolModel.styleModel(k, k);
+            //}
+
+            
+            if ($('#colorOPT :selected').val() === 'RSRZ') {
                 jmolModel.styleModelRSRZ(k, k);
-            } else if ($('#colorRSR').is(':checked')) {
+                $("div.showRSRZ").show(); 
+                $("div.showRSR").hide(); 
+            } else if ($('#colorOPT :selected').val() === 'RSR') {
                 jmolModel.styleModelRSR(k, k);
-            } else {
+                $("div.showRSR").show();
+                $("div.showRSRZ").hide(); 
+            } else if ($('#colorOPT :selected').val() === 'Default') {
                 jmolModel.styleModel(k, k);
-            }
+                $("div.showRSR").hide(); 
+                $("div.showRSRZ").hide();  
+            };
+            
                            
         },
 
@@ -218,7 +235,8 @@ if ( typeof Object.create !== 'function' ) {
                         command += "select " + split_unitid[4] + "/" + i + ".1;" + " color red; ";  
                     }
                     command += "select " + i + ".1, " + i + ".2;" +
-                       " spacefill off; ";
+                       " spacefill off; " + "center " + i + ".1;" +
+                       "zoom {"  + i + ".1} 0;"; 
                 }
             }
 
@@ -234,8 +252,8 @@ if ( typeof Object.create !== 'function' ) {
 
             // RGB color for white is (255, 255, 255)
             // RGB color for red is (255, 0, 0)
-            var diffRed = 0;
-            var diffGreen = -255;
+            var diffRed = 255;
+            var diffGreen = 0;
             var diffBlue = -255;
            
             command = "";
@@ -245,13 +263,14 @@ if ( typeof Object.create !== 'function' ) {
                 for (var k = 0; k < Object.keys(RSR_data[i]).length; k++) {
                     var RSR = parseFloat(RSR_data[i][k].real_space_r);
                     var split_unitid = RSR_data[i][k].unit_id.split("|");
-                    diffRed = Math.round((0 * RSR) + 255);
-                    diffGreen = Math.round((-255 * RSR) + 255);
+                    diffRed = Math.round((255 * RSR) + 0);
+                    diffGreen = Math.round((0 * RSR) + 0);
                     diffBlue = Math.round((-255 * RSR) + 255);
                     command += "select " + split_unitid[4] + "/" + i + ".1;" + " color " + "[" + diffRed + "," + diffGreen + "," + diffBlue + "];";   
                 }
                 command += "select " + i + ".1, " + i + ".2;" +
-                       " spacefill off; ";
+                       " spacefill off; " + "center " + i + ".1;" +
+                       "zoom {"  + i + ".1} 0;";
             }
                
             console.log(command);
@@ -385,6 +404,28 @@ if ( typeof Object.create !== 'function' ) {
             }
         },
 
+        toggleColor: function() {
+
+            n = $.jmolTools.numModels;
+
+            $('#colorOPT').change(function() { 
+                if ($(this).val() === 'RSRZ') {
+                    jmolModel.styleModelRSRZ(1, n);
+                    $("div.showRSRZ").show(); 
+                    $("div.showRSR").hide();
+                } else if ($(this).val() === 'RSR') {
+                    $("div.showRSR").show();
+                    $("div.showRSRZ").hide();
+                    jmolModel.styleModelRSR(1, n); 
+                } else if ($(this).val() === 'Default') {
+                    jmolModel.styleModel(1, n);
+                    $("div.showRSR").hide(); 
+                    $("div.showRSRZ").hide(); 
+                } 
+            });
+
+        },
+
         
         toggleRSR: function() { 
 
@@ -513,6 +554,7 @@ if ( typeof Object.create !== 'function' ) {
             $('#' + $.fn.jmolTools.options.showNumbersId).on('click', Helpers.toggleNumbers);
             $('#' + $.fn.jmolTools.options.colorByRSRZ).on('click', Helpers.toggleRSRZ);
             $('#' + $.fn.jmolTools.options.colorByRSR).on('click', Helpers.toggleRSR);
+            $('#' + $.fn.jmolTools.options.colorOption).on('click', Helpers.toggleColor);
             $('#' + $.fn.jmolTools.options.showAllId)
                     .toggle(Helpers.showAll, Helpers.hideAll)
                     .toggle(
