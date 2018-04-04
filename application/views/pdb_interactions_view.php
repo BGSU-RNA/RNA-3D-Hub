@@ -68,8 +68,51 @@
             </script>
             <label><input type="checkbox" id="showNtNums">Nucleotide numbers</label>
             <input type="button" class="btn" id="neighborhood" value="Show neighborhood">
-            <label><input type="checkbox" id="colorRSRZ">Color by RSRZ</label>
-            <label><input type="checkbox" id="colorRSR">Color by RSR</label>
+            Coloring options: <select id="colorOPT"> 
+                    <option value="Default" selected>Default</option> 
+                    <option value="RSR" >Real Space R (RSR)</option>
+                    <option value="RSRZ">RSR Z-Score (RSRZ)</option>
+                </select>
+                <!--<label><input type="checkbox" id="showNtNums">Nucleotide numbers</label>-->
+                <br>
+                <br>
+                <br>
+                <div class='showRSR' style="display:none">
+                    <svg height="30" width="340">
+                        <defs>
+                            <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:rgb(0, 0, 255);stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:rgb(255,0,0);stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                    <rect x="0" y="0" width="300" height="15" fill="url(#grad3)"  />
+                    <text x="0" y="30" font-family="sans-serif" font-size="12px" fill="black">0</text>
+                    <text x="120" y="30" font-family="sans-serif" font-size="12px" fill="black">RSR Scale</text>
+                    <text x="295" y="30" font-family="sans-serif" font-size="12px" fill="black">1</text>
+                    </svg>
+                </div>
+
+                <div class='showRSRZ' style="display:none">
+                    <svg height="45" width="340">
+                        <defs>
+                        <text x="120" y="0" font-family="sans-serif" font-size="12px" fill="black">RSRZ Scale</text>
+                            <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="25%" style="stop-color:green;stop-opacity:1" />
+                                <stop offset="25%" style="stop-color:yellow;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:yellow;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:orange;stop-opacity:1" />
+                                <stop offset="75%" style="stop-color:orange;stop-opacity:1" />
+                                <stop offset="75%" style="stop-color:red;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:red;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                    <rect x="0" y="0" width="300" height="15" fill="url(#grad2)"  />
+                    <text x="72" y="30" font-family="sans-serif" font-size="12px" fill="black">1</text>
+                    <text x="147" y="30" font-family="sans-serif" font-size="12px" fill="black">2</text>
+                    <text x="223" y="30" font-family="sans-serif" font-size="12px" fill="black">3</text>
+                    <text x="120" y="45" font-family="sans-serif" font-size="12px" fill="black">RSRZ Scale</text>
+                    </svg>
+                </div>
           </div>
         </div>
       </div>
@@ -121,7 +164,7 @@
           $('#stereo').unbind();
           $('#neighborhood').unbind();
           $('#showNtNums').unbind();
-          $('#colorRSRZ').unbind();
+          $('#colorOPT').unbind();
 
           var data_coord = $this.prev().html() + ',' + $this.next().html();
           data_coord = data_coord.replace(/\s+/g, '');
@@ -132,6 +175,7 @@
           $('#tempJmolToolsObj').jmolTools({
             showNeighborhoodId: 'neighborhood',
             showNumbersId: 'showNtNums',
+            colorOption: 'colorOPT',
             colorByRSRZ: 'colorRSRZ',
             colorByRSR: 'colorRSR'
           }).jmolToggle();
