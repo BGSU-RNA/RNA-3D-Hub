@@ -96,7 +96,7 @@
                         <script type="text/javascript">
                           var data = <? echo $heatmap_data; ?>;
                         </script>
-                        <script type="text/javascript" src="<?=$baseurl?>js/heatmap.js"</script>
+                        <script type="text/javascript" src="<?=$baseurl?>js/heatmap.js"></script>
                       </div>
                   </div>
                 </div>
