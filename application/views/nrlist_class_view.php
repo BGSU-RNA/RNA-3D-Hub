@@ -97,11 +97,10 @@
           </div> <!-- statistics -->
         </div> <!-- tab-content -->
       </div> <!-- content -->
-    </div> <!-- nr_class_view -->
 
-    <script>
-      $(function () {
-        $("#members_table").tablesorter();
-        $(".pdb").click(LookUpPDBInfo);
-      })
-    </script>
+      <script>
+        $(function () {
+          $("#members_table").tablesorter();
+          $(".pdb").click(LookUpPDBInfo);
+        })
+      </script>
