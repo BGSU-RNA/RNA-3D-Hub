@@ -92,14 +92,14 @@ class Ajax_model extends CI_Model {
             //  Separate the CQS logic, and conditionally display these values
             if ( $ife != "foo" ){
                 $this->db->select('cq.ife_id')
-                         ->select('cq.composite_quality_score')
+                         #->select('cq.composite_quality_score')
                          ->select('cq.clashscore')
                          ->select('cq.average_rsr')
                          ->select('cq.average_rscc')
                          ->select('cq.percent_clash')
                          ->select('cq.rfree')
-                         ->select('cq.fraction_unobserved')
-                         ->select('cq.percent_observed')
+                         #->select('cq.fraction_unobserved')
+                         #->select('cq.percent_observed')
                          ->from('ife_cqs AS cq')
                          ->where('cq.ife_id', $ife)
                          ->limit(1);
@@ -108,22 +108,26 @@ class Ajax_model extends CI_Model {
                 if ( $ifequery->num_rows() > 0 ) {
                     $row = $ifequery->row();
 
-                    $cqs    = $row->composite_quality_score;
+                    #$cqs    = $row->composite_quality_score;
                     $arsr   = $row->average_rsr;
                     $pclash = $row->percent_clash;
                     $arscc  = $row->average_rscc;
                     $rfree  = $row->rfree;
-                    $fracu  = $row->fraction_unobserved;
-                    $pobs   = $row->percent_observed;
+                    #$fracu  = $row->fraction_unobserved;
+                    #$pobs   = $row->percent_observed;
                 } else {
-                    $cqs    = "N/A";
+                    #$cqs    = "N/A";
                     $arsr   = "N/A";
                     $pclash = "N/A";
                     $arscc  = "N/A";
                     $rfree  = "N/A";
-                    $fracu  = "N/A";
-                    $pobs   = "N/A";
+                    #$fracu  = "N/A";
+                    #$pobs   = "N/A";
                 }
+
+                $cqs    = "N/A";
+                $fracu  = "N/A";
+                $pobs   = "N/A";
 
                 $pdb_info .= "<hr/>" . 
                              "<u>Composite Quality Score (CQS)</u>: $cqs<br/>" .
