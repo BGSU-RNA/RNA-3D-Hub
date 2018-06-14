@@ -6,6 +6,17 @@
 
  var RSRZ_data = {};
  var RSR_data = {};
+ var plasmaColors = ["#0d0887","#110889","#17078b","#1b078d","#20068f","#240691","#2a0693","#300596","#340597","#3a049a","#3d049b","#43049e","#4903a0","#4b03a1","#5003a2","#5303a2","#5803a3","#5c03a3","#6103a4","#6603a5","#6903a5","#6e03a6","#7103a6","#7603a7","#7b03a8","#7d03a8","#8106a6","#8408a5","#880ba4","#8a0da2","#8e10a1","#93139f","#95149e","#99179c","#9c199b","#a01c99","#a41f98","#a72197","#a92395","#ac2693","#af2990","#b32d8d","#b52f8b","#b83388","#bb3587","#be3984","#c13b82","#c43f7f","#c8427c","#ca457a","#cc4778","#cd4976","#d04d74","#d25071","#d4536f","#d6566d","#d8596b","#da5c68","#dc5e67","#df6264","#e16561","#e36860","#e56b5d","#e66c5c","#e87059","#e97556","#eb7755","#ed7b52","#ee7e50","#f0824d","#f2864a","#f38948","#f58d46","#f69044","#f89441","#f89540","#f99a3e","#f99e3c","#f9a13a","#faa638","#faa936","#fbad34","#fbb131","#fbb430","#fcb92d","#fcbc2c","#fdc02a","#fdc328","#fcc728","#fbcc27","#fad026","#f9d526","#f8d925","#f7de25","#f5e324","#f4e723","#f3ec23","#f2f022","#f1f521","#f0f921"];
+
+ var RSR_pair = [];
+ 
+ for (i=0; i < plasmaColors.length; i++) {
+    RSR_pair.push({
+    interval: (100/plasmaColors.length)*(i+1),
+    colorchoice: plasmaColors[i]
+    })
+ }
+
 
 // Utility
 if ( typeof Object.create !== 'function' ) {
@@ -217,13 +228,15 @@ if ( typeof Object.create !== 'function' ) {
 
             console.log("RSRZ mod_num2: " + mod_num2);
 
+            console.log(RSRZ_data);
+
             command = "";
 
             for (var i = mod_num1; i <= mod_num2; i++) {
                 for (var k = 0; k < Object.keys(RSRZ_data[i]).length; k++){
                     var RSRZ = (parseFloat(RSRZ_data[i][k].real_space_r_z_score)*100)/100;
                     var split_unitid = RSRZ_data[i][k].unit_id.split("|");
-                    if (RSRZ !== RSRZ) {
+                    if (RSRZ === null) {
                         command += "select " + split_unitid[4] + "/" + i + ".1;" + " color grey; ";     
                     } else if (RSRZ < 1.00) {
                         command += "select " + split_unitid[4] + "/" + i + ".1;" + " color green; ";   
@@ -235,6 +248,11 @@ if ( typeof Object.create !== 'function' ) {
                         command += "select " + split_unitid[4] + "/" + i + ".1;" + " color red; ";  
                     }
                     command += "select " + i + ".1, " + i + ".2;" +
+                       "select nucleic and " + i + ".2; color grey;" +
+                       "select protein and " + i + ".2; color purple;" +
+                       "select hetero  and " + i + ".2; color pink;" +
+                       " select " + i + ".2; color translucent 0.8;" + 
+                       "select " + i + ".1," + i + ".2;" +
                        " spacefill off; " + "center " + i + ".1;" +
                        "zoom {"  + i + ".1} 0;"; 
                 }
@@ -249,30 +267,43 @@ if ( typeof Object.create !== 'function' ) {
             var mod_num1 = a;
 
             var mod_num2 = b;
-
-            // RGB color for white is (255, 255, 255)
-            // RGB color for red is (255, 0, 0)
-            var diffRed = 255;
-            var diffGreen = 0;
-            var diffBlue = -255;
-           
-            command = "";
             
             // Need to tk into account RSR values <0, >1, and NaN
             for (var i = mod_num1; i <= mod_num2; i++) {
                 for (var k = 0; k < Object.keys(RSR_data[i]).length; k++) {
                     var RSR = parseFloat(RSR_data[i][k].real_space_r);
                     var split_unitid = RSR_data[i][k].unit_id.split("|");
-                    diffRed = Math.round((255 * RSR) + 0);
-                    diffGreen = Math.round((0 * RSR) + 0);
-                    diffBlue = Math.round((-255 * RSR) + 255);
-                    command += "select " + split_unitid[4] + "/" + i + ".1;" + " color " + "[" + diffRed + "," + diffGreen + "," + diffBlue + "];";   
+
+
+                    //make the min and max values of RSR to be equal to 0.1 and 0.7 respectively
+                    if (RSR < 0.1) {
+                        RSR = 0.1;
+                    } else if (RSR > 0.7) {
+                        RSR = 0.7;
+                    }
+
+                    //map the RSR values between 0 and 100
+                    var pert = Math.round(((RSR-0.1)/0.6)*100);
+
+                    for (var a=0; a<Object.keys(RSR_pair).length; a++) {
+                        if (pert == RSR_pair[a].interval){
+                            colorchoice = RSR_pair[a].colorchoice;
+                            command += "select " + split_unitid[4] + "/" + i + ".1;" + " color '" + colorchoice + "'; ";
+                        }
+                    }
                 }
-                command += "select " + i + ".1, " + i + ".2;" +
+
+                 command += "select " + i + ".1, " + i + ".2;" +
+                       "select nucleic and " + i + ".2; color grey;" +
+                       "select protein and " + i + ".2; color purple;" +
+                       "select hetero  and " + i + ".2; color pink;" +
+                       " select " + i + ".2; color translucent 0.8;" + 
+                       "select " + i + ".1," + i + ".2;" +
                        " spacefill off; " + "center " + i + ".1;" +
                        "zoom {"  + i + ".1} 0;";
+                
             }
-               
+
             console.log(command);
             jmolScript(command);
 
