@@ -214,9 +214,9 @@ if ( typeof Object.create !== 'function' ) {
 
             var mod_num2 = b;
 
-            console.log("RSRZ mod_num1: " + mod_num1);
+            //console.log("RSRZ mod_num1: " + mod_num1);
 
-            console.log("RSRZ mod_num2: " + mod_num2);
+            //console.log("RSRZ mod_num2: " + mod_num2);
 
             command = "";
 
@@ -246,7 +246,7 @@ if ( typeof Object.create !== 'function' ) {
                 }
             }
 
-            console.log(command);
+            //console.log(command);
             jmolScript(command);
         },
 
@@ -256,9 +256,9 @@ if ( typeof Object.create !== 'function' ) {
 
             var mod_num2 = b;
 
-            console.log("RSR mod_num1: " + mod_num1);
+            //console.log("RSR mod_num1: " + mod_num1);
 
-            console.log("RSR mod_num2: " + mod_num2);
+            //console.log("RSR mod_num2: " + mod_num2);
             
             command = "";
 
@@ -275,14 +275,14 @@ if ( typeof Object.create !== 'function' ) {
                         RSR = 0.5;
                     }
 
-                    console.log(RSR);
+                    //console.log(RSR);
 
                     //map the RSR values between 0 and 100
                     var pert = Math.round(((RSR-0.0)/0.5)*100);
 
-                    console.log(pert);
+                    //console.log(pert);
 
-                    console.log(RSR_pair[0].colorchoice);
+                    //console.log(RSR_pair[0].colorchoice);
 
                     for (var a=0; a<Object.keys(RSR_pair).length; a++) {
                         if (pert == (RSR_pair[a].interval)-1){
@@ -302,7 +302,7 @@ if ( typeof Object.create !== 'function' ) {
                 
             }
 
-            console.log(command);
+            //console.log(command);
             jmolScript(command);
 
         },
@@ -310,8 +310,6 @@ if ( typeof Object.create !== 'function' ) {
         show: function() {
             var self = this;
             var m = self.modelNumber;
-
-            //console.log(m);
 
             if ( $.fn.jmolTools.options.mutuallyExclusive ) {
                 self.hideAll();
