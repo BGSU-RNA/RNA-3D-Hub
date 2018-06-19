@@ -167,16 +167,6 @@ if ( typeof Object.create !== 'function' ) {
 
             console.log("Color one model: " + k)
             
-            
-            //if ($('#colorRSRZ').is(':checked')) {
-              //  jmolModel.styleModelRSRZ(k, k);
-            //} else if ($('#colorRSR').is(':checked')) {
-              //  jmolModel.styleModelRSR(k, k);
-            //} else {
-              //  jmolModel.styleModel(k, k);
-            //}
-
-            
             if ($('#colorOPT :selected').val() === 'RSRZ') {
                 jmolModel.styleModelRSRZ(k, k);
                 $("div.showRSRZ").show(); 
@@ -228,8 +218,6 @@ if ( typeof Object.create !== 'function' ) {
 
             console.log("RSRZ mod_num2: " + mod_num2);
 
-            console.log(RSRZ_data);
-
             command = "";
 
             for (var i = mod_num1; i <= mod_num2; i++) {
@@ -267,34 +255,44 @@ if ( typeof Object.create !== 'function' ) {
             var mod_num1 = a;
 
             var mod_num2 = b;
+
+            console.log("RSR mod_num1: " + mod_num1);
+
+            console.log("RSR mod_num2: " + mod_num2);
             
-            // Need to tk into account RSR values <0, >1, and NaN
+            command = "";
+
             for (var i = mod_num1; i <= mod_num2; i++) {
                 for (var k = 0; k < Object.keys(RSR_data[i]).length; k++) {
                     var RSR = parseFloat(RSR_data[i][k].real_space_r);
                     var split_unitid = RSR_data[i][k].unit_id.split("|");
 
 
-                    //make the min and max values of RSR to be equal to 0.1 and 0.7 respectively
-                    if (RSR < 0.1) {
-                        RSR = 0.1;
-                    } else if (RSR > 0.7) {
-                        RSR = 0.7;
+                    //make the min and max values of RSR to be equal to 0.0 and 0.5 respectively
+                    if (RSR < 0.0) {
+                        RSR = 0.0;
+                    } else if (RSR > 0.5) {
+                        RSR = 0.5;
                     }
 
+                    console.log(RSR);
+
                     //map the RSR values between 0 and 100
-                    var pert = Math.round(((RSR-0.1)/0.6)*100);
+                    var pert = Math.round(((RSR-0.0)/0.5)*100);
+
+                    console.log(pert);
+
+                    console.log(RSR_pair[0].colorchoice);
 
                     for (var a=0; a<Object.keys(RSR_pair).length; a++) {
-                        if (pert == RSR_pair[a].interval){
+                        if (pert == (RSR_pair[a].interval)-1){
                             colorchoice = RSR_pair[a].colorchoice;
                             command += "select " + split_unitid[4] + "/" + i + ".1;" + " color '" + colorchoice + "'; ";
                         }
                     }
                 }
 
-                 command += "select " + i + ".1, " + i + ".2;" +
-                       "select nucleic and " + i + ".2; color grey;" +
+                 command += "select nucleic and " + i + ".2; color grey;" +
                        "select protein and " + i + ".2; color purple;" +
                        "select hetero  and " + i + ".2; color pink;" +
                        " select " + i + ".2; color translucent 0.8;" + 
@@ -410,8 +408,7 @@ if ( typeof Object.create !== 'function' ) {
             $.jmolTools.stereo = !$.jmolTools.stereo;
         },
 
-        
-        toggleNumbers: function() {
+        toggleNumbers: function() { 
             if ( $(this).is(':checked') ) {
                 $.jmolTools.showNumbers = true;
                 jmolScript("select {*.C1'},{*.CA};label %[sequence]%[resno];color labels black;");
@@ -420,7 +417,6 @@ if ( typeof Object.create !== 'function' ) {
                 jmolScript('label off;');
             }
         },
-        
 
         toggleRSRZ: function() {
 
@@ -457,7 +453,6 @@ if ( typeof Object.create !== 'function' ) {
 
         },
 
-        
         toggleRSR: function() { 
 
             n = $.jmolTools.numModels;
@@ -470,7 +465,6 @@ if ( typeof Object.create !== 'function' ) {
             }
         },
         
-
         toggleNeighborhood: function() {
             // update button text
             if ($.jmolTools.neighborhood) {
