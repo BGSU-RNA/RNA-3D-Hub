@@ -264,9 +264,9 @@
                             </linearGradient>
                         </defs>
                     <rect x="0" y="0" width="300" height="15" fill="url(#grad3)"  />
-                    <text x="0" y="30" font-family="sans-serif" font-size="12px" fill="black">0.1</text>
-                    <text x="120" y="30" font-family="sans-serif" font-size="12px" fill="black">RSR Scale</text>
-                    <text x="285" y="30" font-family="sans-serif" font-size="12px" fill="black">0.7</text>
+                    <text x="0" y="30" font-family="sans-serif" font-size="12px" fill="black">0.0</text>
+                    <text x="70" y="30" font-family="sans-serif" font-size="12px" fill="black">RSR Scale truncated at 0.5</text>
+                    <text x="285" y="30" font-family="sans-serif" font-size="12px" fill="black">0.5</text>
                     </svg>
                 </div>
 
