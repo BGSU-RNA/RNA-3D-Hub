@@ -110,6 +110,7 @@ class Pdb_model extends CI_Model {
     {
         return "<label><input type='radio' id='{$id}' class='jmolInline' data-coord='{$id}' data-quality='{$id}'> {$id} </label>" .
         "<span class='loop_link'>" . anchor_popup("loops/view/{$id}", '&#10140;') . "</span>";
+
     }
     function get_latest_loop_release()
     {
@@ -257,7 +258,6 @@ class Pdb_model extends CI_Model {
 
         }
       
-
         return array( 'data'   => $html,
                       'header' => array_merge( $header, explode(',', $interaction_description) ),
                       'csv'    => $csv
@@ -396,6 +396,7 @@ class Pdb_model extends CI_Model {
             $this->db->where("char_length($interaction) = 3");
         }
         $result = $this->db->get()->row();
+
         return number_format($result->counts, 0);
     }
 
@@ -464,8 +465,8 @@ class Pdb_model extends CI_Model {
                  ->order_by('ui.number', 'asc');
         $query = $this->db->get();
         $chain_data = array();
-
         foreach($query->result() as $row) {
+
 
             $chain_data[$row->chain]['nts'][] = array('id' => $row->id,
                                                       'sequence' => $row->sequence);
