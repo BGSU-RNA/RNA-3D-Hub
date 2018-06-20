@@ -21,15 +21,53 @@
       // Generate the view
       var view = views.current();
       if (view) {
-        var scale = function(domain, max) {
-          return d3.scale.linear().domain(domain).range([0, max]);
+        var scale = function(domain, max, min = 0) {
+          return d3.scale.linear().domain(domain).range([min, max]);
         };
 
         view.preprocess();
 
-        // Setup the scales
-        plot.xScale(scale(view.xDomain(), plot.width() - margin.right));
-        plot.yScale(scale(view.yDomain(), plot.height() - margin.above));
+        // Determine x and y scaling factor -- math by CLZ, September 2017
+        // As of 2017-09-26, the revised version is not working correctly.  Needs more review.
+
+        var xw = (plot.width()  - margin.right - margin.left );
+        var yh = (plot.height() - margin.above - margin.below);
+        var sx = xw / (view.xDomain()[1] - view.xDomain()[0]);
+        var sy = yh / (view.yDomain()[1] - view.yDomain()[0]);
+
+/*
+        // Setup the scales -- Blake original (all-purpose)
+        plot.xScale(scale(view.xDomain(), plot.width() - margin.right - margin.left));
+        plot.yScale(scale(view.yDomain(), plot.height() - margin.above - margin.below));
+*/
+
+        // Set up the scales
+
+        if (sx > sy) {
+          plot.xScale(scale(view.xDomain(), xw*sy/sx)); // original CLZ
+          // plot.xScale(scale(view.xDomain(), (xw * ((sy/sx) + 1) / 2), (xw * (1 - (sy/sx)) / 2)); // revised CLZ
+          // plot.xScale(scale(view.xDomain(), (xw * (1 - (sy/sx)) / 2), (xw * ((sy/sx) + 1) / 2)); // revised CLZ - test reversed params
+          plot.yScale(scale(view.yDomain(), yh));
+        } else {
+          plot.xScale(scale(view.xDomain(), xw));
+          plot.yScale(scale(view.yDomain(), yh*sx/sy));
+        }
+
+        console.log("sx: ", sx);
+        console.log("sy: ", sy);
+        console.log("xw: ", xw);
+        console.log("yh: ", yh);
+        console.log("foo1: ", (xw * ((sy/sx) + 1) / 2));
+        console.log("foo2: ", (xw * (1 - (sy/sx)) / 2));
+
+        console.log("view-xDomain: ", view.xDomain());
+        console.log("view-yDomain: ", view.yDomain());
+        console.log("plot-width: ", plot.width());
+        console.log("plot-height: ", plot.height());
+        console.log("margin-left: ", margin.left);
+        console.log("margin-right: ", margin.right);
+        console.log("margin-above: ", margin.above);
+        console.log("margin-below: ", margin.below);
 
         // Generate the components - brush, frame, zoom, etc
         components.generate();
@@ -474,6 +512,9 @@
     var brush = new Brush();
     brush.attach(plot);
 
+    //console.log("brush-x: ",brush.x().value);
+    //console.log("brush-y: ",brush.y().value);
+
     return brush;
   };
 
@@ -513,6 +554,15 @@
 
   Rna2D.components.frame = function(plot) {
     var Frame = inhert(Rna2D.Component, 'frame', { add: true, 'class': 'frame' });
+
+    console.log("rect-mar-lft: ", plot.margin().left);
+    console.log("rect-mar-abv: ", plot.margin().above);
+    console.log("rect-mar-rgt: ", plot.margin().right);
+    console.log("rect-mar-blw: ", plot.margin().below);
+    console.log("rect-plot-wd: ", plot.width());
+    console.log("rect-plot-ht: ", plot.height());
+    console.log("rect-adj-plot-wd: ", plot.width() + plot.margin().left + plot.margin().right);
+    console.log("rect-adj-plot-ht: ", plot.height() + plot.margin().above + plot.margin().below);
 
     Frame.prototype.draw = function() {
       return plot.vis.append('svg:rect')
@@ -952,6 +1002,11 @@
             var scale = d3.event.scale,
                 translate = d3.event.translate;
 
+            //  These debugs work but don't provide anything useful.
+            //  This scaling keeps the elements in relative scale,
+            //  but has nothing to do with odd inputs.
+            //console.log("scale: ", scale); // DEBUG
+            //console.log("translate: ", translate); // DEBUG
             self.currentScale(scale);
             self.onChange()();
 
@@ -1039,7 +1094,9 @@
     Airport.prototype.preprocess = function() {
       // Compute the max and min of x and y coords for the scales.
       var xMax = 0,
-          yMax = 0;
+          yMax = 0,
+          xMin = 15000,
+          yMin = 15000;
 
       $.each(plot.chains(), function(_, chain) {
         var getX = plot.nucleotides.getX(),
@@ -1051,18 +1108,40 @@
           if (x > xMax) {
             xMax = x;
           }
+
           if (y > yMax) {
             yMax = y;
+          }
+
+          if (x < xMin) {
+            xMin = x;
+          }
+
+          if (y < yMin) {
+            yMin = y;
           }
         });
       });
 
-      this.domain = { x: [0, xMax], y: [0, yMax] };
+      console.log("xMin (out): ", xMin);
+      console.log("xMax (out): ", xMax);
+      console.log("yMin (out): ", yMin);
+      console.log("yMax (out): ", yMax);
+
+      this.domain = { x: [xMin, xMax], y: [yMin, yMax] };
+
+      console.log("xmin: ", this.domain.x[0]);
+      console.log("xmax: ", this.domain.x[1]);
+      console.log("ymin: ", this.domain.y[0]);
+      console.log("ymax: ", this.domain.y[1]);
     };
 
     Airport.prototype.xCoord = function() {
       var scale = plot.xScale(),
           getX = plot.nucleotides.getX();
+
+      //console.log("scale: ", scale); //DEBUG not useful
+
       return function(d, i) { return scale(getX(d, i)); };
     };
 
@@ -1089,6 +1168,8 @@
             .attr('font-size', this.fontSize())
             .text(plot.nucleotides.getSequence())
             .attr('fill', plot.nucleotides.color());
+      //console.log("xcoord: ",this.xCoord()); // DEBUG not useful
+      //console.log("ycoord: ",this.yCoord()); // DEBUG not useful
     };
 
     Airport.prototype.connections = function() {
@@ -1097,8 +1178,11 @@
           getNTs = plot.interactions.ntElements(),
           gap = this.gap();
 
+      //console.log("gap: ",this.gap()); // DEBUG -- not accessed ?!?
+
       interactions = $.map(interactions, function(obj, i) {
         try {
+          //console.log("foo");
           var nts = getNTs(obj),
               nt1 = Rna2D.utils.element(nts[0]),
               nt2 = Rna2D.utils.element(nts[1]),
