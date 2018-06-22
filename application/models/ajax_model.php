@@ -68,8 +68,18 @@ class Ajax_model extends CI_Model {
             if ( $cla ) {
                 $rsc = $cla;
             } else {
-                $rsc = "NULL";
-                // replace with query to obtain most recent class for IFE
+                $this->db->select('cl.name')
+                         ->from('nr_releases AS nr')
+                         ->join('nr_chains AS ch','nr.nr_release_id = ch.nr_release_id')
+                         ->join('nr_classes AS cl','ch.nr_class_id = cl.nr_class_id')
+                         ->where('ch.ife_id', $ife)
+                         ->where('cl.resolution', $res)
+                         ->order_by('nr.index',desc);
+                         ->limit(1);
+
+                 $clquery = $this->db->get();
+                 $clrow = $clquery->row();
+                 $rsc = $clrow->name;
             }
 
             // don't report resolution for nmr structures
