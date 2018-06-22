@@ -6,12 +6,14 @@ function LookUpPDBInfo()
         re = /[a-zA-Z0-9\+\|]*/, // for PDB or IFE ID inputs
         pdb = re.exec(anchor_text),
         cla = a.closest('tr').children("td:eq(1)").children("a:eq(0)").text(),
+        res = a.closest('div .span16').children('ul:eq(0)').find('li.active').text(),
         loc = window.location.protocol + '//' + window.location.host +
             '/rna3dhub/rest/getPdbInfo';
 
     alert(cla);
+    alert(res);
 
-    $.post(loc, { pdb: pdb[0], cla: cla }, function(data) {
+    $.post(loc, { pdb: pdb[0], cla: cla, res: res }, function(data) {
         // hide all previously displayed popovers
         $('.popover-displayed').removeClass('popover-displayed')
                                .popover('hide')

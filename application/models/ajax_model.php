@@ -43,9 +43,16 @@ class Ajax_model extends CI_Model {
         return $query[0]->source;
     }
 
-    function get_pdb_info($inp,$cla="")
+    function get_pdb_info($inp,$cla="",$rin="4.0")
     {
         $pdb_url = "http://www.rcsb.org/pdb/explore/explore.do?structureId=";
+
+        //  Is the input $pdb a pdb_id or an ife_id?
+        //  Assess and set the variables accordingly.
+        $pdb = substr($inp,0,4);
+        $ife = ( strlen($inp) > 4) ? $inp : "foo";
+
+        $res = preg_replace("/A$/", "", $rin);
 
         $this->db->select('pi.title')
                  ->select('pi.experimental_technique')
@@ -88,7 +95,8 @@ class Ajax_model extends CI_Model {
             //             "<u>IFE</u>: [ $ife ]<br/>";
 
             $pdb_info .= "<hr/>" .
-                         "<u>class</u>: [ $rsc ]<br/>";
+                         "<u>class</u>: [ $rsc ]<br/>" . 
+                         "<u>res</u>: [ $res ]<br/>";
 
             //  Isolate nt/bp in preparation for removal.
             $pdb_info .= "<hr/>" . 
