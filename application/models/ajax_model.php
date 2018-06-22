@@ -43,7 +43,7 @@ class Ajax_model extends CI_Model {
         return $query[0]->source;
     }
 
-    function get_pdb_info($inp)
+    function get_pdb_info($inp,$cla="")
     {
         $pdb_url = "http://www.rcsb.org/pdb/explore/explore.do?structureId=";
 
@@ -62,6 +62,13 @@ class Ajax_model extends CI_Model {
 
         if ( $query->num_rows() > 0 ) {
             $row = $query->row();
+
+            if ( $cla ) {
+                $rsc = $cla;
+            } else {
+                $rsc = "NULL";
+                // replace with query to obtain most recent class for IFE
+            }
 
             // don't report resolution for nmr structures
             if (preg_match('/NMR/', $row->experimental_technique)) {
@@ -84,6 +91,9 @@ class Ajax_model extends CI_Model {
             //$pdb_info .= "<hr/>" . 
             //             "<u>PDB</u>: [ $pdb ]<br/>" .
             //             "<u>IFE</u>: [ $ife ]<br/>";
+
+            $pdb_info .= "<hr/>" .
+                         "<u>class</u>: [ $rsc ]<br/>";
 
             //  Isolate nt/bp in preparation for removal.
             $pdb_info .= "<hr/>" . 
