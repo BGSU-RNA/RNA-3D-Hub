@@ -74,7 +74,7 @@ class Ajax_model extends CI_Model {
                          ->join('nr_classes AS cl','ch.nr_class_id = cl.nr_class_id')
                          ->where('ch.ife_id', $ife)
                          ->where('cl.resolution', $res)
-                         ->order_by('nr.index',desc);
+                         ->order_by(nr.index.desc)
                          ->limit(1);
 
                  $clquery = $this->db->get();
