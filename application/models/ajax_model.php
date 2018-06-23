@@ -43,7 +43,7 @@ class Ajax_model extends CI_Model {
         return $query[0]->source;
     }
 
-    function get_pdb_info($inp,$cla="",$rin="4.0")
+    function get_pdb_info($inp,$cla="")
     {
         $pdb_url = "http://www.rcsb.org/pdb/explore/explore.do?structureId=";
 
@@ -51,8 +51,6 @@ class Ajax_model extends CI_Model {
         //  Assess and set the variables accordingly.
         $pdb = substr($inp,0,4);
         $ife = ( strlen($inp) > 4) ? $inp : "foo";
-
-        $res = preg_replace("/A$/", "", $rin);
 
         $this->db->select('pi.title')
                  ->select('pi.experimental_technique')
@@ -66,14 +64,15 @@ class Ajax_model extends CI_Model {
             $row = $query->row();
 
             if ( $cla ) {
-                $rsc = $cla;
+                $tmp = preg_replace('/^NR_[1-4]\.[05]_/','NR_all_',$cla);
+                $rsc = preg_replace('/^NR_20.0_/','NR_all_',$tmp);
             } else {
                 $this->db->select('cl.name')
                          ->from('nr_releases AS nr')
                          ->join('nr_chains AS ch','nr.nr_release_id = ch.nr_release_id')
                          ->join('nr_classes AS cl','ch.nr_class_id = cl.nr_class_id')
                          ->where('ch.ife_id', $ife)
-                         ->where('cl.resolution', $res)
+                         ->where('cl.resolution', "all")
                          ->order_by(nr.index.desc)
                          ->limit(1);
 
@@ -103,10 +102,8 @@ class Ajax_model extends CI_Model {
             //$pdb_info .= "<hr/>" . 
             //             "<u>PDB</u>: [ $pdb ]<br/>" .
             //             "<u>IFE</u>: [ $ife ]<br/>";
-
-            $pdb_info .= "<hr/>" .
-                         "<u>class</u>: [ $rsc ]<br/>" . 
-                         "<u>res</u>: [ $res ]<br/>";
+            //$pdb_info .= "<hr/>" .
+            //             "<u>class</u>: [ $rsc ]<br/>";
 
             //  Isolate nt/bp in preparation for removal.
             $pdb_info .= "<hr/>" . 
@@ -115,44 +112,40 @@ class Ajax_model extends CI_Model {
             //  Separate the CQS logic, and conditionally display these values
             if ( $ife != "foo" ){
                 $this->db->select('ic.ife_id')
-                         #->select('ic.composite_quality_score')
+                         ->select('nc.composite_quality_score')
                          ->select('ic.clashscore')
                          ->select('ic.average_rsr')
                          ->select('ic.average_rscc')
                          ->select('ic.percent_clash')
                          ->select('ic.rfree')
-                         #->select('ic.fraction_unobserved')
-                         #->select('ic.percent_observed')
+                         ->select('nc.fraction_unobserved')
+                         ->select('nc.percent_observed')
                          ->from('ife_cqs AS ic')
                          ->join('nr_cqs AS nc','ic.ife_id = nc.ife_id')
                          ->where('ic.ife_id', $ife)
-                         ->where('nc.nr_name', $cla)
+                         ->where('nc.nr_name', $rsc)
                          ->limit(1);
                 $ifequery = $this->db->get();
 
                 if ( $ifequery->num_rows() > 0 ) {
                     $row = $ifequery->row();
 
-                    #$cqs    = $row->composite_quality_score;
+                    $cqs    = $row->composite_quality_score;
                     $arsr   = $row->average_rsr;
                     $pclash = $row->percent_clash;
                     $arscc  = $row->average_rscc;
                     $rfree  = $row->rfree;
-                    #$fracu  = $row->fraction_unobserved;
-                    #$pobs   = $row->percent_observed;
+                    $fracu  = $row->fraction_unobserved;
+                    $pobs   = $row->percent_observed;
                 } else {
-                    #$cqs    = "N/A";
+                    $cqs    = "N/A";
                     $arsr   = "N/A";
                     $pclash = "N/A";
                     $arscc  = "N/A";
                     $rfree  = "N/A";
-                    #$fracu  = "N/A";
-                    #$pobs   = "N/A";
+                    $fracu  = "N/A";
+                    $pobs   = "N/A";
                 }
-
-                $cqs    = "N/A";
-                $fracu  = "N/A";
-                $pobs   = "N/A";
 
                 $pdb_info .= "<hr/>" . 
                              "<u>Composite Quality Score (CQS)</u>: $cqs<br/>" .
