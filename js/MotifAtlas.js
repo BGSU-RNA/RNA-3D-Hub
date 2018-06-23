@@ -10,9 +10,6 @@ function LookUpPDBInfo()
         loc = window.location.protocol + '//' + window.location.host +
             '/rna3dhub/rest/getPdbInfo';
 
-    alert(cla);
-    alert(res);
-
     $.post(loc, { pdb: pdb[0], cla: cla, res: res }, function(data) {
         // hide all previously displayed popovers
         $('.popover-displayed').removeClass('popover-displayed')
