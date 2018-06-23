@@ -114,17 +114,18 @@ class Ajax_model extends CI_Model {
 
             //  Separate the CQS logic, and conditionally display these values
             if ( $ife != "foo" ){
-                $this->db->select('cq.ife_id')
-                         #->select('cq.composite_quality_score')
-                         ->select('cq.clashscore')
-                         ->select('cq.average_rsr')
-                         ->select('cq.average_rscc')
-                         ->select('cq.percent_clash')
-                         ->select('cq.rfree')
-                         #->select('cq.fraction_unobserved')
-                         #->select('cq.percent_observed')
-                         ->from('ife_cqs AS cq')
-                         ->where('cq.ife_id', $ife)
+                $this->db->select('ic.ife_id')
+                         #->select('ic.composite_quality_score')
+                         ->select('ic.clashscore')
+                         ->select('ic.average_rsr')
+                         ->select('ic.average_rscc')
+                         ->select('ic.percent_clash')
+                         ->select('ic.rfree')
+                         #->select('ic.fraction_unobserved')
+                         #->select('ic.percent_observed')
+                         ->from('ife_cqs AS ic')
+                         ->join('nr_cqs AS nc','ic.ife_id = nc.ife_id')
+                         ->where('ic.ife_id', $ife)
                          ->limit(1);
                 $ifequery = $this->db->get();
 
