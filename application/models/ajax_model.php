@@ -126,6 +126,7 @@ class Ajax_model extends CI_Model {
                          ->from('ife_cqs AS ic')
                          ->join('nr_cqs AS nc','ic.ife_id = nc.ife_id')
                          ->where('ic.ife_id', $ife)
+                         ->where('nc.nr_name', $cla)
                          ->limit(1);
                 $ifequery = $this->db->get();
 
