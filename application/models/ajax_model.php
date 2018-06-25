@@ -133,7 +133,7 @@ class Ajax_model extends CI_Model {
                     $cqs    = $row->composite_quality_score;
                     $arsr   = ( $row->average_rsr == 40 ) ? "not applicable; using 40 for CQS" : $row->average_rsr;
                     $pclash = $row->percent_clash;
-                    $arscc  = $row->average_rscc;
+                    $arscc  = ( $row->average_rscc == -1) ? "not applicable; using -1 for CQS" : $row->average_rscc;
                     $rfree  = ( $row->rfree == 1) ? "not applicable; using 1 for CQS" : $row->rfree;
                     #$fruno  = $row->fraction_unobserved;
                     $frobs   = $row->percent_observed;
