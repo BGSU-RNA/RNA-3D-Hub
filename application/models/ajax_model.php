@@ -118,7 +118,7 @@ class Ajax_model extends CI_Model {
                          ->select('ic.average_rscc')
                          ->select('ic.percent_clash')
                          ->select('ic.rfree')
-                         ->select('nc.fraction_unobserved')
+                         #->select('nc.fraction_unobserved')
                          ->select('nc.percent_observed')
                          ->from('ife_cqs AS ic')
                          ->join('nr_cqs AS nc','ic.ife_id = nc.ife_id')
@@ -131,31 +131,30 @@ class Ajax_model extends CI_Model {
                     $row = $ifequery->row();
 
                     $cqs    = $row->composite_quality_score;
-                    $arsr   = $row->average_rsr;
+                    $arsr   = ( $row->average_rsr == 40 ) ? "not applicable; using 40 for CQS" : $row->average_rsr;
                     $pclash = $row->percent_clash;
                     $arscc  = $row->average_rscc;
-                    $rfree  = $row->rfree;
-                    $fracu  = $row->fraction_unobserved;
-                    $pobs   = $row->percent_observed;
+                    $rfree  = ( $row->rfree == 1) ? "not applicable; using 1 for CQS" : $row->rfree;
+                    #$fruno  = $row->fraction_unobserved;
+                    $frobs   = $row->percent_observed;
                 } else {
-                    $cqs    = "N/A";
-                    $arsr   = "N/A";
-                    $pclash = "N/A";
-                    $arscc  = "N/A";
-                    $rfree  = "N/A";
-                    $fracu  = "N/A";
-                    $pobs   = "N/A";
+                    $cqs    = "not available";
+                    $arsr   = "not available";
+                    $pclash = "not available";
+                    $arscc  = "not available";
+                    $rfree  = "not available";
+                    #$fruno  = "not available";
+                    $frobs  = "not available";
                 }
 
                 $pdb_info .= "<hr/>" . 
                              "<u>Composite Quality Score (CQS)</u>: $cqs<br/>" .
                              $resolution .
+                             "<u>Percent Clash</u>: $pclash %<br/>" .  
+                             "<u>Fraction Observed</u>: $frobs<br/>" . 
                              "<u>Average RSR</u>: $arsr<br/>" .  
-                             "<u>Percent Clash</u>: $pclash<br/>" .  
                              "<u>Average RSCC</u>: $arscc<br/>" .  
-                             "<u>Rfree</u>: $rfree<br/>" .  
-                             "<u>Fraction Unobserved</u>: $fracu<br/>" .  
-                             "<u>Percentage Observed</u>: $pobs<br/>";
+                             "<u>Rfree</u>: $rfree<br/>";
             }
 
             //  Add the structure website links.
