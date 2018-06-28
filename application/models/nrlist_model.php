@@ -37,26 +37,6 @@ class Nrlist_model extends CI_Model {
         return $counts;
     }
 
-/*
-CREATE TABLE `nr_release_diff` (
-                 ->select('nr_release_id1')
-                 ->select('nr_release_id2')
-                 ->select('resolution')
-                 ->select('direct_parent')
-                 ->select('added_groups')
-                 ->select('removed_groups')
-                 ->select('updated_groups')
-                 ->select('same_groups')
-                 ->select('added_pdbs')
-                 ->select('removed_pdbs')
-                 ->select('num_added_groups')
-                 ->select('num_removed_groups')
-                 ->select('num_updated_groups')
-                 ->select('num_same_groups')
-                 ->select('num_added_pdbs')
-                 ->select('num_removed_pdbs')
-*/
-
     function get_release_diff($rel1, $rel2)
     {
         $labels = array('1.5'=>'1_5A','2.0'=>'2_0A','2.5'=>'2_5A','3.0'=>'3_0A','3.5'=>'3_5A','4.0'=>'4_0A','20.0'=>'20_0A','all'=>'all');
@@ -315,9 +295,9 @@ CREATE TABLE `nr_release_diff` (
         }
 
         return $table;
-	}
-	
-	function get_heatmap_data($id)
+    }
+    
+    function get_heatmap_data($id)
     {
         $this->db->select('NR.nr_release_id')
                  ->from('nr_classes AS NC')
@@ -329,7 +309,7 @@ CREATE TABLE `nr_release_diff` (
 
         $release_id = $result[0]['nr_release_id'];
 
-          $this->db->select('NC1.ife_id AS ife1')
+        $this->db->select('NC1.ife_id AS ife1')
                  ->select('NO1.index AS ife1_index')
                  ->select('NC2.ife_id AS ife2')
                  ->select('NO2.index AS ife2_index')
@@ -362,8 +342,7 @@ CREATE TABLE `nr_release_diff` (
         $heatmap_data = json_encode($query->result());
 
         return $heatmap_data;
-	}
-
+    }
 
     function get_compound_single($ife)
     {
@@ -381,7 +360,7 @@ CREATE TABLE `nr_release_diff` (
 
         return $result;
     }
-	
+    
     function get_compound_list($id)
     {
         $this->db->select('group_concat(compound separator ", ") as compounds', FALSE)
@@ -411,7 +390,7 @@ CREATE TABLE `nr_release_diff` (
 
         return implode(', ', $s);
     }
-	
+    
     function get_history($id,$mode)
     {
         if ($mode == 'parents') {
