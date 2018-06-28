@@ -175,6 +175,10 @@ if ( typeof Object.create !== 'function' ) {
                 jmolModel.styleModelRSR(k, k);
                 $("div.showRSR").show();
                 $("div.showRSRZ").hide(); 
+            } else if ($('#colorOPT :selected').val() === 'CPK') {
+                jmolModel.styleModelCPK(k, k);
+                $("div.showRSR").hide();
+                $("div.showRSRZ").hide(); 
             } else if ($('#colorOPT :selected').val() === 'Default') {
                 jmolModel.styleModel(k, k);
                 $("div.showRSR").hide(); 
@@ -192,6 +196,7 @@ if ( typeof Object.create !== 'function' ) {
                         'select [G]/' + k + '.1; color chartreuse;' +
                         'select [C]/' + k + '.1; color gold;' +
                         'select [A]/' + k + '.1; color red;' +
+                        'select protein and ' + k + '.1; color CPK;' +
                         'select nucleic and ' + k + '.2; color grey;' +
                         'select protein and ' + k + '.2; color purple;' +
                         'select hetero  and ' + k + '.2; color pink;' +
@@ -208,15 +213,38 @@ if ( typeof Object.create !== 'function' ) {
             
         },
 
+        styleModelCPK: function(a,b) {
+            
+            for (var k=a; k <= b; k++) {
+            
+                command = 'select nucleic and ' + k + '.1; color CPK;' +
+                        'select protein and ' + k + '.1; color CPK;' +
+                        'select nucleic and ' + k + '.2; color grey;' +
+                        'select protein and ' + k + '.2; color purple;' +
+                        'select hetero  and ' + k + '.2; color pink;' +
+                        'select ' + k + '.2; color translucent 0.8;' +
+                        'select ' + k + '.1,' + k + '.2;' +
+                        'spacefill off;' +
+                        'center ' + k + '.1;' +
+                        'zoom {'  + k + '.1} 0;';
+         
+                console.log(command);
+                jmolScript(command);
+
+            }
+
+            
+        },
+
         styleModelRSRZ: function(a,b) {
 
             var mod_num1 = a;
 
             var mod_num2 = b;
 
-            //console.log("RSRZ mod_num1: " + mod_num1);
+            console.log("RSRZ mod_num1: " + mod_num1);
 
-            //console.log("RSRZ mod_num2: " + mod_num2);
+            console.log("RSRZ mod_num2: " + mod_num2);
 
             command = "";
 
@@ -246,7 +274,7 @@ if ( typeof Object.create !== 'function' ) {
                 }
             }
 
-            //console.log(command);
+            console.log(command);
             jmolScript(command);
         },
 
@@ -256,13 +284,16 @@ if ( typeof Object.create !== 'function' ) {
 
             var mod_num2 = b;
 
-            //console.log("RSR mod_num1: " + mod_num1);
+            console.log("RSR mod_num1: " + mod_num1);
 
-            //console.log("RSR mod_num2: " + mod_num2);
+            console.log("RSR mod_num2: " + mod_num2);
             
             command = "";
 
             for (var i = mod_num1; i <= mod_num2; i++) {
+                console.log(RSR_data[i])
+                //console.log(RSR_data[i][9])
+                console.log(Object.keys(RSR_data[i]).length)
                 for (var k = 0; k < Object.keys(RSR_data[i]).length; k++) {
                     var RSR = parseFloat(RSR_data[i][k].real_space_r);
                     var split_unitid = RSR_data[i][k].unit_id.split("|");
@@ -302,7 +333,7 @@ if ( typeof Object.create !== 'function' ) {
                 
             }
 
-            //console.log(command);
+            console.log(command);
             jmolScript(command);
 
         },
@@ -442,6 +473,10 @@ if ( typeof Object.create !== 'function' ) {
                     $("div.showRSR").show();
                     $("div.showRSRZ").hide();
                     jmolModel.styleModelRSR(1, n); 
+                } else if ($(this).val() === 'CPK') {
+                    jmolModel.styleModelCPK(1, n);
+                    $("div.showRSR").hide(); 
+                    $("div.showRSRZ").hide(); 
                 } else if ($(this).val() === 'Default') {
                     jmolModel.styleModel(1, n);
                     $("div.showRSR").hide(); 
