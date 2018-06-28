@@ -1,5 +1,7 @@
 <?php
 
+ini_set("memory_limit","300M");
+
 function add_url($n)
 {
     return anchor(base_url(array('nrlist','view',$n)), $n);
