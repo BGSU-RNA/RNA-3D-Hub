@@ -387,6 +387,7 @@ class Nrlist_model extends CI_Model {
         }
 
         for ($i = 0; $i < count($s); $i++) {
+            $s[$i] = str_replace("+","+ ",$s[$i]);
             $s[$i] = "<a class='pdb'>$s[$i]</a>";
         }
 
@@ -706,6 +707,7 @@ class Nrlist_model extends CI_Model {
             return '';
         }
     }
+
 
 /*
     ### DEFUNCT FUNCTION?
