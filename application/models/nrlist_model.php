@@ -452,7 +452,6 @@ CREATE TABLE `nr_release_diff` (
         }
 
         for ($i = 0; $i < count($s); $i++) {
-            $s[$i] = str_replace("+","+ ",$s[$i]);
             $s[$i] = "<a class='pdb'>$s[$i]</a>";
         }
 
