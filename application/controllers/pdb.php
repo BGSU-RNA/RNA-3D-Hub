@@ -10,7 +10,7 @@ class Pdb extends CI_Controller {
         $data['recent'] = $this->Pdb_model->get_recent_rna_containing_structures(7);
         $data['title'] = 'RNA Structure Atlas';
         $data['baseurl'] = base_url();
-        $this->load->view('header_view', $data);
+        $this->load->view('header_structure_atlas', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('pdb_view', $data);
         $this->load->view('footer');
@@ -45,7 +45,7 @@ class Pdb extends CI_Controller {
         $data['baseurl'] = base_url();
         $data['method'] = 'fr3d';
         $data['pdb_id'] = $id;
-        $this->load->view('header_view', $data);
+        $this->load->view('header_structure_atlas', $data);
         $this->load->view('pdb_summary_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('footer');
@@ -123,7 +123,7 @@ class Pdb extends CI_Controller {
             $data['pdb_id'] = $id;
             $data['baseurl'] = base_url();
             $data['current_url'] = current_url();
-            $this->load->view('header_view', $data);
+            $this->load->view('header_structure_atlas', $data);
             $this->load->view('menu_view', $data);
             $this->load->view('pdb_interactions_view', $data);
             $this->load->view('footer');
@@ -173,7 +173,7 @@ class Pdb extends CI_Controller {
         $data['baseurl'] = base_url();
         $data['method'] = 'fr3d';
         $data['pdb_id'] = $id;
-        $this->load->view('header_view', $data);
+        $this->load->view('header_structure_atlas', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('pdb_loops_view', $data);
         $this->load->view('footer');
@@ -215,7 +215,7 @@ class Pdb extends CI_Controller {
             $data['message'] = $pdb_status['message'];
             $view = 'pdb_invalid_view';
         }
-        $this->load->view('header_view', $data);
+        $this->load->view('header_structure_atlas', $data);
         $this->load->view('menu_view', $data);
         $this->load->view($view, $data);
         $this->load->view('footer');
