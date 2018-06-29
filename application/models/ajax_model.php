@@ -43,9 +43,14 @@ class Ajax_model extends CI_Model {
         return $query[0]->source;
     }
 
-    function get_pdb_info($pdb)
+    function get_pdb_info($inp,$cla="")
     {
         $pdb_url = "http://www.rcsb.org/pdb/explore/explore.do?structureId=";
+
+        //  Is the input $pdb a pdb_id or an ife_id?
+        //  Assess and set the variables accordingly.
+        $pdb = substr($inp,0,4);
+        $ife = ( strlen($inp) > 4) ? $inp : "foo";
 
         $this->db->select('pi.title')
                  ->select('pi.experimental_technique')
@@ -57,6 +62,24 @@ class Ajax_model extends CI_Model {
 
         if ( $query->num_rows() > 0 ) {
             $row = $query->row();
+
+            if ( $cla ) {
+                $tmp = preg_replace('/^NR_[1-4]\.[05]_/','NR_all_',$cla);
+                $rsc = preg_replace('/^NR_20.0_/','NR_all_',$tmp);
+            } else {
+                $this->db->select('cl.name')
+                         ->from('nr_releases AS nr')
+                         ->join('nr_chains AS ch','nr.nr_release_id = ch.nr_release_id')
+                         ->join('nr_classes AS cl','ch.nr_class_id = cl.nr_class_id')
+                         ->where('ch.ife_id', $ife)
+                         ->where('cl.resolution', "all")
+                         ->order_by(nr.index.desc)
+                         ->limit(1);
+
+                 $clquery = $this->db->get();
+                 $clrow = $clquery->row();
+                 $rsc = $clrow->name;
+            }
 
             // don't report resolution for nmr structures
             if (preg_match('/NMR/', $row->experimental_technique)) {
@@ -71,17 +94,77 @@ class Ajax_model extends CI_Model {
             $nucleotides = $this->count_nucleotides($pdb);
             $bpnt = ( $nucleotides == 0 ) ? 0 : number_format($basepairs/$nucleotides, 4);
 
-            $pdb_info = "<u>Title</u>: {$row->title}<br>" .
-                        $resolution .
-                        "<u>Method</u>: {$row->experimental_technique}<br>" .
-                        "<u>Organism</u>: {$source}<br>" .
-                        "<i>$nucleotides nucleotides, $basepairs basepairs, $bpnt basepairs/nucleotide</i><br><br>" .
-                        'Explore in ' .
-                        anchor_popup("$pdb_url$pdb", 'PDB') .
-                        ',  ' .
-                        anchor_popup("http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget=$pdb", 'NDB') .
-                        ' or ' .
-                        anchor_popup("pdb/$pdb", 'BGSU RNA Site');
+            $pdb_info = "<u>Title</u>: {$row->title}<br/>" .
+                        "<u>Method</u>: {$row->experimental_technique}<br/>" .
+                        "<u>Organism</u>: {$source}<br/>";
+
+            //  Debugging info
+            //$pdb_info .= "<hr/>" . 
+            //             "<u>PDB</u>: [ $pdb ]<br/>" .
+            //             "<u>IFE</u>: [ $ife ]<br/>";
+            //$pdb_info .= "<hr/>" .
+            //             "<u>class</u>: [ $rsc ]<br/>";
+
+            //  Isolate nt/bp in preparation for removal.
+            $pdb_info .= "<hr/>" . 
+                         "<i>$nucleotides nucleotides, $basepairs basepairs, $bpnt basepairs/nucleotide</i><br/>";
+
+            //  Separate the CQS logic, and conditionally display these values
+            if ( $ife != "foo" ){
+                $this->db->select('ic.ife_id')
+                         ->select('nc.composite_quality_score')
+                         ->select('ic.clashscore')
+                         ->select('ic.average_rsr')
+                         ->select('ic.average_rscc')
+                         ->select('ic.percent_clash')
+                         ->select('ic.rfree')
+                         #->select('nc.fraction_unobserved')
+                         ->select('nc.percent_observed')
+                         ->from('ife_cqs AS ic')
+                         ->join('nr_cqs AS nc','ic.ife_id = nc.ife_id')
+                         ->where('ic.ife_id', $ife)
+                         ->where('nc.nr_name', $rsc)
+                         ->limit(1);
+                $ifequery = $this->db->get();
+
+                if ( $ifequery->num_rows() > 0 ) {
+                    $row = $ifequery->row();
+
+                    $cqs    = $row->composite_quality_score;
+                    $arsr   = ( $row->average_rsr == 40 ) ? "not applicable; using 40 for CQS" : $row->average_rsr;
+                    $pclash = $row->percent_clash;
+                    $arscc  = ( $row->average_rscc == -1) ? "not applicable; using -1 for CQS" : $row->average_rscc;
+                    $rfree  = ( $row->rfree == 1) ? "not applicable; using 1 for CQS" : $row->rfree;
+                    #$fruno  = $row->fraction_unobserved;
+                    $frobs   = $row->percent_observed;
+                } else {
+                    $cqs    = "not available";
+                    $arsr   = "not available";
+                    $pclash = "not available";
+                    $arscc  = "not available";
+                    $rfree  = "not available";
+                    #$fruno  = "not available";
+                    $frobs  = "not available";
+                }
+
+                $pdb_info .= "<hr/>" . 
+                             "<u>Composite Quality Score (CQS)</u>: $cqs<br/>" .
+                             $resolution .
+                             "<u>Percent Clash</u>: $pclash %<br/>" .  
+                             "<u>Fraction Observed</u>: $frobs<br/>" . 
+                             "<u>Average RSR</u>: $arsr<br/>" .  
+                             "<u>Average RSCC</u>: $arscc<br/>" .  
+                             "<u>Rfree</u>: $rfree<br/>";
+            }
+
+            //  Add the structure website links.
+            $pdb_info .= "<hr/>" . 
+                         'Explore in ' .
+                         anchor_popup("$pdb_url$pdb", 'PDB') .
+                         ',  ' .
+                         anchor_popup("http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget=$pdb", 'NDB') .
+                         ', or ' .
+                         anchor_popup("pdb/$pdb", 'BGSU RNA Site');
         } else {
             // check obsolete files
             $this->db->select('replaced_by')
