@@ -90,19 +90,19 @@ CREATE TABLE `nr_release_diff` (
             } else {
                 $data['uls'][$labels[$row->resolution]]['ul_updated'] = '';
             }
-            
+
             if ($row->num_added_groups > 0) {
                 $data['uls'][$labels[$row->resolution]]['ul_only_in_1'] = ul(array_map("add_url", explode(', ',$row->added_groups)),$attributes);
             } else {
                 $data['uls'][$labels[$row->resolution]]['ul_only_in_1'] = '';
             }
-            
+
             if ($row->num_removed_groups > 0) {
                 $data['uls'][$labels[$row->resolution]]['ul_only_in_2'] = ul(array_map("add_url", explode(', ',$row->removed_groups)),$attributes);
             } else {
                 $data['uls'][$labels[$row->resolution]]['ul_only_in_2'] = '';
             }
-            
+
             $data['uls'][$labels[$row->resolution]]['num_intersection'] = $row->num_same_groups;
             $data['uls'][$labels[$row->resolution]]['num_updated']      = $row->num_updated_groups;
             $data['uls'][$labels[$row->resolution]]['num_only_in_1']    = $row->num_added_groups;
@@ -243,7 +243,7 @@ CREATE TABLE `nr_release_diff` (
 
         $i = 0;
         $table = array();
-        
+
         foreach ($query->result() as $row) {
             $link = $this->make_pdb_widget_link($row->ife_id);
 
@@ -268,7 +268,7 @@ CREATE TABLE `nr_release_diff` (
 
         return $table;
     }
-    
+
     function get_statistics($id)
     {
         $this->db->select('NR.nr_release_id')
@@ -294,7 +294,7 @@ CREATE TABLE `nr_release_diff` (
                  ->join('ife_info AS ii','pi.pdb_id = ii.pdb_id')
                  ->join('nr_chains AS ch', 'ii.ife_id = ch.ife_id')
                  ->join('nr_ordering AS nl', 'ch.nr_chain_id = nl.nr_chain_id')
-                 ->join('nr_classes AS cl', 'nl.nr_class_id = cl.nr_class_id AND ch.nr_release_id = cl.nr_release_id')          
+                 ->join('nr_classes AS cl', 'nl.nr_class_id = cl.nr_class_id AND ch.nr_release_id = cl.nr_release_id')
                  ->where('cl.name',$id)
                  ->where('cl.nr_release_id', $release_id)
                  #->where('nch.nr_release_id',$this->last_seen_in) # what was this doing? still necessary?
@@ -306,7 +306,7 @@ CREATE TABLE `nr_release_diff` (
 
         $i = 0;
         $table = array();
-        
+
         foreach ($query -> result() as $row) {
             $link = $this->make_pdb_widget_link($row->ife_id);
             //if ( $i==0 ) {
@@ -322,13 +322,13 @@ CREATE TABLE `nr_release_diff` (
                              $row->resolution,
                              $row->length);
                              //$row->bp_count);
-                             
+
         }
 
         return $table;
-       
+
 	}
-	
+
 	function get_heatmap_data($id)
     {
         $this->db->select('NR.nr_release_id')
@@ -371,8 +371,8 @@ CREATE TABLE `nr_release_diff` (
         $query = $this->db->get();
 
         //  why do this processing if the results are not used?!?
-        
-        
+
+
         foreach($query->result() as $row) {
             $ife1[] = $row->ife1;
             $ife1_index[] = $row->ife1_index;
@@ -382,10 +382,10 @@ CREATE TABLE `nr_release_diff` (
             //$ife1_len[] = $row->len_seq_ife1;
             // $combined_id[] = ($row->ife1_index, $row->ife2_index);
         }
-        
+
         // print_r($ife1_len);
-       
-        //$sequence_len = $this->calc_min_seq_len(50, 49); 
+
+        //$sequence_len = $this->calc_min_seq_len(50, 49);
 
         //print $sequence_len;
 
@@ -396,7 +396,7 @@ CREATE TABLE `nr_release_diff` (
         return $heatmap_data;
     }
 
-    function calc_min_seq_len($seq1_len, $seq2_len) 
+    function calc_min_seq_len($seq1_len, $seq2_len)
     {
         if ($seq1_len < $seq2_len) {
             $min_seq_len = $seq1_len;
@@ -426,7 +426,7 @@ CREATE TABLE `nr_release_diff` (
 
         return $result;
     }
-	
+
 
     function get_compound_list($id)
     {
@@ -452,12 +452,13 @@ CREATE TABLE `nr_release_diff` (
         }
 
         for ($i = 0; $i < count($s); $i++) {
+            $s[$i] = str_replace("+","+ ",$s[$i]);
             $s[$i] = "<a class='pdb'>$s[$i]</a>";
         }
 
         return implode(', ', $s);
     }
-	
+
     function get_history($id,$mode)
     {
         if ($mode == 'parents') {
@@ -543,7 +544,7 @@ CREATE TABLE `nr_release_diff` (
         foreach ($query->result() as $row) {
             $counts[$row->nr_release_id] = $row->num;
         }
-        
+
         return $counts;
     }
 
@@ -696,11 +697,11 @@ CREATE TABLE `nr_release_diff` (
         foreach ($query->result() as $row) {
             $ids[] = $row->nr_release_id;
         }
-        
+
         for ($i=0; $i<count($ids)-1; $i++) {
             $releases[$ids[$i]] = $ids[$i+1];
         }
-        
+
         return $releases;
     }
 
@@ -901,7 +902,7 @@ CREATE TABLE `nr_release_diff` (
             $ife_id   = $reps[$class_id];
             $pdb_id   = $row->pdb_id;
 
-            $source   = ( is_null($row->species_name) ) ? "" : 
+            $source   = ( is_null($row->species_name) ) ? "" :
                             anchor_popup("$this->tax_url$row->species_id", "$row->species_name");
             $compound = (strlen($row->compound) > 40 ) ? substr($row->compound, 0, 40) . "[...]" : $row->compound;
 
@@ -944,7 +945,7 @@ CREATE TABLE `nr_release_diff` (
                              '</ul>',
                              $pdb[$pdb_id]['resolution'],
                              $row->analyzed_length,
-                             #$row->analyzed_length . '&nbsp;(analyzed)<br>' . 
+                             #$row->analyzed_length . '&nbsp;(analyzed)<br>' .
                              #$row->experimental_length . '&nbsp;(experimental)',
                              "(" . $nums . ") " . $this->add_pdb_class($class[$class_id])
                             );
