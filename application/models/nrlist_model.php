@@ -387,7 +387,7 @@ class Nrlist_model extends CI_Model {
         }
 
         for ($i = 0; $i < count($s); $i++) {
-//            $s[$i] = add_space_to_long_IFE($s[$i]);
+            $s[$i] = add_space_to_long_IFE($s[$i]);
             $s[$i] = "<a class='pdb'>$s[$i]</a>";
         }
 
