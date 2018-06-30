@@ -2,7 +2,8 @@
 
       <div class="content">
         <div class="page-header">
-          <h1>Representative Sets of RNA structures
+          <h1>Repr3D - Representative Sets of RNA 3D Structures
+          <br>
           <small>Release <?=$release_id?>, <?=$description?></small>
           </h1>
         </div>
