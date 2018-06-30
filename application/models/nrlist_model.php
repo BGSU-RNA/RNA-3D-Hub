@@ -388,7 +388,8 @@ class Nrlist_model extends CI_Model {
 
         for ($i = 0; $i < count($s); $i++) {
 //            $s[$i] = add_space_to_long_IFE($s[$i]);
-            $t = add_space_to_long_IFE("temp+temp+temp");
+//            $t = add_space_to_long_IFE("temp+temp+temp");
+            $s[$i] = str_replace("+","+ ",$s[$i]);
             $s[$i] = "<a class='pdb'>$s[$i]</a>";
         }
 
@@ -885,7 +886,8 @@ class Nrlist_model extends CI_Model {
                              #anchor(base_url("nrlist/view/".$class_id."/".$id),$class_id,$id)
                              . '<br>' . $this->add_annotation_label($row->nr_class_id, $reason)
                              . '<br>' . $source,
-                             $ife_id . ' (<strong class="pdb">' . $pdb_id . '</strong>)' .
+//                             $ife_id . ' (<strong class="pdb">' . $pdb_id . '</strong>)' .
+                             str_replace("+","+ ",$ife_id) . ' (<strong class="pdb">' . $pdb_id . '</strong>)' .
 //                             add_space_to_long_IFE($ife_id) . ' (<strong class="pdb">' . $pdb_id . '</strong>)' .
                              '<ul>' .
                              '<li>' . $compound . '</li>' .
