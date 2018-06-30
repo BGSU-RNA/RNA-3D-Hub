@@ -710,7 +710,7 @@ class Nrlist_model extends CI_Model {
 
     function add_space_to_long_IFE($ifename)
     {
-        if (strlen($ifename) > 36) {
+        if (strlen($ifename) > 99936) {
             $ife_set = explode('+', $ifename);
             for ($i=4; $i < count($ife_set); $i = $i + 4) {
                 $ife_set[$i] = " $ife_set[$i]";
