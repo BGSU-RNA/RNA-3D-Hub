@@ -387,7 +387,7 @@ class Nrlist_model extends CI_Model {
         }
 
         for ($i = 0; $i < count($s); $i++) {
-            $s[$i] = str_replace("+","+ ",$s[$i]);
+            $s[$i] = add_space_to_long_IFE($s[$i]);
             $s[$i] = "<a class='pdb'>$s[$i]</a>";
         }
 
@@ -708,6 +708,17 @@ class Nrlist_model extends CI_Model {
         }
     }
 
+    function add_space_to_long_IFE($ifename)
+    {
+        if (strlen($ifename) > 36) {
+            $ife_set = explode('+', $ife_id);
+            for ($i=4; $i < length($ife_set); $i = $i + 4) {
+                $ife_set[$i] = " $ife_set[$i]";
+            }
+            $ifename = implode("+",$ife_set);
+        }
+        return $ifename;
+    }
 
 /*
     ### DEFUNCT FUNCTION?
@@ -873,7 +884,7 @@ class Nrlist_model extends CI_Model {
                              #anchor(base_url("nrlist/view/".$class_id."/".$id),$class_id,$id)
                              . '<br>' . $this->add_annotation_label($row->nr_class_id, $reason)
                              . '<br>' . $source,
-                             str_replace("+","+ ",$ife_id) . ' (<strong class="pdb">' . $pdb_id . '</strong>)' .
+                             add_space_to_long_IFE($ife_id) . ' (<strong class="pdb">' . $pdb_id . '</strong>)' .
                              '<ul>' .
                              '<li>' . $compound . '</li>' .
                              '<li>' . $pdb[$pdb_id]['experimental_technique'] . '</li>' .
