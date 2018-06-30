@@ -713,7 +713,7 @@ class Nrlist_model extends CI_Model {
         if (strlen($ifename) > 36) {
             $ife_set = explode('+', $ifename);
             for ($i=4; $i < count($ife_set); $i = $i + 4) {
-                $ife_set[$i] = " " . $ife_set[$i];
+                $ife_set[$i] = " $ife_set[$i]";
             }
             $ifename = implode("+",$ife_set);
         }
