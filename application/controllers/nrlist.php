@@ -12,13 +12,13 @@ class Nrlist extends CI_Controller {
         $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table'>" );
         $this->table->set_template($tmpl);
         $data['table']   = $this->table->generate($result);
-        $data['title']   = 'All Representative Set Releases';
+        $data['title']   = 'RepR3D - Representative Sets of RNA 3D Structures';
         $data['baseurl'] = base_url();
 
         $data['images'] = $this->Nrlist_model->get_newest_pdb_images();
         $data['total_pdbs'] = $this->Nrlist_model->get_total_pdb_count();
 
-        $this->load->view('header_representative', $data);
+        $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_all_releases_view', $data);
         $this->load->view('footer');
@@ -50,7 +50,7 @@ class Nrlist extends CI_Controller {
         $data['class'] = $this->table->generate($temp['table']);
 
         $data['baseurl'] = base_url();
-        $this->load->view('header_representative', $data);
+        $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_release_view', $data);
         $this->load->view('footer');
@@ -84,7 +84,7 @@ class Nrlist extends CI_Controller {
     public function view($id)
     #public function view($id, $nr_release_id)
     {
-        
+
         $this->output->cache(262974); # 6 months
 
         $this->load->model('Nrlist_model', '', TRUE);
@@ -119,7 +119,7 @@ class Nrlist extends CI_Controller {
         $history = $this->Nrlist_model->get_history($id,'children');
         $this->table->set_heading('This class','Descendant classes','Release id','Intersection','Only in this class','Added to child');
         $data['children'] = $this->table->generate($history);
-        
+
         $statistics = $this->Nrlist_model->get_statistics($id);
         $tmpl = array( 'table_open'  => "<table class='condensed-table bordered-table zebra-striped pairwise-interactions' id='sort'>" );
         $this->table->set_template($tmpl);
@@ -129,11 +129,11 @@ class Nrlist extends CI_Controller {
         $heatmap = $this->Nrlist_model->get_heatmap_data($id);
         #$heatmap = $this->Nrlist_model->get_heatmap_data($id, $nr_release_id);
         $data['heatmap_data'] = $heatmap;
-        
-        
+
+
         $data['title'] = $id;
         $data['baseurl'] = base_url();
-        $this->load->view('header_representative', $data);
+        $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_class_view', $data);
         $this->load->view('footer');
@@ -152,7 +152,7 @@ class Nrlist extends CI_Controller {
 
         $data['baseurl'] = base_url();
         $data['action']  = base_url('nrlist/compare');
-        $this->load->view('header_representative', $data);
+        $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_release_compare_view', $data);
         $this->load->view('footer');
@@ -180,7 +180,7 @@ class Nrlist extends CI_Controller {
 
         #var_dump($data); ### DEBUG
 
-        $this->load->view('header_representative', $data);
+        $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_release_compare_results_view', $data);
         $this->load->view('footer');
@@ -206,7 +206,7 @@ class Nrlist extends CI_Controller {
 
         $data['title'] = 'Release History';
         $data['baseurl'] = base_url();
-        $this->load->view('header_representative', $data);
+        $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_release_history_view', $data);
         $this->load->view('footer');
