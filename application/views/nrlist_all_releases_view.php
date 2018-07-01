@@ -2,7 +2,7 @@
     <div class="container nr_all_releases_view">
       <div class="content">
         <div class="page-header">
-          <h1>Repr3D - Representative Sets of RNA 3D Structures
+          <h1>RepR3D - Representative Sets of RNA 3D Structures
             <br><small><?=$total_pdbs?> RNA-containing 3D structures</small>
           </h1>
         </div>
