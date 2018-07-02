@@ -9,7 +9,7 @@ class Motif_model extends CI_Model {
         $this->release_id  = '';
         $this->loops       = array(); // loops in the search order
         $this->nts         = array(); // human-readable nts
-        $this->nt_ids      = array(); // full nt ids
+        #$this->nt_ids      = array(); // full nt ids
         $this->unit_ids    = array();
         $this->full_nts    = array();
         $this->full_units  = array();
@@ -938,7 +938,8 @@ class Motif_model extends CI_Model {
 
     function get_nucleotides()
     {
-        $this->db->select('MLP.loop_id, MLP.nt_id, MLP.position, UI.unit_id')
+        #$this->db->select('MLP.loop_id, MLP.nt_id, MLP.position, UI.unit_id')
+        $this->db->select('MLP.loop_id, MLP.position, UI.unit_id')
                  ->from('ml_loop_positions AS MLP')
                  ->join('unit_info AS UI', 'MLP.unit_id = UI.unit_id')
                  ->where('ml_release_id', $this->release_id)
@@ -946,10 +947,10 @@ class Motif_model extends CI_Model {
         $result = $this->db->get()->result_array();
 
         for ($i = 0; $i < count($result); $i++) {
-            $parts_ntid = explode("_", $result[$i]['nt_id']);
+            #$parts_ntid = explode("_", $result[$i]['nt_id']);
             $parts_unit = explode("|", $result[$i]['unit_id']);
             $ic_unit = (isset($parts_unit[8])) ? ' ' . $parts_unit[8] : "";
-            $nt_id = $parts_ntid[4] . $parts_ntid[6] . ' ' . $parts_ntid[5];
+            #$nt_id = $parts_ntid[4] . $parts_ntid[6] . ' ' . $parts_ntid[5];
             $unit_id = $parts_unit[4] . $ic_unit . ' ' . $parts_unit[3];
 
             ###echo "<p>index $i:  nt: [$nt_id] // unit: [$unit_id]</p>"; ### DEBUG
