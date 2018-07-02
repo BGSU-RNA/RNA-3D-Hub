@@ -930,7 +930,7 @@ CREATE TABLE `nr_release_diff` (
                  ->select('ii.ife_id')
                  ->select('ii.pdb_id')
                  ->select('ii.length AS analyzed_length')
-                 ->select("GROUP_CONCAT(DISTINCT ci.compound SEPARATOR ', ' AS compound)")
+                 ->select('group_concat(DISTINCT ci.compound separator ", ") as compound', FALSE)
                  ->select('sm.species_name')
                  ->select('sm.species_mapping_id')
                  ->select('nl.nr_class_id')
