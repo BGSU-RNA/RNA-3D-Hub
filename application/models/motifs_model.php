@@ -75,11 +75,11 @@ class Motifs_model extends CI_Model {
         $query = $this->db->get();
 
         $motif_ids = array();
-        
+
         foreach($query->result() as $row) {
             $motif_ids[] = $row->motif_id;
         }
-        
+
         return $motif_ids;
     }
 
@@ -280,7 +280,7 @@ class Motifs_model extends CI_Model {
     {
         foreach ($this->types as $motif_type) {
             $query = $this->db_get_all_releases($motif_type);
-            
+
             foreach($query->result() as $row){
                 $data[$row->ml_release_id]['loops'] = $row->loops;
                 $data[$row->ml_release_id]['motifs'] = $row->motifs;
@@ -398,7 +398,7 @@ class Motifs_model extends CI_Model {
         if ( $query->num_rows() > 0 ) {
             foreach ($query->result() as $row) {
                 $reason[$row->motif_id]  = $row->comment;
-                $reason_flat[]     = $row->comment;
+                $reason_flat[]           = $row->comment;
             }
 
             // count all annotation types

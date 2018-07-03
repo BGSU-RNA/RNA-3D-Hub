@@ -2,8 +2,7 @@
     <div class="container nr_all_releases_view">
       <div class="content">
         <div class="page-header">
-          <h1>
-            <?=$title?>
+          <h1>RepR3D - Representative Sets of RNA 3D Structures
             <br><small><?=$total_pdbs?> RNA-containing 3D structures</small>
           </h1>
         </div>
@@ -26,6 +25,8 @@
                 </p>
                 <p>
                   Releases are generated weekly, and previous releases are available starting from 2011.
+                  (As of July 2018, we are filling in previous releases as they would have appeared,
+                  at the rate of more than one per week.)
                   The default listing shows structures at 4 Angstrom resolution or better, but
                   different resolution thresholds are available for each release.
                   The set of representative structures can be viewed online along with information
