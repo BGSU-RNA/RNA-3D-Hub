@@ -1,5 +1,7 @@
 <?php
 
+ini_set("memory_limit","300M");
+
 function add_url($n)
 {
     return anchor(base_url(array('nrlist','view',$n)), $n);
@@ -36,26 +38,6 @@ class Nrlist_model extends CI_Model {
         }
         return $counts;
     }
-
-/*
-CREATE TABLE `nr_release_diff` (
-                 ->select('nr_release_id1')
-                 ->select('nr_release_id2')
-                 ->select('resolution')
-                 ->select('direct_parent')
-                 ->select('added_groups')
-                 ->select('removed_groups')
-                 ->select('updated_groups')
-                 ->select('same_groups')
-                 ->select('added_pdbs')
-                 ->select('removed_pdbs')
-                 ->select('num_added_groups')
-                 ->select('num_removed_groups')
-                 ->select('num_updated_groups')
-                 ->select('num_same_groups')
-                 ->select('num_added_pdbs')
-                 ->select('num_removed_pdbs')
-*/
 
     function get_release_diff($rel1, $rel2)
     {
@@ -342,12 +324,9 @@ CREATE TABLE `nr_release_diff` (
         $release_id = $result[0]['nr_release_id'];
 
         $this->db->select('NC1.ife_id AS ife1')
-                 //->select('ESI1.length AS len_seq_ife1')
                  ->select('NO1.index AS ife1_index')
                  ->select('NC2.ife_id AS ife2')
-                 //->select('ESI2.length AS len_seq_ife2')
                  ->select('NO2.index AS ife2_index')
-                 //->select('CRI.match_count AS match_count')
                  ->select('CSS.discrepancy')
                  ->from('nr_classes AS NCL')
                  ->join('nr_chains as NC1', 'NC1.nr_class_id = NCL.nr_class_id and NC1.nr_release_id = NCL.nr_release_id', 'inner')
@@ -355,18 +334,11 @@ CREATE TABLE `nr_release_diff` (
                  ->join('nr_chains as NC2', 'NC2.nr_class_id = NCL.nr_class_id and NC2.nr_release_id = NCL.nr_release_id', 'inner')
                  ->join('nr_ordering as NO2', 'NO2.nr_chain_id = NC2.nr_chain_id and NO2.nr_class_id = NC2.nr_class_id', 'inner')
                  ->join('ife_chains as IC1', 'IC1.ife_id = NC1.ife_id and IC1.index = 0', 'inner')
-                 ->join('exp_seq_chain_mapping as ESC1', 'IC1.chain_id = ESC1.chain_id', 'inner')
-                 ->join('exp_seq_info as ESI1', 'ESC1.exp_seq_id = ESI1.exp_seq_id', 'inner')
                  ->join('ife_chains as IC2', 'IC2.ife_id = NC2.ife_id and IC2.index = 0', 'inner')
-                 ->join('exp_seq_chain_mapping as ESC2', 'IC2.chain_id = ESC2.chain_id', 'inner')
-                 ->join('exp_seq_info as ESI2', 'ESC2.exp_seq_id = ESI2.exp_seq_id', 'inner')
-                 ->join('correspondence_info as CRI', 'ESI1.exp_seq_id = CRI.exp_seq_id_1 and ESI2.exp_seq_id = CRI.exp_seq_id_2', 'inner')
                  ->join('chain_chain_similarity as CSS', 'CSS.chain_id_1 = IC1.chain_id and CSS.chain_id_2 = IC2.chain_id', 'left outer')
                  ->where('NC1.nr_chain_id !=', 'NC2.nr_chain_id')
                  ->where('NCL.name', $id)
-                 ->where('NCL.nr_release_id', $release_id)
-                 ->group_by('ife1_index', 'ASC')
-                 ->group_by('ife2_index', 'ASC');
+                 ->where('NCL.nr_release_id', $release_id);
 
         $query = $this->db->get();
 
@@ -379,36 +351,12 @@ CREATE TABLE `nr_release_diff` (
             $ife2[] = $row->ife2;
             $ife2_index[] = $row->ife2_index;
             $discrepancy[] = $row->discrepancy;
-            //$ife1_len[] = $row->len_seq_ife1;
-            // $combined_id[] = ($row->ife1_index, $row->ife2_index);
         }
-
-        // print_r($ife1_len);
-
-        //$sequence_len = $this->calc_min_seq_len(50, 49);
-
-        //print $sequence_len;
 
         $heatmap_data = json_encode($query->result());
 
-        // print_r($heatmap_data);
-
         return $heatmap_data;
     }
-
-    function calc_min_seq_len($seq1_len, $seq2_len)
-    {
-        if ($seq1_len < $seq2_len) {
-            $min_seq_len = $seq1_len;
-
-        } else {
-            $min_seq_len = $seq2_len;
-        }
-
-        return $min_seq_len;
-
-    }
-
 
     function get_compound_single($ife)
     {
@@ -426,7 +374,6 @@ CREATE TABLE `nr_release_diff` (
 
         return $result;
     }
-
 
     function get_compound_list($id)
     {
@@ -452,6 +399,9 @@ CREATE TABLE `nr_release_diff` (
         }
 
         for ($i = 0; $i < count($s); $i++) {
+            $s[$i] = $this->add_space_to_long_IFE($s[$i]);
+//            $t = add_space_to_long_IFE("temp+temp+temp");
+//            $s[$i] = str_replace("+","+ ",$s[$i]);
             $s[$i] = "<a class='pdb'>$s[$i]</a>";
         }
 
@@ -772,6 +722,18 @@ CREATE TABLE `nr_release_diff` (
         }
     }
 
+    function add_space_to_long_IFE($ifename)
+    {
+        if (strlen($ifename) > 36) {
+            $ife_set = explode('+', $ifename);
+            for ($i=4; $i < count($ife_set); $i = $i + 4) {
+                $ife_set[$i] = " $ife_set[$i]";
+            }
+            $ifename = implode("+",$ife_set);
+        }
+        return $ifename;
+    }
+
 /*
     ### DEFUNCT FUNCTION?
     function get_source_organism_for_class($pdb_list)
@@ -936,7 +898,9 @@ CREATE TABLE `nr_release_diff` (
                              #anchor(base_url("nrlist/view/".$class_id."/".$id),$class_id,$id)
                              . '<br>' . $this->add_annotation_label($row->nr_class_id, $reason)
                              . '<br>' . $source,
-                             $ife_id . ' (<strong class="pdb">' . $pdb_id . '</strong>)' .
+//                             $ife_id . ' (<strong class="pdb">' . $pdb_id . '</strong>)' .
+//                             str_replace("+","+ ",$ife_id) . ' (<strong class="pdb">' . $pdb_id . '</strong>)' .
+                             $this->add_space_to_long_IFE($ife_id) . ' (<strong class="pdb">' . $pdb_id . '</strong>)' .
                              '<ul>' .
                              '<li>' . $compound . '</li>' .
                              '<li>' . $pdb[$pdb_id]['experimental_technique'] . '</li>' .

@@ -1144,7 +1144,6 @@
       console.log("ymax: ", this.domain.y[1]);
     };
     
-
     Airport.prototype.xCoord = function() {
       var scale = plot.xScale(),
           getX = plot.nucleotides.getX();

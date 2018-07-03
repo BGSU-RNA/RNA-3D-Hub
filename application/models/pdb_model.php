@@ -110,61 +110,7 @@ class Pdb_model extends CI_Model {
     {
         return "<label><input type='radio' id='{$id}' class='jmolInline' data-coord='{$id}' data-quality='{$id}'> {$id} </label>" .
         "<span class='loop_link'>" . anchor_popup("loops/view/{$id}", '&#10140;') . "</span>";
-    }
-    function get_RSRZ_score($id) {
-        // find all constituent unit IDs of the loop
-        $this->db->select('unit_ids')
-                 ->distinct()
-                 ->from('loop_info')
-                 ->where_in('loop_id',$id);
-        $query = $this->db->get();
-        if ($query->num_rows() == 0) { return 'Loop id not found'; }
-        foreach ($query->result() as $row) {
-            $total_unit_ids = explode(',', $row->unit_ids);
-        }
-        // $loop_id = explode(',', $id);
-        // var_dump($loop_id);
-        // get the RSRZ score of each unit IDs forming the loop
-        $this->db->select('unit_id, real_space_r_z_score')
-                 //->distinct()
-                 ->from('unit_quality')
-                 ->where_in('unit_id',$total_unit_ids);
-        $query = $this->db->get();
-        
-        if ($query->num_rows() == 0) {
-            return 'No RSRZ is correspondence found';
-        } else {
-            $RSRZ_score = array();
-            foreach ($query->result_array() as $row) {
-                $RSRZ_score[] = $row["unit_id"]. ":" . $row["real_space_r_z_score"];
-                
-            }
- 
-        }
-        // $RSRZ_score = json_encode($RSRZ_score);
-        //print_r($RSRZ_score);
-        // print_r($RSRZ_score);
-        // echo count($RSRZ_score);
-        
-        /*
-        foreach ($RSRZ_score as $key1 => $value1) {
-            print $key1 . "<br>"."<br>";
-        } 
-        */
-        // print_r(array_values($RSRZ_score));
-        // print_r($RSRZ_score[0]);
-        /*
-        foreach ($RSRZ_score as $key => $value) {
-          $tag[] = $key .":". $value;
-        }
-        $tag = array_values($tag);
-        */
-        //print_r($tag);
-        //$out = implode(“,”, $tag);
-        // $RSRZ_score = array_values($RSRZ_score)
-        // print_r($RSRZ_score);
-        //$c = array_combine($loop_id, $RSRZ_score);
-        //print_r($c);
+
     }
     function get_latest_loop_release()
     {

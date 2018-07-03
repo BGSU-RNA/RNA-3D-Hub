@@ -53,7 +53,7 @@
                 <ul class="media-grid">
                   <li>
                     <a href="#">
-                      <img src="http://www.pdb.org/pdb/images/<?=$pdb_id?>_bio1_r_250.jpg" class="span3" alt="Asymmetric unit <?=$pdb_id?>">
+                      <img src="http://cdn.rcsb.org/images/rutgers/<?=strtolower(substr($pdb_id, 1, 2));?>/<?=strtolower($pdb_id);?>/<?=strtolower($pdb_id);?>.pdb-250.jpg" class="span3" alt="Asymmetric unit <?=$pdb_id?>">
                     </a>
                   </li>
                 </ul>

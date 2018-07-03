@@ -12,6 +12,7 @@ application/cache/*
 
 */config/development
 */logs/log-*.php
+*/logs/log-*.php.gz
 */logs/!index.html
 */cache/*
 */cache/!index.html
