@@ -409,6 +409,7 @@
     },
 
     xDomain: function() { return this.domain.x; },
+
     yDomain: function() { return this.domain.y; },
 
     labels: function() { return false; },
@@ -519,6 +520,7 @@
   };
 
   Rna2D.components.chains = function(plot) {
+
     var Chains = inhert(Rna2D.Component, 'chains', {
       getID: function(d, i) { return d.id; },
       'class': 'chain',
@@ -541,7 +543,6 @@
             chainIndex = index;
           }
         });
-
         return chainIndex;
       }
     });
@@ -938,6 +939,11 @@
       encodeID: function(id) { return id; },
       getSequence: function(d) { return d.sequence; },
       getNumber: function(d) { return d.id.split('|')[4]; },
+      getInsCd: function(d) { 
+        return ( typeof d.id.split('|')[7] != 'undefined'
+          ? "_" + d.id.split('|')[7]
+          : "" );
+      },
       getChain: function(d) { return d.id.split('|')[2]; },
       getSymop: function(d) { 
         return ( typeof d.id.split('|')[8] != 'undefined'
@@ -949,7 +955,8 @@
       toggleLetters: Object,
       highlightText: function(d, i) {
         return plot.nucleotides.getSequence()(d, i) +
-          plot.nucleotides.getNumber()(d, i) + 
+          plot.nucleotides.getNumber()(d, i) +
+          plot.nucleotides.getInsCd()(d, i) +  
           " (" + plot.nucleotides.getChain()(d, i) +
           plot.nucleotides.getSymop()(d, i) + ")";
       },
@@ -991,6 +998,7 @@
     });
 
     Zoom.prototype.draw = function() {
+
       var self = this,
           translation = 0,
           zoom = d3.behavior.zoom()
@@ -1135,7 +1143,7 @@
       console.log("ymin: ", this.domain.y[0]);
       console.log("ymax: ", this.domain.y[1]);
     };
-
+    
     Airport.prototype.xCoord = function() {
       var scale = plot.xScale(),
           getX = plot.nucleotides.getX();

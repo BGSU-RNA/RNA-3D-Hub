@@ -150,7 +150,8 @@
                 <br>
                 Coloring options: <select id="colorOPT"> 
                     <option value="Default" selected>Default</option> 
-                    <option value="RSR" >Real Space R (RSR)</option>
+                    <option value="CPK">CPK</option> 
+                    <option value="RSR">Real Space R (RSR)</option>
                     <option value="RSRZ">RSR Z-Score (RSRZ)</option>
                 </select>
                 <label><input type="checkbox" id="showNtNums">Nucleotide numbers</label>

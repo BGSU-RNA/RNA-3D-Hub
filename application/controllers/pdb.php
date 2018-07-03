@@ -37,6 +37,7 @@ class Pdb extends CI_Controller {
             $data['bst_counts'] = $this->Pdb_model->get_pairwise_info($id, 'f_stacks');
             $data['bph_counts'] = $this->Pdb_model->get_pairwise_info($id, 'f_bphs');
             $data['brb_counts'] = $this->Pdb_model->get_pairwise_info($id, 'f_brbs');
+            $data['baa_counts'] = $this->Pdb_model->get_baseaa_info($id);
         } else {
             $data['message'] = $pdb_status['message'];
         }
@@ -58,11 +59,17 @@ class Pdb extends CI_Controller {
         // when caching is enabled, headers are not sent correctly
         // and the download functionality is compromised
 
+        //print $id;
+        //print $method;
+        //print $interaction_type;
+
         // validate inputs
-        $interaction_types = array('basepairs', 'stacking', 'basephosphate', 'baseribose', 'all');
+        $interaction_types = array('basepairs', 'stacking', 'basephosphate', 'baseribose', 'baseaa', 'all');
         if ( !preg_match('/fr3d/i', $method) or array_search($interaction_type, $interaction_types) === false ) {
             show_404();
         }
+
+        //print $interaction_type;
 
         // detect download requests
         if ( !is_null($format) ) {

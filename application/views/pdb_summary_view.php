@@ -124,6 +124,7 @@
                   <li><?=$bst_counts?> <a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/stacking">base-stacking</a></li>
                   <li><?=$bph_counts?> <a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/basephosphate">base-phosphate</a></li>
                   <li><?=$brb_counts?> <a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/baseribose">base-ribose</a></li>
+                  <li><?=$baa_counts?> <a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/baseaa">base-amino acids</a></li>
                 </ul>
                 <a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/all">View all</a>
               </div>

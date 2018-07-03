@@ -28,13 +28,41 @@
 
     <div class="container nrlist_class_view">
 
+    text.mono {
+      font-size: 9pt;
+      font-family: Consolas, courier;
+      fill: #aaa;
+    }
+
+    text.axis-workweek {
+      fill: #000;
+    }
+
+    text.axis-worktime {
+      fill: #000;
+    }
+
+    .axis path,
+    .axis tick,
+    .axis line {
+      fill: none;
+      stroke: none;
+    } 
+  </style> 
+
+    <div class="container nrlist_class_view"> 
       <div class="content">
         <div class="page-header">
           <h1>Equivalence class <?=$title?>
             <small><?=$status?></small>
           </h1>
-        </div>
+        </div> <!-- page-header -->
 
+        <ul class="tabs" data-tabs="tabs">
+          <li class="active"><a href="#members">Members (<?=$num_members?>)</a></li>
+          <li><a href="#history">History</a></li>
+          <li><a href="#statistics">Statistics</a></li>
+        </ul>
 
             <ul class="tabs" data-tabs="tabs">
                 <li class="active"><a href="#members">Members (<?=$num_members?>)</a></li>
@@ -42,7 +70,12 @@
                 <li><a href="#statistics">Statistics</a></li>
             </ul>
 
-            <div class="tab-content">
+            <div class="span16">
+              <h3>Parents</h3>
+              <div class="parents maxheight400">
+                <?=$parents?>
+              </div>
+            </div> 
 
                 <div class="tab-pane active" id="members">
                   <div class="span16">
@@ -76,6 +109,11 @@
                       </div>
                   </div>
 
+                <span class="muted">
+                 #S - ordering by similarity (same as in the heat map).
+                </span>
+                <div>
+                  <?=$statistics?> 
                 </div>
 
 
@@ -103,14 +141,13 @@
 
                 </div>
             </div>
+          </div> <!-- statistics -->
+        </div> <!-- tab-content -->
+      </div> <!-- content -->
 
-        </div>
-
-
-    <script>
+      <script>
         $(function () {
-            $("#members_table").tablesorter();
-            $(".pdb").click(LookUpPDBInfo);
+          $("#members_table").tablesorter();
+          $(".pdb").click(LookUpPDBInfo);
         })
-
-    </script>
+      </script>

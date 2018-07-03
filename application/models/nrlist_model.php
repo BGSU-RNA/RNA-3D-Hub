@@ -253,6 +253,16 @@ class Nrlist_model extends CI_Model {
 
     function get_statistics($id)
     {
+        $this->db->select('NR.nr_release_id')
+                 ->from('nr_classes AS NC')
+                 ->join('nr_releases AS NR', 'NC.nr_release_id = NR.nr_release_id')
+                 ->where('NC.name', $id)
+                 ->order_by('NR.index', 'DESC')
+                 ->limit(1);
+        $result = $this->db->get()->result_array();
+
+        $release_id = $result[0]['nr_release_id'];
+
         $this->db->select('pi.pdb_id')
                  ->select('ch.ife_id')
                  ->select('pi.title')
@@ -268,9 +278,10 @@ class Nrlist_model extends CI_Model {
                  ->join('nr_ordering AS nl', 'ch.nr_chain_id = nl.nr_chain_id')
                  ->join('nr_classes AS cl', 'nl.nr_class_id = cl.nr_class_id AND ch.nr_release_id = cl.nr_release_id')
                  ->where('cl.name',$id)
+                 ->where('cl.nr_release_id', $release_id)
                  #->where('nch.nr_release_id',$this->last_seen_in) # what was this doing? still necessary?
-                 ->group_by('pi.pdb_id')
-                 ->group_by('ii.ife_id')
+                 //->group_by('pi.pdb_id')
+                 //->group_by('ii.ife_id')
                  ->order_by('nl.index','asc');
 
         $query = $this->db->get();
@@ -297,9 +308,10 @@ class Nrlist_model extends CI_Model {
         }
 
         return $table;
-    }
 
-    function get_heatmap_data($id)
+	}
+
+	function get_heatmap_data($id)
     {
         $this->db->select('NR.nr_release_id')
                  ->from('nr_classes AS NC')

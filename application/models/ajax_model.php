@@ -85,7 +85,7 @@ class Ajax_model extends CI_Model {
             if (preg_match('/NMR/', $row->experimental_technique)) {
                 $resolution = '';
             } else {
-                $resolution = "<u>Resolution:</u> {$row->resolution} &Aring<br>";
+                $resolution = "<u>Resolution:</u> {$row->resolution} &Aring;<br>";
             }
 
             $source = $this->get_source_organism($pdb);
@@ -429,20 +429,19 @@ class Ajax_model extends CI_Model {
 
         $footer = array('#');
 
-        //foreach ($nt_ids as $x) {
-            //echo $x;
-        //}
-
         $nt_ids = explode(',', $nt_ids);
 
         // get their coordinates
         $this->db->select('coordinates')->from('unit_coordinates');
         $this->db->where_in('unit_id', $nt_ids);
-        $this->db->_protect_identifiers = FALSE;
-        // preserve order as in the where in clause
+        $this->db->_protect_identifiers = FALSE; // stop CI adding backticks
+
+        // make SQL to return the correct order of results based on the where_in clause
+        // example of query: SELECT coordinates FROM unit_coordinates WHERE unit_id IN ('2ZM5|1|C|A|31', '2ZM5|1|C|U|32')
+        //                   ORDER BY FIELD (unit_id, '2ZM5|1|C|A|31', '2ZM5|1|C|U|32');
         $order = sprintf('FIELD(unit_id, %s)', "'" . implode("','", $nt_ids) . "'");
         $this->db->order_by($order);
-        $this->db->_protect_identifiers = TRUE;
+        $this->db->_protect_identifiers = TRUE; // switch on again for security reasons
         $query = $this->db->get();
 
         if ($query->num_rows() == 0) { return 'Nucleotide coordinates not found'; }
@@ -471,8 +470,7 @@ class Ajax_model extends CI_Model {
                  ->where_in('unit_id_2',$nt_ids)
                  ->where_not_in('unit_id_1',$nt_ids);
         $query = $this->db->get();
-
-        
+      
         if ($query->num_rows() != 0) {
 
             foreach ($query->result() as $row) {
