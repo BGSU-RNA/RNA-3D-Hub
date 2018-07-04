@@ -400,12 +400,22 @@ class Nrlist_model extends CI_Model {
 
         for ($i = 0; $i < count($s); $i++) {
             $s[$i] = $this->add_space_to_long_IFE($s[$i]);
-//            $t = add_space_to_long_IFE("temp+temp+temp");
-//            $s[$i] = str_replace("+","+ ",$s[$i]);
             $s[$i] = "<a class='pdb'>$s[$i]</a>";
         }
 
         return implode(', ', $s);
+    }
+
+    function count_pdb_class($list)
+    {
+        if (!is_array($list)) {
+            $s = explode(',', $list);
+        } else {
+            $s = $list;
+        }
+
+        return count($s);
+
     }
 
     function get_history($id,$mode)
@@ -898,8 +908,6 @@ class Nrlist_model extends CI_Model {
                              #anchor(base_url("nrlist/view/".$class_id."/".$id),$class_id,$id)
                              . '<br>' . $this->add_annotation_label($row->nr_class_id, $reason)
                              . '<br>' . $source,
-//                             $ife_id . ' (<strong class="pdb">' . $pdb_id . '</strong>)' .
-//                             str_replace("+","+ ",$ife_id) . ' (<strong class="pdb">' . $pdb_id . '</strong>)' .
                              $this->add_space_to_long_IFE($ife_id) . ' (<strong class="pdb">' . $pdb_id . '</strong>)' .
                              '<ul>' .
                              '<li>' . $compound . '</li>' .
@@ -910,7 +918,7 @@ class Nrlist_model extends CI_Model {
                              $row->analyzed_length,
                              #$row->analyzed_length . '&nbsp;(analyzed)<br>' .
                              #$row->experimental_length . '&nbsp;(experimental)',
-                             "(" . $nums . ") " . $this->add_pdb_class($class[$class_id])
+                             "(" . $nums . "," . $this->count_pdb_class($class[$class_id]) . ") " . $this->add_pdb_class($class[$class_id])
                             );
             $i++;
         }
