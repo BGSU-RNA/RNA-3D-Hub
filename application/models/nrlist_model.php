@@ -857,6 +857,7 @@ class Nrlist_model extends CI_Model {
                  ->order_by('ii.ife_id');
         */
 
+        /*
         $this->db->select('cr.name, cr.pdb_id, cr.analyzed_length, cr.experimental_length, cr.compound, cr.species_name, cr.species_id, cr.nr_class_id, rc.num')
                  ->from('nr_class_reps_bar AS cr')
                  ->join('nr_class_reps_count AS rc', 'cr.nr_release_id = rc.nr_release_id AND cr.name = rc.name AND cr.ife_id = rc.ife_id')
@@ -865,6 +866,58 @@ class Nrlist_model extends CI_Model {
                  ->order_by('cr.analyzed_length','desc')
                  #->order_by('rc.num','desc')
                  ->order_by('cr.ife_id');
+        */
+
+/*
+    SELECT nl.name,
+            ii.ife_id, 
+            ii.pdb_id, 
+            ii.length AS analyzed_length, 
+            GROUP_CONCAT(DISTINCT ci.compound SEPARATOR ', ') AS compound, 
+            sm.species_name, 
+            sm.species_mapping_id, 
+            nl.nr_class_id, 
+            COUNT(DISTINCT ii.ife_id) AS num 
+        FROM nr_chains AS nc 
+        INNER JOIN ife_info AS ii 
+            ON nc.ife_id = ii.ife_id 
+        INNER JOIN nr_classes AS nl 
+            ON nc.nr_class_id = nl.nr_class_id 
+            AND nc.nr_release_id = nl.nr_release_id 
+        INNER JOIN ife_chains AS ic 
+            ON ii.ife_id = ic.ife_id 
+        INNER JOIN chain_info AS ci 
+            ON ic.chain_id = ci.chain_id 
+        LEFT JOIN species_mapping AS sm 
+            ON ci.taxonomy_id = sm.species_mapping_id 
+        WHERE nl.nr_release_id = '9.13' 
+            AND nl.resolution = '4.0' 
+        GROUP BY nl.name, 
+                    nl.nr_release_id, 
+                    nl.resolution
+    ;
+*/
+
+        $this->db->select('nl.name')
+                 ->select('ii.ife_id')
+                 ->select('ii.pdb_id')
+                 ->select('ii.length AS analyzed_length')
+                 ->select('group_concat(DISTINCT ci.compound separator ", ") as compound', FALSE)
+                 ->select('sm.species_name')
+                 ->select('sm.species_mapping_id')
+                 ->select('nl.nr_class_id')
+                 ->select('COUNT(DISTINCT ii.ife_id) AS num')
+                 ->from('nr_chains AS nc')
+                 ->join('ife_info AS ii', 'nc.ife_id = ii.ife_id')
+                 ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
+                 ->join('ife_chains AS ic', 'ii.ife_id')
+                 ->join('chain_info AS ci', 'ic.chain_id = ci.chain_id')
+                 ->join('species_mapping AS sm', 'ci.taxonomy_id = sm.species_mapping_id', 'left')
+                 ->where('nl.nr_release_id', $id)
+                 ->where('nl.resolution', $resolution)
+                 ->group_by('nl.name')
+                 ->group_by('nl.nr_release_id')
+                 ->group_by('nl.resolution');
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
