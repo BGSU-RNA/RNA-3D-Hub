@@ -400,12 +400,22 @@ class Nrlist_model extends CI_Model {
 
         for ($i = 0; $i < count($s); $i++) {
             $s[$i] = $this->add_space_to_long_IFE($s[$i]);
-//            $t = add_space_to_long_IFE("temp+temp+temp");
-//            $s[$i] = str_replace("+","+ ",$s[$i]);
             $s[$i] = "<a class='pdb'>$s[$i]</a>";
         }
 
         return implode(', ', $s);
+    }
+
+    function count_pdb_class($list)
+    {
+        if (!is_array($list)) {
+            $s = explode(',', $list);
+        } else {
+            $s = $list;
+        }
+
+        return count($s);
+
     }
 
     function get_history($id,$mode)
@@ -833,38 +843,37 @@ class Nrlist_model extends CI_Model {
         $i = 1;
 
         // get order
-        /*
-        $this->db->select('nl.name, cr.pdb_id, cr.analyzed_length, cr.experimental_length, cr.compound, cr.species_name, cr.species_id, nl.nr_class_id, count(DISTINCT ii.ife_id) as num')
+        $this->db->select('nl.name')
+                 ->select('ii.ife_id')
+                 ->select('ii.pdb_id')
+                 ->select('ii.length AS analyzed_length')
+                 ->select('group_concat(DISTINCT ci.compound separator ", ") as compound', FALSE)
+                 ->select('sm.species_name')
+                 ->select('sm.species_mapping_id AS species_id')
+                 ->select('nl.nr_class_id')
+                 #->select('COUNT(DISTINCT ii.ife_id) AS num')
                  ->from('nr_chains AS nc')
                  ->join('ife_info AS ii', 'nc.ife_id = ii.ife_id')
                  ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
-                 ->join('nr_class_reps AS cr', 'nl.name = cr.name AND nl.nr_class_id = cr.nr_class_id')
-                 ->where('nc.nr_release_id', $id)
-                 ->like('nl.name', "NR_{$resolution}", 'after')
+                 ->join('ife_chains AS ic', 'ii.ife_id = ic.ife_id')
+                 ->join('chain_info AS ci', 'ic.chain_id = ci.chain_id')
+                 ->join('species_mapping AS sm', 'ci.taxonomy_id = sm.species_mapping_id', 'left')
+                 ->where('nl.nr_release_id', $id)
+                 ->where('nl.resolution', $resolution)
                  ->group_by('nl.name')
-                 ->order_by('num','desc')
-                 ->order_by('nc.rep','desc')
-                 ->order_by('ii.ife_id');
-        */
-
-        $this->db->select('cr.name, cr.pdb_id, cr.analyzed_length, cr.experimental_length, cr.compound, cr.species_name, cr.species_id, cr.nr_class_id, rc.num')
-                 ->from('nr_class_reps_bar AS cr')
-                 ->join('nr_class_reps_count AS rc', 'cr.nr_release_id = rc.nr_release_id AND cr.name = rc.name AND cr.ife_id = rc.ife_id')
-                 ->where('cr.nr_release_id', $id)
-                 ->like('cr.name', "NR_{$resolution}", 'after')
-                 ->order_by('cr.analyzed_length','desc')
-                 #->order_by('rc.num','desc')
-                 ->order_by('cr.ife_id');
+                 ->group_by('nl.nr_release_id')
+                 ->group_by('nl.resolution')
+                 ->order_by('ii.length','desc');
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
             $class_id = $row->name;
-            $nums     = $row->num;
+            #$nums     = $row->num;
             $ife_id   = $reps[$class_id];
             $pdb_id   = $row->pdb_id;
+            $tax_link = $this->tax_url . $row->species_id;
 
-            $source   = ( is_null($row->species_name) ) ? "" :
-                            anchor_popup("$this->tax_url$row->species_id", "$row->species_name");
+            $source   = ( is_null($row->species_name) ) ? "" : anchor_popup("$tax_link", "$row->species_name");
             $compound = (strlen($row->compound) > 40 ) ? substr($row->compound, 0, 40) . "[...]" : $row->compound;
 
             if (preg_match('/\+/',$ife_id)){
@@ -898,8 +907,6 @@ class Nrlist_model extends CI_Model {
                              #anchor(base_url("nrlist/view/".$class_id."/".$id),$class_id,$id)
                              . '<br>' . $this->add_annotation_label($row->nr_class_id, $reason)
                              . '<br>' . $source,
-//                             $ife_id . ' (<strong class="pdb">' . $pdb_id . '</strong>)' .
-//                             str_replace("+","+ ",$ife_id) . ' (<strong class="pdb">' . $pdb_id . '</strong>)' .
                              $this->add_space_to_long_IFE($ife_id) . ' (<strong class="pdb">' . $pdb_id . '</strong>)' .
                              '<ul>' .
                              '<li>' . $compound . '</li>' .
@@ -910,7 +917,8 @@ class Nrlist_model extends CI_Model {
                              $row->analyzed_length,
                              #$row->analyzed_length . '&nbsp;(analyzed)<br>' .
                              #$row->experimental_length . '&nbsp;(experimental)',
-                             "(" . $nums . ") " . $this->add_pdb_class($class[$class_id])
+                             "(" . $this->count_pdb_class($class[$class_id]) . ") " . $this->add_pdb_class($class[$class_id])
+                             #"(" . $nums . "," . $this->count_pdb_class($class[$class_id]) . ") " . $this->add_pdb_class($class[$class_id])
                             );
             $i++;
         }
