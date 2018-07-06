@@ -870,9 +870,9 @@ class Nrlist_model extends CI_Model {
             $nums     = $row->num;
             $ife_id   = $reps[$class_id];
             $pdb_id   = $row->pdb_id;
+            $tax_link = $this->tax_url . $row->species_id;
 
-            $source   = ( is_null($row->species_name) ) ? "" :
-                            anchor_popup("$this->tax_url$row->species_id", "$row->species_name");
+            $source   = ( is_null($row->species_name) ) ? "" : anchor_popup("$tax_link", "$row->species_name");
             $compound = (strlen($row->compound) > 40 ) ? substr($row->compound, 0, 40) . "[...]" : $row->compound;
 
             if (preg_match('/\+/',$ife_id)){
