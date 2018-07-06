@@ -855,7 +855,7 @@ class Nrlist_model extends CI_Model {
                  ->from('nr_chains AS nc')
                  ->join('ife_info AS ii', 'nc.ife_id = ii.ife_id')
                  ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
-                 ->join('ife_chains AS ic', 'ii.ife_id')
+                 ->join('ife_chains AS ic', 'ii.ife_id = ic.ife_id')
                  ->join('chain_info AS ci', 'ic.chain_id = ci.chain_id')
                  ->join('species_mapping AS sm', 'ci.taxonomy_id = sm.species_mapping_id', 'left')
                  ->where('nl.nr_release_id', $id)
