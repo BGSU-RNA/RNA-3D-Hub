@@ -862,7 +862,8 @@ class Nrlist_model extends CI_Model {
                  ->where('nl.resolution', $resolution)
                  ->group_by('nl.name')
                  ->group_by('nl.nr_release_id')
-                 ->group_by('nl.resolution');
+                 ->group_by('nl.resolution')
+                 ->order_by('ii.length','desc');
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
