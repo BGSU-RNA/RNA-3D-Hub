@@ -851,7 +851,7 @@ class Nrlist_model extends CI_Model {
                  ->select('sm.species_name')
                  ->select('sm.species_mapping_id AS species_id')
                  ->select('nl.nr_class_id')
-                 ->select('COUNT(DISTINCT ii.ife_id) AS num')
+                 #->select('COUNT(DISTINCT ii.ife_id) AS num')
                  ->from('nr_chains AS nc')
                  ->join('ife_info AS ii', 'nc.ife_id = ii.ife_id')
                  ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
@@ -867,7 +867,7 @@ class Nrlist_model extends CI_Model {
 
         foreach ($query->result() as $row) {
             $class_id = $row->name;
-            $nums     = $row->num;
+            #$nums     = $row->num;
             $ife_id   = $reps[$class_id];
             $pdb_id   = $row->pdb_id;
             $tax_link = $this->tax_url . $row->species_id;
@@ -916,7 +916,8 @@ class Nrlist_model extends CI_Model {
                              $row->analyzed_length,
                              #$row->analyzed_length . '&nbsp;(analyzed)<br>' .
                              #$row->experimental_length . '&nbsp;(experimental)',
-                             "(" . $nums . "," . $this->count_pdb_class($class[$class_id]) . ") " . $this->add_pdb_class($class[$class_id])
+                             "(" . $this->count_pdb_class($class[$class_id]) . ") " . $this->add_pdb_class($class[$class_id])
+                             #"(" . $nums . "," . $this->count_pdb_class($class[$class_id]) . ") " . $this->add_pdb_class($class[$class_id])
                             );
             $i++;
         }
