@@ -849,7 +849,7 @@ class Nrlist_model extends CI_Model {
                  ->select('ii.length AS analyzed_length')
                  ->select('group_concat(DISTINCT ci.compound separator ", ") as compound', FALSE)
                  ->select('sm.species_name')
-                 ->select('sm.species_mapping_id')
+                 ->select('sm.species_mapping_id AS species_id')
                  ->select('nl.nr_class_id')
                  ->select('COUNT(DISTINCT ii.ife_id) AS num')
                  ->from('nr_chains AS nc')
