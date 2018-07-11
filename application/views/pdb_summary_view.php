@@ -1,5 +1,4 @@
     <div class="container pdb_summary_view">
-
       <div class="content">
         <div class="page-header">
           <h1>
@@ -7,7 +6,7 @@
             <small>Summary</small>
             <small class="pull-right">
               <select data-placeholder="Choose a structure" id="chosen">
-               <option value=""></option>
+                <option value=""></option>
               <?php foreach ($pdbs as $pdb): ?>
                 <option value="<?=$pdb?>"><?=$pdb?></option>
               <?php endforeach; ?>
@@ -23,7 +22,7 @@
                 <li class="active"><a href="<?=$baseurl?>pdb/<?=$pdb_id?>">Summary</a></li>
                 <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/motifs">Motifs</a></li>
                 <li class="dropdown" data-dropdown="dropdown">
-                <a href="#" class="dropdown-toggle">Interactions</a>
+                  <a href="#" class="dropdown-toggle">Interactions</a>
                   <ul class="dropdown-menu">
                     <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/basepairs">Base-pair</a></li>
                     <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/stacking">Base-stacking</a></li>
@@ -43,11 +42,8 @@
 
         <!-- general info from PDB -->
         <div class="row">
-
           <div class="span15 well">
-
             <div class="row">
-
               <!-- 3D image -->
               <div class="span3">
                 <ul class="media-grid">
@@ -79,7 +75,7 @@
                   <dd><?=$experimental_technique?></dd>
                   <?php if ($resolution != ''): ?>
                   <dt>Resolution</dt>
-                  <dd><?php echo number_format($resolution, 1); ?> &Aring</dd>
+                  <dd><?php echo number_format($resolution, 1); ?> &Aring;</dd>
                   <?php endif; ?>
                   <dt>Chains</dt>
                   <dd>
@@ -106,11 +102,8 @@
                   <dl><?=$compounds?></dl>
                 </dl>
               </div>
-
             </div> <!-- end row -->
-
           </div> <!-- end well -->
-
         </div> <!-- end row -->
 
         <!-- BGSU RNA Site specific data -->
@@ -188,8 +181,6 @@
             <pre class="span8"><?=$message?></pre>
           </div>
         <?php endif; ?>
-
-
       </div>
 
       <script>
