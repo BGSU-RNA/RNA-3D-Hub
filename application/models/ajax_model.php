@@ -63,22 +63,26 @@ class Ajax_model extends CI_Model {
         if ( $query->num_rows() > 0 ) {
             $row = $query->row();
 
-            if ( $cla ) {
-                $tmp = preg_replace('/^NR_[1-4]\.[05]_/','NR_all_',$cla);
-                $rsc = preg_replace('/^NR_20.0_/','NR_all_',$tmp);
+            if ( $ife == "foo" ) {
+                $rsc = "foo";
             } else {
-                $this->db->select('cl.name')
-                         ->from('nr_releases AS nr')
-                         ->join('nr_chains AS ch','nr.nr_release_id = ch.nr_release_id')
-                         ->join('nr_classes AS cl','ch.nr_class_id = cl.nr_class_id')
-                         ->where('ch.ife_id', $ife)
-                         ->where('cl.resolution', "all")
-                         ->order_by(nr.index.desc)
-                         ->limit(1);
+                if ( $cla ) {
+                    $tmp = preg_replace('/^NR_[1-4]\.[05]_/','NR_all_',$cla);
+                    $rsc = preg_replace('/^NR_20.0_/','NR_all_',$tmp);
+                } else {
+                    $this->db->select('cl.name')
+                             ->from('nr_releases AS nr')
+                             ->join('nr_chains AS ch','nr.nr_release_id = ch.nr_release_id')
+                             ->join('nr_classes AS cl','ch.nr_class_id = cl.nr_class_id')
+                             ->where('ch.ife_id', $ife)
+                             ->where('cl.resolution', "all")
+                             ->order_by('nr.index DESC')
+                             ->limit(1);
 
-                 $clquery = $this->db->get();
-                 $clrow = $clquery->row();
-                 $rsc = $clrow->name;
+                     $clquery = $this->db->get();
+                     $clrow = $clquery->row();
+                     $rsc = $clrow->name;
+                }
             }
 
             // don't report resolution for nmr structures
