@@ -2,7 +2,7 @@
   	rect.bordered {
       stroke: #E6E6E6;
       stroke-width: 10px;
-    } 
+    }
     text.mono {
       font-size: 9pt;
       font-family: Consolas, courier;
@@ -21,9 +21,9 @@
       fill: none;
       stroke: none;
     }
-  </style> 
+  </style>
 
-    <div class="container nrlist_class_view"> 
+    <div class="container nrlist_class_view">
       <div class="content">
         <div class="page-header">
           <h1>Equivalence class <?=$title?>
@@ -34,9 +34,9 @@
         <ul class="tabs" data-tabs="tabs">
           <li class="active"><a href="#members">Members (<?=$num_members?>)</a></li>
           <li><a href="#history">History</a></li>
-          <li><a href="#statistics">Statistics</a></li>
+          <li><a href="#heatmap">Heat map</a></li>
         </ul>
-        
+
            <div class="tab-content">
               <div class="tab-pane active" id="members">
                   <div class="span16">
@@ -45,7 +45,7 @@
                       </div>
                   </div>
             </div> <!-- members -->
-           
+
             <div class="tab-pane" id="history">
               <div class="span16">
                   <h3>Release history</h3>
@@ -60,7 +60,7 @@
                       <?=$parents?>
                   </div>
               </div>
-              <br> 
+              <br>
 
               <div class="span16" >
                   <h3>Children</h3>
@@ -70,7 +70,7 @@
               </div>
             </div> <!-- history -->
 
-            <div class="row span16 interactions resizable" id="statistics">
+            <div class="row span16 interactions resizable" id="heatmap">
                 <div class="span16">
                     <div>
                       <p align="center">Heat map of mutual geometric discrepancy, in Angstroms per nucleotide.  Instances are ordered to put similar structures near each other. The colorbar ranges from 0 to the maximum observed discrepancy, up to 0.5</p>
@@ -80,7 +80,7 @@
                          #S - ordering by similarity (same as in the heat map).
                       </span>
                       <div>
-                        <?=$statistics?> 
+                        <?=$statistics?>
                       </div>
                       <script src="//d3js.org/d3.v4.min.js"></script>
                       <script type="text/javascript">
@@ -89,7 +89,7 @@
                       <script type="text/javascript" src="<?=$baseurl?>js/heatmap.js"></script>
                     </div>
                 </div>
-            </div> <!-- statistics -->
+            </div> <!-- heatmap -->
 
       </div> <!-- content -->
     </div> <!-- container -->
