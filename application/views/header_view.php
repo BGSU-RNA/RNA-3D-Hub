@@ -56,8 +56,7 @@
     <link href='<?=$baseurl?>css/bootstrap-toggle-buttons.css' rel='stylesheet'>
 
     <!-- Le fav and touch icons -->
-    <link rel="shortcut icon" href="<?=$pageicon?>">
-    <link rel="shortcut icon" href="<?=$baseurl?>icons/R_icon.png">
+    <link rel="shortcut icon" type="image/png" href="<?=$baseurl?>icons/R_icon.png" >
 
     <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
     <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
