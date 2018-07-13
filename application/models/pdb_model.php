@@ -199,6 +199,7 @@ class Pdb_model extends CI_Model {
     }
     function get_interactions($pdb_id, $interaction_type)
     {   
+        /* Commented out since we don't have aa-nt annotations yet
         if ( $interaction_type == 'baseaa' ) {
             $unit_ids = $this->_get_unit_ids($pdb_id);
             $this->db->select('uai.na_unit_id, uai.aa_unit_id, uai.annotation, uai.value')
@@ -239,7 +240,9 @@ class Pdb_model extends CI_Model {
             return array( 'data'   => $html,
                           'header' => array('#', 'Nucleotide id', 'Amino acid id', "Base-amino acid")
                      );
-        } 
+        }
+        */
+
         $url_parameters = array('basepairs', 'stacking', 'basephosphate', 'baseribose');
         $db_fields      = array('f_lwbp', 'f_stacks', 'f_bphs', 'f_brbs');
         $header_values  = array('Base-pair', 'Base-stacking', 'Base-phosphate', 'Base-ribose');
