@@ -118,7 +118,7 @@ class Nrlist extends CI_Controller {
         $data['parents'] = $this->table->generate($history);
 
         $history = $this->Nrlist_model->get_history($id,'children');
-        $this->table->set_heading('This class','Descendant classes','Release id','Intersection','Only in this class','Added to child');
+        $this->table->set_heading('This class           ','Descendant classes','Release id','Intersection','Only in this class','Added to child');
         $data['children'] = $this->table->generate($history);
 
         $statistics = $this->Nrlist_model->get_statistics($id);
@@ -134,6 +134,7 @@ class Nrlist extends CI_Controller {
 
         $data['title'] = $id;
         $data['baseurl'] = base_url();
+        $data['pageicon'] = 'icons/R_icon.png';
         $this->load->view('header_representative', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_class_view', $data);
