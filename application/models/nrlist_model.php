@@ -227,7 +227,7 @@ class Nrlist_model extends CI_Model {
         $table = array();
 
         foreach ($query->result() as $row) {
-            $link = $this->make_pdb_widget_link($row->ife_id);
+            $link = $this->make_pdb_widget_link(str_replace('+','+ ',$row->ife_id));
 
             if ( $i==0 ) {
                 $link = $link . ' <strong>(rep)</strong>';
@@ -237,7 +237,7 @@ class Nrlist_model extends CI_Model {
 
             $table[] = array($i,
                              $link,
-                             str_replace('+','+ ',$this->get_compound_single($row->ife_id)),
+                             $this->get_compound_single($row->ife_id),
                              #  may add get_compound_list as popover
                              #  to get_compound_single field
                              #$this->get_compound_list($row->pdb_id),
