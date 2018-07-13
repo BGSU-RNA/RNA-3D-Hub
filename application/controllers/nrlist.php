@@ -13,6 +13,7 @@ class Nrlist extends CI_Controller {
         $this->table->set_template($tmpl);
         $data['table']   = $this->table->generate($result);
         $data['title']   = 'RepR3D - Representative Sets of RNA 3D Structures';
+        $data['pageicon'] = base_url() . 'icons/R_icon.png';
         $data['baseurl'] = base_url();
 
         $data['images'] = $this->Nrlist_model->get_newest_pdb_images();
