@@ -237,7 +237,7 @@ class Nrlist_model extends CI_Model {
 
             $table[] = array($i,
                              $link,
-                             $this->get_compound_single($row->ife_id),
+                             str_replace('+','+ ',$this->get_compound_single($row->ife_id)),
                              #  may add get_compound_list as popover
                              #  to get_compound_single field
                              #$this->get_compound_list($row->pdb_id),
