@@ -131,10 +131,9 @@ class Nrlist extends CI_Controller {
         #$heatmap = $this->Nrlist_model->get_heatmap_data($id, $nr_release_id);
         $data['heatmap_data'] = $heatmap;
 
-
         $data['title'] = $id;
         $data['baseurl'] = base_url();
-        $data['pageicon'] = 'icons/R_icon.png';
+        $data['pageicon'] = base_url() . 'icons/R_icon.png';
         $this->load->view('header_representative', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_class_view', $data);
