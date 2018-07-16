@@ -91,6 +91,7 @@ class Motif extends MY_Controller {
         $data['sequence_variation']['nwc'] = $this->table->generate($seq_var['nwc']);
 
         $data['title']      = $motif_id;
+        $data['pageicon'] = base_url() . 'icons/M_icon.png';
         $data['release_id'] = $release_id;
         $data['release_id_label'] = $this->Motif_model->is_current_motif($motif_id);
         $data['motif_id']   = $motif_id;
@@ -157,6 +158,7 @@ class Motif extends MY_Controller {
         $data['motif1'] = $motif1;
         $data['motif2'] = $motif2;
         $data['title']  = "$motif1 vs. $motif2";
+        $data['pageicon'] = base_url() . 'icons/M_icon.png';
         $data['baseurl'] = base_url();
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);

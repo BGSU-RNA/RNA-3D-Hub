@@ -20,6 +20,7 @@ class Motifs extends CI_Controller {
         $data['table']['hls'] = $this->table->generate($result['HL']);
 
         $data['title']   = 'All Motif Atlas Releases';
+        $data['pageicon'] = base_url() . 'icons/M_icon.png';
         $data['baseurl'] = base_url();
 
         $this->load->view('header_view', $data);
@@ -39,6 +40,7 @@ class Motifs extends CI_Controller {
         $data = array_merge($data, $this->Motifs_model->get_current_release_info());
 
         $data['title']   = 'RNA 3D Motif Atlas';
+        $data['pageicon'] = base_url() . 'icons/M_icon.png';
         $data['baseurl'] = base_url();
 
         $this->load->view('header_view', $data);
@@ -60,6 +62,7 @@ class Motifs extends CI_Controller {
         $data['table'] = $this->table->generate($table);
 
         $data['title']   = 'Polymorphic motifs';
+        $data['pageicon'] = base_url() . 'icons/M_icon.png';
         $data['baseurl'] = base_url();
 
         $this->load->view('header_view', $data);
@@ -131,6 +134,7 @@ class Motifs extends CI_Controller {
 
         $data['status']   = $this->Motifs_model->get_release_status($motif_type,$id);
         $data['counts']   = $result['counts'];
+        $data['pageicon'] = base_url() . 'icons/M_icon.png';
         if ( $motif_type == 'il' ) {
             $data['title']    = 'Internal Loop Motif Atlas Release ' . $id;
         } else {
@@ -167,6 +171,7 @@ class Motifs extends CI_Controller {
         $data['status']   = $this->Motifs_model->get_release_status($motif_type,$id);
         $data['counts']   = $result['counts'];
         $data['title']    = 'Motif Atlas Release ' . $id;
+        $data['pageicon'] = base_url() . 'icons/M_icon.png';
         $data['baseurl']  = base_url();
         $data['alt_view'] = base_url(array('motifs','graph',$motif_type,$id));
         $data['polymorph_url'] = base_url(array('motifs','polymorphs',$motif_type, $id));
@@ -190,6 +195,7 @@ class Motifs extends CI_Controller {
         $data['img_loc']   = strtoupper($motif_type) . $id;
         $data['alt_view']  = base_url(array('motifs','release',$motif_type,$id));
         $data['title']     = 'Motif Atlas Release ' . $id . ' (' . strtoupper($motif_type) . ')';
+        $data['pageicon'] = base_url() . 'icons/M_icon.png';
         $data['baseurl']   = base_url();
 
         $this->load->view('header_view', $data);
@@ -221,6 +227,7 @@ class Motifs extends CI_Controller {
         $data['table']['hls'] = $this->table->generate($result['HL']);
 
         $data['title']      = 'Compare Motif Atlas Releases';
+        $data['pageicon'] = base_url() . 'icons/M_icon.png';
         $data['baseurl']    = base_url();
         $data['action_il']  = base_url('motifs/compare/il');
         $data['action_hl']  = base_url('motifs/compare/hl');
@@ -277,6 +284,7 @@ class Motifs extends CI_Controller {
         $data['rel1'] = $rel1;
         $data['rel2'] = $rel2;
         $data['title'] = "{$rel1} | {$rel2}";
+        $data['pageicon'] = base_url() . 'icons/M_icon.png';
         $data['motif_type'] = $motif_type;
         $data['baseurl'] = base_url();
         $this->load->view('header_view', $data);
@@ -314,6 +322,7 @@ class Motifs extends CI_Controller {
         $data['table']['hls'] = $this->table->generate($result['HL']);
 
         $data['title'] = 'Release History';
+        $data['pageicon'] = base_url() . 'icons/M_icon.png';
         $data['baseurl'] = base_url();
 
         $this->load->view('header_view', $data);
@@ -399,6 +408,7 @@ class Motifs extends CI_Controller {
             show_404();
         }
 
+        $data['pageicon'] = base_url() . 'icons/M_icon.png';
         $data['baseurl'] = base_url();
 
         $this->load->view('header_view', $data);
