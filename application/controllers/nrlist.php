@@ -38,7 +38,7 @@ class Nrlist extends CI_Controller {
             show_404();
         }
 
-        $data['title'] = "RepR3D - Representative Sets of RNA 3D Structures";
+        $data['title'] = "Representative set $id";
         $data['pageicon'] = base_url() . 'icons/R_icon.png';
         $data['release_id']  = $id;
         $data['description'] = $this->Nrlist_model->get_release_description($id);
