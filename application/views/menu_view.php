@@ -62,7 +62,7 @@
                 <a href="#" class="dropdown-toggle">Resources</a>
                 <ul class="dropdown-menu">
                     <li><a href="<?=$this->config->item('home_url')?>/WebFR3D">WebFR3D</a></li>
-                    <li><a href="<?=$this->config->item('home_url')?>/JAR3D">JAR3D &szlig;</a></li>
+                    <li><a href="<?=$this->config->item('home_url')?>/JAR3D">JAR3D</a></li>
                     <li><a href="<?=$this->config->item('home_url')?>/r3dalign/">R3DAlign</a></li>
                     <li><a href="<?=$this->config->item('fr3d_url')?>">FR3D</a></li>
                     <li class="divider"></li>

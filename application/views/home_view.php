@@ -11,7 +11,7 @@
         <a href="<?=$this->config->item('home_url')?>/main/introduction-to-rna-3d-hub/" class="btn success large">Introduction</a>
         </p>
         <p>
-          We are <a href="<?=$this->config->item('home_url')?>/rna.bgsu.edu/main/upgrading-rna-3d-hub/">upgrading BGSU RNA Site</a>
+          We have upgraded the <a href="<?=$this->config->item('home_url')?>/rna.bgsu.edu/main/upgrading-rna-3d-hub/">BGSU RNA Site</a>
           to include new RNA 3D structures distributed in <a href="http://wwpdb.org/news/news.php?year=2014#10-December-2014">mmCIF format</a>.
           Follow us on <a href="https://twitter.com/rna3dhub">Twitter</a> to hear when the updated version becomes available.
         </p>

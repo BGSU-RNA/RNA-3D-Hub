@@ -14,6 +14,7 @@ class Loops extends CI_Controller {
         }
 
         $data['title']   = 'All Loops';
+        $data['pageicon'] = base_url() . 'icons/L_icon.png';
         $data['baseurl'] = base_url();
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
@@ -59,13 +60,14 @@ class Loops extends CI_Controller {
 
         $motif_full_names = array('IL'=>'internal loops', 'HL' => 'hairpin loops', 'J3' => 'junction loops');
         $data['title']      = 'All ' .  $type . ' ' . $motif_full_names[$motif_type];
+        $data['pageicon'] = base_url() . 'icons/L_icon.png';
         $data['release_id'] = $release_id;
         $data['type']       = $type;
         $data['motif_type'] = $motif_type;
         $data['baseurl'] = base_url();
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
-        $this->load->view('loops_paginated_view', $data);
+        //$this->load->view('loops_paginated_view', $data);
         $this->load->view('footer');
 
 //         $this->output->enable_profiler(TRUE);
@@ -84,6 +86,7 @@ class Loops extends CI_Controller {
         $this->table->set_template($tmpl);
         $data['table'] = $this->table->generate($table);
         $data['title'] = 'Sfcheck and mapman';
+        $data['pageicon'] = base_url() . 'icons/L_icon.png';
 
         $data['fields']  = $this->Loops_model->get_fields_array();
         $data['baseurl'] = base_url();
@@ -99,6 +102,7 @@ class Loops extends CI_Controller {
         $data['graphs'] = $this->Loops_model->get_graphs();
 
         $data['title'] = 'Graphs';
+        $data['pageicon'] = base_url() . 'icons/L_icon.png';
         $data['baseurl'] = base_url();
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
@@ -117,6 +121,7 @@ class Loops extends CI_Controller {
             $data['pdb_count']= count($pdbs);
             $data['table']   = $this->table->generate($list);
             $data['title']   = 'Sfcheck and Mapman';
+            $data['pageicon'] = base_url() . 'icons/L_icon.png';
             $data['baseurl'] = base_url();
             $this->load->view('header_view', $data);
             $this->load->view('menu_view', $data);
@@ -180,6 +185,7 @@ class Loops extends CI_Controller {
         }
 
         $data['title'] = 'Loop ' . $id;
+        $data['pageicon'] = base_url() . 'icons/L_icon.png';
         $data['id']    = $id;
         $data['baseurl'] = base_url();
         $this->load->view('header_view', $data);
@@ -204,6 +210,7 @@ class Loops extends CI_Controller {
             $data['table'] = $this->table->generate($table);
             $data['kind']    = $kind;
             $data['title']   = 'Loop extraction benchmark';
+            $data['pageicon'] = base_url() . 'icons/L_icon.png';
             $data['baseurl'] = base_url();
             $this->load->view('header_view', $data);
             $this->load->view('menu_view', $data);
