@@ -39,6 +39,7 @@ class Nrlist extends CI_Controller {
         }
 
         $data['title']       = "Representative set $id";
+        $data['pageicon'] = base_url() . 'icons/R_icon.png';
         $data['release_id']  = $id;
         $data['description'] = $this->Nrlist_model->get_release_description($id);
         $data['resolution'] = $res;
@@ -133,7 +134,7 @@ class Nrlist extends CI_Controller {
 
         $data['title'] = $id;
         $data['baseurl'] = base_url();
-        $data['pageicon'] = base_url() . 'icons/R_icon.png';
+        $data['pageicon'] = base_url() . 'icons/E_icon.png';
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_class_view', $data);
@@ -152,6 +153,7 @@ class Nrlist extends CI_Controller {
         $data['title'] = 'Compare releases';
 
         $data['baseurl'] = base_url();
+        $data['pageicon'] = base_url() . 'icons/R_icon.png';
         $data['action']  = base_url('nrlist/compare');
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
@@ -174,6 +176,8 @@ class Nrlist extends CI_Controller {
         $data = $this->Nrlist_model->get_release_diff($rel1,$rel2);
 
         $data['title'] = "{$rel1} | {$rel2}";
+        $data['pageicon'] = base_url() . 'icons/R_icon.png';
+
         $data['rel1']  = $rel1;
         $data['rel2']  = $rel2;
 
@@ -206,6 +210,7 @@ class Nrlist extends CI_Controller {
         }
 
         $data['title'] = 'Release History';
+        $data['pageicon'] = base_url() . 'icons/R_icon.png';
         $data['baseurl'] = base_url();
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
