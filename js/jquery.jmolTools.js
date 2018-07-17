@@ -250,20 +250,27 @@ if ( typeof Object.create !== 'function' ) {
 
             for (var i = mod_num1; i <= mod_num2; i++) {
                 for (var k = 0; k < Object.keys(RSRZ_data[i]).length; k++){
-                    var RSRZ = (parseFloat(RSRZ_data[i][k].real_space_r_z_score)*100)/100;
+
+                    var RSRZ = RSRZ_data[i][k].real_space_r_z_score;
                     var split_unitid = RSRZ_data[i][k].unit_id.split("|");
-                    if (RSRZ === null) {
-                        command += "select " + split_unitid[4] + "/" + i + ".1;" + " color grey; ";     
-                    } else if (RSRZ < 1.00) {
-                        command += "select " + split_unitid[4] + "/" + i + ".1;" + " color green; ";   
-                    } else if (RSRZ < 2.00) {
-                        command += "select " + split_unitid[4] + "/" + i + ".1;" + " color yellow; ";  
-                    } else if (RSRZ < 3.00) {
-                        command += "select " + split_unitid[4] + "/" + i + ".1;" + " color orange; ";  
+
+                    if (RSRZ === null){
+                        command += "select " + split_unitid[4] + "/" + i + ".1;" + " color gray" + "; ";
                     } else {
-                        command += "select " + split_unitid[4] + "/" + i + ".1;" + " color red; ";  
+                        var RSRZ = (parseFloat(RSRZ_data[i][k].real_space_r_z_score)*100)/100;
+                        if (RSRZ < 1.00) {
+                            command += "select " + split_unitid[4] + "/" + i + ".1;" + " color green; ";   
+                        } else if (RSRZ < 2.00) {
+                            command += "select " + split_unitid[4] + "/" + i + ".1;" + " color yellow; ";  
+                        } else if (RSRZ < 3.00) {
+                            command += "select " + split_unitid[4] + "/" + i + ".1;" + " color orange; ";  
+                        } else {
+                            command += "select " + split_unitid[4] + "/" + i + ".1;" + " color red; ";  
+                        }
                     }
-                    command += "select " + i + ".1, " + i + ".2;" +
+                }
+
+                command += "select " + i + ".1, " + i + ".2;" +
                        "select nucleic and " + i + ".2; color grey;" +
                        "select protein and " + i + ".2; color purple;" +
                        "select hetero  and " + i + ".2; color pink;" +
@@ -271,7 +278,6 @@ if ( typeof Object.create !== 'function' ) {
                        "select " + i + ".1," + i + ".2;" +
                        " spacefill off; " + "center " + i + ".1;" +
                        "zoom {"  + i + ".1} 0;"; 
-                }
             }
 
             console.log(command);
@@ -291,36 +297,36 @@ if ( typeof Object.create !== 'function' ) {
             command = "";
 
             for (var i = mod_num1; i <= mod_num2; i++) {
-                console.log(RSR_data[i])
-                //console.log(RSR_data[i][9])
-                console.log(Object.keys(RSR_data[i]).length)
                 for (var k = 0; k < Object.keys(RSR_data[i]).length; k++) {
-                    var RSR = parseFloat(RSR_data[i][k].real_space_r);
+                    
+                    var RSR = RSR_data[i][k].real_space_r;
                     var split_unitid = RSR_data[i][k].unit_id.split("|");
 
+                    if (RSR === null){
+                        command += "select " + split_unitid[4] + "/" + i + ".1;" + " color gray" + "; ";
+                    } else {
 
-                    //make the min and max values of RSR to be equal to 0.0 and 0.5 respectively
-                    if (RSR < 0.0) {
-                        RSR = 0.0;
-                    } else if (RSR > 0.5) {
-                        RSR = 0.5;
-                    }
-
-                    //console.log(RSR);
-
-                    //map the RSR values between 0 and 100
-                    var pert = Math.round(((RSR-0.0)/0.5)*100);
-
-                    //console.log(pert);
-
-                    //console.log(RSR_pair[0].colorchoice);
-
-                    for (var a=0; a<Object.keys(RSR_pair).length; a++) {
-                        if (pert == (RSR_pair[a].interval)-1){
-                            colorchoice = RSR_pair[a].colorchoice;
-                            command += "select " + split_unitid[4] + "/" + i + ".1;" + " color '" + colorchoice + "'; ";
+                        var RSR = parseFloat(RSR_data[i][k].real_space_r);
+                        
+                        //Set the min and max values of RSR
+                        if (RSR < 0.0) {
+                            RSR = 0.0;
+                        } else if (RSR > 0.5) {
+                            RSR = 0.5;
                         }
+                        
+                        //map the RSR values between 0 and 100
+                        var pert = Math.round(((RSR-0.0)/0.5)*100);
+                        
+                        for (var a=0; a<Object.keys(RSR_pair).length; a++) {
+                            if (pert == (RSR_pair[a].interval)-1){
+                                colorchoice = RSR_pair[a].colorchoice;
+                                command += "select " + split_unitid[4] + "/" + i + ".1;" + " color '" + colorchoice + "'; ";
+                            }
+                        }
+
                     }
+
                 }
 
                  command += "select nucleic and " + i + ".2; color grey;" +
