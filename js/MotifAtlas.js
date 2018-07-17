@@ -16,6 +16,7 @@ function LookUpPDBInfo()
                                .popover('hide')
                                .unbind()
                                .bind('click', LookUpPDBInfo);
+        // The next two a.data lines can be commented out and the popover still works.  Odd.
         a.data('content',data);
         a.data('original-title',pdb);
         a.popover({
@@ -26,7 +27,7 @@ function LookUpPDBInfo()
           delayOut: 5000,
           html: true,
           animate: true,
-          template: '<div class="popover"><div class="arrow"></div><div class="inner"><h3 class="title"></h3><div class="content"></div><div class="footer"></div></div></div>',
+          template: '<div class="arrow"></div><div class="inner"><h3 class="title"></h3><div class="content"><p></p></div><div class="footer"><p></p></div></div>'
           placement: a.offset().top - $(window).scrollTop() < 500 ? 'below' : 'above'
         });
         a.addClass('popover-displayed');
