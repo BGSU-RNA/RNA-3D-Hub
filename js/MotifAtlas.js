@@ -22,11 +22,12 @@ function LookUpPDBInfo()
           offset: 10,
           content: function(){return data;},
           title: function(){return pdb;},
+          footer: 'FOOTER'
           delayOut: 5000,
           html: true,
           animate: true,
           placement: a.offset().top - $(window).scrollTop() < 500 ? 'below' : 'above',
-          template: '<div class="popover"><div class="arrow"></div><h3 class="popover-title"></h3><div class="popover-content"></div><div class="popover-footer"><button type="button" class="btn btn-default">Button</button></div></div>'
+          template: '<div class="popover"><h3 class="popover-title"></h3><div class="popover-content"></div><div class="popover-footer"></div></div>'
         });
         a.addClass('popover-displayed');
         a.popover('show');
