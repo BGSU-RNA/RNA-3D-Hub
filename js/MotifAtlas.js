@@ -26,8 +26,8 @@ function LookUpPDBInfo()
           delayOut: 5000,
           html: true,
           animate: true,
-          placement: a.offset().top - $(window).scrollTop() < 500 ? 'below' : 'above',
-          template: '<div class="popover"><h3 class="popover-title"></h3><div class="popover-content"></div><div class="popover-footer"></div></div>'
+          template: '<div class="popover"><div class="arrow"></div><div class="inner"><h3 class="title"></h3><div class="content"></div><div class="footer"></div></div></div>',
+          placement: a.offset().top - $(window).scrollTop() < 500 ? 'below' : 'above'
         });
         a.addClass('popover-displayed');
         a.popover('show');
