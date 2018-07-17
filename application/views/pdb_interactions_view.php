@@ -71,7 +71,8 @@
             <label><input type="checkbox" id="showNtNums">Nucleotide numbers</label>
             <input type="button" class="btn" id="neighborhood" value="Show neighborhood">
             Coloring options: <select id="colorOPT"> 
-                    <option value="Default" selected>Default</option> 
+                    <option value="Default" selected>Default</option>
+                    <option value="CPK">CPK</option>  
                     <option value="RSR" >Real Space R (RSR)</option>
                     <option value="RSRZ">RSR Z-Score (RSRZ)</option>
                 </select>

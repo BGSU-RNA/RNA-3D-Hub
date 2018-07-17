@@ -755,6 +755,7 @@
       appID: 'jmolApplet0',
       tmpID: 'tempJmolToolsObj',
       neighborhoodID: 'neighborhood',
+      colorOption: 'colorOPT',
       numbersID: 'showNtNums',
       stereoID: 'stero',
       maxSize: 200,
@@ -802,6 +803,7 @@
       $('#' + this.stereoID()).unbind();
       $('#' + this.neighborhoodID()).unbind();
       $('#' + this.numbersID()).unbind();
+      $('#' + this.colorOption()).unbind();
 
       return this;
     };
@@ -820,7 +822,7 @@
 
       $('#' + tool.tmpID()).remove();
       $('body').append("<input type='radio' id='" + tool.tmpID() +
-                       "' data-coord='" + ntIDs.join(',') + "'>");
+                       "' data-coord='" + ntIDs.join(',') + "' data-quality='" + ntIDs.join(',') + "'>");
       $('#' + tool.tmpID()).hide();
       $('#' + tool.tmpID()).jmolTools({
         showNeighborhoodId: tool.neighborhoodID(),

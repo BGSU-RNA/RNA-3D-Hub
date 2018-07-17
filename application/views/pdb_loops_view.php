@@ -111,8 +111,6 @@
             showStereoId: 'stereo',
             showNeighborhoodId: 'neighborhood',
             showNumbersId: 'showNtNums',
-            colorByRSRZ: 'colorRSRZ',
-            colorByRSR: 'colorRSR',
             colorOption: 'colorOPT',
             showNextId: 'next',
             showPrevId: 'prev'
