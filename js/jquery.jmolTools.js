@@ -632,8 +632,6 @@ if ( typeof Object.create !== 'function' ) {
             $('#' + $.fn.jmolTools.options.showStereoId).on('click', Helpers.toggleStereo);
             $('#' + $.fn.jmolTools.options.showNeighborhoodId).on('click', Helpers.toggleNeighborhood);
             $('#' + $.fn.jmolTools.options.showNumbersId).on('click', Helpers.toggleNumbers);
-            $('#' + $.fn.jmolTools.options.colorByRSRZ).on('click', Helpers.toggleRSRZ);
-            $('#' + $.fn.jmolTools.options.colorByRSR).on('click', Helpers.toggleRSR);
             $('#' + $.fn.jmolTools.options.colorOption).on('click', Helpers.toggleColor);
             $('#' + $.fn.jmolTools.options.showAllId)
                     .toggle(Helpers.showAll, Helpers.hideAll)
