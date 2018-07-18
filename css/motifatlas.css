@@ -392,6 +392,7 @@ small .label {
     /*max-height:220px;*/
     max-height:auto;
     overflow:auto;
+    overflow-y: scroll;
 }
 .popover .content p {
     font-size:12px;
