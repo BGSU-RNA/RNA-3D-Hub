@@ -803,6 +803,7 @@
       $('#' + this.stereoID()).unbind();
       $('#' + this.neighborhoodID()).unbind();
       $('#' + this.numbersID()).unbind();
+      //$('#colorOPT').unbind();
       $('#' + this.colorOption()).unbind();
 
       return this;
@@ -827,7 +828,8 @@
       $('#' + tool.tmpID()).jmolTools({
         showNeighborhoodId: tool.neighborhoodID(),
         showNumbersId: tool.numbersID(),
-        showStereoId: tool.stereoID()
+        showStereoId: tool.stereoID(),
+        colorOption: tool.colorOption()
       }).jmolToggle();
 
       return tool;
