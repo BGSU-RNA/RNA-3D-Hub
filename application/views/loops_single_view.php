@@ -157,14 +157,14 @@
     function jmolScriptWait(cmd) {Jmol.scriptWait(jmolApplet0, cmd)};
 </script>
                 <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
-                 <br>
+                <label><input type="checkbox" id="showNtNums">Nucleotide numbers</label>
                 Coloring options: <select id="colorOPT"> 
-                    <option value="Default" selected>Default</option> 
+                    <option value="Default" selected>Default</option>
+                    <option value="CPK" >CPK</option> 
                     <option value="RSR" >Real Space R (RSR)</option>
                     <option value="RSRZ">RSR Z-Score (RSRZ)</option>
                 </select>
-                <label><input type="checkbox" id="showNtNums">Nucleotide numbers</label>
-                <br><br>
+                <br>
                 <div class='showRSR' style="display:none">
                     <svg height="30" width="340">
                         <defs>
@@ -300,7 +300,7 @@
                     </svg>
                 </div>
                 <div id='checkboxes'>
-                    <label><input type='checkbox' class='jmolInline' data-coord='<?=$id?>'><?=$id?></label>
+                    <label><input type='checkbox' class='jmolInline' data-coord='<?=$id?>' data-quality='<?=$id?>'><?=$id?></label>
                 </div>
            </div>
 

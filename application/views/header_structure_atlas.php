@@ -31,8 +31,6 @@
     <script src="<?=$baseurl?>js/MotifAtlas.js" type="text/javascript"></script>
     <script src="<?=$baseurl?>js/rcsbPdbImageLib.min.js" type="text/javascript"> </script>
 
-    <link rel="structure atlas icon" type = "image/png" href="../icons/S_icon.png">
-
     <!-- jEditable -->
     <?php if ($this->session->userdata('username')): ?>
     <script src="<?=$baseurl?>js/jquery.jeditable.mini.js" type="text/javascript"></script>
