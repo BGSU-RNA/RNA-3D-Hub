@@ -456,7 +456,7 @@ class Motifs_model extends CI_Model {
                                     . "<ul class='unstyled inputs-list'>"
                                     . "<li><label><input type='radio' class='jmolInline' id='"
                                     . str_replace('.','_',$row->motif_id)
-                                    . "' data-coord='{$row->motif_id}' data-type='motif_id' name='ex'>"
+                                    . "' data-coord='{$row->motif_id}' data-quality='{$row->motif_id}' data-type='motif_id' name='ex'>"
                                     . "<span>Exemplar</span></label></li>"
                                     . "<li>Basepair signature: $signature</li>"
                                     . '<li>History status: ' . $this->add_annotation_label($row->motif_id, $reason) . '</li>'
