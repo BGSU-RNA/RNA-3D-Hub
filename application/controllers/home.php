@@ -4,6 +4,7 @@ class Home extends CI_Controller {
 	public function index()
 	{
         $data['title'] = 'BGSU RNA Site';
+        $data['pageicon'] = base_url() . 'icons/R_icon.png';
         $data['baseurl'] = base_url();
 
         $this->load->view('header_view', $data);
