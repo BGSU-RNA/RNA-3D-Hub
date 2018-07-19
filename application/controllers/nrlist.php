@@ -12,7 +12,7 @@ class Nrlist extends CI_Controller {
         $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table'>" );
         $this->table->set_template($tmpl);
         $data['table']   = $this->table->generate($result);
-        $data['title']   = 'RepR3D - Representative Sets of RNA 3D Structures';
+        $data['title']   = 'Representative Sets of RNA 3D Structures';
         $data['pageicon'] = base_url() . 'icons/R_icon.png';
         $data['baseurl'] = base_url();
 
