@@ -413,6 +413,7 @@ small .label {
     max-height: auto;
     overflow: none;
     background-color: white;
+    border-top: 1px solid black;
 }
 .popover .footer p {
     font-size: 12px;
