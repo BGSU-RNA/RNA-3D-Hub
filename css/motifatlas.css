@@ -389,12 +389,22 @@ small .label {
 .popover .content {
     margin: 0;
     min-height:20px;
-    max-height:220px;
+    max-height:300px;
+    /*max-height:auto;*/
+    overflow:auto;
+}
+.popover .content p {
+    font-size:12px;
+}
+.popover .content1 {
+    margin: 0;
+    min-height:20px;
+    max-height:250px;
     /*max-height:auto;*/
     overflow:auto;
     overflow-y: scroll;
 }
-.popover .content p {
+.popover .content1 p {
     font-size:12px;
 }
 .popover .footer {
