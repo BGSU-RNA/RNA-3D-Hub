@@ -98,7 +98,8 @@ class Ajax_model extends CI_Model {
             $nucleotides = $this->count_nucleotides($pdb);
             $bpnt = ( $nucleotides == 0 ) ? 0 : number_format($basepairs/$nucleotides, 4);
 
-            $pdb_info = "<u>Title</u>: {$row->title}<br/>" .
+            $pdb_info = "<div class='popover-content1'>" . 
+                        "<u>Title</u>: {$row->title}<br/>" .
                         "<u>Method</u>: {$row->experimental_technique}<br/>" .
                         "<u>Organism</u>: {$source}<br/>";
 
@@ -161,6 +162,9 @@ class Ajax_model extends CI_Model {
                              "<u>Rfree</u>: $rfree<br/>";
             }
 
+            $pdb_info .= "</div>" . 
+                         '<div class="popover-footer">';
+
             //  Add the structure website links.
             $pdb_info .= "<hr/>" . 
                          'Explore in ' .
@@ -169,6 +173,7 @@ class Ajax_model extends CI_Model {
                          anchor_popup("http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget=$pdb", 'NDB') .
                          ', or ' .
                          anchor_popup("pdb/$pdb", 'BGSU RNA Site');
+            $pdb_info .= '</div>';
         } else {
             // check obsolete files
             $this->db->select('replaced_by')
