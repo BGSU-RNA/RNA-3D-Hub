@@ -13,12 +13,13 @@ class Nrlist extends CI_Controller {
         $this->table->set_template($tmpl);
         $data['table']   = $this->table->generate($result);
         $data['title']   = 'RepR3D - Representative Sets of RNA 3D Structures';
+        $data['pageicon'] = base_url() . 'icons/R_icon.png';
         $data['baseurl'] = base_url();
 
         $data['images'] = $this->Nrlist_model->get_newest_pdb_images();
         $data['total_pdbs'] = $this->Nrlist_model->get_total_pdb_count();
 
-        $this->load->view('header_representative', $data);
+        $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_all_releases_view', $data);
         $this->load->view('footer');
@@ -37,7 +38,8 @@ class Nrlist extends CI_Controller {
             show_404();
         }
 
-        $data['title']       = "Representative set $id";
+        $data['title'] = "Representative set $id";
+        $data['pageicon'] = base_url() . 'icons/R_icon.png';
         $data['release_id']  = $id;
         $data['description'] = $this->Nrlist_model->get_release_description($id);
         $data['resolution'] = $res;
@@ -50,7 +52,7 @@ class Nrlist extends CI_Controller {
         $data['class'] = $this->table->generate($temp['table']);
 
         $data['baseurl'] = base_url();
-        $this->load->view('header_representative', $data);
+        $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_release_view', $data);
         $this->load->view('footer');
@@ -117,7 +119,7 @@ class Nrlist extends CI_Controller {
         $data['parents'] = $this->table->generate($history);
 
         $history = $this->Nrlist_model->get_history($id,'children');
-        $this->table->set_heading('This class','Descendant classes','Release id','Intersection','Only in this class','Added to child');
+        $this->table->set_heading('This class           ','Descendant classes','Release id','Intersection','Only in this class','Added to child');
         $data['children'] = $this->table->generate($history);
 
         $statistics = $this->Nrlist_model->get_statistics($id);
@@ -130,10 +132,10 @@ class Nrlist extends CI_Controller {
         #$heatmap = $this->Nrlist_model->get_heatmap_data($id, $nr_release_id);
         $data['heatmap_data'] = $heatmap;
 
-
         $data['title'] = $id;
         $data['baseurl'] = base_url();
-        $this->load->view('header_representative', $data);
+        $data['pageicon'] = base_url() . 'icons/E_icon.png';
+        $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_class_view', $data);
         $this->load->view('footer');
@@ -151,8 +153,9 @@ class Nrlist extends CI_Controller {
         $data['title'] = 'Compare releases';
 
         $data['baseurl'] = base_url();
+        $data['pageicon'] = base_url() . 'icons/R_icon.png';
         $data['action']  = base_url('nrlist/compare');
-        $this->load->view('header_representative', $data);
+        $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_release_compare_view', $data);
         $this->load->view('footer');
@@ -173,6 +176,8 @@ class Nrlist extends CI_Controller {
         $data = $this->Nrlist_model->get_release_diff($rel1,$rel2);
 
         $data['title'] = "{$rel1} | {$rel2}";
+        $data['pageicon'] = base_url() . 'icons/R_icon.png';
+
         $data['rel1']  = $rel1;
         $data['rel2']  = $rel2;
 
@@ -180,7 +185,7 @@ class Nrlist extends CI_Controller {
 
         #var_dump($data); ### DEBUG
 
-        $this->load->view('header_representative', $data);
+        $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_release_compare_results_view', $data);
         $this->load->view('footer');
@@ -205,8 +210,9 @@ class Nrlist extends CI_Controller {
         }
 
         $data['title'] = 'Release History';
+        $data['pageicon'] = base_url() . 'icons/R_icon.png';
         $data['baseurl'] = base_url();
-        $this->load->view('header_representative', $data);
+        $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
         $this->load->view('nrlist_release_history_view', $data);
         $this->load->view('footer');

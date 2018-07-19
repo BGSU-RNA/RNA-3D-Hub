@@ -782,6 +782,22 @@ class Ajax_model extends CI_Model {
 
     }
 
+    function get_exemplar_RSR($motif_id)
+    {
+        // given a motif_id find the representative loop
+        $this->db->select('loop_id')
+                 ->from('ml_loop_order')
+                 ->where('motif_id',$motif_id)
+                 ->where('original_order',1);
+        $query = $this->db->get();
+        if ($query->num_rows() == 0) {
+            return 'No motif found';
+        }
+        $row = $query->row();
+
+        return $this->get_loop_RSR($row->loop_id);
+    }
+
     function get_loop_RSRZ($loop_id)
     {
 
@@ -809,6 +825,22 @@ class Ajax_model extends CI_Model {
 
         return json_encode($RSRZ);
 
+    }
+
+    function get_exemplar_RSRZ($motif_id)
+    {
+        // given a motif_id find the representative loop
+        $this->db->select('loop_id')
+                 ->from('ml_loop_order')
+                 ->where('motif_id',$motif_id)
+                 ->where('original_order',1);
+        $query = $this->db->get();
+        if ($query->num_rows() == 0) {
+            return 'No motif found';
+        }
+        $row = $query->row();
+
+        return $this->get_loop_RSRZ($row->loop_id);
     }
 
     function get_unit_id_RSR($unit_ids)

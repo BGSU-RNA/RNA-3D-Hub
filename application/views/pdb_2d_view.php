@@ -194,6 +194,58 @@
 
                         <button type="button" id="neighborhood" class="btn">Show neighborhood</button>
                         <button type="button" id="stereo" class="btn">Stereo</button>
+                        <br>
+                        Coloring options: <select id="colorOPT"> 
+                            <option value="Default" selected>Default</option> 
+                            <option value="CPK">CPK</option> 
+                            <option value="RSR">Real Space R (RSR)</option>
+                            <option value="RSRZ">RSR Z-Score (RSRZ)</option>
+                        </select>
+                        <br>
+                        <div class='showRSR' style="display:none">
+                    <svg height="30" width="340">
+                        <defs>
+                            <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="10%" style="stop-color:#0d0887; stop-opacity:1" />
+                                <stop offset="20%" style="stop-color:#6603a5; stop-opacity:1" />
+                                <stop offset="30%" style="stop-color:#8a0da2; stop-opacity:1" />
+                                <stop offset="40%" style="stop-color:#ac2693; stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#ca457a; stop-opacity:1" />
+                                <stop offset="60%" style="stop-color:#df6264; stop-opacity:1" />
+                                <stop offset="70%" style="stop-color:#f0824d; stop-opacity:1" />
+                                <stop offset="80%" style="stop-color:#faa638; stop-opacity:1" />
+                                <stop offset="90%" style="stop-color:#fbcc27; stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#f0f921; stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                    <rect x="0" y="0" width="300" height="15" fill="url(#grad3)"  />
+                    <text x="0" y="30" font-family="sans-serif" font-size="12px" fill="black">0.0</text>
+                    <text x="70" y="30" font-family="sans-serif" font-size="12px" fill="black">RSR Scale truncated at 0.5</text>
+                    <text x="285" y="30" font-family="sans-serif" font-size="12px" fill="black">0.5</text>
+                    </svg>
+                </div>
+
+                <div class='showRSRZ' style="display:none">
+                    <svg height="45" width="340">
+                        <defs>
+                        <text x="120" y="0" font-family="sans-serif" font-size="12px" fill="black">RSRZ Scale</text>
+                            <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="25%" style="stop-color:green;stop-opacity:1" />
+                                <stop offset="25%" style="stop-color:yellow;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:yellow;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:orange;stop-opacity:1" />
+                                <stop offset="75%" style="stop-color:orange;stop-opacity:1" />
+                                <stop offset="75%" style="stop-color:red;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:red;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                    <rect x="0" y="0" width="300" height="15" fill="url(#grad2)"  />
+                    <text x="72" y="30" font-family="sans-serif" font-size="12px" fill="black">1</text>
+                    <text x="147" y="30" font-family="sans-serif" font-size="12px" fill="black">2</text>
+                    <text x="223" y="30" font-family="sans-serif" font-size="12px" fill="black">3</text>
+                    <text x="120" y="45" font-family="sans-serif" font-size="12px" fill="black">RSRZ Scale</text>
+                    </svg>
+                </div>
                         <label><input type="checkbox" id="showNtNums">Show numbers</label>
                     </div>
                 </div>

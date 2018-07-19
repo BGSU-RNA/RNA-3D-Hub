@@ -227,7 +227,7 @@ class Nrlist_model extends CI_Model {
         $table = array();
 
         foreach ($query->result() as $row) {
-            $link = $this->make_pdb_widget_link($row->ife_id);
+            $link = $this->make_pdb_widget_link(str_replace('+','+ ',$row->ife_id));
 
             if ( $i==0 ) {
                 $link = $link . ' <strong>(rep)</strong>';
