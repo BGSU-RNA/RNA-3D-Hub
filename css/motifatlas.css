@@ -393,9 +393,6 @@ small .label {
     /*max-height:auto;*/
     overflow:auto;
 }
-.popover .content p {
-    font-size:12px;
-}
 .popover .content1 {
     margin: 0;
     min-height:20px;
@@ -404,17 +401,16 @@ small .label {
     overflow:auto;
     overflow-y: scroll;
 }
-.popover .content1 p {
-    font-size:12px;
-}
 .popover .footer {
     margin: 0;
     min-height: 20px;
     max-height: auto;
     overflow: none;
     background-color: white;
-    border-top: 1px solid black;
+    border: 2px solid black;
 }
+.popover .content p,
+.popover .content1 p,
 .popover .footer p {
     font-size: 12px;
     /*font-color: white;*/
