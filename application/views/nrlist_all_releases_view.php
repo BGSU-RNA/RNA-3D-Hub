@@ -15,7 +15,7 @@
             <div class="row">
               <div class="span7">
                 <p>
-                  The RepR3D database (pronounced rep-red) organizes all
+                  The Representative Sets of RNA 3D Structures pages organize all
                   RNA-containing 3D structures from PDB into sequence/structure equivalence classes
                   and selects a high-quality representative structure from each class.
                   The resulting Representative Sets of RNA 3D structures are appropriate for tasks
