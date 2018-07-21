@@ -59,6 +59,7 @@
         });
 
         $(".pdb").click(LookUpPDBInfo);
+        $(".ife").click(LookUpIFEInfo);
 
     });
     </script>
