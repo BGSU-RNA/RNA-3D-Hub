@@ -27,7 +27,7 @@ class Rest extends MY_Controller {
         $this->load->model('Ajax_model', '', TRUE);
         $this->output->set_header("Access-Control-Allow-Origin: *");
         $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
-        echo $this->Ajax_model->get_pdb_info($ife,$cla);
+        echo $this->Ajax_model->get_ife_info($ife,$cla);
     }
 
     public function getPdbInfo()
