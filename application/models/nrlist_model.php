@@ -390,6 +390,22 @@ class Nrlist_model extends CI_Model {
         return $result;
     }
 
+    function add_ife_class($list)
+    {
+        if (!is_array($list)) {
+            $s = explode(',', $list);
+        } else {
+            $s = $list;
+        }
+
+        for ($i = 0; $i < count($s); $i++) {
+            $s[$i] = $this->add_space_to_long_IFE($s[$i]);
+            $s[$i] = "<a class='pdb'>$s[$i]</a>";
+        }
+
+        return implode(', ', $s);
+    }
+
     function add_pdb_class($list)
     {
         if (!is_array($list)) {
@@ -917,8 +933,8 @@ class Nrlist_model extends CI_Model {
                              $row->analyzed_length,
                              #$row->analyzed_length . '&nbsp;(analyzed)<br>' .
                              #$row->experimental_length . '&nbsp;(experimental)',
-                             "(" . $this->count_pdb_class($class[$class_id]) . ") " . $this->add_pdb_class($class[$class_id])
-                             #"(" . $nums . "," . $this->count_pdb_class($class[$class_id]) . ") " . $this->add_pdb_class($class[$class_id])
+                             "(" . $this->count_pdb_class($class[$class_id]) . ") " . $this->add_ife_class($class[$class_id])
+                             #"(" . $nums . "," . $this->count_pdb_class($class[$class_id]) . ") " . $this->add_ife_class($class[$class_id])
                             );
             $i++;
         }
