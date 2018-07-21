@@ -33,12 +33,10 @@ class Rest extends MY_Controller {
     public function getPdbInfo()
     {
         $pdb = $this->input->get_post('pdb');
-        $cla = $this->input->get_post('cla');
-        $res = $this->input->get_post('res');
         $this->load->model('Ajax_model', '', TRUE);
         $this->output->set_header("Access-Control-Allow-Origin: *");
         $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
-        echo $this->Ajax_model->get_pdb_info($pdb,$cla,$res);
+        echo $this->Ajax_model->get_pdb_info($pdb);
     }
 
     public function getCoordinates()
