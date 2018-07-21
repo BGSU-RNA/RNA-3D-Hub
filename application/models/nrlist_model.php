@@ -400,7 +400,7 @@ class Nrlist_model extends CI_Model {
 
         for ($i = 0; $i < count($s); $i++) {
             $s[$i] = $this->add_space_to_long_IFE($s[$i]);
-            $s[$i] = "<a class='ifep'>$s[$i]</a>";
+            $s[$i] = "<a class='ife'>$s[$i]</a>";
         }
 
         return implode(', ', $s);

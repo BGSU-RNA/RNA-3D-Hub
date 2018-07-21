@@ -396,11 +396,11 @@ small .label {
 .popover .content p {
     font-size:12px;
 }
-.ifep,
+.ife,
 .pdb {
     border-bottom:1px dotted;
 }
-.ifep:hover,
+.ife:hover,
 .pdb:hover {
     text-decoration:none;
     cursor:pointer;
