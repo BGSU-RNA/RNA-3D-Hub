@@ -20,6 +20,16 @@ class Rest extends MY_Controller {
         echo 'Instructions page under construction';
     }
 
+    public function getIfeInfo()
+    {
+        $ife = $this->input->get_post('ife');
+        $cla = $this->input->get_post('cla');
+        $this->load->model('Ajax_model', '', TRUE);
+        $this->output->set_header("Access-Control-Allow-Origin: *");
+        $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
+        echo $this->Ajax_model->get_pdb_info($ife,$cla);
+    }
+
     public function getPdbInfo()
     {
         $pdb = $this->input->get_post('pdb');
