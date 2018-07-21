@@ -98,5 +98,6 @@
         $(function () {
           $("#members_table").tablesorter();
           $(".pdb").click(LookUpPDBInfo);
+          $(".ife").click(LookUpIFEInfo);
         })
       </script>

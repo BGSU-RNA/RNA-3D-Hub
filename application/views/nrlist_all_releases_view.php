@@ -110,5 +110,6 @@
       </div>
 
       <script>
-          $(".pdb").click(LookUpPDBInfo);
+        $(".pdb").click(LookUpPDBInfo);
+        $(".ife").click(LookUpIFEInfo);
       </script>
