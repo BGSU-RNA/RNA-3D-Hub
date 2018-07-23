@@ -173,6 +173,11 @@ class Nrlist_model extends CI_Model {
         return "<span class='rcsb_image' title='{$pdb}|asr|xsmall|'></span><a class='pdb'>$pdb</a>";
     }
 
+    function make_ife_link($ife)
+    {
+        return "<a class='ife'>$ife</a>";
+    }
+
     function get_source_organism($ife_id)
     {
         if ( 1 == substr_count($ife_id, '|') ) {
@@ -227,7 +232,7 @@ class Nrlist_model extends CI_Model {
         $table = array();
 
         foreach ($query->result() as $row) {
-            $link = $this->make_pdb_widget_link(str_replace('+','+ ',$row->ife_id));
+            $link = $this->make_ife_link(str_replace('+','+ ',$row->ife_id));
 
             if ( $i==0 ) {
                 $link = $link . ' <strong>(rep)</strong>';
@@ -290,7 +295,7 @@ class Nrlist_model extends CI_Model {
         $table = array();
 
         foreach ($query -> result() as $row) {
-            $link = $this->make_pdb_widget_link($row->ife_id);
+            $link = $this->make_ife_link($row->ife_id);
             //if ( $i==0 ) {
                 //$link = $link . ' <strong>(rep)</strong>';
             //}
