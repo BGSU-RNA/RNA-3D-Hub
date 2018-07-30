@@ -103,20 +103,20 @@ class Rest extends MY_Controller {
         // don't load the database until the input was validated
         $this->load->model('Ajax_model', '', TRUE);
 
-		$this->output->enable_profiler(TRUE);
-		
+        $this->output->enable_profiler(TRUE);
+        
         switch ($query_type) :
             case 'loop_id':
                 return $this->Ajax_model->get_loop_coordinates($query);
+            case 'chain_id':
+                return $this->Ajax_model->get_chain_coordinates($query);
             case 'motif_id':
                 return $this->Ajax_model->get_exemplar_coordinates($query);
             case 'nt_list':
-                //return $this->Ajax_model->get_coordinates($query);
                 return $this->Ajax_model->get_unit_id_coordinates($query);
             case 'loop_pair':
                 return $this->Ajax_model->get_loop_pair_coordinates($query);
             case 'unit_id':
-                //return $this->Ajax_model->get_unit_id_coordinates($query);
                 return $this->Ajax_model->get_nt_coordinates($query);
             default: return $this->messages['error'];
         endswitch;
@@ -135,6 +135,8 @@ class Rest extends MY_Controller {
                 return $this->Ajax_model->get_loop_RSR($query);
             case 'motif_id':
                 return $this->Ajax_model->get_exemplar_RSR($query);
+            case 'chain_id':
+                return $this->Ajax_model->get_chain_RSR($query);
             case 'unit_id':
                 return $this->Ajax_model->get_unit_id_RSR($query);
             default: return $this->messages['error'];
@@ -154,6 +156,8 @@ class Rest extends MY_Controller {
                 return $this->Ajax_model->get_loop_RSRZ($query);
             case 'motif_id':
                 return $this->Ajax_model->get_exemplar_RSRZ($query);
+            case 'chain_id':
+                return $this->Ajax_model->get_chain_RSRZ($query);
             case 'unit_id':
                 return $this->Ajax_model->get_unit_id_RSRZ($query);
             default: return $this->messages['error'];
@@ -170,6 +174,8 @@ class Rest extends MY_Controller {
                 return 'loop_id';
             } elseif ( $this->_is_motif_id($query) ) {
                 return 'motif_id';
+            } elseif ( $this->_is_chain_id($query) ) {
+                return 'chain_id';
             } elseif ( $this->_is_nt_list($query) ) {
                 return 'nt_list';
             } elseif ( $this->_is_loop_pair($query) ) {
@@ -182,6 +188,19 @@ class Rest extends MY_Controller {
                 return FALSE;
             }
 
+        } else {
+            return FALSE;
+        }
+    }
+
+    private function _is_chain_id($query)
+    {
+        //1FJG|1|A
+        $parts = explode('|', $query);
+        $separators = count($parts);
+        if ( $separators = 3 and
+            $parts[1] != 'AU' and $parts[1] != 'BA1' ) {
+            return TRUE;
         } else {
             return FALSE;
         }
