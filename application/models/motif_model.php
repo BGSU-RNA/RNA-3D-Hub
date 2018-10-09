@@ -955,11 +955,20 @@ class Motif_model extends CI_Model {
         for ($i = 0; $i < count($result); $i++) {
             #$parts_ntid = explode("_", $result[$i]['nt_id']);
             $parts_unit = explode("|", $result[$i]['unit_id']);
-            $ic_unit = (isset($parts_unit[7]) && ctype_alpha($parts_unit[7])) ? '^' . $parts_unit[7]: "";
+            $ai_unit = (isset($parts_unit[6]) && ctype_alnum($parts_unit[6])) ? '_' . $parts_unit[6] : "";
+            $ic_unit = (isset($parts_unit[7]) && ctype_alpha($parts_unit[7])) ? '^' . $parts_unit[7] : "";
+            $so_unit = (isset($parts_unit[8])) ? '|' . $parts_unit[8] : "";
             #$nt_id = $parts_ntid[4] . $parts_ntid[6] . ' ' . $parts_ntid[5];
-            $unit_id = $parts_unit[4] . $ic_unit . ' ' . $parts_unit[3];
+            $unit_id = $parts_unit[4] . $ai_unit . $ic_unit . $so_unit . ' ' . $parts_unit[3];
+            #$unit_id = $parts_unit[4] . $ic_unit . ' ' . $parts_unit[3];
+            if ( $ai_unit <> "" ) {
+                echo "<p>i: $i<br>4: $parts_unit[4]<br>ai: $ai_unit<br>3: $parts_unit[3]<br>unit: $unit_id</p>";
+            }
             if ( $ic_unit <> "" ) {
                 #echo "<p>i: $i<br>4: $parts_unit[4]<br>ic: $ic_unit<br>3: $parts_unit[3]<br>unit: $unit_id</p>";
+            }
+            if ( $so_unit <> "" ) {
+                echo "<p>i: $i<br>4: $parts_unit[4]<br>so: $so_unit<br>3: $parts_unit[3]<br>unit: $unit_id</p>";
             }
 
             ###echo "<p>index $i:  nt: [$nt_id] // unit: [$unit_id]</p>"; ### DEBUG
