@@ -955,8 +955,7 @@ class Motif_model extends CI_Model {
         for ($i = 0; $i < count($result); $i++) {
             #$parts_ntid = explode("_", $result[$i]['nt_id']);
             $parts_unit = explode("|", $result[$i]['unit_id']);
-            #$ic_unit = (isset($parts_unit[7])) ? ' ' . $parts_unit[7] : "";
-            $ic_unit = (isset($parts_unit[7])) ? '^' . $parts_unit[7] : "";
+            $ic_unit = (isset($parts_unit[7]) && ctype_alpha($parts_unit[7])) ? '^' . $parts_unit[7]: "";
             #$nt_id = $parts_ntid[4] . $parts_ntid[6] . ' ' . $parts_ntid[5];
             $unit_id = $parts_unit[4] . $ic_unit . ' ' . $parts_unit[3];
             if ( $ic_unit <> "" ) {
