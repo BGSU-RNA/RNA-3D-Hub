@@ -821,7 +821,7 @@ class Motif_model extends CI_Model {
 
     function generate_row($id)
     {
-        #echo "<p>id: $id</p>";
+        ###echo "<p>id: $id</p>";
         for ($i = 0; $i < count($this->header); $i++) {
             $key = $this->header[$i];
 
@@ -843,9 +843,15 @@ class Motif_model extends CI_Model {
                 $parts = explode(' ', $this->units[$this->loops[$id]][$key]);
 
                 $foo = count($parts) - 1;
+                ###echo "<p>id: $id<br>key: $key<br>#parts: $foo</p>";
+                ###echo "<p>parts: " . var_dump($parts) . "</p>";
 
                 $row[] = $parts[$foo]; // ISSUE
+                ###echo "<p>row(1): $row</p>";
+                ###echo "<p>row(1): " . var_dump($row) . "</p>";
                 $row[] = $parts[0]; // ISSUE
+                ###echo "<p>row(2): $row</p>";
+                ###echo "<p>row(2): " . var_dump($row) . "</p>";
             } elseif ( $key == ' ' ) {
                 // do nothing
             } elseif ( $key == 'Disc' ) {
@@ -949,9 +955,13 @@ class Motif_model extends CI_Model {
         for ($i = 0; $i < count($result); $i++) {
             #$parts_ntid = explode("_", $result[$i]['nt_id']);
             $parts_unit = explode("|", $result[$i]['unit_id']);
-            $ic_unit = (isset($parts_unit[8])) ? ' ' . $parts_unit[8] : "";
+            #$ic_unit = (isset($parts_unit[7])) ? ' ' . $parts_unit[7] : "";
+            $ic_unit = (isset($parts_unit[7])) ? '^' . $parts_unit[7] : "";
             #$nt_id = $parts_ntid[4] . $parts_ntid[6] . ' ' . $parts_ntid[5];
             $unit_id = $parts_unit[4] . $ic_unit . ' ' . $parts_unit[3];
+            if ( $ic_unit <> "" ) {
+                #echo "<p>i: $i<br>4: $parts_unit[4]<br>ic: $ic_unit<br>3: $parts_unit[3]<br>unit: $unit_id</p>";
+            }
 
             ###echo "<p>index $i:  nt: [$nt_id] // unit: [$unit_id]</p>"; ### DEBUG
 
