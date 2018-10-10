@@ -138,6 +138,8 @@ class Loops_model extends CI_Model {
 
         $pdb_id = substr($id,3,4); ### not needed?  Can get via DB lookup in loop_info using loop_id = $id
 
+        echo "<p>id: $id<br>pdb: $pdb_id</p>";
+
         $this->db->select('loop_name')
                  ->from('loop_info')
                  ->where('loop_id',$id);
@@ -145,7 +147,7 @@ class Loops_model extends CI_Model {
 
         if ($query->num_rows() > 0){
             $ife_info = $query->row();
-            $loop_name = $ife_info['loop_name'];
+            $loop_name = $ife_info->loop_name;
 
             $result['ife_id'] = $loop_name;
         } else {
