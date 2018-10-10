@@ -161,13 +161,9 @@ class Loops_model extends CI_Model {
                 $ife_list[] = $ife_part;
             }
 
-            echo "<p>ife_list: " . var_dump($ife_list) . "</p>";
+            echo "<p>ife_list:</p>";
+            var_dump($ife_list);
 
-        } else {
-            $ife_info = "";
-        }
-
-        if ($ife_info <> ""){
             ### TODO:  build an array with all permutations of $ife_list, ordering by decreasing number of components
             ### feed this as the where_in clause below
 
@@ -180,7 +176,6 @@ class Loops_model extends CI_Model {
                      ->where('ui.unit_id', $id)
                      ->where_in('ic.ife_id', $ife_list);
             $query = $this->db->get();
-
 
             $result['ife_id'] = $loop_name; ### TEMPORARY!  While sorting out the best options to acquire the true ife_id
         } else {
