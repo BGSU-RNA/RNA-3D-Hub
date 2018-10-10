@@ -1,10 +1,10 @@
 <?php
 class Loops extends CI_Controller {
 
-	public function index()
-	{
-	    $this->load->model('Loops_model', '', TRUE);
-	    $tables = $this->Loops_model->get_loop_stats();
+    public function index()
+    {
+        $this->load->model('Loops_model', '', TRUE);
+        $tables = $this->Loops_model->get_loop_stats();
         $motif_types = array('IL','HL','J3');
         foreach ($motif_types as $motif_type) {
             $this->table->set_heading('id','Date','Total','Valid','Missing','Modified','Abnormal','Incomplete','Complementary');
@@ -20,13 +20,13 @@ class Loops extends CI_Controller {
         $this->load->view('menu_view', $data);
         $this->load->view('loops_all_view', $data);
         $this->load->view('footer');
-	}
+    }
 
     public function view_all($type,$motif_type,$release_id)
     {
         $config['per_page'] = '20';
 
-	    $this->load->model('Loops_model', '', TRUE);
+        $this->load->model('Loops_model', '', TRUE);
         $data['table'] = $this->Loops_model->get_loops($type,
                                                        $motif_type,
                                                        $release_id,
@@ -75,9 +75,9 @@ class Loops extends CI_Controller {
 
     public function sfdata()
     {
-	    $this->load->model('Loops_model', '', TRUE);
+        $this->load->model('Loops_model', '', TRUE);
         $this->Loops_model->initialize_sfdata();
-	    $table = $this->Loops_model->get_sfdata_table();
+        $table = $this->Loops_model->get_sfdata_table();
 
         $heading = $this->Loops_model->get_heading();
 
@@ -98,7 +98,7 @@ class Loops extends CI_Controller {
 
     public function graphs()
     {
-	    $this->load->model('Loops_model', '', TRUE);
+        $this->load->model('Loops_model', '', TRUE);
         $data['graphs'] = $this->Loops_model->get_graphs();
 
         $data['title'] = 'Graphs';
@@ -217,9 +217,7 @@ class Loops extends CI_Controller {
             $this->load->view('loops_benchmark_view', $data);
             $this->load->view('footer');
         }
-
     }
-
 }
 
 /* End of file loops.php */
