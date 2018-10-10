@@ -175,7 +175,13 @@ class Loops_model extends CI_Model {
                      ->join('ife_chains AS ic', 'escm.chain_id = ic.chain_id')
                      ->where('ui.unit_id', $id)
                      ->where_in('ic.ife_id', $ife_list);
-            $query = $this->db->get();
+            $query2 = $this->db->get();
+
+            if ( $query2->num_rows() > 0 ){
+                echo "<p>Success</p>";
+            } else {
+                echo "<p>Failure</p>";
+            }
 
             $result['ife_id'] = $loop_name; ### TEMPORARY!  While sorting out the best options to acquire the true ife_id
         } else {
