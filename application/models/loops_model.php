@@ -136,20 +136,52 @@ class Loops_model extends CI_Model {
     {
         $result = array();
 
-        $pdb_id = substr($id,3,4); ### not needed?  Can get via DB lookup in loop_info using loop_id = $id
-
-        echo "<p>id: $id<br>pdb: $pdb_id</p>";
-
-        $this->db->select('loop_name')
+        $this->db->select('pdb_id', 'loop_name')
                  ->from('loop_info')
-                 ->where('loop_id',$id);
+                 ->where('loop_id',$id)
+                 ->limit(1);
         $query = $this->db->get();
 
         if ($query->num_rows() > 0){
             $ife_info = $query->row();
-            $loop_name = $ife_info->loop_name;
+        } else {
+            $ife_info = "";
+        }
 
-            $result['ife_id'] = $loop_name;
+        if ($ife_info <> ""){
+            $loop_name = $ife_info->loop_name;
+            $pdb = $ife_info->pdb_id;
+
+            $proto = explode(',', $loop_name);
+
+            $idx = 0;
+
+            foreach ( $proto as $component ){
+                $parts = explode('/', $component)
+                $ife_part = implode('|', $pdb, $parts[0], $parts[1]);
+
+                echo "<p>ife_part: $ife_part</p>";
+
+                $ife_list[] = $ife_part;
+            }
+
+            echo "<p>ife_list: " . var_dump($ife_list) . "</p>";
+
+            ### TODO:  build an array with all permutations of $ife_list, ordering by decreasing number of components
+            ### feed this as the where_in clause below
+
+            $this->db->select('ic.ife_id')
+                     ->from('unit_info AS ui')
+                     ->join('exp_seq_unit_mapping AS esum', 'ui.unit_id = esum.unit_id')
+                     ->join('exp_seq_position AS esp', 'esum.exp_seq_position_id = esp.exp_seq_position_id')
+                     ->join('exp_seq_chain_mapping AS escm', 'esum.exp_seq_chain_mapping_id = escm.exp_seq_chain_mapping_id')
+                     ->join('ife_chains AS ic', 'escm.chain_id = ic.chain_id')
+                     ->where('ui.unit_id', $id)
+                     ->where_in('ic.ife_id', $ife_list);
+            $query = $this->db->get();
+
+
+            $result['ife_id'] = $loop_name; ### TEMPORARY!  While sorting out the best options to acquire the true ife_id
         } else {
             $result['ife_id'] = '';
         }
