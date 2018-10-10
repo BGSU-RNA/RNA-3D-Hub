@@ -1,20 +1,18 @@
     <div class="container loops_single_view">
-
       <div class="content">
         <div class="page-header">
           <h1><?=$id?></h1>
         </div>
-        <div class="row">
 
+        <div class="row">
             <div class="span9">
                 <ul class="tabs" data-tabs="tabs">
-
-                <?php if ($show_similar): ?>
+<?php if ($show_similar): ?>
                     <li><a href="<?php echo str_replace('similar', '', current_url());?>">General information</a></li>
                     <li class="active"><a href="#">Similar loops</a></li>
-                <?php else: ?>
+<?php else: ?>
                     <li class="active"><a href="#general">General information</a></li>
-                <?php endif; ?>
+<?php endif; ?>
 <!--
                     <li><a href="#history">Motif history</a></li>
                     <li><a href="#rnastar">RNASTAR</a></li>
@@ -23,20 +21,18 @@
             </div>
 
             <div class="tab-content span9" id='left_content'>
-
-                <?php if ($show_similar): ?>
-
+<?php if ($show_similar): ?>
                 <div class="tab-pane" id='general'>
                 </div>
-
-                <?php else: ?>
-
+<?php else: ?>
                 <div class="tab-pane active" id='general'>
                     <div class="row">
                         <div class="span4 well">
                             <h4>3D structure</h4>
                             <dl>
-                                <dt>PDB id</dt>
+                                <dt>IFE ID</dt>
+                                <dd>(to be added)</dd>
+                                <dt>PDB ID</dt>
                                 <dd><?=$pdb?> (<i>explore in</i> <?=$rna3dhub_link?> <i>or</i> <?=$pdb_link?>)</dd>
                                 <dt>Description</dt>
                                 <dd><?=$pdb_desc?></dd>
@@ -48,6 +44,7 @@
                                 <dd><?=$nr_classes?></dd>
                             </dl>
                         </div>
+
                         <div class="span3 well">
                             <h4>Loop</h4>
                             <dl>
@@ -62,6 +59,7 @@
                             </dl>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="span3 well">
                             <h4>Motif assignment</h4>
@@ -76,37 +74,34 @@
                                 <dd><?=$motif_instances?></dd>
                             </dl>
                         </div>
+
                         <div class="span4 well">
                             <h4>Nearby proteins</h4>
-                            <?php
-                                if (count($proteins) > 0) {
-                                    echo '<dl>';
-                                    foreach($proteins as $chain => $desc) {
-                                        echo "<dt>Chain $chain</dt>";
-                                        echo "<dd>{$desc['description']} (Uniprot: {$desc['uniprot']})</dd>";
-                                    }
-                                    echo '</dl>';
-                                } else {
-                                    echo "No proteins within 16&Aring;";
-                                }
-                            ?>
+<?php
+if (count($proteins) > 0) {
+    echo '                            <dl>';
+    foreach($proteins as $chain => $desc) {
+        echo "                                <dt>Chain $chain</dt>";
+        echo "                                <dd>{$desc['description']} (Uniprot: {$desc['uniprot']})</dd>";
+    }
+    echo '                            </dl>';
+} else {
+    echo "                            No proteins within 16&Aring;";
+}
+?>
                         </div>
                     </div>
-
                 </div>
-                <?php endif; ?>
+<?php endif; ?>
 
-
-                <?php if ($show_similar): ?>
+<?php if ($show_similar): ?>
                 <div class="tab-pane active" id='similar'>
                     <?=$table?>
                 </div>
-                <?php else: ?>
+<?php else: ?>
                 <div class="tab-pane" id='similar'>
                 </div>
-                <?php endif; ?>
-
-
+<?php endif; ?>
 <!--
                 <div class="tab-pane" id='history'>
                     Coming soon
@@ -116,7 +111,6 @@
                     Coming soon
                 </div>
  -->
-
             </div>
 
             <div class="span6 well" id="jmol" >
@@ -212,14 +206,13 @@
                     <text x="120" y="45" font-family="sans-serif" font-size="12px" fill="black">RSRZ Scale</text>
                     </svg>
                 </div>
+
                 <div id='checkboxes'>
                     <label><input type='checkbox' class='jmolInline' data-coord='<?=$id?>' data-quality='<?=$id?>'><?=$id?></label>
                 </div>
            </div>
-
         </div>
       </div>
-
 
       <script>
         $('#sortable').tablesorter();
@@ -288,5 +281,4 @@
             $('#l0').jmolToggle();
 
         });
-
     </script>
