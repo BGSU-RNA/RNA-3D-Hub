@@ -140,15 +140,11 @@ class Loops_model extends CI_Model {
                  ->from('loop_info')
                  ->where('loop_id',$id)
                  ->limit(1);
-        $query = $this->db->get();
+        $query1 = $this->db->get();
 
-        if ($query->num_rows() > 0){
-            $ife_info = $query->row();
-        } else {
-            $ife_info = "";
-        }
+        if ($query1->num_rows() > 0){
+            $ife_info = $query1->row();
 
-        if ($ife_info <> ""){
             $loop_name = $ife_info->loop_name;
             $pdb = $ife_info->pdb_id;
 
@@ -167,6 +163,11 @@ class Loops_model extends CI_Model {
 
             echo "<p>ife_list: " . var_dump($ife_list) . "</p>";
 
+        } else {
+            $ife_info = "";
+        }
+
+        if ($ife_info <> ""){
             ### TODO:  build an array with all permutations of $ife_list, ordering by decreasing number of components
             ### feed this as the where_in clause below
 
