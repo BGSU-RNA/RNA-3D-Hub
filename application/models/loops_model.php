@@ -149,6 +149,8 @@ class Loops_model extends CI_Model {
         } else {
             $result['ife_id'] = '';
         }
+
+        return $result;
     }
 
     function get_pdb_info($id)
