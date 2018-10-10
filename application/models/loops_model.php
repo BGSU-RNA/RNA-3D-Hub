@@ -134,6 +134,8 @@ class Loops_model extends CI_Model {
 
     function get_ife_info($id)
     {
+        $result = array();
+
         $pdb_id = substr($id,3,4); ### not needed?  Can get via DB lookup in loop_info using loop_id = $id
 
         $this->db->select('loop_name')
