@@ -154,7 +154,7 @@ class Loops_model extends CI_Model {
 
             foreach ( $proto as $component ){
                 $parts = explode('/', $component);
-                $ife_part = implode('|', array($pdb, $parts[0], $parts[1]);
+                $ife_part = implode('|', array($pdb, $parts[0], $parts[1]));
 
                 echo "<p>ife_part: $ife_part</p>";
 
