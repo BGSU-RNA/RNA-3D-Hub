@@ -136,7 +136,7 @@ class Loops_model extends CI_Model {
     {
         $result = array();
 
-        $this->db->select('pdb_id', 'loop_name')
+        $this->db->select('pdb_id, loop_name')
                  ->from('loop_info')
                  ->where('loop_id',$id)
                  ->limit(1);
