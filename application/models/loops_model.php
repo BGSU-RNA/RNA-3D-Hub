@@ -132,6 +132,25 @@ class Loops_model extends CI_Model {
         return $result;
     }
 
+    function get_ife_info($id)
+    {
+        $pdb_id = substr($id,3,4); ### not needed?  Can get via DB lookup in loop_info using loop_id = $id
+
+        $this->db->select('loop_name')
+                 ->from('loop_info')
+                 ->where('loop_id',$id);
+        $query = $this->db->get();
+
+        if ($query->num_rows() > 0){
+            $ife_info = $query->row();
+            $loop_name = $ife_info['loop_name'];
+
+            $result['ife_id'] = $loop_name;
+        } else {
+            $result['ife_id'] = '';
+        }
+    }
+
     function get_pdb_info($id)
     {
         $result = array();
@@ -213,7 +232,6 @@ class Loops_model extends CI_Model {
         } else {
             return NULL;
         }
-
     }
 
     function get_most_recent_motif_assignment($loop_id)
@@ -226,6 +244,7 @@ class Loops_model extends CI_Model {
                  ->where('MR.type', $loop_type)
                  ->order_by('MR.date', 'desc');
         $query = $this->db->get();
+
         if ( $query->num_rows() == 0 ) {
             return NULL;
         } else {
@@ -680,8 +699,8 @@ EOT;
         $props = get_object_vars($row);
 
         $extreme_case = false;
-        foreach ($props as $key => $value) {
 
+        foreach ($props as $key => $value) {
             if (array_key_exists($key,$this->low_is_good)) {
                 if ($value > $this->avg[$key]) {
                     $extreme_case = true;
@@ -692,7 +711,6 @@ EOT;
                     $extreme_case = true;
                     break;
                 }
-
             }
 
 
