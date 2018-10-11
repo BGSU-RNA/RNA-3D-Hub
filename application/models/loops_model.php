@@ -60,7 +60,7 @@ class Loops_model extends CI_Model {
         $result = array();
 
         // info from loops_all
-        $this->db->select('length, seq, unit_ids, loop_name')
+        $this->db->select('length, seq, unit_ids, loop_name, pdb_id')
                  ->from('loop_info')
                  ->where('loop_id',$id);
         $query = $this->db->get();
@@ -69,6 +69,7 @@ class Loops_model extends CI_Model {
             $loop_info = $query->row();
             $result['length'] = $loop_info->length;
             $result['sequence'] = $loop_info->seq;
+            $pdb = $loop_info->pdb_id;
 
             $seq_split = str_split($loop_info->seq);
             $unit_split = explode(',', $loop_info->unit_ids);
@@ -78,12 +79,10 @@ class Loops_model extends CI_Model {
                 echo "<p>part: $part</p>";
                 $name_parts = explode('/', $part);
                 $model = $part[0];
-                $chain = $part[1];
-                $range = $part[2];
-                echo "<p>model: $model<br>chain: $chain<br>range: $range</p>";
-                $name_range = explode(':', $range);
-                $beg = $name_range[0];
-                $end = $name_range[1];
+                $chain = $part[2];
+                echo "<p>pdb: $pdb<br>model: $model<br>chain: $chain</p>";
+                $beg = $part[4];
+                $end = $part[6];
                 echo "<p>beg: $beg<br>end: $end</p>";
             }
 
