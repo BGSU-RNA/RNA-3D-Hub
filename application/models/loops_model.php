@@ -78,11 +78,13 @@ class Loops_model extends CI_Model {
             foreach ($name_split as $part){
                 echo "<p>part: $part</p>";
                 $name_parts = explode('/', $part);
-                $model = $part[0];
-                $chain = $part[2];
-                echo "<p>pdb: $pdb<br>model: $model<br>chain: $chain</p>";
-                $beg = $part[4];
-                $end = $part[6];
+                $model = $name_parts[0];
+                $chain = $name_parts[1];
+                $range = $name_parts[2];
+                echo "<p>pdb: $pdb<br>model: $model<br>chain: $chain<br>range: $range</p>";
+                $bounds = explode(":", $range);
+                $beg = $bounds[0];
+                $end = $bounds[1];
                 echo "<p>beg: $beg<br>end: $end</p>";
 
                 $this->db->select('unit_id')
