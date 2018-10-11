@@ -94,7 +94,8 @@ class Loops_model extends CI_Model {
                          ->where('chain', $chain)
                          ->where('number >=', $beg)
                          ->where('number <=', $end)
-                         ->where_in('unit_id', $unit_split);
+                         ->where_in('unit_id', $unit_split)
+                         ->order_by('chain_index ASC');
                 $query2 = $this->db->get();
 
                 $tempres = array();
