@@ -69,6 +69,12 @@ class Loops_model extends CI_Model {
             $loop_info = $query->row();
             $result['length'] = $loop_info->length;
             $result['sequence'] = $loop_info->seq;
+
+            $seq_split = explode('', $loop_info->seq);
+
+            var_dump($seq_split);
+
+
             $result['units'] = $loop_info->unit_ids;
         } else {
             $result['length'] = '';
