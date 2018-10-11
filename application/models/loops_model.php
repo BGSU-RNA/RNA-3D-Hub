@@ -101,7 +101,7 @@ class Loops_model extends CI_Model {
                     $tempres[] = $row->unit_id;
                 }
 
-                print_r("<p>".$tempres."</p>");
+                echo "<p>" . print_r($tempres) . "</p>";
             }
 
             $units = "";
