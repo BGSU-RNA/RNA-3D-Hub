@@ -50,6 +50,8 @@
                             <dl>
                                 <dt>Sequence</dt>
                                 <dd><?=$sequence?></dd>
+                                <dt>Full Unit IDs</dt>
+                                <dd>TBA</dd>
                                 <dt>Length</dt>
                                 <dd><?=$length?> nucleotides</dd>
                                 <dt>Bulged bases</dt>
