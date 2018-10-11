@@ -70,7 +70,7 @@ class Loops_model extends CI_Model {
             $result['length'] = $loop_info->length;
             $result['sequence'] = $loop_info->seq;
 
-            $seq_split = explode('', $loop_info->seq);
+            $seq_split = str_split($loop_info->seq);
 
             var_dump($seq_split);
 
