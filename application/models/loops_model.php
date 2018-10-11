@@ -71,7 +71,7 @@ class Loops_model extends CI_Model {
             $result['sequence'] = $loop_info->seq;
 
             $seq_split = str_split($loop_info->seq);
-            $unit_split = explode(',' $loop_info->unit_ids);
+            $unit_split = explode(',', $loop_info->unit_ids);
 
             var_dump($seq_split);
             var_dump($unit_split);
