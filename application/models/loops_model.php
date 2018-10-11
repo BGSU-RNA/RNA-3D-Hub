@@ -97,6 +97,8 @@ class Loops_model extends CI_Model {
                          ->where_in('unit_id', $unit_split);
                 $query2 = $this->db->get();
 
+                $tempres = array();
+
                 foreach($query2->result() as $row){
                     $tempres[] = $row->unit_id;
                 }
