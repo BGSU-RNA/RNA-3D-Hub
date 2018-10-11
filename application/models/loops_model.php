@@ -80,13 +80,13 @@ class Loops_model extends CI_Model {
 
             foreach ($seq_split as $element) {
                 if ( $element == "*" ){
-                    $units += $element;
+                    $units .= $element;
                 } else {
-                    $units += shift($unit_split);
+                    $units .= shift($unit_split);
                 }
 
                 if !(empty($unit_split)){
-                    $units += "<br>";
+                    $units .= "<br>";
                 }
             }
 
