@@ -60,7 +60,7 @@ class Loops_model extends CI_Model {
         $result = array();
 
         // info from loops_all
-        $this->db->select('length, seq')
+        $this->db->select('length, seq, unit_ids')
                  ->from('loop_info')
                  ->where('loop_id',$id);
         $query = $this->db->get();
@@ -69,9 +69,11 @@ class Loops_model extends CI_Model {
             $loop_info = $query->row();
             $result['length'] = $loop_info->length;
             $result['sequence'] = $loop_info->seq;
+            $result['units'] = $loop_info->unit_ids;
         } else {
             $result['length'] = '';
             $result['sequence'] = '';
+            $result['units'] = '';
         }
 
         // qa info
