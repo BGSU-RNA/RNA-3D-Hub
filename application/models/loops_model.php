@@ -84,6 +84,22 @@ class Loops_model extends CI_Model {
                 $beg = $part[4];
                 $end = $part[6];
                 echo "<p>beg: $beg<br>end: $end</p>";
+
+                $this->db->select('unit_id')
+                         ->from('unit_info')
+                         ->where('pdb_id', $pdb)
+                         ->where('model', $model)
+                         ->where('chain', $chain)
+                         ->where('number >=', $beg)
+                         ->where('number <=', $end)
+                         ->where_in('unit_id', $unit_split);
+                $query2 = $this->db->get();
+
+                foreach($query2->result() as $row){
+                    $tempres[] = $row->unit_id;
+                }
+
+                print_r("<p>".$tempres."</p>");
             }
 
             $units = "";
