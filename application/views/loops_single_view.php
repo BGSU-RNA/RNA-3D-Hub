@@ -51,7 +51,7 @@
                                 <dt>Sequence</dt>
                                 <dd><?=$sequence?></dd>
                                 <dt>Full Unit IDs</dt>
-                                <dd>TBA:  <?=$units?></dd>
+                                <dd><?=$units?></dd>
                                 <dt>Length</dt>
                                 <dd><?=$length?> nucleotides</dd>
                                 <dt>Bulged bases</dt>
