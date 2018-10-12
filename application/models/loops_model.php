@@ -113,8 +113,8 @@ class Loops_model extends CI_Model {
 
             echo "<p>" . print_r($seq_parts) . "</p>";
 
-            $units = "";
-
+            $units = implode("<br>*<br>", $seq_parts);
+/*
             foreach ($seq_split as $element) {
                 if ( $element == "*" ){
                     $units .= $element;
@@ -126,7 +126,7 @@ class Loops_model extends CI_Model {
                     $units .= "<br>";
                 }
             }
-
+*/
             $result['units'] = $units;
         } else {
             $result['length'] = '';
