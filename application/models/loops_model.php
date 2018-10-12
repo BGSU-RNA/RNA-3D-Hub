@@ -229,13 +229,8 @@ class Loops_model extends CI_Model {
             echo "<p>Unique component IFEs:</p>";
             var_dump($ife_list);
 
-            $this->db->select('ic.ife_id')
-                     ->from('unit_info AS ui')
-                     ->join('exp_seq_unit_mapping AS esum', 'ui.unit_id = esum.unit_id')
-                     ->join('exp_seq_position AS esp', 'esum.exp_seq_position_id = esp.exp_seq_position_id')
-                     ->join('exp_seq_chain_mapping AS escm', 'esum.exp_seq_chain_mapping_id = escm.exp_seq_chain_mapping_id')
-                     ->join('ife_chains AS ic', 'escm.chain_id = ic.chain_id')
-                     ->where('ui.unit_id', $id);
+            $this->db->select('ife_id')
+                     ->from('ife_info');
             foreach ( $ife_list as $check_ife ){
                 $this->db->like('ic.ife_id', $check_ife);
             }
