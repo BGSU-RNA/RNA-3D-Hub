@@ -229,6 +229,7 @@ class Loops_model extends CI_Model {
             var_dump($ife_list);
 
             $ife_list = array_unique($ife_list);
+            echo "<p>Uniquified:</p>";
             var_dump($ife_list);
 
             ### TODO:  build an array with all permutations of $ife_list, ordering by decreasing number of components
