@@ -204,6 +204,8 @@ class Loops_model extends CI_Model {
                  ->limit(1);
         $query1 = $this->db->get();
 
+        $ife_list = array();
+
         if ($query1->num_rows() > 0){
             $ife_info = $query1->row();
 
