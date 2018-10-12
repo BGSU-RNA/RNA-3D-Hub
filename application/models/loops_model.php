@@ -226,6 +226,9 @@ class Loops_model extends CI_Model {
             echo "<p>ife_list:</p>";
             var_dump($ife_list);
 
+            $ife_list = array_unique($ife_list);
+            var_dump($ife_list);
+
             ### TODO:  build an array with all permutations of $ife_list, ordering by decreasing number of components
             ### feed this as the where_in clause below
 
