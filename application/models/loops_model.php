@@ -78,17 +78,15 @@ class Loops_model extends CI_Model {
             $seq_parts = array();
 
             foreach ($name_split as $part){
-                echo "<p>part: $part</p>";
                 $name_parts = explode('/', $part);
                 $model = $name_parts[0];
                 $chain = $name_parts[1];
                 $range = $name_parts[2];
-                echo "<p>pdb: $pdb<br>model: $model<br>chain: $chain<br>range: $range</p>";
+                
                 $bounds = explode(":", $range);
                 $beg = $bounds[0];
                 $end = $bounds[1];
-                echo "<p>beg: $beg<br>end: $end</p>";
-
+                
                 $this->db->select('unit_id')
                          ->from('unit_info')
                          ->where('pdb_id', $pdb)
@@ -106,28 +104,10 @@ class Loops_model extends CI_Model {
                     $tempres[] = $row->unit_id;
                 }
 
-                echo "<p>" . print_r($tempres) . "</p>";
-
                 $seq_parts[] = implode("<br>", $tempres);
             }
 
-            echo "<p>" . print_r($seq_parts) . "</p>";
-
-            $units = implode("<br>*<br>", $seq_parts);
-/*
-            foreach ($seq_split as $element) {
-                if ( $element == "*" ){
-                    $units .= $element;
-                } else {
-                    $units .= array_shift($unit_split);
-                }
-
-                if ($unit_split){
-                    $units .= "<br>";
-                }
-            }
-*/
-            $result['units'] = $units;
+            $result['units'] = implode("<br>*<br>", $seq_parts);
         } else {
             $result['length'] = '';
             $result['sequence'] = '';
