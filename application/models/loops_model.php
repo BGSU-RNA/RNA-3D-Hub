@@ -110,6 +110,12 @@ class Loops_model extends CI_Model {
                          ->where('chain', $chain)
                          ->where('number >=', $beg)
                          ->where('number <=', $end);
+
+                if ( $bic <> "" || $eic <> "" ){
+                    $this->db->where('ins_code >=', $bic)
+                             ->where('ins_code <=', $eic);
+                }
+
                 $this->db->where_in('unit_id', $unit_split)
                          ->order_by('chain_index ASC');
                 $query2 = $this->db->get();
