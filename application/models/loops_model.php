@@ -101,8 +101,6 @@ class Loops_model extends CI_Model {
                     $eic = substr($bounds[1], -1);
                 }
 
-                echo "<p>beg: $beg<br>bic: $bic<br>end: $end<br>eic: $eic</p>";
-                
                 $this->db->select('unit_id')
                          ->from('unit_info')
                          ->where('pdb_id', $pdb)
@@ -219,15 +217,10 @@ class Loops_model extends CI_Model {
             foreach ( $proto as $component ){
                 $parts = explode('/', $component);
                 $ife_part = implode('|', array($pdb, $parts[0], $parts[1]));
-
-                echo "<p>ife_part: $ife_part</p>";
-
                 $ife_list[] = $ife_part;
             }
 
             $ife_list = array_unique($ife_list);
-            echo "<p>Unique component IFEs:</p>";
-            var_dump($ife_list);
 
             $this->db->select('ife_id')
                      ->from('ife_info');
