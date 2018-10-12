@@ -232,7 +232,7 @@ class Loops_model extends CI_Model {
             $this->db->select('ife_id')
                      ->from('ife_info');
             foreach ( $ife_list as $check_ife ){
-                $this->db->like('ic.ife_id', $check_ife);
+                $this->db->like('ife_id', $check_ife);
             }
             $query2 = $this->db->get();
 
