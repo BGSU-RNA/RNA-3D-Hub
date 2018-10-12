@@ -237,12 +237,11 @@ class Loops_model extends CI_Model {
             $query2 = $this->db->get();
 
             if ( $query2->num_rows() > 0 ){
-                echo "<p>Success</p>";
+                $ife_result = $query2->row();
+                $result['ife_id'] = $ife_result->ife_id;
             } else {
-                echo "<p>Failure</p>";
+                $result['ife_id'] = $loop_name; ### may change to NULL string
             }
-
-            $result['ife_id'] = $loop_name; ### TEMPORARY!  While sorting out the best options to acquire the true ife_id
         } else {
             $result['ife_id'] = '';
         }
