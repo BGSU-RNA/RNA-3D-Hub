@@ -90,14 +90,14 @@ class Loops_model extends CI_Model {
                     $beg = $bounds[0];
                     $bic = "";
                 } else {
-                    $beg = substr($bounds[0], 0, strlen($bounds[0])-1;
+                    $beg = substr($bounds[0], 0, strlen($bounds[0])-1);
                     $bic = substr($bounds[0], -1);
                 }
                 if ( is_numeric($bounds[1]) ){
                     $end = $bounds[1];
                     $eic = "";
                 } else {
-                    $end = substr($bounds[1], 0, strlen($bounds[0])-1;
+                    $end = substr($bounds[1], 0, strlen($bounds[0])-1);
                     $eic = substr($bounds[1], -1);
                 }
 
