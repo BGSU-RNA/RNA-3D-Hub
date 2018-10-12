@@ -225,15 +225,9 @@ class Loops_model extends CI_Model {
                 $ife_list[] = $ife_part;
             }
 
-            echo "<p>ife_list:</p>";
-            var_dump($ife_list);
-
             $ife_list = array_unique($ife_list);
-            echo "<p>Uniquified:</p>";
+            echo "<p>Unique component IFEs:</p>";
             var_dump($ife_list);
-
-            ### TODO:  build an array with all permutations of $ife_list, ordering by decreasing number of components
-            ### feed this as the where_in clause below
 
             $this->db->select('ic.ife_id')
                      ->from('unit_info AS ui')
@@ -241,8 +235,10 @@ class Loops_model extends CI_Model {
                      ->join('exp_seq_position AS esp', 'esum.exp_seq_position_id = esp.exp_seq_position_id')
                      ->join('exp_seq_chain_mapping AS escm', 'esum.exp_seq_chain_mapping_id = escm.exp_seq_chain_mapping_id')
                      ->join('ife_chains AS ic', 'escm.chain_id = ic.chain_id')
-                     ->where('ui.unit_id', $id)
-                     ->where_in('ic.ife_id', $ife_list);
+                     ->where('ui.unit_id', $id);
+            foreach ( $ife_list as $check_ife ){
+                $this->db->like('ic.ife_id', $check_ife);
+            }
             $query2 = $this->db->get();
 
             if ( $query2->num_rows() > 0 ){
