@@ -75,6 +75,8 @@ class Loops_model extends CI_Model {
             $unit_split = explode(',', $loop_info->unit_ids);
             $name_split = explode(',', $loop_info->loop_name);
 
+            $parts = array();
+
             foreach ($name_split as $part){
                 echo "<p>part: $part</p>";
                 $name_parts = explode('/', $part);
@@ -105,7 +107,11 @@ class Loops_model extends CI_Model {
                 }
 
                 echo "<p>" . print_r($tempres) . "</p>";
+
+                $parts[] = implode("<br>", $tempres);
             }
+
+            echo "<p>" . print_r($parts) . "</p>";
 
             $units = "";
 
