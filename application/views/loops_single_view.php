@@ -31,7 +31,7 @@
                             <h4>3D structure</h4>
                             <dl>
                                 <dt>IFE ID</dt>
-                                <dd>(to be added)  TEST: <?=$ife_id?></dd>
+                                <dd><?=$ife_id?></dd>
                                 <dt>PDB ID</dt>
                                 <dd><?=$pdb?> (<i>explore in</i> <?=$rna3dhub_link?> <i>or</i> <?=$pdb_link?>)</dd>
                                 <dt>Description</dt>
