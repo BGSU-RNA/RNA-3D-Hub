@@ -131,7 +131,7 @@ if ( typeof Object.create !== 'function' ) {
             return self.modelNumber;
         },
 
-        // superimpose this model onto the first one using phosphate atoms
+        // superimpose this model onto the first one using spine atoms in nucleic acids
         superimpose: function() {
             var self = this;
             if ( self.superimposed ) { return; }
@@ -140,10 +140,10 @@ if ( typeof Object.create !== 'function' ) {
 
                 for (var i = 0; i < 3; i++) {
                 // if the same number of phosphates, try to superimpose,
-                // otherwise take the first four phosphates
+                // otherwise take the first four spine atoms
                 var command = 'if ({*.P/' + m + '.1}.length == {*.P/1.1}) ' +
-                              '{x=compare({*.P/' + m + '.1},{*.P/1.1});}' +
-                              'else {x=compare({(*.P/' + m + '.1)[1][4]},{(*.P/1.1)[1][4]});};' +
+                              '{x=compare({spine/' + m + '.1},{spine/1.1});}' +
+                              'else {x=compare({(spine/' + m + '.1)[1][4]},{(spine/1.1)[1][4]});};' +
                               'select ' + m + '.1,' + m + '.2; rotate selected @{x};';
                 jmolScript(command);
                 }
