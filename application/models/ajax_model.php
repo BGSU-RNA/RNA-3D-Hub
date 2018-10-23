@@ -100,7 +100,7 @@ class Ajax_model extends CI_Model {
 
             $pdb_info = "<u>Title</u>: {$row->title}<br/>" .
                         "<u>Method</u>: {$row->experimental_technique}<br/>" .
-                        "<u>Organism</u>: {$source}<br/>";
+                        "<u>Organism</u>: <i>{$source}</i><br/>";
 
             //  Debugging info
             //$pdb_info .= "<hr/>" . 
