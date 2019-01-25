@@ -318,6 +318,7 @@ class Pdb_model extends CI_Model {
         $query = $this->db->get();
         $data['rna_chains'] = 0;
         foreach ($query->result() as $row) {
+            $ndb_id = ( $row->ndb_id ) ? $row->ndb_id : $pdb_id;
             // get this info only once because it applies to all chains
             if ( $data['rna_chains'] == 0 ) {
                 $data['title'] = $row->title;
@@ -326,7 +327,8 @@ class Pdb_model extends CI_Model {
                 $data['release_date'] = $row->release_date;
                 $data['authors'] = $row->authors;
                 $data['pdb_url'] = "http://www.pdb.org/pdb/explore/explore.do?structureId={$pdb_id}";
-                $data['ndb_url'] = "http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget={$row->ndb_id}";
+                #$data['ndb_url'] = "http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget={$row->ndb_id}";
+                $data['ndb_url'] = "http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget={$pdb_id}";
             }
             // only for RNA chains
             if ( $row->entity_macromolecule_type == 'Polyribonucleotide (RNA)' or
