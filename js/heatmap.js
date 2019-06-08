@@ -102,12 +102,15 @@
       data.forEach(function(d) {
         ife1 = d.ife1;
         //ife1_len = +d.ife1_len
-        ife1_index = +d.ife1_index
+        ife1_index = +d.ife1_index;
         ife2 = d.ife2;
         //ife2_len = +d.ife2_len
-        ife2_index = +d.ife2_index
+        ife2_index = +d.ife2_index;
         //match_count = +d.match_count
         discrepancy = +d.discrepancy;
+        if (d.discrepancy == -1) {
+          d.discrepancy = null;
+        };
       });
 
       var domainMax = d3.max(data, function(d) {return +d.discrepancy;});
@@ -185,7 +188,7 @@
         .attr("height", gridSize)
         .style("fill", function(d) {
           if ((d.ife1 != d.ife2) && (d.discrepancy == null)) {
-              return "#808080";
+              return "#C0C0C0";
           } else {
               return colorScale(d.discrepancy);
           }
