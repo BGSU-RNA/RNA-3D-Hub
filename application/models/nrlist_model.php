@@ -205,7 +205,6 @@ class Nrlist_model extends CI_Model {
 
     function get_members($id)
     {
-
         $this->db->select('pi.pdb_id')
                  ->select('ch.ife_id')
                  ->select('pi.title')
@@ -309,9 +308,9 @@ class Nrlist_model extends CI_Model {
 
         return $table;
 
-	}
+    }
 
-	function get_heatmap_data($id)
+    function get_heatmap_data($id)
     {
         $this->db->select('NR.nr_release_id')
                  ->from('nr_classes AS NC')
@@ -343,7 +342,6 @@ class Nrlist_model extends CI_Model {
         $query = $this->db->get();
 
         //  why do this processing if the results are not used?!?
-
 
         foreach($query->result() as $row) {
             $ife1[] = $row->ife1;
@@ -415,7 +413,6 @@ class Nrlist_model extends CI_Model {
         }
 
         return count($s);
-
     }
 
     function get_history($id,$mode)
