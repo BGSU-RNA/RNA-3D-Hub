@@ -128,7 +128,7 @@ class Nrlist extends CI_Controller {
         $this->table->set_heading('#S','PDB','Title','Method','Resolution','Length');
         $data['statistics'] = $this->table->generate($statistics);
 
-        $heatmap = $this->Nrlist_model->get_heatmap_data($id);
+        $heatmap = $this->Nrlist_model->get_heatmap_data_revised($id);
         #$heatmap = $this->Nrlist_model->get_heatmap_data($id, $nr_release_id);
         $data['heatmap_data'] = $heatmap;
 
