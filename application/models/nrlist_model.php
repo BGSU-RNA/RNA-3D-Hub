@@ -307,7 +307,28 @@ class Nrlist_model extends CI_Model {
         }
 
         return $table;
+    }
 
+    function get_heatmap_data_revised($id)
+    {
+        $this->db->select('NO1.ife_id AS ife1')
+                 ->select('NO1.class_order AS ife1_index')
+                 ->select('NO2.ife_id AS ife2')
+                 ->select('NO2.class_order AS ife2_index')
+                 ->select('CCS.discrepancy')
+                 ->from('nr_ordering_temp AS NO1')
+                 ->join('nr_ordering_temp AS NO2', 'NO1.nr_class_name = NO2.nr_class_name', 'inner')
+                 ->join('ife_chains AS IC1', 'NO1.ife_id = IC1.ife_id AND IC1.index = 0', 'inner')
+                 ->join('ife_chains AS IC2', 'NO2.ife_id = IC2.ife_id AND IC2.index = 0', 'inner')
+                 ->join('chain_chain_similarity AS CCS', 'IC1.chain_id = CCS.chain_id_1 AND IC2.chain_id = CCS.chain_id_2', 'left outer')
+                 ->where('NO1.nr_class_name', $id);
+
+        $query = $this->db->get();
+
+        $heatmap_data = json_encode($query->result());
+
+        return $heatmap_data;
+        
     }
 
     function get_heatmap_data($id)
@@ -340,8 +361,6 @@ class Nrlist_model extends CI_Model {
                  ->where('NCL.nr_release_id', $release_id);
 
         $query = $this->db->get();
-
-        //  why do this processing if the results are not used?!?
 
         foreach($query->result() as $row) {
             $ife1[] = $row->ife1;
