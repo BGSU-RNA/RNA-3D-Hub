@@ -309,7 +309,7 @@ class Nrlist_model extends CI_Model {
         return $table;
     }
 
-    function get_heatmap_data_revised($id)
+    function get_heatmap_data_revised_original($id)
     {
         $this->db->select('NO1.ife_id AS ife1')
                  ->select('NO1.class_order AS ife1_index')
@@ -328,7 +328,90 @@ class Nrlist_model extends CI_Model {
         $heatmap_data = json_encode($query->result());
 
         return $heatmap_data;
-        
+
+    }
+
+    function get_heatmap_data_revised($id)
+    {
+        // Retrieve IFE names and order index for this equivalence class
+        $this->db->select('NO1.ife_id AS ife1')
+                 ->select('NO1.class_order AS ife1_index')
+                 ->from('nr_ordering_test AS NO1')
+                 ->where('NO1.nr_class_name', $id);
+
+        $query = $this->db->get();
+
+        // Assemble IFE names into an array
+        $ife_list = array();
+        $index_list = array();
+        foreach ($query->result() as $row) {
+            array_push($ife_list,$row->ife1);
+            array_push($index_list,$row->ife1_index);
+        }
+
+        // Load discrepancies from large classes from flat file, small from database
+        if (count($ife_list) > 100) {
+
+            // store all million or more discrepancies in an associative array
+            $discrepancy_array = array();
+            $file_lines = file('/var/www/html/discrepancy/IFEdiscrepancy.txt');
+            foreach ($file_lines as $line) {
+                $line = str_replace("\n","",$line);
+                $resultArray = explode("\t", $line);
+                if (in_array($resultArray[0],$ife_list)) {
+                    $discrepancy_array[$resultArray[0]." ".$resultArray[1]] = $resultArray[2];
+//                    $discrepancy_array[$resultArray[1]." ".$resultArray[0]] = $resultArray[2];
+                }
+            }
+
+            $file_lines = array();
+
+            // build one line of $result for each pair of discrepancies
+            $result = array();
+
+            for ($i = 0; $i < count($ife_list); $i++) {
+                for ($j = 0; $j < count($ife_list); $j++) {
+                    $ife1 = $ife_list[$i];
+                    $ife2 = $ife_list[$j];
+                    $newrow["ife1"] = $ife1;
+                    $newrow["ife2"] = $ife2;
+                    $newrow["ife1_index"] = $index_list[$i];
+                    $newrow["ife2_index"] = $index_list[$j];
+                    $key  = $ife1." ".$ife2;
+                    $key2 = $ife2." ".$ife1;
+                    if (array_key_exists($key, $discrepancy_array)) {
+                        $newrow["discrepancy"] = $discrepancy_array[$key];
+                    } elseif (array_key_exists($key2, $discrepancy_array)) {
+                        $newrow["discrepancy"] = $discrepancy_array[$key2];
+                    } else {
+                        $newrow["discrepancy"] = null;
+                    }
+                    array_push($result,$newrow);
+                }
+            }
+
+            $heatmap_data = json_encode($result);
+
+        } else {
+            $this->db->select('NO1.ife_id AS ife1')
+                     ->select('NO1.class_order AS ife1_index')
+                     ->select('NO2.ife_id AS ife2')
+                     ->select('NO2.class_order AS ife2_index')
+                     ->select('CCS.discrepancy')
+                     ->from('nr_ordering_test AS NO1')
+                     ->join('nr_ordering_test AS NO2', 'NO1.nr_class_name = NO2.nr_class_name', 'inner')
+                     ->join('ife_chains AS IC1', 'NO1.ife_id = IC1.ife_id AND IC1.index = 0', 'inner')
+                     ->join('ife_chains AS IC2', 'NO2.ife_id = IC2.ife_id AND IC2.index = 0', 'inner')
+                     ->join('chain_chain_similarity AS CCS', 'IC1.chain_id = CCS.chain_id_1 AND IC2.chain_id = CCS.chain_id_2', 'left outer')
+                     ->where('NO1.nr_class_name', $id);
+
+            $query = $this->db->get();
+
+            $heatmap_data = json_encode($query->result());
+
+        }
+
+        return $heatmap_data;
     }
 
     function get_heatmap_data($id)
