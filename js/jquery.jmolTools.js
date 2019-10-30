@@ -116,7 +116,7 @@ if ( typeof Object.create !== 'function' ) {
             // change MODEL to data_view
             if ( data.indexOf('data_view') > -1 ) {
                 jmolScriptWait("load DATA \"append structure\"\n" + data + 'end "append structure";');
-                //console.log(data);
+                console.log(data);
                 self.loaded = true;
                 //console.error('Server returned: ' + data);
             }
@@ -144,7 +144,7 @@ if ( typeof Object.create !== 'function' ) {
                 var command = 'if ({*.P/' + m + '.1}.length == {*.P/1.1}) ' +
                               '{x=compare({spine/' + m + '.1},{spine/1.1});}' +
                               'else {x=compare({(spine/' + m + '.1)[1][4]},{(spine/1.1)[1][4]});};' +
-                              'select ' + m + '.1,' + m + '.2; rotate selected @{x};';
+                              'select ' + m + '.1,' + m + '.2,' + m + '.3; rotate selected @{x};';
                 jmolScript(command);
                 }
 
@@ -371,7 +371,7 @@ if ( typeof Object.create !== 'function' ) {
             if (self.neighborhood) {
                 command = 'frame *;display displayed or ' + m + '.1,' + m + '.2; center ' + m + '.1;';
             } else {
-                command = 'frame *;display displayed or '      + m + '.1;' +
+                command = 'frame *;display displayed or '      + m + '.1,' + m + '.3;' +
                           'frame *;display displayed and not ' + m + '.2;' +
                           'center ' + m + '.1;';
             }
@@ -385,7 +385,8 @@ if ( typeof Object.create !== 'function' ) {
             m = self.modelNumber;
             if ( self.loaded ) {
                 command = 'frame *;display displayed and not ' + m + '.1;' +
-                                  'display displayed and not ' + m + '.2;'
+                                  'display displayed and not ' + m + '.2;' +
+                                  'display displayed and not ' + m + '.3;';
                 jmolScript(command);
                 self.hidden  = true;
                 self.toggleCheckbox();
