@@ -200,8 +200,9 @@ if ( typeof Object.create !== 'function' ) {
                         'select nucleic and ' + k + '.2; color grey;' +
                         'select protein and ' + k + '.2; color purple;' +
                         'select hetero  and ' + k + '.2; color pink;' +
+                        'select nucleic and ' + k + '.3; color CPK;' +
                         'select ' + k + '.2; color translucent 0.8;' +
-                        'select ' + k + '.1,' + k + '.2;' +
+                        'select ' + k + '.1,' + k + '.2,' + k + '.3;' +
                         'spacefill off;' +
                         'center ' + k + '.1;' +
                         'zoom {'  + k + '.1} 0;';
