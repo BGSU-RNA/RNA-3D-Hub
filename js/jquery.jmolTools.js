@@ -5,6 +5,7 @@
  */
 
  var RSRZ_data = {};
+ var bulge_data = {};
  var RSR_data = {};
  var plasmaColors = ["#0d0887","#110889","#17078b","#1b078d","#20068f","#240691","#2a0693","#300596","#340597","#3a049a","#3d049b","#43049e","#4903a0","#4b03a1","#5003a2","#5303a2","#5803a3","#5c03a3","#6103a4","#6603a5","#6903a5","#6e03a6","#7103a6","#7603a7","#7b03a8","#7d03a8","#8106a6","#8408a5","#880ba4","#8a0da2","#8e10a1","#93139f","#95149e","#99179c","#9c199b","#a01c99","#a41f98","#a72197","#a92395","#ac2693","#af2990","#b32d8d","#b52f8b","#b83388","#bb3587","#be3984","#c13b82","#c43f7f","#c8427c","#ca457a","#cc4778","#cd4976","#d04d74","#d25071","#d4536f","#d6566d","#d8596b","#da5c68","#dc5e67","#df6264","#e16561","#e36860","#e56b5d","#e66c5c","#e87059","#e97556","#eb7755","#ed7b52","#ee7e50","#f0824d","#f2864a","#f38948","#f58d46","#f69044","#f89441","#f89540","#f99a3e","#f99e3c","#f9a13a","#faa638","#faa936","#fbad34","#fbb131","#fbb430","#fcb92d","#fcbc2c","#fdc02a","#fdc328","#fcc728","#fbcc27","#fad026","#f9d526","#f8d925","#f7de25","#f5e324","#f4e723","#f3ec23","#f2f022","#f1f521","#f0f921"];
 
@@ -16,6 +17,14 @@
     colorchoice: plasmaColors[i]
     })
  }
+
+ function isEmpty(obj) {
+    for(var key in obj) {
+        if(obj.hasOwnProperty(key))
+            return false;
+    }
+    return true;
+}
 
 
 // Utility
@@ -67,6 +76,19 @@ if ( typeof Object.create !== 'function' ) {
             var self = this;
             if ( self.loaded ) { return; }
 
+            // This AJAX call gets the bulge units
+            $.ajax({
+                url: $.fn.jmolTools.options.serverUrlBulgeUnit,
+                type: 'GET',
+                dataType: 'json',
+                contentType: 'application/json',
+                data: {'quality' : self.$elem.data($.fn.jmolTools.options.dataAttributeBulgeUnit)}
+                }).done(function(data) {
+                    //bulge_units= data;      
+                    bulge_data[$.jmolTools.numModels+1] = data;
+                    //console.log(bulge_data)
+            });
+
             // This AJAX call gets the RSRZ data
             $.ajax({
                 url: $.fn.jmolTools.options.serverUrlRSRZ,
@@ -77,6 +99,7 @@ if ( typeof Object.create !== 'function' ) {
                 }).done(function(data) {
                     RSRZ_JSON = data;      
                     RSRZ_data[$.jmolTools.numModels+1] = data;
+                    console.log(RSRZ_data)
             });
 
             // This AJAX call gets the RSR data
@@ -116,7 +139,7 @@ if ( typeof Object.create !== 'function' ) {
             // change MODEL to data_view
             if ( data.indexOf('data_view') > -1 ) {
                 jmolScriptWait("load DATA \"append structure\"\n" + data + 'end "append structure";');
-                console.log(data);
+                //console.log(data);
                 self.loaded = true;
                 //console.error('Server returned: ' + data);
             }
@@ -278,7 +301,35 @@ if ( typeof Object.create !== 'function' ) {
                         }
                     }
 
-            }
+                }
+
+                if (bulge_data[i] == "{}") {
+                	console.log('Object is empty');
+                } else {
+                	for (var k = 0; k < Object.keys(bulge_data[i]).length; k++){
+
+                        var RSRZ = bulge_data[i][k].real_space_r_z_score;
+                        var split_unitid = bulge_data[i][k].unit_id.split("|");
+
+                        if (RSRZ === null){
+                            command += "select " + split_unitid[4] + "/" + i + ".1;" + " color gray" + "; ";
+                        } else {
+                            var RSRZ = (parseFloat(bulge_data[i][k].real_space_r_z_score)*100)/100;
+                            if (RSRZ < 1.00) {
+                                command += "select " + split_unitid[4] + "/" + i + ".3;" + " color green; " + " spacefill off; ";   
+                            } else if (RSRZ < 2.00) {
+                                command += "select " + split_unitid[4] + "/" + i + ".3;" + " color yellow; " + " spacefill off; ";  
+                            } else if (RSRZ < 3.00) {
+                                command += "select " + split_unitid[4] + "/" + i + ".3;" + " color orange; " + " spacefill off; ";  
+                            } else {
+                                command += "select " + split_unitid[4] + "/" + i + ".3;" + " color red; " + " spacefill off; ";  
+                            }
+                        }
+                    }
+                }
+                
+
+
 
                 command += "select " + i + ".1, " + i + ".2;" +
                        "select nucleic and " + i + ".2; color grey;" +
@@ -289,6 +340,7 @@ if ( typeof Object.create !== 'function' ) {
                        " spacefill off; " + "center " + i + ".1;" +
                        "zoom {"  + i + ".1} 0;"; 
             }
+
 
             console.log(command);
             jmolScript(command);
@@ -723,6 +775,9 @@ if ( typeof Object.create !== 'function' ) {
 
         serverUrlRSRZ   : loc + '/rna3dhub/rest/getRSRZ',
         dataAttributeRSRZ: 'quality',
+
+        serverUrlBulgeUnit   : loc + '/rna3dhub/rest/getBulge',
+        dataAttributeBulgeUnit: 'quality',
 
         toggleCheckbox: true,      // by default each model will monitor the checked state of its corresponding checkbox
         mutuallyExclusive:  false, // by default will set to false for checkboxes and false for radiobuttons
