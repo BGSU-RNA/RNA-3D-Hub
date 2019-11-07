@@ -565,7 +565,7 @@ class Ajax_model extends CI_Model {
         $this->db->select('unit_id')
                  ->from('ml_loop_positions')
                  ->where('loop_id',$loop_id)
-                 ->where('ml_release_id',4.24)
+                 ->where('ml_release_id',3.2)
                  ->order_by('position');
         $query = $this->db->get();
         if ($query->num_rows() == 0) { return 'Loop id not found'; }
