@@ -219,12 +219,16 @@ if ( typeof Object.create !== 'function' ) {
                         'select [G]/' + k + '.1; color chartreuse;' +
                         'select [C]/' + k + '.1; color gold;' +
                         'select [A]/' + k + '.1; color red;' +
+                        'select [U]/' + k + '.3; color mediumblue;' +
+                        'select [G]/' + k + '.3; color palegreen;' +
+                        'select [C]/' + k + '.3; color khaki;' +
+                        'select [A]/' + k + '.3; color tomato;' +
                         'select protein and ' + k + '.1; color CPK;' +
                         'select nucleic and ' + k + '.2; color grey;' +
                         'select protein and ' + k + '.2; color purple;' +
                         'select hetero  and ' + k + '.2; color pink;' +
-                        'select nucleic and ' + k + '.3; color CPK;' +
                         'select ' + k + '.2; color translucent 0.8;' +
+                        'select ' + k + '.3; color translucent 0.99;' +
                         'select ' + k + '.1,' + k + '.2,' + k + '.3;' +
                         'spacefill off;' +
                         'center ' + k + '.1;' +
@@ -242,12 +246,14 @@ if ( typeof Object.create !== 'function' ) {
             for (var k=a; k <= b; k++) {
             
                 command = 'select nucleic and ' + k + '.1; color CPK;' +
+                		'select nucleic and ' + k + '.3; color CPK;' +
                         'select protein and ' + k + '.1; color CPK;' +
                         'select nucleic and ' + k + '.2; color grey;' +
                         'select protein and ' + k + '.2; color purple;' +
                         'select hetero  and ' + k + '.2; color pink;' +
                         'select ' + k + '.2; color translucent 0.8;' +
-                        'select ' + k + '.1,' + k + '.2;' +
+                        'select ' + k + '.3; color translucent 0.99;' +
+                        'select ' + k + '.1,' + k + '.2,' + k + '.3;' + 
                         'spacefill off;' +
                         'center ' + k + '.1;' +
                         'zoom {'  + k + '.1} 0;';
@@ -303,9 +309,11 @@ if ( typeof Object.create !== 'function' ) {
 
                 }
 
+
                 if (bulge_data[i] == "{}") {
                 	console.log('Object is empty');
                 } else {
+                	console.log(bulge_data[i])
                 	for (var k = 0; k < Object.keys(bulge_data[i]).length; k++){
 
                         var RSRZ = bulge_data[i][k].real_space_r_z_score;
@@ -329,13 +337,12 @@ if ( typeof Object.create !== 'function' ) {
                 }
                 
 
-
-
                 command += "select " + i + ".1, " + i + ".2;" +
                        "select nucleic and " + i + ".2; color grey;" +
                        "select protein and " + i + ".2; color purple;" +
                        "select hetero  and " + i + ".2; color pink;" +
                        " select " + i + ".2; color translucent 0.8;" + 
+                       'select ' + i + '.3; color translucent 0.99;' +
                        "select " + i + ".1," + i + ".2;" +
                        " spacefill off; " + "center " + i + ".1;" +
                        "zoom {"  + i + ".1} 0;"; 
