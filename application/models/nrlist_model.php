@@ -250,7 +250,7 @@ class Nrlist_model extends CI_Model {
         return $table;
     }
 
-    function get_statistics($id)
+    function get_statistics_original($id)
     {
         $this->db->select('NR.nr_release_id')
                  ->from('nr_classes AS NC')
@@ -282,6 +282,49 @@ class Nrlist_model extends CI_Model {
                  //->group_by('pi.pdb_id')
                  //->group_by('ii.ife_id')
                  ->order_by('nl.index','asc');
+
+        $query = $this->db->get();
+
+        $i = 0;
+        $table = array();
+
+        foreach ($query -> result() as $row) {
+            $link = $this->make_pdb_widget_link($row->ife_id);
+            //if ( $i==0 ) {
+                //$link = $link . ' <strong>(rep)</strong>';
+            //}
+            $i++;
+            $table[] = array($i,
+                             $link,
+                             $row->title,
+                             //$this->get_source_organism($row->ife_id),
+                             //$this->get_compound_list($row->pdb_id),
+                             $row->experimental_technique,
+                             $row->resolution,
+                             $row->length);
+                             //$row->bp_count);
+
+        }
+
+        return $table;
+    }
+
+    function get_statistics($id)
+    {
+        $this->db->select('pi.pdb_id')
+                 ->select('ii.ife_id')
+                 ->select('pi.title')
+                 ->select('pi.experimental_technique')
+                 ->select('pi.release_date')
+                 ->select('pi.resolution')
+                 ->select('ii.length')
+                 ->select('ii.bp_count')
+                 ->select('ot.class_order')
+                 ->from('pdb_info AS pi')
+                 ->join('ife_info AS ii','pi.pdb_id = ii.pdb_id')
+                 ->join('nr_ordering_test AS ot', 'ii.ife_id = ot.ife_id')
+                 ->where('ot.nr_class_name',$id)
+                 ->order_by('ot.class_order','asc');
 
         $query = $this->db->get();
 
