@@ -393,7 +393,7 @@ class Nrlist_model extends CI_Model {
         }
 
         // Load discrepancies from large classes from flat file, small from database
-        if (count($ife_list) > 100) {
+        if (count($ife_list) > 300) {
 
             // store all million or more discrepancies in an associative array
             $discrepancy_array = array();
