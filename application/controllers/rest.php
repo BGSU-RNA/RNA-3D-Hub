@@ -31,6 +31,28 @@ class Rest extends MY_Controller {
         echo $this->Ajax_model->get_pdb_info($pdb,$cla,$res);
     }
 
+    public function getBulge()
+    {
+        // should be able to accept loop_id and unit_id
+
+        // search POST, then GET
+        $query = $this->input->get_post('quality');
+        
+        //$this->output->enable_profiler(TRUE);
+        
+        $query_type = $this->_parseInput($query);
+
+        if ( $query_type ) {
+            $this->output->set_header("Access-Control-Allow-Origin: *");
+            $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
+            $data['json'] = $this->_database_lookup_bulge($query, $query_type);
+            $this->load->view('json_view', $data);
+        } else {
+            echo $this->messages['invalid'];
+        }
+
+    }
+
     public function getCoordinates()
     {
         // should be able to accept loop_id, nt_ids, motif_id, short_nt_id
@@ -53,6 +75,31 @@ class Rest extends MY_Controller {
         }
 
     }
+
+
+    public function getCoordinatesRelative()
+    {
+        // should be able to accept loop_id, nt_ids, motif_id, short_nt_id
+        // and loop pairs (returns the first loop of the two)
+
+        // search POST, then GET
+        $query = $this->input->get_post('core');
+        
+        $this->output->enable_profiler(TRUE);
+        
+        $query_type = $this->_parseInput($query);
+
+        if ( $query_type ) {
+            $this->output->set_header("Access-Control-Allow-Origin: *");
+            $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
+            $data['csv'] = $this->_database_lookup_relative($query, $query_type);
+            $this->load->view('csv_view', $data);
+        } else {
+            echo $this->messages['invalid'];
+        }
+
+    }
+
 
     public function getRSR()
     {
@@ -123,6 +170,21 @@ class Rest extends MY_Controller {
 
     }
 
+    private function _database_lookup_relative($query, $query_type)
+    {
+        // don't load the database until the input was validated
+        $this->load->model('Ajax_model', '', TRUE);
+
+        $this->output->enable_profiler(TRUE);
+        
+        switch ($query_type) :
+            case 'unit_id':
+                return $this->Ajax_model->get_coord_relative($query);
+            default: return $this->messages['error'];
+        endswitch;
+
+    }
+
     private function _database_lookup_RSR($query, $query_type)
     {
         // don't load the database until the input was validated
@@ -156,6 +218,23 @@ class Rest extends MY_Controller {
                 return $this->Ajax_model->get_exemplar_RSRZ($query);
             case 'unit_id':
                 return $this->Ajax_model->get_unit_id_RSRZ($query);
+            default: return $this->messages['error'];
+        endswitch;
+
+    }
+
+    private function _database_lookup_bulge($query, $query_type)
+    {
+        // don't load the database until the input was validated
+        $this->load->model('Ajax_model', '', TRUE);
+
+        // $this->output->enable_profiler(TRUE);
+        
+        switch ($query_type) :
+            case 'loop_id':
+                return $this->Ajax_model->get_bulge_RSRZ($query);
+            case 'unit_id':
+                return $this->Ajax_model->get_unit_RSRZ($query);
             default: return $this->messages['error'];
         endswitch;
 
