@@ -76,7 +76,6 @@ class Rest extends MY_Controller {
 
     }
 
-    /*
 
     public function getCoordinatesRelative()
     {
@@ -100,7 +99,7 @@ class Rest extends MY_Controller {
         }
 
     }
-    */
+
 
     public function getRSR()
     {

@@ -768,7 +768,142 @@ class Ajax_model extends CI_Model {
     
     function get_coord_relative($unit_id)
     {
-        return 'This link is working';
+        $unit_id = explode(',', $unit_id);
+        $core_units = array_slice($unit_id, 0, 10);
+        $loop_units = array_slice($unit_id, 10);
+
+        $lines_arr = array();
+        $lines_arr2 = array();
+        $lines_arr3 = array();
+        
+        $headers_cif_fr3d = array (
+
+            'data_view',
+            '#', 
+            'loop_',
+            '_atom_site.group_PDB', 
+            '_atom_site.id', 
+            '_atom_site.type_symbol', 
+            '_atom_site.label_atom_id', 
+            '_atom_site.label_alt_id', 
+            '_atom_site.label_comp_id', 
+            '_atom_site.label_asym_id', 
+            '_atom_site.label_entity_id', 
+            '_atom_site.label_seq_id', 
+            '_atom_site.pdbx_PDB_ins_code', 
+            '_atom_site.Cartn_x', 
+            '_atom_site.Cartn_y', 
+            '_atom_site.Cartn_z', 
+            '_atom_site.occupancy', 
+            '_atom_site.B_iso_or_equiv', 
+            '_atom_site.Cartn_x_esd', 
+            '_atom_site.Cartn_y_esd', 
+            '_atom_site.Cartn_z_esd', 
+            '_atom_site.occupancy_esd', 
+            '_atom_site.B_iso_or_equiv_esd', 
+            '_atom_site.pdbx_formal_charge', 
+            '_atom_site.auth_seq_id', 
+            '_atom_site.auth_comp_id', 
+            '_atom_site.auth_asym_id', 
+            '_atom_site.auth_atom_id', 
+            '_atom_site.pdbx_PDB_model_num' 
+
+        );
+
+        $footer = array('#');
+
+        $this->db->select('coordinates')->from('unit_coordinates');
+        $this->db->where_in('unit_id', $loop_units);
+        $this->db->_protect_identifiers = FALSE; // stop CI adding backticks
+
+        // make SQL to return the correct order of results based on the where_in clause
+        // example of query: SELECT coordinates FROM unit_coordinates WHERE unit_id IN ('2ZM5|1|C|A|31', '2ZM5|1|C|U|32')
+        //                   ORDER BY FIELD (unit_id, '2ZM5|1|C|A|31', '2ZM5|1|C|U|32');
+        $order = sprintf('FIELD(unit_id, %s)', "'" . implode("','", $loop_units) . "'");
+        $this->db->order_by($order);
+        $this->db->_protect_identifiers = TRUE; // switch on again for security reasons
+        $query = $this->db->get();
+
+        if ($query->num_rows() == 0) { return 'Loop coordinates not found'; }
+
+        foreach ($query->result() as $row) {
+            foreach ($row as $line) {
+                $line= explode("\n", $line);
+                foreach ($line as $line2) {
+                    $model_1_pattern = '/ 1\s*$/';
+                    // If model number is not 1, change to 1
+                    if (!preg_match($model_1_pattern, $line2)) {
+                        $search_pattern = '/([+-]?[0-9]+)\s*$/';
+                        $line2 = preg_replace($search_pattern, '1', $line2);
+                    }      
+                    $lines_arr[] = ($line2);  
+                }   
+            }
+        }
+
+        // get the coordinates of neighboring residues
+        $this->db->select('coordinates')
+                 ->distinct()
+                 ->from('unit_coordinates')
+                 ->join('unit_pairs_distances','unit_coordinates.unit_id = unit_pairs_distances.unit_id_1')
+                 ->where_in('unit_id_2',$loop_units)
+                 ->where_not_in('unit_id_1',$loop_units);
+        $query = $this->db->get();
+
+        foreach ($query->result() as $row) {
+            foreach ($row as $line) {
+                $line= explode("\n", $line);
+                foreach ($line as $line2) {
+                    $model_2_pattern = '/ 2\s*$/';
+                    // If model number is not 2, change to 2
+                    if (!preg_match($model_2_pattern, $line2)) {
+                        $search_pattern = '/([+-]?[0-9]+)\s*$/';
+                        $line2 = preg_replace($search_pattern, '2', $line2);
+                    }      
+                    $lines_arr2[] = ($line2);  
+                }   
+            }
+        }
+
+        $this->db->select('coordinates')->from('unit_coordinates');
+        $this->db->where_in('unit_id', $core_units);
+        $this->db->_protect_identifiers = FALSE; // stop CI adding backticks
+
+        // make SQL to return the correct order of results based on the where_in clause
+        // example of query: SELECT coordinates FROM unit_coordinates WHERE unit_id IN ('2ZM5|1|C|A|31', '2ZM5|1|C|U|32')
+        //                   ORDER BY FIELD (unit_id, '2ZM5|1|C|A|31', '2ZM5|1|C|U|32');
+        $order = sprintf('FIELD(unit_id, %s)', "'" . implode("','", $core_units) . "'");
+        $this->db->order_by($order);
+        $this->db->_protect_identifiers = TRUE; // switch on again for security reasons
+        $query = $this->db->get();
+
+        if ($query->num_rows() == 0) { return 'Core coordinates not found'; }
+
+        foreach ($query->result() as $row) {
+            foreach ($row as $line) {
+                $line= explode("\n", $line);
+                foreach ($line as $line2) {
+                    $model_3_pattern = '/ 3\s*$/';
+                    // If model number is not 3, change to 3
+                    if (!preg_match($model_3_pattern, $line2)) {
+                        $search_pattern = '/([+-]?[0-9]+)\s*$/';
+                        $line2 = preg_replace($search_pattern, '3', $line2);
+                    }      
+                    $lines_arr3[] = ($line2);  
+                }   
+            }
+        }
+
+        $combine_result = array_merge($headers_cif_fr3d, $lines_arr, $footer, $headers_cif_fr3d, $lines_arr2, $footer, $headers_cif_fr3d, $lines_arr3, $footer);
+        
+        $final_result = '';
+
+        foreach ($combine_result as $output) {
+            $final_result .= $output . "\n";
+        }
+
+        return $final_result;
+        
     }
     
 
