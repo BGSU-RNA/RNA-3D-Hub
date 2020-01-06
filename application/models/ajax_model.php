@@ -765,6 +765,11 @@ class Ajax_model extends CI_Model {
 
     }
 
+    function get_coord_relative($unit_id)
+    {
+        return 'This link is working'
+    }
+
     function get_loop_pair_coordinates($loop_pair)
     {
         // IL_1J5E_001:IL_1J5E_002
