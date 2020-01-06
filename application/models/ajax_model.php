@@ -765,10 +765,12 @@ class Ajax_model extends CI_Model {
 
     }
 
+    
     function get_coord_relative($unit_id)
     {
-        return 'This link is working'
+        return 'This link is working';
     }
+    
 
     function get_loop_pair_coordinates($loop_pair)
     {

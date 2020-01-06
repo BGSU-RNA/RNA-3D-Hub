@@ -76,13 +76,15 @@ class Rest extends MY_Controller {
 
     }
 
+    /*
+
     public function getCoordinatesRelative()
     {
         // should be able to accept loop_id, nt_ids, motif_id, short_nt_id
         // and loop pairs (returns the first loop of the two)
 
         // search POST, then GET
-        $query = $this->input->get_post('coord');
+        $query = $this->input->get_post('core');
         
         $this->output->enable_profiler(TRUE);
         
@@ -98,6 +100,7 @@ class Rest extends MY_Controller {
         }
 
     }
+    */
 
     public function getRSR()
     {
