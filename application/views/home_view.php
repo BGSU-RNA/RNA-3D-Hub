@@ -6,16 +6,20 @@
       <!-- Main hero unit for a primary marketing message or call to action -->
       <div class="hero-unit">
         <h1>BGSU RNA Site</h1>
-        <br>
         <p>
         <a href="<?=$this->config->item('home_url')?>/main/introduction-to-rna-3d-hub/" class="btn success large">Introduction</a>
+        Follow us on <a href="https://twitter.com/rna3dhub">Twitter</a>.
         </p>
         <p>
-          We have upgraded the <a href="<?=$this->config->item('home_url')?>/rna.bgsu.edu/main/upgrading-rna-3d-hub/">BGSU RNA Site</a>
-          to include new RNA 3D structures distributed in <a href="http://wwpdb.org/news/news.php?year=2014#10-December-2014">mmCIF format</a>.
-          Follow us on <a href="https://twitter.com/rna3dhub">Twitter</a> to hear when the updated version becomes available.
+          Every week we download and annotate all new RNA-containing 3D structures from PDB.
+          Annotations of individual 3D structures are available in the RNA Structure Atlas.
+          The Representative Sets of RNA structures organize 3D structures by molecule type (such as large ribosomal subunit) and by species, by order of structure quality measures.
+          The RNA 3D Motif Atlas organizes hairpin and internal loops by their geometry.
         </p>
-
+        <p>
+          The Resources link above takes you to WebFR3D, to search within RNA-containing 3D structures,
+          and JAR3D, to search hairpin and internal loops by sequence.
+        </p>
       </div>
 
       <div class="row">
@@ -29,7 +33,6 @@
              <li>Motif annotations from the <a href="<?=$this->config->item('home_url')?>/rna3dhub/motifs">Motif Atlas</a></li>
              <li>Similar structures from the <a href="<?=$this->config->item('home_url')?>/rna3dhub/nrlist">Representative Sets</a></li>
           </ul>
-          <p>Automatic weekly updates <a href="http://rna.bgsu.edu/main/upgrading-rna-3d-hub/">will resume soon</a></p>
           <p><a class="btn primary" href="<?php echo $baseurl;?>pdb">Explore</a></p>
         </div>
 
@@ -42,8 +45,9 @@
 
         <div class="span5">
           <h2>Representative Sets</h2>
-          <p>PDB files grouped into equivalence classes by molecule type, organism, and resolution.</p>
-          <p>Automatic updates <a href="http://rna.bgsu.edu/main/upgrading-rna-3d-hub/">will resume soon</a></p>
+          <p>RNA 3D structures grouped into equivalence classes by molecule type, organism, and resolution.
+          Taking the structure with the best structure quality measures from each equivalence class gives a Representative Set of RNA 3D structures.
+          Updated each week since 2011.</p>
           <p><a class="btn primary" href="<?php echo $baseurl;?>nrlist">Explore</a></p>
        </div>
 
