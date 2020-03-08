@@ -1,10 +1,13 @@
 <?php
+
+ini_set("memory_limit","300M");
+
 class Pdb_model extends CI_Model {
     function __construct()
     {
         $CI = & get_instance();
         $CI->load->helper('url');
-        $this->qa_status = array(NULL,'valid','missing','modified','abnormal','incomplete','complementary');
+        $this->qa_status = array(NULL,'valid','missing nts','modified nts','abnormal chain','incomplete nts','complementary','symmetry','all high RSRZ','pair high RSRZ');
         // Call the Model constructor
         parent::__construct();
     }
@@ -34,7 +37,7 @@ class Pdb_model extends CI_Model {
     {
         // $loop_type = IL or HL
         $latest_release = $this->get_latest_motif_release($loop_type);
-        
+
         $this->db->select()
                  ->from('ml_loops')
                  ->where('ml_release_id', $latest_release)
@@ -46,9 +49,30 @@ class Pdb_model extends CI_Model {
         }
         return $data;
     }
+    function get_latest_loop_release()
+    {
+        $this->db->select('loop_release_id')
+                 ->from('loop_releases')
+                 ->order_by('date','desc')
+                 ->limit(1);
+        $result = $this->db->get()->result_array();
+        return $result[0]['loop_release_id'];
+    }
+    function get_latest_loop_release_for_this_pdb($pdb_id)
+    {
+        $this->db->select('lq.loop_release_id')
+                 ->from('loop_releases AS lr')
+                 ->join('loop_qa AS lq', 'lq.loop_release_id = lr.loop_release_id')
+                 ->join('loop_info AS li', 'li.loop_id = lq.loop_id')
+                 ->where('pdb_id',$pdb_id)
+                 ->order_by('date','desc')
+                 ->limit(1);
+        $result = $this->db->get()->result_array();
+        return $result[0]['loop_release_id'];
+    }
     function get_loops($pdb_id)
     {
-        $loop_release_id = $this->get_latest_loop_release();
+        $loop_release_id = $this->get_latest_loop_release_for_this_pdb($pdb_id);
         $this->db->select('lq.loop_id')
                  ->select('lq.status')
                  ->select('lq.modifications')
@@ -58,10 +82,10 @@ class Pdb_model extends CI_Model {
                  ->select('li.loop_name')
                  ->from('loop_qa AS lq')
                  ->join('loop_info AS li', 'li.loop_id = lq.loop_id')
-                 ->where('pdb_id', $pdb_id)
-                 ->where('loop_release_id', $loop_release_id);
+                 ->where('lq.loop_release_id',$loop_release_id)
+                 ->where('pdb_id', $pdb_id);
         $query = $this->db->get();
-        
+
         $loop_types = array('IL','HL','J3');
         foreach ($loop_types as $loop_type) {
             $valid_tables[$loop_type] = array();
@@ -71,7 +95,7 @@ class Pdb_model extends CI_Model {
         $motifs = array_merge($motifs, $this->get_latest_motif_assignments($pdb_id, 'HL'));
         foreach ($query->result() as $row) {
             $loop_type = substr($row->loop_id, 0, 2);
-            if ($row->status == 1) {
+            if ($row->status == 1 or $row->status == 3) {
                 if ( array_key_exists($row->loop_id, $motifs) ) {
                     $motif_id = anchor_popup("motif/view/{$motifs[$row->loop_id]}", $motifs[$row->loop_id]);
                 } else {
@@ -111,15 +135,6 @@ class Pdb_model extends CI_Model {
         return "<label><input type='radio' id='{$id}' class='jmolInline' data-coord='{$id}' data-quality='{$id}'> {$id} </label>" .
         "<span class='loop_link'>" . anchor_popup("loops/view/{$id}", '&#10140;') . "</span>";
 
-    }
-    function get_latest_loop_release()
-    {
-        $this->db->select('loop_release_id')
-                 ->from('loop_releases')
-                 ->order_by('date','desc')
-                 ->limit(1);
-        $result = $this->db->get()->result_array();
-        return $result[0]['loop_release_id'];
     }
     function pdb_exists($pdb_id)
     {
@@ -198,7 +213,7 @@ class Pdb_model extends CI_Model {
         return $unit_ids;
     }
     function get_interactions($pdb_id, $interaction_type)
-    {   
+    {
         /* Commented out since we don't have aa-nt annotations yet
         if ( $interaction_type == 'baseaa' ) {
             $unit_ids = $this->_get_unit_ids($pdb_id);
@@ -221,7 +236,7 @@ class Pdb_model extends CI_Model {
             for ($i = 0; $i <= ($array_size-1); $i++) {
                 // Don't display value for cation-pi interactions
                 if ($value[$i] == NULL) {
-                
+
                     $html .= str_pad('<span>' . $na_unit_id[$i] . '</span>', 38, ' ') .
                              "<a class='jmolInline' id='s{$i}'>" .
                              str_pad( '<span>' . $annotation[$i] . '</span>' , 10, '',STR_PAD_BOTH) .
@@ -395,16 +410,16 @@ class Pdb_model extends CI_Model {
         foreach ($query->result() as $row) {
             $data['loops'][$row->type] = $row->counts;
         }
-        
+
         // add zeros if some loop types are not present
         foreach ( array('IL', 'HL', 'J3') as $loop_type ) {
             if ( !array_key_exists($loop_type, $data['loops']) ) {
                 $data['loops'][$loop_type] = 0;
             }
         }
-        
+
         $data['loops']['url'] = anchor('pdb/' . $pdb_id . '/motifs', 'More');
-        
+
         return $data;
     }
     function get_latest_motif_release($motif_type)
@@ -414,9 +429,9 @@ class Pdb_model extends CI_Model {
                  ->order_by('date', 'desc')
                  ->where('type', $motif_type)
                  ->limit(1);
-        
+
         $result = $this->db->get()->row();
-        
+
         return $result->ml_release_id;
     }
     function get_motifs_info($pdb_id, $motif_type)
