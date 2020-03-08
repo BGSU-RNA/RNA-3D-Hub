@@ -164,14 +164,14 @@ class Pdb extends CI_Controller {
                     $data['loops'][$loop_type]['valid'] = '<p>No loops found</p>';
                 }
 
-                // disqualified loops
+                // problematic loops
                 $tmpl = array( 'table_open'  => '<table class="condensed-table bordered-table">' );
                 $this->table->set_template($tmpl);
-                $this->table->set_heading('#', 'loop id', 'Reason for disqualification', 'Sequence');
+                $this->table->set_heading('#', 'loop id', 'Problem', 'Sequence');
                 if (count($results['invalid'][$loop_type]) > 0) {
                     $data['loops'][$loop_type]['invalid'] = $this->table->generate($results['invalid'][$loop_type]);
                 } else {
-                    $data['loops'][$loop_type]['invalid'] = '<p>No disqualified loops</p>';
+                    $data['loops'][$loop_type]['invalid'] = '<p>No problematic loops</p>';
                 }
 
                 $data['counts'][$loop_type] = count($results['valid'][$loop_type]) + count($results['invalid'][$loop_type]);
