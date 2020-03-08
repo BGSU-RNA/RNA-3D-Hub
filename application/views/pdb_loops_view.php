@@ -29,7 +29,7 @@
           <div class="span9">
             <ul class="tabs">
                 <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>">Summary</a></li>
-                <li class="active"><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/motifs">Motifs</a></li>
+                <li class="active"><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/motifs">Loops</a></li>
                 <li class="dropdown" data-dropdown="dropdown">
                 <a href="#" class="dropdown-toggle">Interactions</a>
                   <ul class="dropdown-menu">
@@ -68,7 +68,7 @@
                     <div class="valid block">
                         <?=$loops['IL']['valid']?>
                     </div>
-                    <h3>Disqualified loops</h3>
+                    <h3>Problematic loops</h3>
                     <div class="modified block">
                         <?=$loops['IL']['invalid']?>
                     </div>
@@ -79,7 +79,7 @@
                     <div class="valid block">
                         <?=$loops['HL']['valid']?>
                     </div>
-                    <h3>Disqualified loops</h3>
+                    <h3>Problematic loops</h3>
                     <div class="modified block">
                         <?=$loops['HL']['invalid']?>
                     </div>
@@ -90,7 +90,7 @@
                     <div class="valid block">
                         <?=$loops['J3']['valid']?>
                     </div>
-                    <h3>Disqualified loops</h3>
+                    <h3>Problematic loops</h3>
                     <div class="modified block">
                         <?=$loops['J3']['invalid']?>
                     </div>
@@ -146,9 +146,9 @@
                 <input type='button' id='prev' class='btn' value='Previous'>
                 <input type='button' id='next' class='btn' value="Next">
                 <br>
-                Coloring options: <select id="colorOPT"> 
-                    <option value="Default" selected>Default</option> 
-                    <option value="CPK">CPK</option> 
+                Coloring options: <select id="colorOPT">
+                    <option value="Default" selected>Default</option>
+                    <option value="CPK">CPK</option>
                     <option value="RSR">Real Space R (RSR)</option>
                     <option value="RSRZ">RSR Z-Score (RSRZ)</option>
                 </select>
@@ -200,8 +200,8 @@
                     </svg>
                 </div>
                 <!--RSR scale (from 0 to 1)
-                <div id="grad1" align = 'centre'></div>--> 
-                
+                <div id="grad1" align = 'centre'></div>-->
+
                 <!--<div>
                     <br><br><input type="radio" id="colorRSRZ" name="color"> <label for="colorByRSRZ">Colour by RSRZ</label>
 

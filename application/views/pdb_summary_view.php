@@ -20,7 +20,7 @@
           <div class="span16">
             <ul class="tabs">
                 <li class="active"><a href="<?=$baseurl?>pdb/<?=$pdb_id?>">Summary</a></li>
-                <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/motifs">Motifs</a></li>
+                <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/motifs">Loops</a></li>
                 <li class="dropdown" data-dropdown="dropdown">
                   <a href="#" class="dropdown-toggle">Interactions</a>
                   <ul class="dropdown-menu">
@@ -117,7 +117,7 @@
                   <li><?=$bst_counts?> <a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/stacking">base-stacking</a></li>
                   <li><?=$bph_counts?> <a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/basephosphate">base-phosphate</a></li>
                   <li><?=$brb_counts?> <a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/baseribose">base-ribose</a></li>
-                  <!-- Commented out since we don't have aa-nt annotations yet 
+                  <!-- Commented out since we don't have aa-nt annotations yet
                   <li><?=$baa_counts?> <a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/baseaa">base-amino acids</a></li> -->
                 </ul>
                 <a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/all">View all</a>
@@ -129,11 +129,11 @@
                 In the current release of the <a href="<?=$baseurl?>/motifs">RNA 3D Motif Atlas</a>, <?=$pdb_id?> contains:
                 <ul>
                   <li>
-                    <?=$loops['IL']?> internal loop<?php if ($loops['IL'] <> 1): ?>s<?php endif; ?> 
+                    <?=$loops['IL']?> internal loop<?php if ($loops['IL'] <> 1): ?>s<?php endif; ?>
                     from <?=$il_counts?> motif group<?php if ($il_counts <> 1): ?>s<?php endif; ?>
                   </li>
                   <li>
-                    <?=$loops['HL']?> hairpin loop<?php if ($loops['HL'] <> 1): ?>s<?php endif; ?> 
+                    <?=$loops['HL']?> hairpin loop<?php if ($loops['HL'] <> 1): ?>s<?php endif; ?>
                     from <?=$hl_counts?> motif group<?php if ($hl_counts <> 1): ?>s<?php endif; ?>
                   </li>
                   <li><?=$loops['J3']?> three-way junction<?php if ($loops['J3'] <> 1): ?>s<?php endif; ?></li>

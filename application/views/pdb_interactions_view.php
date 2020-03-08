@@ -13,7 +13,7 @@
           <div class="span16">
             <ul class="tabs">
                 <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>">Summary</a></li>
-                <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/motifs">Motifs</a></li>
+                <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/motifs">Loops</a></li>
                 <li class="dropdown active" data-dropdown="dropdown">
                 <a href="#" class="dropdown-toggle">Interactions</a>
                   <ul class="dropdown-menu">
@@ -72,9 +72,9 @@
             <input type="button" class="btn" id="neighborhood" value="Show neighborhood">
             <button type="button" id="stereo" class="btn">Stereo</button>
             <br>
-            Coloring options: <select id="colorOPT"> 
+            Coloring options: <select id="colorOPT">
                     <option value="Default" selected>Default</option>
-                    <option value="CPK">CPK</option>  
+                    <option value="CPK">CPK</option>
                     <option value="RSR" >Real Space R (RSR)</option>
                     <option value="RSRZ">RSR Z-Score (RSRZ)</option>
                 </select>
@@ -170,7 +170,7 @@
           $.jmolTools.neighborhood = false;
           $('#neighborhood').val('Show neighborhood');
           $.jmolTools.models = {};
-          
+
           // unbind all events
           $('#stereo').unbind();
           $('#neighborhood').unbind();

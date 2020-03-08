@@ -29,7 +29,7 @@
           <div class="span16">
             <ul class="tabs">
                 <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>">Summary</a></li>
-                <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/motifs">Motifs</a></li>
+                <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/motifs">Loops</a></li>
                 <li class="dropdown" data-dropdown="dropdown">
                 <a href="#" class="dropdown-toggle">Interactions</a>
                   <ul class="dropdown-menu">
@@ -55,7 +55,7 @@
                       Airport
                     </button>
                     <?php else: ?>
-                    <button id='airport-view' disabled="disabled" 
+                    <button id='airport-view' disabled="disabled"
                         class="btn hasTooltip disabled view-control" data-view='airport'
                         title="No airport diagram is available yet">
                       Airport
@@ -71,7 +71,7 @@
         <div class="row">
             <div id='controls' class='span1 block-controls'>
 
-              <button data-controls-modal="help-modal" data-backdrop="true" 
+              <button data-controls-modal="help-modal" data-backdrop="true"
                 data-keyboard="true" class="btn primary btn-block">Help</button>
 
               <div id="motif-controls">
@@ -84,14 +84,14 @@
               </div>
 
               <div id='nucleotide-controls'>
-                <button type='button' id='rsr-controls' class='btn btn-block nt-color' 
+                <button type='button' id='rsr-controls' class='btn btn-block nt-color'
                   data-toggle='button' data-attr='real_space_r'>RsR</button>
               </div>
 
               <div id="control-groups">
                 <div id="interaction-controls">
                     <button type="button" id="all-toggle" class="btn btn-block
-                      toggle-control" data-toggle='button' 
+                      toggle-control" data-toggle='button'
                       data-toggable='tWW,cWS,tWS,cWH,tWH,cSH,tSH,cSS,tSS,cHH,tHH'
                       data-activate='cWW'>
                       All
@@ -154,7 +154,7 @@
               <div class="row span6">
                 <div id="error-message" class="alert-message error hide fade in" data-alert='alert'>
                    <a class="close" href="#">×</a>
-                </div> 
+                </div>
 
 
 <!--                 <div class="row span6">
@@ -195,9 +195,9 @@
                         <button type="button" id="neighborhood" class="btn">Show neighborhood</button>
                         <button type="button" id="stereo" class="btn">Stereo</button>
                         <br>
-                        Coloring options: <select id="colorOPT"> 
-                            <option value="Default" selected>Default</option> 
-                            <option value="CPK">CPK</option> 
+                        Coloring options: <select id="colorOPT">
+                            <option value="Default" selected>Default</option>
+                            <option value="CPK">CPK</option>
                             <option value="RSR">Real Space R (RSR)</option>
                             <option value="RSRZ">RSR Z-Score (RSRZ)</option>
                         </select>
@@ -283,23 +283,23 @@
           <div class="modal-body">
 
             <p>
-              Shown here is a <strong>circular diagram</strong> generated using the 
-              <a href="<?=$this->config->item('home_url')?>/main/software/fr3d/">FR3D</a> annotations 
-              for <?=$pdb_id?>. The black circle represents the annotated chains. For 
-              some structures an <strong>airport diagram</strong> is provided. To draw it click the 
+              Shown here is a <strong>circular diagram</strong> generated using the
+              <a href="<?=$this->config->item('home_url')?>/main/software/fr3d/">FR3D</a> annotations
+              for <?=$pdb_id?>. The black circle represents the annotated chains. For
+              some structures an <strong>airport diagram</strong> is provided. To draw it click the
               airport button. Structures without one have a disabled button.
             </p>
 
             <h4>Interactions</h4>
             <p>
               Interactions are displayed as arcs connecting nucleotides,
-              by default only cWW interactions are displayed. The 
+              by default only cWW interactions are displayed. The
               <strong>dotted arcs</strong>
-              are long range interactions, there include things like 
-              pseudoknots. To display other interactions use the interaction 
-              controls to the right. Clicking on a interaction will toggle 
-              displaying all interactions of that family and ones near that 
-              family. So clicking on tWW shows all tWW and ntWW. 
+              are long range interactions, there include things like
+              pseudoknots. To display other interactions use the interaction
+              controls to the right. Clicking on a interaction will toggle
+              displaying all interactions of that family and ones near that
+              family. So clicking on tWW shows all tWW and ntWW.
             </p>
 
             <h4>Motifs</h4>
@@ -311,17 +311,17 @@
 
             <h4>Modes</h4>
             <p>
-              In the default <strong>select mode</strong>, click and drag to create a selection box. 
-              All nucleotides within the selection box will be displayed in a jmol 
-              window to the right. The selection box is dragable and resizeable. 
+              In the default <strong>select mode</strong>, click and drag to create a selection box.
+              All nucleotides within the selection box will be displayed in a jmol
+              window to the right. The selection box is dragable and resizeable.
             </p>
 
             <p>
               In <strong>click mode</strong>, click on a interaction or nucleotide to display it
-              in 3D. In addition, some information about the clicked element will 
-              be displayed below the jmol window. To switch to the click mode use 
-              the selection mode control. Hovering over an interaction will 
-              highlight it and the nucleotides that form it. Hovering over a 
+              in 3D. In addition, some information about the clicked element will
+              be displayed below the jmol window. To switch to the click mode use
+              the selection mode control. Hovering over an interaction will
+              highlight it and the nucleotides that form it. Hovering over a
               nucleotide will highlight it as well as all intereracations it forms.
             </p>
 
