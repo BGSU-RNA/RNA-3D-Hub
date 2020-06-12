@@ -72,7 +72,6 @@ class Pdb_model extends CI_Model {
     }
     function get_loops($pdb_id)
     {
-        $loop_release_id = $this->get_latest_loop_release_for_this_pdb($pdb_id);
         $this->db->select('lq.loop_id')
                  ->select('lq.status')
                  ->select('lq.modifications')
@@ -82,7 +81,6 @@ class Pdb_model extends CI_Model {
                  ->select('li.loop_name')
                  ->from('loop_qa AS lq')
                  ->join('loop_info AS li', 'li.loop_id = lq.loop_id')
-                 ->where('lq.loop_release_id',$loop_release_id)
                  ->where('pdb_id', $pdb_id);
         $query = $this->db->get();
 

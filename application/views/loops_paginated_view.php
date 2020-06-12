@@ -12,21 +12,21 @@
                 <li class="dropdown" data-dropdown="dropdown">
                 <a href="#" class="dropdown-toggle">Quality Assurance</a>
                     <ul class="dropdown-menu">
-                        <li><a href="<?=$baseurl?>loops/view_all/valid/<?=$motif_type?>/<?=$release_id?>">Valid</a></li>
-                        <li><a href="<?=$baseurl?>loops/view_all/missing/<?=$motif_type?>/<?=$release_id?>">Missing</a></li>
-                        <li><a href="<?=$baseurl?>loops/view_all/modified/<?=$motif_type?>/<?=$release_id?>">Modified</a></li>
-                        <li><a href="<?=$baseurl?>loops/view_all/incomplete/<?=$motif_type?>/<?=$release_id?>">Incomplete</a></li>
-                        <li><a href="<?=$baseurl?>loops/view_all/abnormal/<?=$motif_type?>/<?=$release_id?>">Composite</a></li>
-                        <li><a href="<?=$baseurl?>loops/view_all/complementary/<?=$motif_type?>/<?=$release_id?>">Self-complementary</a></li>
+                        <li><a href="<?=$baseurl?>loops/view_all/valid/<?=$motif_type?>">Valid</a></li>
+                        <li><a href="<?=$baseurl?>loops/view_all/missing/<?=$motif_type?>">Missing</a></li>
+                        <li><a href="<?=$baseurl?>loops/view_all/modified/<?=$motif_type?>">Modified</a></li>
+                        <li><a href="<?=$baseurl?>loops/view_all/incomplete/<?=$motif_type?>">Incomplete</a></li>
+                        <li><a href="<?=$baseurl?>loops/view_all/abnormal/<?=$motif_type?>">Composite</a></li>
+                        <li><a href="<?=$baseurl?>loops/view_all/complementary/<?=$motif_type?>">Self-complementary</a></li>
                     </ul>
                 </li>
 
                 <li class="dropdown" data-dropdown="dropdown">
                 <a href="#" class="dropdown-toggle">Loop types</a>
                     <ul class="dropdown-menu">
-                        <li><a href="<?=$baseurl?>loops/view_all/<?=$type?>/IL/<?=$release_id?>">Internal loops</a></li>
-                        <li><a href="<?=$baseurl?>loops/view_all/<?=$type?>/HL/<?=$release_id?>">Hairpin loops</a></li>
-                        <li><a href="<?=$baseurl?>loops/view_all/<?=$type?>/J3/<?=$release_id?>">Junction loops</a></li>
+                        <li><a href="<?=$baseurl?>loops/view_all/<?=$type?>/IL">Internal loops</a></li>
+                        <li><a href="<?=$baseurl?>loops/view_all/<?=$type?>/HL">Hairpin loops</a></li>
+                        <li><a href="<?=$baseurl?>loops/view_all/<?=$type?>/J3">Junction loops</a></li>
                     </ul>
                 </li>
             </ul>

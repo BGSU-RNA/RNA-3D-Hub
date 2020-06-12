@@ -78,7 +78,6 @@ class Loops_model extends CI_Model {
         $this->db->select('status, modifications, nt_signature, complementary')
                  ->from('loop_qa')
                  ->where('loop_id',$id)
-                 ->order_by('loop_release_id', 'desc')
                  ->limit(1);
         $query = $this->db->get();
 
@@ -301,17 +300,17 @@ class Loops_model extends CI_Model {
 
         if ($query->num_rows() > 0) {
             $chains = array();
-            
+
             foreach ($query->result() as $row) {
                 $chains[] = $row->chain;
             }
-            
+
             $this->db->select('chain_name, compound')
                      ->from('chain_info')
                      ->where('pdb_id', substr($id,3,4))
                      ->where_in('chain_name', $chains);
             $query = $this->db->get();
-            
+
             foreach ($query->result() as $row) {
                 $result['proteins'][$row->chain_name]['description'] = $row->compound;
             }
@@ -357,7 +356,7 @@ class Loops_model extends CI_Model {
             } else {
                 $match = $row->loop_id_1;
             }
-            
+
             // exclude rows with reversed orientation of loop_id_1 and loop_id_2
             if ( array_key_exists($match, $matches) ) {
                 continue;
@@ -366,7 +365,7 @@ class Loops_model extends CI_Model {
             }
 
             $count++;
-            
+
             $this->db->select()
                      ->from('ml_loops')
                      ->where('loop_id',$match)
@@ -424,47 +423,33 @@ class Loops_model extends CI_Model {
 
     function get_loop_stats()
     {
-        // get release order
-        $this->db->select('loop_release_id, date')
-                 ->from('loop_releases')
-                 ->order_by('date', 'desc');
-        $query = $this->db->get();
-
-        foreach ($query->result() as $row) {
-            $releases[] = $row->loop_release_id;
-            $dates[$row->loop_release_id] = substr($row->date,0,10);
-        }
-
-        // get loop counts group by loop type and release
-        $this->db->select('loop_release_id, status, count(status) as counts, substr(loop_id, 1, 2) as loop_type', FALSE)
+        // get loop counts group by loop type
+        $this->db->select('status, count(status) as counts, substr(loop_id, 1, 2) as loop_type',FALSE)
                  ->from('loop_qa')
-                 ->group_by(array('status', 'loop_release_id', 'loop_type'));
+                 ->group_by(array('status', 'loop_type'));
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
-            $results[$row->loop_type][$row->loop_release_id][$row->status] = $row->counts;
+            $results[$row->loop_type][$row->status] = $row->counts;
         }
 
         foreach (array_keys($results) as $loop_type) {
-            foreach ($releases as $release) {
-                $tables[$loop_type][] = array($release,
-                                            $dates[$release],
-                                            array_sum(array_values($results[$loop_type][$release])),
-                                            $this->make_view_loops_link($results,$loop_type,$release,1),
-                                            $this->make_view_loops_link($results,$loop_type,$release,2),
-                                            $this->make_view_loops_link($results,$loop_type,$release,3),
-                                            $this->make_view_loops_link($results,$loop_type,$release,4),
-                                            $this->make_view_loops_link($results,$loop_type,$release,5),
-                                            $this->make_view_loops_link($results,$loop_type,$release,6));
-            }
+            $tables[$loop_type][] = array(
+                                        array_sum(array_values($results[$loop_type])),
+                                        $this->make_view_loops_link($results,$loop_type,1),
+                                        $this->make_view_loops_link($results,$loop_type,2),
+                                        $this->make_view_loops_link($results,$loop_type,3),
+                                        $this->make_view_loops_link($results,$loop_type,4),
+                                        $this->make_view_loops_link($results,$loop_type,5),
+                                        $this->make_view_loops_link($results,$loop_type,6));
         }
 
         return $tables;
     }
 
-    function make_view_loops_link($counts,$motif_type,$release_id,$status)
+    function make_view_loops_link($counts,$motif_type,$status)
     {
-        if (!array_key_exists($status,$counts[$motif_type][$release_id])) {
+        if (!array_key_exists($status,$counts[$motif_type])) {
             return '0';
         }
 
@@ -474,8 +459,8 @@ class Loops_model extends CI_Model {
         }
         else {
             return anchor(
-                          base_url(array('loops','view_all',$type,$motif_type,$release_id)),
-                          $counts[$motif_type][$release_id][$status]
+                          base_url(array('loops','view_all',$type,$motif_type)),
+                          $counts[$motif_type][$status]
                           );
         }
     }
@@ -492,7 +477,7 @@ class Loops_model extends CI_Model {
         return $links;
     }
 
-    function get_loops($type,$motif_type,$release_id,$num,$offset)
+    function get_loops($type,$motif_type,$num,$offset)
     {
         $verbose = $type;
         $type = array_search($type, $this->qa_status);
@@ -501,7 +486,6 @@ class Loops_model extends CI_Model {
                  ->join('loop_info AS li','qa.loop_id = li.loop_id')
                  ->where('status',$type)
                  ->where('type',$motif_type)
-                 ->where('loop_release_id',$release_id)
                  ->order_by('li.loop_id')
                  ->limit($num,$offset);
         $query = $this->db->get();
@@ -550,13 +534,12 @@ class Loops_model extends CI_Model {
                 <span class='loop_link'>{$loop_link}</span></label>", 'class' => 'loop');
     }
 
-    function get_loops_count($type,$motif_type,$release_id)
+    function get_loops_count($type,$motif_type)
     {
         $type = array_search($type, $this->qa_status);
         $this->db->from('loop_qa')
                  ->where('status',$type)
-                 ->like('loop_id',$motif_type,'after')
-                 ->where('loop_release_id',$release_id);
+                 ->like('loop_id',$motif_type,'after');
         return $this->db->count_all_results();
     }
 

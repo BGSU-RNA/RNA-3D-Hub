@@ -7,7 +7,7 @@ class Loops extends CI_Controller {
 	    $tables = $this->Loops_model->get_loop_stats();
         $motif_types = array('IL','HL','J3');
         foreach ($motif_types as $motif_type) {
-            $this->table->set_heading('id','Date','Total','Valid','Missing','Modified','Abnormal','Incomplete','Complementary');
+            $this->table->set_heading('Total','Valid','Missing','Modified','Abnormal','Incomplete','Complementary');
             $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table'>" );
             $this->table->set_template($tmpl);
             $data['tables'][$motif_type] = $this->table->generate($tables[$motif_type]);
@@ -22,21 +22,20 @@ class Loops extends CI_Controller {
         $this->load->view('footer');
 	}
 
-    public function view_all($type,$motif_type,$release_id)
+    public function view_all($type,$motif_type)
     {
         $config['per_page'] = '20';
 
 	    $this->load->model('Loops_model', '', TRUE);
         $data['table'] = $this->Loops_model->get_loops($type,
                                                        $motif_type,
-                                                       $release_id,
                                                        $config['per_page'],
                                                        $this->uri->segment(6));
         // load pagination class
         $this->load->library('pagination');
-        $config['base_url']         = base_url(array('loops','view_all',$type,$motif_type,$release_id));
+        $config['base_url']         = base_url(array('loops','view_all',$type,$motif_type));
         $config['uri_segment']      = '6';
-        $config['total_rows']       = $this->Loops_model->get_loops_count($type,$motif_type,$release_id);
+        $config['total_rows']       = $this->Loops_model->get_loops_count($type,$motif_type);
         $config['num_links']        = 2;
         $config['use_page_numbers'] = TRUE;
         $config['full_tag_open']    = '<div class="pagination"><ul>';
@@ -61,13 +60,12 @@ class Loops extends CI_Controller {
         $motif_full_names = array('IL'=>'internal loops', 'HL' => 'hairpin loops', 'J3' => 'junction loops');
         $data['title']      = 'All ' .  $type . ' ' . $motif_full_names[$motif_type];
         $data['pageicon'] = base_url() . 'icons/L_icon.png';
-        $data['release_id'] = $release_id;
         $data['type']       = $type;
         $data['motif_type'] = $motif_type;
         $data['baseurl'] = base_url();
         $this->load->view('header_view', $data);
         $this->load->view('menu_view', $data);
-        //$this->load->view('loops_paginated_view', $data);
+        $this->load->view('loops_paginated_view', $data);
         $this->load->view('footer');
 
 //         $this->output->enable_profiler(TRUE);
