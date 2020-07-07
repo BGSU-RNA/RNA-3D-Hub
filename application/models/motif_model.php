@@ -112,6 +112,8 @@ class Motif_model extends CI_Model {
 
         $query = $this->db->get();
 
+        $loop_annotation1["zzz"] = $this->release_id;
+
         foreach($query->result() as $row){
             $loop_annotation1[$row->loop_id] = $row->annotation_1;
             $loop_annotation2[$row->loop_id] = $row->annotation_2;
@@ -778,7 +780,7 @@ class Motif_model extends CI_Model {
 
     function get_header()
     {
-        $header = array('#D', '#S', 'Loop id', 'PDB', 'Disc', 'Bulges', 'Ann1', 'Ann2');
+        $header = array('#D', '#S', 'Loop id', 'PDB', 'Disc', 'Bulges', 'Annotation', 'Location');
 
         // 1, 2, ..., N
         for ($i = 1; $i <= $this->motiflen; $i++) {
@@ -882,11 +884,13 @@ class Motif_model extends CI_Model {
                 // do nothing
             } elseif ( $key == 'Disc' ) {
                 $row[] = $this->disc[$this->loops[1]][$this->loops[$id]];
-            } elseif( $key == 'Ann1' ) {
-                $row[] = $this->loop_annotation1[$id];
-            } elseif( $key == 'Ann2' ){
-                $row[] = "Temporary";
-#                $row[] = $this->loop_annotation2[$id];
+            } elseif( $key == 'Annotation' ) {
+#                $row[] = $this->loop_annotation1["zzz"];
+                $row[] = $this->loop_annotation1[$this->loops[$id]];
+            } elseif( $key == 'Location' ){
+#                $row[] = $id;
+#                $row[] = "Temporary";
+                $row[] = $this->loop_annotation2[$this->loops[$id]];
             } else {
                 $parts = explode('-', $key);
 
