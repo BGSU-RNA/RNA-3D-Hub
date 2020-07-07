@@ -97,6 +97,30 @@ class Motif_model extends CI_Model {
         return json_encode($data);
     }
 
+    function get_loop_annotations()
+        {
+        $this->db->select('la.loop_id, la.annotation_1, la.annotation_2')
+        ->from('loop_annotations as la')
+        ->join('ml_loops as ml', 'ml.loop_id = la.loop_id')
+        ->where('ml.ml_release_id', $this->release_id)
+        ->where('ml.motif_id', $this->motif_id);
+
+#        ->where('ml.motif_id', $motif_id);
+
+#        ->where('ml.motif_id', $this->get_annotations($motif_id));
+
+
+        $query = $this->db->get();
+
+        foreach($query->result() as $row){
+            $loop_annotation1[$row->loop_id] = $row->annotation_1;
+            $loop_annotation2[$row->loop_id] = $row->annotation_2;
+        }
+
+        $this->loop_annotation1 = $loop_annotation1;
+        $this->loop_annotation2 = $loop_annotation2;
+    }
+
     function get_annotations($motif_id)
     {
         $this->db->select()
@@ -183,7 +207,7 @@ class Motif_model extends CI_Model {
         $query = $this->db->get();
 
         $matrix = array();
-        
+
         foreach ($query->result() as $row) {
             $qa_status[$row->loop1][$row->loop2] = $row->qa_status;
             $qa_message[$row->loop1][$row->loop2] = $row->qa_message;
@@ -456,7 +480,7 @@ class Motif_model extends CI_Model {
             $last  = "";
 
             foreach($query->result() as $row) {
-                if ( $first == "" ){ 
+                if ( $first == "" ){
                     $first = $row->position;
                 }
 
@@ -711,7 +735,7 @@ class Motif_model extends CI_Model {
         #echo "<p>i: $i // loops: " . $this->loops[$i] . "</p>";
         #ksort($this->full_nts[$this->loops[$i]]);
         ksort($this->full_units[$this->loops[$i]]);
-        return "<label><input type='checkbox' id='{$this->loops[$i]}' class='jmolInline' 
+        return "<label><input type='checkbox' id='{$this->loops[$i]}' class='jmolInline'
                data-coord='{$this->loops[$i]}' " . " " . "data-core=" . " " . "data-quality='". "{$this->loops[$i]}" . "'>{$this->loops[$i]}</label>"
                . "<span class='loop_link'>" . anchor_popup("loops/view/{$this->loops[$i]}", '&#10140;') . "</span>";
 
@@ -724,6 +748,7 @@ class Motif_model extends CI_Model {
         $this->get_loops();
         $this->get_discrepancies();
         $this->get_interactions();
+        $this->get_loop_annotations();
         $this->get_loop_lengths();
         $this->get_chainbreak();
         $this->get_motiflen();
@@ -732,9 +757,9 @@ class Motif_model extends CI_Model {
         for ($i = 0; $i < $this->num_loops; $i++) {
             $rows[$i] = $this->generate_row($i+1);
         }
-        
+
         $rows = $this->remove_empty_columns($rows);
-        
+
         return $rows;
     }
 
@@ -753,7 +778,7 @@ class Motif_model extends CI_Model {
 
     function get_header()
     {
-        $header = array('#D', '#S', 'Loop id', 'PDB', 'Disc', 'Bulges');
+        $header = array('#D', '#S', 'Loop id', 'PDB', 'Disc', 'Bulges', 'Ann1', 'Ann2');
 
         // 1, 2, ..., N
         for ($i = 1; $i <= $this->motiflen; $i++) {
@@ -857,8 +882,12 @@ class Motif_model extends CI_Model {
                 // do nothing
             } elseif ( $key == 'Disc' ) {
                 $row[] = $this->disc[$this->loops[1]][$this->loops[$id]];
-            }
-            else {
+            } elseif( $key == 'Ann1' ) {
+                $row[] = $this->loop_annotation1[$id];
+            } elseif( $key == 'Ann2' ){
+                $row[] = "Temporary";
+#                $row[] = $this->loop_annotation2[$id];
+            } else {
                 $parts = explode('-', $key);
 
                 #$nt1 = $this->nts[$this->loops[$id]][$parts[0]]; // ISSUE
@@ -885,7 +914,7 @@ class Motif_model extends CI_Model {
                  ->where_in('unit_id_1', array_keys($this->unit_ids))
                  ->where_in('unit_id_2', array_keys($this->unit_ids));
         $query = $this->db->get();
-        
+
         foreach($query->result() as $row) {
             $unit_full_1 = $row->unit_id_1;
             $unit_full_2 = $row->unit_id_2;
@@ -910,7 +939,7 @@ class Motif_model extends CI_Model {
                  ->where('loop_id_1', $this->loops[1])
                  ->where_in('loop_id_2', $this->loops);
         $result = $this->db->get()->result_array();
-        
+
         for ($i = 0; $i < count($result); $i++) {
             $disc[$result[$i]['loop_id_1']][$result[$i]['loop_id_2']] = number_format($result[$i]['discrepancy'],4);
         }
@@ -935,7 +964,7 @@ class Motif_model extends CI_Model {
             $loops[$row->original_order] = $row->loop_id;
             $similarity[$row->similarity_order] = $row->loop_id;
         }
-        
+
         $this->loops = $loops;
         $this->num_loops = count($loops);
         $this->similarity = $similarity;
