@@ -585,18 +585,9 @@ class Ajax_model extends CI_Model {
     function get_loop_coordinates_MotifAtlas($loop_id)
     {
 
-        $this->output->enable_profiler(TRUE);
-
         $lines_arr = array();
         $lines_arr2 = array();
         $lines_arr3 = array();
-
-        echo $this->router->method;
-        echo "<br>";
-
-        $release_id = $this->get_latest_ml_release_id();
-
-        echo $release_id;
 
         $headers_cif_fr3d = array (
 
@@ -634,10 +625,12 @@ class Ajax_model extends CI_Model {
 
         $footer = array('#');
 
+        $ml_release_id = $this->get_latest_ml_release_id();
+
         $this->db->select('unit_id')
                  ->from('ml_loop_positions')
                  ->where('loop_id',$loop_id)
-                 ->where('ml_release_id',4.24)
+                 ->where('ml_release_id', $ml_release_id)
                  ->order_by('position');
         $query = $this->db->get();
         if ($query->num_rows() == 0) { return 'Loop id is not found'; }
@@ -792,14 +785,8 @@ class Ajax_model extends CI_Model {
     function get_loop_coordinates($loop_id)
     {
 
-        $this->output->enable_profiler(TRUE);
-
         $lines_arr = array();
         $lines_arr2 = array();
-
-        echo $this->router->method;
-        echo "<br>";
-
         
         $headers_cif_fr3d = array (
 
@@ -839,7 +826,7 @@ class Ajax_model extends CI_Model {
 
         $this->db->select('unit_id')
                  ->from('loop_positions')
-                 ->where('loop_id',$loop_id)
+                 ->where('loop_id', $loop_id)
                  ->order_by('position');
         $query = $this->db->get();
         if ($query->num_rows() == 0) { return 'Loop id is not found'; }
