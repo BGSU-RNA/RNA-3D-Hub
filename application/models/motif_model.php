@@ -738,7 +738,7 @@ class Motif_model extends CI_Model {
         #ksort($this->full_nts[$this->loops[$i]]);
         ksort($this->full_units[$this->loops[$i]]);
         return "<label><input type='checkbox' id='{$this->loops[$i]}' class='jmolInline'
-               data-coord='{$this->loops[$i]}' " . " " . "data-core=" . " " . "data-quality='". "{$this->loops[$i]}" . "'>{$this->loops[$i]}</label>"
+               data-coord_ma='{$this->loops[$i]}' " . " " . "data-core=" . " " . "data-quality='". "{$this->loops[$i]}" . "'>{$this->loops[$i]}</label>"
                . "<span class='loop_link'>" . anchor_popup("loops/view/{$this->loops[$i]}", '&#10140;') . "</span>";
 
     }
