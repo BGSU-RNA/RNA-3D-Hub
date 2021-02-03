@@ -76,6 +76,29 @@ class Rest extends MY_Controller {
 
     }
 
+    public function getCoordinatesMotifAtlas()
+    {
+        // should be able to accept loop_id, nt_ids, motif_id, short_nt_id
+        // and loop pairs (returns the first loop of the two)
+
+        // search POST, then GET
+        $query = $this->input->get_post('coord_ma');
+        
+        $this->output->enable_profiler(TRUE);
+        
+        $query_type = $this->_parseInput($query);
+
+        if ( $query_type ) {
+            $this->output->set_header("Access-Control-Allow-Origin: *");
+            $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
+            $data['csv'] = $this->_database_lookup_ma($query, $query_type);
+            $this->load->view('csv_view', $data);
+        } else {
+            echo $this->messages['invalid'];
+        }
+
+    }
+
 
     public function getCoordinatesRelative()
     {
@@ -165,6 +188,21 @@ class Rest extends MY_Controller {
             case 'unit_id':
                 //return $this->Ajax_model->get_unit_id_coordinates($query);
                 return $this->Ajax_model->get_nt_coordinates($query);
+            default: return $this->messages['error'];
+        endswitch;
+
+    }
+
+    private function _database_lookup_ma($query, $query_type)
+    {
+        // don't load the database until the input was validated
+        $this->load->model('Ajax_model', '', TRUE);
+
+        $this->output->enable_profiler(TRUE);
+        
+        switch ($query_type) :
+            case 'loop_id':
+                return $this->Ajax_model->get_loop_coordinates_MotifAtlas($query);
             default: return $this->messages['error'];
         endswitch;
 
