@@ -662,31 +662,6 @@ class Ajax_model extends CI_Model {
 
         }
 
-        /*
-        // get the coordinates of core nucleotides
-        $this->db->select('coordinates')
-                ->from('unit_coordinates')
-                ->where_in('unit_id', $core_units);
-        $query = $this->db->get();
-
-        if ($query->num_rows() == 0) { return 'Loop coordinates not found'; }
-
-        foreach ($query->result() as $row) {
-            foreach ($row as $line) {
-                $line= explode("\n", $line);
-                foreach ($line as $line2) {
-                    $model_1_pattern = '/ 1\s*$/';
-                    // If model number is not 1, change to 1
-                    if (!preg_match($model_1_pattern, $line2)) {
-                        $search_pattern = '/([+-]?[0-9]+)\s*$/';
-                        $line2 = preg_replace($search_pattern, '1', $line2);
-                    }      
-                    $lines_arr[] = ($line2);  
-                }   
-            }
-        }
-        */
-
 
         $this->db->select('coordinates')->from('unit_coordinates');
         $this->db->where_in('unit_id', $core_units);
@@ -776,8 +751,7 @@ class Ajax_model extends CI_Model {
         }
 
         
-        return $final_result;
-        
+        return $final_result;        
 
     }
 
