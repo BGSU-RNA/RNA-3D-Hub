@@ -15,24 +15,27 @@
             <div class="row">
               <div class="span7">
                 <p>
-                  The Representative Sets of RNA 3D Structures pages organize all
+                  The Representative Sets of RNA 3D Structures organize all
                   RNA-containing 3D structures from PDB into sequence/structure equivalence classes
                   and selects a high-quality representative structure from each class.
                   The resulting Representative Sets of RNA 3D structures are appropriate for tasks
                   which require searching or training over the breadth of the entire RNA 3D structure database,
                   but which should avoid the redundancy inherent in PDB due to multiple 3D
                   structures of the same molecule from the same organism.
+                  Equivalence classes show all structures of the same molecule, and the associated heat maps
+                  show all-against-all geometric comparisons of the structures within each class.
                 </p>
                 <p>
                   Releases are generated weekly, and previous releases are available starting from 2011.
-                  (As of July 2018, we are filling in previous releases as they would have appeared,
-                  at the rate of more than one per week.)
                   The default listing shows structures at 4 Angstrom resolution or better, but
                   different resolution thresholds are available for each release.
                   The set of representative structures can be viewed online along with information
                   about the resolution, experimental method, molecule name, species, and number of
                   equivalent structures.
                   Releases can also be downloaded and parsed by computer programs.
+                  Some weeks, when many new structures are released, the representative set listing can
+                  be delayed because of the time it takes to compute all-against-all geometric comparisons
+                  within large equivalences classes such as Thermus thermophilus small ribosomal subunit.
                 </p>
                 <p>
                   With Release 3.0, we modified the procedure for choosing the representative
