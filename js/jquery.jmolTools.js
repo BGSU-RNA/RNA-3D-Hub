@@ -131,6 +131,23 @@ if ( typeof Object.create !== 'function' ) {
                 }
             });
 
+            // This AJAX call gets the coordinate data for Motif Atlas pages
+            $.ajax({
+                url: $.fn.jmolTools.options.serverUrlCoordMotifAtlas,
+                type: 'POST',
+                data: {'coord_ma' : self.$elem.data($.fn.jmolTools.options.dataAttributeCoordMotifAtlas)}
+            }).done(function(data) {
+                self.appendData(data);
+                if ( self.loaded ) {
+                    self.updateModelCounts();
+                    modelNum = self.modelNumber;
+                    self.superimpose();
+                    self.labelnucleotides();
+                    self.colorOneModel();
+                    self.show();
+                }
+            });
+
                
         },
 
@@ -776,6 +793,9 @@ if ( typeof Object.create !== 'function' ) {
     $.fn.jmolTools.options = {
         serverUrlCoord   : loc + '/rna3dhub/rest/getCoordinates',
         dataAttributeCoord: 'coord',
+
+        serverUrlCoordMotifAtlas   : loc + '/rna3dhub/rest/getCoordinatesMotifAtlas',
+        dataAttributeCoordMotifAtlas: 'coord_ma',
 
         serverUrlRSR   : loc + '/rna3dhub/rest/getRSR',
         dataAttributeRSR: 'quality',
