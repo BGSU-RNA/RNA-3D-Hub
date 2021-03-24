@@ -780,7 +780,7 @@ class Motif_model extends CI_Model {
 
     function get_header()
     {
-        $header = array('#D', '#S', 'Loop id', 'PDB', 'Disc', 'Bulges', 'Annotation', 'Location');
+        $header = array('#D', '#S', 'Loop id', 'PDB', 'Disc', 'Bulges', 'Annotation');
 
         // 1, 2, ..., N
         for ($i = 1; $i <= $this->motiflen; $i++) {
@@ -887,10 +887,6 @@ class Motif_model extends CI_Model {
             } elseif( $key == 'Annotation' ) {
 #                $row[] = $this->loop_annotation1["zzz"];
                 $row[] = $this->loop_annotation1[$this->loops[$id]];
-            } elseif( $key == 'Location' ){
-#                $row[] = $id;
-#                $row[] = "Temporary";
-                $row[] = $this->loop_annotation2[$this->loops[$id]];
             } else {
                 $parts = explode('-', $key);
 
