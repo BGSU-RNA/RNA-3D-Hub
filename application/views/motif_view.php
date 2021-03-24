@@ -35,12 +35,12 @@
                             <?php endif; ?>
                             <dt>Basepair signature:</dt>
                             <dd id="bp_signature" class="edit"><?=$annotation['bp_signature']?></dd>
-                            <dt>Free text annotation:</dt>
-                            <?php if ($annotation['annotation']): ?>
-                            <dd id="annotation" class="edit_area"><?=$annotation['annotation']?></dd>
-                            <?php else: ?>
+                            <!--<dt>Free text annotation:</dt>
+                            <#?php if ($annotation['annotation']): ?>
+                            <dd id="annotation" class="edit_area"><#?=$annotation['annotation']?></dd>
+                            <#?php else: ?>
                             <dd id="annotation" class="edit_area">No annotation provided yet.</dd>
-                            <?php endif; ?>
+                            <#?php endif; ?>-->
                             <dt>Intraclusteral linkage</dt>
                             <dd>
                                 <strong>Min</strong> <?php echo number_format($linkage['intra_min_disc'], 2); ?> |
