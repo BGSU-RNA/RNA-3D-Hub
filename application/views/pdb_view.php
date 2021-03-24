@@ -7,31 +7,22 @@
 
             <h1>RNA Structure Atlas</h1>
             <p>
-
-            </p>
-
-            <p>
-              - provides annotations of base-pairing, -stacking, and -backbone 
-              interactions computed by 
+              Provides annotations of base-pairing, base stacking, and base-backbone
+              interactions computed by
               <a href="<?=$this->config->item('fr3d_url')?>">FR3D</a>
             </p>
             <p>
-              - extracts internal, hairpin and 3-way junction loops and 
-              annotates them with motifs from the 
+              Extracts internal, hairpin and 3-way junction loops and
+              annotates representative structures with motifs from the
               <a href="<?=$baseurl?>motifs?">RNA 3D Motif Atlas</a>
             </p>
             <p>
-              - organizes redundant structures into 
-              <a href="<?=$baseurl?>nrlist">representative sets</a> of 
-              equivalence classes
+              All RNA-containing 3D structures are downloaded and annotated each week, including
+              large structures in mmCIF format.
             </p>
             <p>
-              We are <a href="http://rna.bgsu.edu/main/upgrading-rna-3d-hub/">upgrading BGSU RNA Site</a>
-              to include new RNA 3D structures distributed in 
-              <a href="http://wwpdb.org/news/news.php?year=2014#10-December-2014">mmCIF format</a>.
-              Follow us on 
-              <a href="https://twitter.com/rna3dhub">Twitter</a> 
-              to hear when the updated version becomes available.
+              Follow us on
+              <a href="https://twitter.com/rna3dhub">Twitter</a>
             </p>
 
             <select data-placeholder="Choose one of <?php echo count($pdbs); ?> RNA-containing 3D structures" tabindex="1" id="chosen" style="width:400px">
@@ -49,47 +40,24 @@
               <h4>Featured Structures</h4>
               <ul class="media-grid">
                 <li>
-                  <a href="<?=$baseurl?>pdb/1FJG">1FJG
-                    <img src="http://cdn.rcsb.org/images/rutgers/fj/1fjg/1fjg.pdb-250.jpg" class="thumbnail span2" alt="Asymmetric unit 1FJG">
-                    T. th. 16S rRNA
+                  <a href="<?=$baseurl?>pdb/6ZMI">6ZMI
+                    <img src="https://cdn.rcsb.org/images/structures/zm/6zmi/6zmi_assembly-1.jpeg" class="thumbnail span2" alt="6ZMI assembly">
+                    Human ribosome
                   </a>
                 </li>
                 <li>
-                  <a href="<?=$baseurl?>pdb/3V2F">3V2F
-                    <img src="http://cdn.rcsb.org/images/rutgers/v2/3v2f/3v2f.pdb-250.jpg" class="thumbnail span2" alt="Asymmetric unit 3V2F">
-                    T. th. 23S rRNA
+                  <a href="<?=$baseurl?>pdb/4Y4O">4Y4O
+                    <img src="https://cdn.rcsb.org/images/structures/y4/4y4o/4y4o_assembly-1.jpeg" class="thumbnail span2" alt="4Y4O assembly">
+                    T. th. ribosome
                   </a>
                 </li>
                 <li>
-                  <a href="<?=$baseurl?>pdb/1S72">1S72
-                    <img src="http://cdn.rcsb.org/images/rutgers/s7/1s72/1s72.pdb-250.jpg" class="thumbnail span2" alt="Asymmetric unit 1S72">
-                    H. m. 23S rRNA
+                  <a href="<?=$baseurl?>pdb/7K00">7K00
+                    <img src="https://cdn.rcsb.org/images/structures/k0/7k00/7k00_assembly-1.jpeg" class="thumbnail span2" alt="7K00 assembly">
+                    E. coli ribosome
                   </a>
                 </li>
-                <li>
-                  <a href="<?=$baseurl?>pdb/2QBG">2QBG
-                    <img src="http://cdn.rcsb.org/images/rutgers/qb/2qbg/2qbg.pdb-250.jpg" class="thumbnail span2" alt="Asymmetric unit 2QBG">
-                    E. coli 23S rRNA
-                  </a>
-                </li>
-                <li>
-                  <a href="<?=$baseurl?>pdb/2AW7">2AW7
-                    <img src="http://cdn.rcsb.org/images/rutgers/aw/2aw7/2aw7.pdb-250.jpg" class="thumbnail span2" alt="Asymmetric unit 2AW7">
-                    E. coli 16S rRNA
-                  </a>
-                </li>
-                <li>
-                  <a href="<?=$baseurl?>pdb/3U5F">3U5F
-                    <img src="http://cdn.rcsb.org/images/rutgers/u5/3u5f/3u5f.pdb-250.jpg" class="thumbnail span2" alt="Asymmetric unit 3U5F">
-                    S. c. 40S rRNA
-                  </a>
-                </li>
-                <li>
-                  <a href="<?=$baseurl?>pdb/4A1B">4A1B
-                    <img src="http://cdn.rcsb.org/images/rutgers/a1/4a1b/4a1b.pdb-250.jpg" class="thumbnail span2" alt="Asymmetric unit 4A1B">
-                    Tetr. th. 26S rRNA
-                  </a>
-                </li>
+
               </ul>
 
             </div>
@@ -103,7 +71,7 @@
                 <?php foreach($recent as $pdb): ?>
                 <li>
                   <a href="<?=$baseurl?>pdb/<?=$pdb?>"><?=$pdb?>
-                    <img src="http://cdn.rcsb.org/images/rutgers/<?=strtolower(substr($pdb, 1, 2));?>/<?=strtolower($pdb);?>/<?=strtolower($pdb);?>.pdb-250.jpg" class="thumbnail span2" alt="Asymmetric unit <?=$pdb?>">
+                    <img src="https://cdn.rcsb.org/images/structures/<?=strtolower(substr($pdb, 1, 2));?>/<?=strtolower($pdb);?>/<?=strtolower($pdb);?>_assembly-1.jpeg" class="thumbnail span2" alt="<?=$pdb?> assembly">
                   </a>
                 </li>
                 <?php endforeach; ?>

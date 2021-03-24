@@ -49,7 +49,7 @@
                 <ul class="media-grid">
                   <li>
                     <a href="#">
-                      <img src="http://cdn.rcsb.org/images/rutgers/<?=strtolower(substr($pdb_id, 1, 2));?>/<?=strtolower($pdb_id);?>/<?=strtolower($pdb_id);?>.pdb-250.jpg" class="span3" alt="Asymmetric unit <?=$pdb_id?>">
+                      <img src="https://cdn.rcsb.org/images/structures/<?=strtolower(substr($pdb_id, 1, 2));?>/<?=strtolower($pdb_id);?>/<?=strtolower($pdb_id);?>_assembly-1.jpeg" class="span3" alt="<?=$pdb_id?> assembly">
                     </a>
                   </li>
                 </ul>
@@ -145,10 +145,9 @@
               <div class="span3 well">
                 <h4>3D Redundancy</h4>
                 <?php if (!isset($nr_classes) ): ?>
-                    This PDB is not included in any representative set equivalence class. Most likely, this PDB doesn't contain any
-                    complete nucleotides.
+                    This PDB is not included in any representative set equivalence class. Possibly, this PDB doesn't contain any complete nucleotides.
                 <?php else: ?>
-                    <?=$pdb_id?> belongs to the following equivalence classes in the current representative set:
+                    <?=$pdb_id?> has chains which belong to the following equivalence classes in the current representative set:
                     <ul>
                       <?php foreach ($nr_classes as $nr_class): ?>
                       <li>
