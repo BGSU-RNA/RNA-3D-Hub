@@ -116,11 +116,11 @@ class Motif_model extends CI_Model {
 
         foreach($query->result() as $row){
             $loop_annotation1[$row->loop_id] = $row->annotation_1;
-            $loop_annotation2[$row->loop_id] = $row->annotation_2;
+            #$loop_annotation2[$row->loop_id] = $row->annotation_2;
         }
 
         $this->loop_annotation1 = $loop_annotation1;
-        $this->loop_annotation2 = $loop_annotation2;
+        #$this->loop_annotation2 = $loop_annotation2;
     }
 
     function get_annotations($motif_id)
@@ -886,7 +886,12 @@ class Motif_model extends CI_Model {
                 $row[] = $this->disc[$this->loops[1]][$this->loops[$id]];
             } elseif( $key == 'Annotation' ) {
 #                $row[] = $this->loop_annotation1["zzz"];
-                $row[] = $this->loop_annotation1[$this->loops[$id]];
+                 # Check if the motif instance has an annotation associated with it
+                 if (array_key_exists($this->loops[$id], $this->loop_annotation1)) {
+                    $row[] = $this->loop_annotation1[$this->loops[$id]];
+                 } else {
+                    $row[] = 'No annotation';  
+                 }
             } else {
                 $parts = explode('-', $key);
 
