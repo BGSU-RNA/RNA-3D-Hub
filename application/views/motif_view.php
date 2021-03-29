@@ -28,7 +28,13 @@
                 <div class="block-div resizable" id="annotation-panel">
                         <dl>
                             <dt>Description:</dt>
-                            <dd id="common_name2" class="edit"><?=$annotation_test?></dd>
+                            <dd id="common_name2" class="edit"><?
+                            foreach($annotation_test as $x => $x_value) {
+                                #echo "Key=" . $x . ", Value=" . $x_value;
+                                echo $x . " ". "(". $x_value . ")";
+                                echo "<br>";
+                            }
+                            ?></dd>
                             <!--<dt>Description:</dt>
                             <#?php if ($annotation['common_name']): ?>
                             <dd id="common_name" class="edit"><?=$annotation['common_name']?></dd>
