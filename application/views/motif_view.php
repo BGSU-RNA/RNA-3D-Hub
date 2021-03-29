@@ -28,11 +28,13 @@
                 <div class="block-div resizable" id="annotation-panel">
                         <dl>
                             <dt>Description:</dt>
-                            <?php if ($annotation['common_name']): ?>
+                            <dd id="common_name2" class="edit"><?=$annotation_test?></dd>
+                            <!--<dt>Description:</dt>
+                            <#?php if ($annotation['common_name']): ?>
                             <dd id="common_name" class="edit"><?=$annotation['common_name']?></dd>
-                            <?php else: ?>
+                            <#?php else: ?>
                             <dd id="common_name" class="edit">No description added yet.</dd>
-                            <?php endif; ?>
+                            <#?php endif; ?>-->
                             <dt>Basepair signature:</dt>
                             <dd id="bp_signature" class="edit"><?=$annotation['bp_signature']?></dd>
                             <!--<dt>Free text annotation:</dt>
