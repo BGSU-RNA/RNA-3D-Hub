@@ -50,8 +50,6 @@ class Motif extends MY_Controller {
             return;
         }
 
-        //annotations
-        $data['annotation'] = $this->Motif_model->get_annotations($motif_id);
 
         // pairwise interactions table
         $this->benchmark->mark('a');
@@ -65,6 +63,11 @@ class Motif extends MY_Controller {
         // checkbox widget
 //         $this->benchmark->mark('b');
 //         $data['checkboxes'] = array(); //$this->Motif_model->get_checkboxes($this->Motif_model->loops);
+
+        //annotations
+        $data['annotation'] = $this->Motif_model->get_annotations($motif_id);
+
+        $data['annotation_test'] = $this->Motif_model->get_annotations_count();
 
         // mutual discrepancy matrix widget
         $this->benchmark->mark('c');
