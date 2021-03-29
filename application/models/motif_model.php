@@ -123,6 +123,29 @@ class Motif_model extends CI_Model {
         #$this->loop_annotation2 = $loop_annotation2;
     }
 
+    function get_annotations_count()
+    {
+
+        # Check whether the loop_annotation1 array has values
+        if ($this->loop_annotation1) {
+
+            # get the annotation from the loop_annotation1 array
+            $annotation = array_values($this->loop_annotation1);
+            # count the number of unique annotation label. Key would be the annotation label and the value would be the count
+            $annotation_count = array_count_values($annotation);
+            # sort the array by desc value
+            arsort($annotation_count);
+
+            # get the keys from the annotation_count array
+            $keys = array_keys($annotation_count);
+
+            return $keys[0];
+        } else { 
+            return 'No annotation is available';
+        }
+
+    }
+
     function get_annotations($motif_id)
     {
         $this->db->select()
