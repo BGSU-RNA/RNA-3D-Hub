@@ -911,7 +911,7 @@ class Motif_model extends CI_Model {
                  if (array_key_exists($this->loops[$id], $this->loop_annotation1)) {
                     $row[] = $this->loop_annotation1[$this->loops[$id]];
                  } else {
-                    $row[] = 'No annotation';  
+                    $row[] = ' ';  
                  }
             } else {
                 $parts = explode('-', $key);
