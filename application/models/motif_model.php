@@ -112,8 +112,6 @@ class Motif_model extends CI_Model {
 
         $query = $this->db->get();
 
-        $loop_annotation1["zzz"] = $this->release_id;
-
         foreach($query->result() as $row){
             $loop_annotation1[$row->loop_id] = $row->annotation_1;
             #$loop_annotation2[$row->loop_id] = $row->annotation_2;
@@ -137,11 +135,11 @@ class Motif_model extends CI_Model {
             arsort($annotation_count);
 
             # get the keys from the annotation_count array
-            $keys = array_keys($annotation_count);
+            # $keys = array_keys($annotation_count);
 
-            return $keys[0];
+            return $annotation_count;
         } else { 
-            return 'No annotation is available';
+        	return false;
         }
 
     }
