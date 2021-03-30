@@ -27,12 +27,10 @@
             <div class="span4">
                 <div class="block-div resizable" id="annotation-panel">
                         <dl>
-                            <dt>Description:</dt>
+                            <dt>Annotations</dt>
                             <dd id="common_name2" class="edit"><?
-                            foreach($annotation_test as $x => $x_value) {
-                                #echo "Key=" . $x . ", Value=" . $x_value;
-                                echo $x . " ". "(". $x_value . ")";
-                                echo "<br>";
+                            foreach($annotation_test as $key => $value) {
+                                echo "<li>" . $key . " ". "(". $value . ")". "</li>";
                             }
                             ?></dd>
                             <!--<dt>Description:</dt>
@@ -41,7 +39,7 @@
                             <#?php else: ?>
                             <dd id="common_name" class="edit">No description added yet.</dd>
                             <#?php endif; ?>-->
-                            <dt>Basepair signature:</dt>
+                            <dt>Basepair signature</dt>
                             <dd id="bp_signature" class="edit"><?=$annotation['bp_signature']?></dd>
                             <!--<dt>Free text annotation:</dt>
                             <#?php if ($annotation['annotation']): ?>

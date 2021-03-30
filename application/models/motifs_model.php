@@ -398,14 +398,13 @@ class Motifs_model extends CI_Model {
 
         foreach($query->result() as $row){
             $loop_annotation[$row->loop_id] = $row->annotation_1;
-            #$loop_annotation2[$row->loop_id] = $row->annotation_2;
         }
         return $loop_annotation;
     }
 
     function get_loop_annotations_count($loop_annotations) 
     {
-        # Check whether the loop_annotation1 array has values
+        # Check whether the loop_annotations array has values
         if ($loop_annotations) {
 
             # get the annotation from the loop_annotation1 array
@@ -414,9 +413,6 @@ class Motifs_model extends CI_Model {
             $annotation_count = array_count_values($annotation);
             # sort the array by desc value
             arsort($annotation_count);
-
-            # get the keys from the annotation_count array
-            # $keys = array_keys($annotation_count);
 
             return $annotation_count;
         } 
@@ -489,21 +485,18 @@ class Motifs_model extends CI_Model {
                 }
 
                 /*
-                Do we still need to run the following two queries below or can we
-                import them from the motif_model.php?
-
-                We might need to refactor these portion of the code
-
+                We might need to refactor the code in the next two lines since equivalent methods
+                exist in motif_model.php
                 */
                 $loop_annotations = $this->get_loop_annotations($row->motif_id, $id);
                 $annotations_count = $this->get_loop_annotations_count($loop_annotations);
 
-                # Create an empty string for motif annotation
+                # Create an empty string for storing motif annotation
                 $annotation_new = ''; 
 
                 if ($annotations_count) {
                     foreach($annotations_count as $key => $value) {
-                        $annotation_new .= "<li>". $key . " " . "(" . $value . ")". "</li>";
+                        $annotation_new .= "<li>" . $key . " " . "(" . $value . ")". "</li>";
                         
                     }
                 }
@@ -521,10 +514,10 @@ class Motifs_model extends CI_Model {
                                     . "<span>Exemplar</span></label></li>"
                                     . "<li>Basepair signature: $signature</li>"
                                     . '<li>History status: ' . $this->add_annotation_label($row->motif_id, $reason) . '</li>'
-                                    . "$annotation"
-                                    ."$annotation_new"
-                                    //. $annotation2
-                                    . '</ul>',
+                                    #. "$annotation"
+                                    #. "<li>Annotations</li>"
+                                    . '</ul>'
+                                    ."$annotation_new",
                                  $length_distribution['min'],
                                  $row->instances);
                 $i++;
