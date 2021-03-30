@@ -123,6 +123,27 @@ class Rest extends MY_Controller {
 
     }
 
+    public function SeqtoUnitMapping()
+    {
+
+        // search POST, then GET
+        $query = $this->input->get_post('ife');
+        
+        $this->output->enable_profiler(TRUE);
+        
+        if ( $query ) {
+            $this->load->model('Ajax_model', '', TRUE);
+
+            $this->output->set_header("Access-Control-Allow-Origin: *");
+            $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
+            $data['json'] = $this->Ajax_model->get_seq_unit_mapping($query);
+            $this->load->view('json_view', $data);
+        } else {
+            echo $this->messages['invalid'];
+        }
+
+    }
+
 
     public function getRSR()
     {

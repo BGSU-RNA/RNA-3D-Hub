@@ -287,6 +287,41 @@ class Ajax_model extends CI_Model {
         
     }
 
+    function get_seq_unit_mapping($ife) 
+    {
+        list($pdb, $model, $chain) = explode('|', $ife);
+        
+        
+        $this->db->select('e1.unit_id')
+                 ->select('e3.index')
+                 ->select('e3.unit')
+                 ->from('exp_seq_unit_mapping as e1')
+                 ->join('exp_seq_chain_mapping as e2','e1.exp_seq_chain_mapping_id = e2.exp_seq_chain_mapping_id')
+                 ->join('chain_info as c1','e2.chain_id = c1.chain_id')
+                 ->join('exp_seq_position as e3','e1.exp_seq_position_id = e3.exp_seq_position_id')
+                 ->where('c1.pdb_id ',$pdb)
+                 ->where('c1.chain_name',$chain);
+        $query = $this->db->get();
+        
+        $data = " ";
+        foreach ($query->result_array() as $row) {
+            $unit_id=$row['unit_id']; 
+            # Add 1 because sequence index begins from 0 in the db
+            $index=$row['index'] + 1;
+            $unit=$row['unit'];
+            if (is_null($unit_id)) {
+                $relation = $pdb . "|Sequence|" . $chain . "|" . $unit . "|" . $index . " observed_as NULL";
+                $data .= $relation . "</br>";
+            } else {
+                $relation = $pdb . "|Sequence|" . $chain . "|" . $unit . "|" . $index . " observed_as " . $unit_id;
+                $data .= $relation . "</br>";
+            }
+        }
+    
+        return $data;
+
+    }
+
     function get_nt_json_dcc($nt_ids)
     {
         $lengths = array('C' => 24, 'U' => 23, 'A' => 26, 'G' => 27);
