@@ -322,6 +322,77 @@ class Ajax_model extends CI_Model {
 
     }
 
+    function get_pairwise_interactions($units)
+    {
+
+        
+        $ifes = array('5UYK|1|A', '5UYM|1|A', '5UYL|1|A');
+        $units_list = array('5J7L|1|AA|G|963', '5J7L|1|AA|C|972');
+
+        $hl_test = array(
+            '5J7L|A|AA' => array('5J7L|1|AA|C|186', '5J7L|1|AA|G|187', '5J7L|1|AA|C|188', '5J7L|1|AA|A|189', '5J7L|1|AA|A|190', '5J7L|1|AA|G|191'),
+            '5UYM|A|A' => array('5UYM|1|A|G|187', '5UYM|1|A|C|188', '5UYM|1|A|A|189', '5UYM|1|A|A|190', '5UYM|1|A|G|191', '5UYM|1|A|A|192'));
+
+        $ife_pairs = array();
+        foreach ($ifes as $ife) {
+            $chain_parts = explode("|", $ife);
+
+            $this->db->select('unit_id_2');
+            $this->db->from('correspondence_units');
+            $this->db->where('pdb_id_2', $chain_parts[0]);
+            $this->db->where('chain_name_2', $chain_parts[2]);
+            $this->db->where_in('unit_id_1', $units_list);
+            $this->db->_protect_identifiers = FALSE; // stop CI adding backticks
+            $order = sprintf('FIELD(unit_id_1, %s)', "'" . implode("','", $units_list) . "'");
+            $this->db->order_by($order);
+            $this->db->_protect_identifiers = TRUE;
+;
+            $query = $this->db->get();
+
+            $complete_units = array();
+
+            foreach ($query->result() as $row) {
+                $correspondence_units[] = $row->unit_id_2;
+            }
+
+            $ife_pairs[$ife] = $correspondence_units;
+
+        }
+
+        ##################################################################################################
+
+        $pairwise_interactions_collection = array();
+        $keys_collection = array();
+
+        foreach($hl_test as $ife => $res_list) {
+            $length = count($res_list);
+            $pairwise_interactions = array();
+            for ($a = 0; $a < $length; $a++) {
+                for ($b = $a + 1; $b < $length; $b++) {
+                    $key = (string)$a . (string)$b;
+
+                    $this->db->select('f_lwbp, f_stacks')
+                     ->from('unit_pairs_interactions')
+                     ->where('unit_id_1', $res_list[$a])
+                     ->where('unit_id_2', $res_list[$b]);
+                    $query = $this->db->get();
+
+                    foreach ($query->result() as $row) {
+                        $pairwise_interactions[$key] = $row->f_lwbp . $row->f_stacks;
+                        array_push($keys_collection, $key);
+                    }
+
+                }
+            }
+
+            $pairwise_interactions_collection[$ife] = $pairwise_interactions;
+
+        }
+
+        var_dump($pairwise_interactions_collection);
+
+    }
+
     function get_nt_json_dcc($nt_ids)
     {
         $lengths = array('C' => 24, 'U' => 23, 'A' => 26, 'G' => 27);
