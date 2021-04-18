@@ -326,12 +326,12 @@ class Ajax_model extends CI_Model {
     {
 
         
-        $ifes = array('5UYK|1|A', '5UYM|1|A', '5UYL|1|A');
-        $units_list = array('5J7L|1|AA|G|963', '5J7L|1|AA|C|972');
+        $ifes = array('5J7L|1|AA', '5UYM|1|A');
+        $units_list = array('5UYK|1|A|G|963', '5UYK|1|A|C|972');
 
         $hl_test = array(
-            '5J7L|A|AA' => array('5J7L|1|AA|C|186', '5J7L|1|AA|G|187', '5J7L|1|AA|C|188', '5J7L|1|AA|A|189', '5J7L|1|AA|A|190', '5J7L|1|AA|G|191'),
-            '5UYM|A|A' => array('5UYM|1|A|G|187', '5UYM|1|A|C|188', '5UYM|1|A|A|189', '5UYM|1|A|A|190', '5UYM|1|A|G|191', '5UYM|1|A|A|192'));
+            '5J7L|1|AA' => array('5J7L|1|AA|C|186', '5J7L|1|AA|G|187', '5J7L|1|AA|C|188', '5J7L|1|AA|A|189', '5J7L|1|AA|A|190', '5J7L|1|AA|G|191'),
+            '5UYM|1|A' => array('5UYM|1|A|C|186', '5UYM|1|A|G|187', '5UYM|1|A|C|188', '5UYM|1|A|A|189', '5UYM|1|A|A|190', '5UYM|1|A|G|191'));
 
         $ife_pairs = array();
         foreach ($ifes as $ife) {
@@ -349,24 +349,23 @@ class Ajax_model extends CI_Model {
 ;
             $query = $this->db->get();
 
-            $complete_units = array();
-
+            $correspondence_units = array();
             foreach ($query->result() as $row) {
                 $correspondence_units[] = $row->unit_id_2;
             }
 
-            $ife_pairs[$ife] = $correspondence_units;
+        $ife_pairs[$ife] = $correspondence_units;
 
         }
 
         ##################################################################################################
 
-        $pairwise_interactions_collection = array();
+        $pairwise_interactions_collection_ref = array();
         $keys_collection = array();
 
         foreach($hl_test as $ife => $res_list) {
             $length = count($res_list);
-            $pairwise_interactions = array();
+            $pairwise_interactions_ref = array();
             for ($a = 0; $a < $length; $a++) {
                 for ($b = $a + 1; $b < $length; $b++) {
                     $key = (string)$a . (string)$b;
@@ -378,18 +377,63 @@ class Ajax_model extends CI_Model {
                     $query = $this->db->get();
 
                     foreach ($query->result() as $row) {
-                        $pairwise_interactions[$key] = $row->f_lwbp . $row->f_stacks;
+                        $pairwise_interactions_ref[$key] = $row->f_lwbp . $row->f_stacks;
                         array_push($keys_collection, $key);
                     }
 
                 }
             }
 
-            $pairwise_interactions_collection[$ife] = $pairwise_interactions;
+            $pairwise_interactions_collection_ref[$ife] = $pairwise_interactions_ref;
 
         }
 
-        var_dump($pairwise_interactions_collection);
+        $unique_interaction_pairs = array_unique($keys_collection);
+        sort($unique_interaction_pairs);
+
+        ################################################################################################
+
+        $ifes = array_keys($pairwise_interactions_collection_ref);
+
+        $ifes_test = array('5J7L|1|AA', '5UYM|1|A');
+
+        $query_index = array();
+
+        for($i=0; $i<count($ifes_test);$i++){
+            $query_index[] = $i;  
+        }
+
+        $header_index = join(",", $query_index);
+        $header_interaction_pairs = join(",", $unique_interaction_pairs);
+
+        $header = $header_index . ',' . $header_interaction_pairs;
+
+        $pairwise_interactions_collection = array();
+        foreach($ifes as $ife){
+            $pairwise_interactions = array();
+            foreach($unique_interaction_pairs as $unique_interaction_pair){
+                $pairwise_interactions[$unique_interaction_pair] = '-'; 
+            }
+        $pairwise_interactions_collection[$ife] = $pairwise_interactions; 
+        }
+
+        foreach($ifes as $ife) {
+            foreach($pairwise_interactions_collection_ref[$ife] as $interaction_pair => $interaction) {
+                    $pairwise_interactions_collection[$ife][$interaction_pair] = $interaction;
+            }
+        }
+
+        #$arr3 = array_merge($ife_pairs, $pairwise_interactions_collection);
+
+        $test_str = '';
+
+        foreach($ifes_test as $key) {
+            $test2 = join(",", $ife_pairs[$key]);
+            $test3 = join(",", $pairwise_interactions_collection[$key]);
+            $test_str .= $test2 . "," . $test3 . "</br>";
+        }
+
+        var_dump($header);
 
     }
 
