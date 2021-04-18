@@ -322,10 +322,83 @@ class Ajax_model extends CI_Model {
 
     }
 
+    function get_ec_members($query_ife)
+    {
+        $this->db->select('nc1.nr_class_id')
+                 ->from('nr_chains as nc1')
+                 ->join('nr_releases as nr','nc1.nr_release_id = nr.nr_release_id')
+                 ->join('nr_classes as nc2','nc1.nr_class_id = nc2.nr_class_id')
+                 ->where('nc1.ife_id', $query_ife)
+                 ->where('nc2.resolution', 4.0)
+                 ->order_by('nr.date', 'desc')
+                 ->limit(1);
+
+        $query = $this->db->get();
+        $row = $query->row();
+        $class_id = $row->nr_class_id;
+
+        $this->db->select('ife_id')
+                 ->from('nr_chains')
+                 ->where('nr_class_id', $class_id)
+                 ->where('ife_id !=', $query_ife);
+
+        $query2 = $this->db->get();
+
+        foreach ($query2->result() as $row) {
+            $ifes[] = $row->ife_id;
+        }
+
+        return $ifes;
+
+    }
+
+    function get_units_correspondence($members, $units_list)
+    {
+
+        $correspondence = array();
+        foreach ($members as $ife) {
+            $chain_parts = explode("|", $ife);
+
+            $this->db->select('unit_id_2');
+            $this->db->from('correspondence_units');
+            $this->db->where('pdb_id_2', $chain_parts[0]);
+            $this->db->where('chain_name_2', $chain_parts[2]);
+            $this->db->where_in('unit_id_1', $units_list);
+            $this->db->_protect_identifiers = FALSE; // stop CI adding backticks
+            $order = sprintf('FIELD(unit_id_1, %s)', "'" . implode("','", $units_list) . "'");
+            $this->db->order_by($order);
+            $this->db->_protect_identifiers = TRUE;
+;
+            $query = $this->db->get();
+
+            $correspondence_units = array();
+            foreach ($query->result() as $row) {
+                $correspondence_units[] = $row->unit_id_2;
+            }
+
+        $correspondence[$ife] = $correspondence_units;
+
+        }
+
+        return $correspondence;
+    }
+
     function get_pairwise_interactions($units)
     {
 
         
+        $units_arr = explode(",", $units);
+        $query_ife_parts = explode("|", $units_arr[0]);
+        $query_ife = implode("|", array_slice($query_ife_parts, 0, 3));
+
+        $ec_members = $this->get_ec_members($query_ife);
+
+        $units_correspondence = $this->get_units_correspondence($ec_members, $units_arr);
+        $units_correspondence[$query_ife] = $units_arr;
+
+        /*
+
+
         $ifes = array('5J7L|1|AA', '5UYM|1|A');
         $units_list = array('5UYK|1|A|G|963', '5UYK|1|A|C|972');
 
@@ -432,8 +505,9 @@ class Ajax_model extends CI_Model {
             $test3 = join(",", $pairwise_interactions_collection[$key]);
             $test_str .= $test2 . "," . $test3 . "</br>";
         }
+        */
 
-        var_dump($header);
+        var_dump($units_correspondence);
 
     }
 
