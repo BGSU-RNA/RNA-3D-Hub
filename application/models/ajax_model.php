@@ -383,6 +383,51 @@ class Ajax_model extends CI_Model {
         return $correspondence;
     }
 
+    function format_interactions($units_correspondence, $collection_ref, $unique_res_pairs, $query_size)
+    {
+        
+        $ifes = array_keys($collection_ref);
+
+        $query_index = array();
+
+        for($i=0; $i<$query_size; $i++){
+            $query_index[] = $i;  
+        }
+
+        $header_index = join(",", $query_index);
+        $header_interaction_pairs = join(",", $unique_res_pairs);
+
+        $header = $header_index . ',' . $header_interaction_pairs;
+
+        $pairwise_interactions_collection = array();
+        foreach($ifes as $ife){
+            $pairwise_interactions = array();
+            foreach($unique_res_pairs as $unique_interaction_pair){
+                $pairwise_interactions[$unique_interaction_pair] = '-'; 
+            }
+        $pairwise_interactions_collection[$ife] = $pairwise_interactions; 
+        }
+
+        foreach($ifes as $ife) {
+            foreach($collection_ref[$ife] as $interaction_pair => $interaction) {
+                    $pairwise_interactions_collection[$ife][$interaction_pair] = $interaction;
+            }
+        }
+
+        $display_str = '';
+        $display_str .= $header . "</br>";
+
+    
+        foreach($ifes as $ife) {
+            $part_1 = join(",", $units_correspondence[$ife]);
+            $part_2 = join(",", $pairwise_interactions_collection[$ife]);
+            $display_str .= $part_1 . "," . $part_2 . "</br>";
+        }
+
+        return $display_str;
+
+    }
+
     function get_pairwise_interactions($units)
     {
 
@@ -390,53 +435,17 @@ class Ajax_model extends CI_Model {
         $units_arr = explode(",", $units);
         $query_ife_parts = explode("|", $units_arr[0]);
         $query_ife = implode("|", array_slice($query_ife_parts, 0, 3));
+        $query_size = count($units_arr);
 
         $ec_members = $this->get_ec_members($query_ife);
 
         $units_correspondence = $this->get_units_correspondence($ec_members, $units_arr);
         $units_correspondence[$query_ife] = $units_arr;
 
-        /*
-
-
-        $ifes = array('5J7L|1|AA', '5UYM|1|A');
-        $units_list = array('5UYK|1|A|G|963', '5UYK|1|A|C|972');
-
-        $hl_test = array(
-            '5J7L|1|AA' => array('5J7L|1|AA|C|186', '5J7L|1|AA|G|187', '5J7L|1|AA|C|188', '5J7L|1|AA|A|189', '5J7L|1|AA|A|190', '5J7L|1|AA|G|191'),
-            '5UYM|1|A' => array('5UYM|1|A|C|186', '5UYM|1|A|G|187', '5UYM|1|A|C|188', '5UYM|1|A|A|189', '5UYM|1|A|A|190', '5UYM|1|A|G|191'));
-
-        $ife_pairs = array();
-        foreach ($ifes as $ife) {
-            $chain_parts = explode("|", $ife);
-
-            $this->db->select('unit_id_2');
-            $this->db->from('correspondence_units');
-            $this->db->where('pdb_id_2', $chain_parts[0]);
-            $this->db->where('chain_name_2', $chain_parts[2]);
-            $this->db->where_in('unit_id_1', $units_list);
-            $this->db->_protect_identifiers = FALSE; // stop CI adding backticks
-            $order = sprintf('FIELD(unit_id_1, %s)', "'" . implode("','", $units_list) . "'");
-            $this->db->order_by($order);
-            $this->db->_protect_identifiers = TRUE;
-;
-            $query = $this->db->get();
-
-            $correspondence_units = array();
-            foreach ($query->result() as $row) {
-                $correspondence_units[] = $row->unit_id_2;
-            }
-
-        $ife_pairs[$ife] = $correspondence_units;
-
-        }
-
-        ##################################################################################################
-
         $pairwise_interactions_collection_ref = array();
         $keys_collection = array();
 
-        foreach($hl_test as $ife => $res_list) {
+        foreach($units_correspondence as $ife => $res_list) {
             $length = count($res_list);
             $pairwise_interactions_ref = array();
             for ($a = 0; $a < $length; $a++) {
@@ -464,50 +473,9 @@ class Ajax_model extends CI_Model {
         $unique_interaction_pairs = array_unique($keys_collection);
         sort($unique_interaction_pairs);
 
-        ################################################################################################
+        $interactions_display = $this->format_interactions($units_correspondence, $pairwise_interactions_collection_ref, $unique_interaction_pairs, $query_size);
 
-        $ifes = array_keys($pairwise_interactions_collection_ref);
-
-        $ifes_test = array('5J7L|1|AA', '5UYM|1|A');
-
-        $query_index = array();
-
-        for($i=0; $i<count($ifes_test);$i++){
-            $query_index[] = $i;  
-        }
-
-        $header_index = join(",", $query_index);
-        $header_interaction_pairs = join(",", $unique_interaction_pairs);
-
-        $header = $header_index . ',' . $header_interaction_pairs;
-
-        $pairwise_interactions_collection = array();
-        foreach($ifes as $ife){
-            $pairwise_interactions = array();
-            foreach($unique_interaction_pairs as $unique_interaction_pair){
-                $pairwise_interactions[$unique_interaction_pair] = '-'; 
-            }
-        $pairwise_interactions_collection[$ife] = $pairwise_interactions; 
-        }
-
-        foreach($ifes as $ife) {
-            foreach($pairwise_interactions_collection_ref[$ife] as $interaction_pair => $interaction) {
-                    $pairwise_interactions_collection[$ife][$interaction_pair] = $interaction;
-            }
-        }
-
-        #$arr3 = array_merge($ife_pairs, $pairwise_interactions_collection);
-
-        $test_str = '';
-
-        foreach($ifes_test as $key) {
-            $test2 = join(",", $ife_pairs[$key]);
-            $test3 = join(",", $pairwise_interactions_collection[$key]);
-            $test_str .= $test2 . "," . $test3 . "</br>";
-        }
-        */
-
-        var_dump($units_correspondence);
+        return $interactions_display;
 
     }
 
