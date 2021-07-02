@@ -112,13 +112,19 @@ class Motif_model extends CI_Model {
 
         $query = $this->db->get();
 
-        foreach($query->result() as $row){
-            $loop_annotation1[$row->loop_id] = $row->annotation_1;
-            #$loop_annotation2[$row->loop_id] = $row->annotation_2;
+        if ( $query->num_rows > 0 ) {
+            foreach($query->result() as $row){
+                $loop_annotation1[$row->loop_id] = $row->annotation_1;
+                #$loop_annotation2[$row->loop_id] = $row->annotation_2;
+            }
+
+        } else {
+            $loop_annotation1 = (array) null;
         }
 
         $this->loop_annotation1 = $loop_annotation1;
         #$this->loop_annotation2 = $loop_annotation2;
+
     }
 
     function get_annotations_count()
@@ -127,18 +133,22 @@ class Motif_model extends CI_Model {
         # Check whether the loop_annotation1 array has values
         if ($this->loop_annotation1) {
 
-            # get the annotation from the loop_annotation1 array
-            $annotation = array_values($this->loop_annotation1);
-            # count the number of unique annotation label. Key would be the annotation label and the value would be the count
-            $annotation_count = array_count_values($annotation);
-            # sort the array by desc value
-            arsort($annotation_count);
+            if (count($this->loop_annotation1) > 0) {
+                # get the annotation from the loop_annotation1 array
+                $annotation = array_values($this->loop_annotation1);
+                # count the number of unique annotation label. Key would be the annotation label and the value would be the count
+                $annotation_count = array_count_values($annotation);
+                # sort the array by desc value
+                arsort($annotation_count);
 
-            # get the keys from the annotation_count array
-            # $keys = array_keys($annotation_count);
+                # get the keys from the annotation_count array
+                # $keys = array_keys($annotation_count);
 
-            return $annotation_count;
-        } else { 
+                return $annotation_count;
+            } else {
+                return false;
+            }
+        } else {
         	return false;
         }
 
@@ -563,7 +573,7 @@ class Motif_model extends CI_Model {
                  ->join('ml_motifs_info AS MM', 'MR.ml_release_id = MM.ml_release_id')
                  ->where('MM.motif_id',$motif_id)
                  ->where('MR.type', substr($motif_id, 0, 2))
-                 ->order_by('date','desc')
+                 ->order_by('index','desc')
                  ->limit(1);
         $result = $this->db->get()->result_array();
         return $result[0]['ml_release_id'];
@@ -757,10 +767,10 @@ class Motif_model extends CI_Model {
     {
         #echo "<p>i: $i // loops: " . $this->loops[$i] . "</p>";
         #ksort($this->full_nts[$this->loops[$i]]);
-        ksort($this->full_units[$this->loops[$i]]);
-        return "<label><input type='checkbox' id='{$this->loops[$i]}' class='jmolInline'
-               data-coord_ma='{$this->loops[$i]}' " . " " . "data-core=" . " " . "data-quality='". "{$this->loops[$i]}" . "'>{$this->loops[$i]}</label>"
-               . "<span class='loop_link'>" . anchor_popup("loops/view/{$this->loops[$i]}", '&#10140;') . "</span>";
+        ksort($this->full_units[$this->similarity[$i]]);
+        return "<label><input type='checkbox' id='{$this->similarity[$i]}' class='jmolInline'
+               data-coord_ma='{$this->similarity[$i]}' " . " " . "data-core=" . " " . "data-quality='". "{$this->similarity[$i]}" . "'>{$this->similarity[$i]}</label>"
+               . "<span class='loop_link'>" . anchor_popup("loops/view/{$this->similarity[$i]}", '&#10140;') . "</span>";
 
     }
 
@@ -875,21 +885,21 @@ class Motif_model extends CI_Model {
             $key = $this->header[$i];
 
             if ( $key == '#D' ) {
-                $row[] = $id;
+                $row[] = array_search($this->similarity[$id], $this->loops);
             } elseif ( $key == '#S') {
-                $row[] = array_search($this->loops[$id], $this->similarity);
+                $row[] = $id;
             } elseif ( $key == 'Loop id' ) {
                 $row[] = array('class'=>'loop','data'=>$this->get_checkbox($id)); //$this->loops[$id];
             } elseif ( $key == 'PDB' ) {
-                $parts = explode("_", $this->loops[$id]);
+                $parts = explode("_", $this->similarity[$id]);
                 $row[] = '<a class="pdb">' . $parts[1] . '</a>';
             } elseif ( $key == 'Bulges' ) {
-                $row[] = $this->full_length[$this->loops[$id]] - count($this->full_units[$this->loops[$id]]);
+                $row[] = $this->full_length[$this->similarity[$id]] - count($this->full_units[$this->similarity[$id]]);
             } elseif ( $key == 'break' ) {
             	$row[] = '*';
             } elseif ( is_int($key) ) {
                 #$parts = explode(' ', $this->nts[$this->loops[$id]][$key]);
-                $parts = explode(' ', $this->units[$this->loops[$id]][$key]);
+                $parts = explode(' ', $this->units[$this->similarity[$id]][$key]);
 
                 $foo = count($parts) - 1;
                 ###echo "<p>id: $id<br>key: $key<br>#parts: $foo</p>";
@@ -904,22 +914,23 @@ class Motif_model extends CI_Model {
             } elseif ( $key == ' ' ) {
                 // do nothing
             } elseif ( $key == 'Disc' ) {
-                $row[] = $this->disc[$this->loops[1]][$this->loops[$id]];
+                $loop_index = array_search($this->similarity[$id], $this->loops);
+                $row[] = $this->disc[$this->loops[1]][$this->loops[$loop_index]];
             } elseif( $key == 'Annotation' ) {
 #                $row[] = $this->loop_annotation1["zzz"];
                  # Check if the motif instance has an annotation associated with it
-                 if (array_key_exists($this->loops[$id], $this->loop_annotation1)) {
-                    $row[] = $this->loop_annotation1[$this->loops[$id]];
+                 if (array_key_exists($this->similarity[$id], $this->loop_annotation1)) {
+                    $row[] = $this->loop_annotation1[$this->similarity[$id]];
                  } else {
-                    $row[] = ' ';  
+                    $row[] = ' ';
                  }
             } else {
                 $parts = explode('-', $key);
 
                 #$nt1 = $this->nts[$this->loops[$id]][$parts[0]]; // ISSUE
                 #$nt2 = $this->nts[$this->loops[$id]][$parts[1]]; // ISSUE
-                $unit_1 = $this->units[$this->loops[$id]][$parts[0]]; // ISSUE
-                $unit_2 = $this->units[$this->loops[$id]][$parts[1]]; // ISSUE
+                $unit_1 = $this->units[$this->similarity[$id]][$parts[0]]; // ISSUE
+                $unit_2 = $this->units[$this->similarity[$id]][$parts[1]]; // ISSUE
 
                 #if ( isset($this->f_lwbp[$nt1][$nt2]) ) {
                 #    $row[] = $this->f_lwbp[$nt1][$nt2];
@@ -983,7 +994,7 @@ class Motif_model extends CI_Model {
                  ->from('ml_loop_order')
                  ->where('ml_release_id', $this->release_id)
                  ->where('motif_id', $this->motif_id)
-                 ->order_by('original_order');
+                 ->order_by('similarity_order');
         $query = $this->db->get();
 
         foreach($query->result() as $row) {
