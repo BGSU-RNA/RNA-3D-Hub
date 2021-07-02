@@ -4,7 +4,6 @@
         <div class="page-header">
           <h1>
             <?php echo $title;?>
-            <small><?=$status?></small>
             <small class="pull-right">
               <ul class="tabs">
               <li class="dropdown" data-dropdown="dropdown">
@@ -71,9 +70,9 @@
               <input type='button' id='next' class='btn' value="Next">
               <input type='button' id='stereo' class='btn' value="Show stereo">
               <br>
-                Coloring options: <select id="colorOPT"> 
-                    <option value="Default" selected>Default</option> 
-                    <option value="CPK">CPK</option> 
+                Coloring options: <select id="colorOPT">
+                    <option value="Default" selected>Default</option>
+                    <option value="CPK">CPK</option>
                     <option value="RSR">Real Space R (RSR)</option>
                     <option value="RSRZ">RSR Z-Score (RSRZ)</option>
                 </select>
