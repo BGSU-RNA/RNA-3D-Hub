@@ -13,18 +13,20 @@
             </p>
 
             <p>
-              We are <a href="http://rna.bgsu.edu/main/upgrading-rna-3d-hub/">upgrading BGSU RNA Site</a>
-              to include new RNA 3D structures distributed in <a href="http://wwpdb.org/news/news.php?year=2014#10-December-2014">mmCIF format</a>.
-              Follow us on <a href="https://twitter.com/rna3dhub">Twitter</a> to hear when the updated version becomes available.
+              In Summer 2021, we are filling in previous releases based on representative sets
+              from the last few years.
+              We are adjusting the clustering methodology.
+              See the <a href="https://docs.google.com/document/d/1OpeT3w00PsFly5eVMLXxyTgxrf9odadse1m6Slpqhkc/edit?usp=sharing">release notes for each release</a>.
+              Follow us on <a href="https://twitter.com/rna3dhub">Twitter</a>.
             </p>
 
-            <a class="btn primary large" href="<?=$baseurl?>motifs/release/il/current">Internal loops</a>
+            <a class="btn primary large" href="<?=$baseurl?>motifs/release/il/<?=$release_info['il_release']?>">Internal loops</a>
             <a href="<?=$baseurl?>motifs/graph/il/<?=$release_info['il_release']?>">Graph view</a>
             <em>Current version: <?=$release_info['il_release']?></em>
 
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-            <a class="btn primary large" href="<?=$baseurl?>motifs/release/hl/current">Hairpin loops</a>
+            <a class="btn primary large" href="<?=$baseurl?>motifs/release/hl/<?=$release_info['hl_release']?>">Hairpin loops</a>
             <a href="<?=$baseurl?>motifs/graph/hl/<?=$release_info['hl_release']?>">Graph view</a>
             <em>Current version: <?=$release_info['hl_release']?></em>
 
@@ -32,7 +34,7 @@
             <br>
 
             <em>
-            Last update: <?=date('d-m-Y', $release_info['last_update'])?>
+            Latest motif atlas release based on the representative set from: <?=date('Y-m-d', $release_info['last_update'])?>
 <!--             next update: <?=date('d-m-Y', $release_info['next_update'])?> -->
             </em>
 
@@ -67,35 +69,5 @@
                 </blockquote>
 
             </div>
-
         </div>
-
-
-        <div class="row">
-
-            <div class="span16">
-              <h4>Featured Motifs</h4>
-              <ul class="media-grid">
-
-                <?php foreach($featured as $name=>$motif): ?>
-                <li>
-                  <a href="<?=$baseurl?>motif/view/<?=$motif?>" target="_blank">
-                    <img src="<?=$this->config->item('home_url')?>/img/MotifAtlas/<?php
-                        if ( strstr($motif, 'IL') ) {
-                            echo 'IL' . $release_info['il_release'];
-                        } else {
-                            echo 'HL' . $release_info['hl_release'];
-                        }
-                    ?>/<?=$motif?>.png" class="thumbnail span2" alt="Motif <?=$motif?>">
-                    <?=ucfirst($name);?>
-                  </a>
-                </li>
-                <?php endforeach; ?>
-
-              </ul>
-            </div>
-
-        </div>
-
-
       </div>
