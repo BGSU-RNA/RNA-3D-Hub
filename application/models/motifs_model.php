@@ -383,7 +383,7 @@ class Motifs_model extends CI_Model {
          return "<ul class='media-grid'><li><a href='#$id'><img class='thumbnail' src='$image' alt='$id' class='varna' /></a></li></ul>";
     }
 
-    function get_loop_annotations($motif_id, $id) 
+    function get_loop_annotations($motif_id, $id)
     {
 
         $loop_annotation = array();
@@ -402,7 +402,7 @@ class Motifs_model extends CI_Model {
         return $loop_annotation;
     }
 
-    function get_loop_annotations_count($loop_annotations) 
+    function get_loop_annotations_count($loop_annotations)
     {
         # Check whether the loop_annotations array has values
         if ($loop_annotations) {
@@ -415,10 +415,11 @@ class Motifs_model extends CI_Model {
             arsort($annotation_count);
 
             return $annotation_count;
-        } 
+        }
 
     }
 
+    // This code creates the table that constitutes an IL or HL release
     function get_release($motif_type,$id)
     {
         // get annotations: updated/>2 parents etc
@@ -437,89 +438,88 @@ class Motifs_model extends CI_Model {
                 $reason_flat[]           = $row->comment;
             }
 
-            // count all annotation types
-            $counts = array_count_values($reason_flat);
+        // count all loop annotation types for this motif
+        $counts = array_count_values($reason_flat);
 
-            foreach ($counts as $comment => $count) {
-                $label = $this->get_annotation_label_type($comment);
-                $counts_text .= "<span class='label $label'>$comment</span> <strong>$count</strong>;    ";
+        foreach ($counts as $comment => $count) {
+            $label = $this->get_annotation_label_type($comment);
+            $counts_text .= "<span class='label $label'>$comment</span> <strong>$count</strong>;    ";
+        }
+
+        $counts_text .= '<br><br>';
+
+        // get common names and basepair signatures
+        // however, we are no longer using common_name annotations
+        $this->db->select('motif_id')
+                 ->select('bp_signature')
+                 ->select('common_name')
+                 ->from('ml_motif_annotations');
+        $query = $this->db->get();
+
+        foreach ($query->result() as $row) {
+            $annotations[$row->motif_id]['bp_signature'] = $row->bp_signature;
+            $annotations[$row->motif_id]['common_name'] = $row->common_name;
+        }
+
+        // get the motif ids and counts
+        $this->db->select('motif_id, count(loop_id) AS instances')
+                 ->from('ml_loops')
+                 ->like('motif_id',strtoupper($motif_type),'after')
+                 ->where('ml_release_id', $id)
+                 ->group_by('motif_id')
+                 ->order_by('instances','desc');
+        $query = $this->db->get();
+
+        $i = 1;
+
+        foreach ($query->result() as $row) {
+            if ( array_key_exists($row->motif_id, $annotations) &&
+                 strlen($annotations[$row->motif_id]['common_name']) > 1 ) {
+                $annotation = '<li>Name: ' . $annotations[$row->motif_id]['common_name'] . '</li>';
+            } else {
+                $annotation = '';
             }
 
-            $counts_text .= '<br><br>';
-
-            // get common names and annotations
-            $this->db->select('motif_id')
-                     ->select('bp_signature')
-                     ->select('common_name')
-                     ->from('ml_motif_annotations');
-            $query = $this->db->get();
-
-            foreach ($query->result() as $row) {
-                $annotations[$row->motif_id]['bp_signature'] = $row->bp_signature;
-                $annotations[$row->motif_id]['common_name'] = $row->common_name;
+            if ( array_key_exists($row->motif_id, $annotations) and array_key_exists('bp_signature', $annotations[$row->motif_id])) {
+                $signature = $annotations[$row->motif_id]['bp_signature'];
+            } else {
+                $signature = '';
             }
 
-            // get the motif ids and counts
-            $this->db->select('motif_id, count(loop_id) AS instances')
-                     ->from('ml_loops')
-                     ->like('motif_id',strtoupper($motif_type),'after')
-                     ->where('ml_release_id', $id)
-                     ->group_by('motif_id')
-                     ->order_by('instances','desc');
-            $query = $this->db->get();
+            /*
+            We might need to refactor the code in the next two lines since equivalent methods
+            exist in motif_model.php
+            */
+            $loop_annotations = $this->get_loop_annotations($row->motif_id, $id);
+            $annotations_count = $this->get_loop_annotations_count($loop_annotations);
 
-            $i = 1;
+            # Create an empty string for storing motif annotation
+            $annotation_new = '';
 
-            foreach ($query->result() as $row) {
-                if ( array_key_exists($row->motif_id, $annotations) &&
-                     strlen($annotations[$row->motif_id]['common_name']) > 1 ) {
-                    $annotation = '<li>Name: ' . $annotations[$row->motif_id]['common_name'] . '</li>';
-                } else {
-                    $annotation = '';
+            if ($annotations_count) {
+                foreach($annotations_count as $key => $value) {
+                    $annotation_new .= "<li>" . $key . " " . "(" . $value . ")". "</li>";
                 }
+            }
 
-                if ( array_key_exists($row->motif_id, $annotations) and array_key_exists('bp_signature', $annotations[$row->motif_id])) {
-                    $signature = $annotations[$row->motif_id]['bp_signature'];
-                } else {
-                    $signature = '';
-                }
+            $length_distribution = $this->_get_motif_length_distribution($row->motif_id, $id);
 
-                /*
-                We might need to refactor the code in the next two lines since equivalent methods
-                exist in motif_model.php
-                */
-                $loop_annotations = $this->get_loop_annotations($row->motif_id, $id);
-                $annotations_count = $this->get_loop_annotations_count($loop_annotations);
-
-                # Create an empty string for storing motif annotation
-                $annotation_new = ''; 
-
-                if ($annotations_count) {
-                    foreach($annotations_count as $key => $value) {
-                        $annotation_new .= "<li>" . $key . " " . "(" . $value . ")". "</li>";
-                        
-                    }
-                }
-                
-
-                $length_distribution = $this->_get_motif_length_distribution($row->motif_id, $id);
-
-                $table[] = array($i,
-                                 $this->make_fancybox_link($row->motif_id, $motif_type, $id),
-                                 anchor_popup(base_url(array('motif','view',$row->motif_id)), $row->motif_id)
-                                    . "<ul class='unstyled inputs-list'>"
-                                    . "<li><label><input type='radio' class='jmolInline' id='"
-                                    . str_replace('.','_',$row->motif_id)
-                                    . "' data-coord='{$row->motif_id}' data-quality='{$row->motif_id}' data-type='motif_id' name='ex'>"
-                                    . "<span>Exemplar</span></label></li>"
-                                    . "<li>Basepair signature: $signature</li>"
-                                    . '<li>History status: ' . $this->add_annotation_label($row->motif_id, $reason) . '</li>'
-                                    #. "$annotation"
-                                    #. "<li>Annotations</li>"
-                                    . '</ul>'
-                                    ."$annotation_new",
-                                 $length_distribution['min'],
-                                 $row->instances);
+            $table[] = array($i,
+                             $this->make_fancybox_link($row->motif_id, $motif_type, $id),
+                             anchor_popup(base_url(array('motif','view',$row->motif_id)), $row->motif_id)
+                                . "<ul class='unstyled inputs-list'>"
+                                . "<li><label><input type='radio' class='jmolInline' id='"
+                                . str_replace('.','_',$row->motif_id)
+                                . "' data-coord='{$row->motif_id}' data-quality='{$row->motif_id}' data-type='motif_id' name='ex'>"
+                                . "<span>View exemplar</span></label></li>"
+                                . "<li>Basepair signature: $signature</li>"
+                                . '<li>History status: ' . $this->add_annotation_label($row->motif_id, $reason) . '</li>'
+                                #. "$annotation"
+                                #. "<li>Annotations</li>"
+                                . '</ul>'
+                                ."$annotation_new",
+                             $length_distribution['min'],
+                             $row->instances);
                 $i++;
             }
         }
@@ -598,7 +598,7 @@ class Motifs_model extends CI_Model {
         $this->db->select('ml_release_id, date')
                  ->from('ml_releases')
                  ->where('type',$motif_type)
-                 ->order_by('date','desc')
+                 ->order_by('index','desc')
                  ->limit(1);
         $result = $this->db->get()->row();
 
