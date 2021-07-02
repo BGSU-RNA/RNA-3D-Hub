@@ -29,8 +29,9 @@
                         <dl>
                             <dt>Annotations</dt>
                             <dd id="common_name2" class="edit"><?
-                            foreach($annotation_test as $key => $value) {
+                            if ($annotation_test) { foreach($annotation_test as $key => $value) {
                                 echo "<li>" . $key . " ". "(". $value . ")". "</li>";
+                                }
                             }
                             ?></dd>
                             <!--<dt>Description:</dt>
@@ -164,7 +165,7 @@
             colorByRSR: 'colorRSR',
             colorOption: 'colorOPT',
             clearId: 'clear',
-            insertionsId: 'insertions'                
+            insertionsId: 'insertions'
         });
         // run the plugin
         $('.jmolInline').first().jmolToggle();
@@ -201,9 +202,9 @@
                             <input type='button' id='all' class='btn' value="Show all">
                             <input type='button' id='clear' class='btn' value="Clear all">
                             <br>
-                            Coloring options: <select id="colorOPT"> 
-                                <option value="Default" selected>Default</option> 
-                                <option value="CPK" >CPK</option> 
+                            Coloring options: <select id="colorOPT">
+                                <option value="Default" selected>Default</option>
+                                <option value="CPK" >CPK</option>
                                 <option value="RSR" >Real Space R (RSR)</option>
                                 <option value="RSRZ">RSR Z-Score (RSRZ)</option>
                             </select>
