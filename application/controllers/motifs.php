@@ -31,7 +31,7 @@ class Motifs extends CI_Controller {
 
 	public function index()
 	{
-        $this->output->cache(262974); # 6 months
+        # $this->output->cache(262974); # 6 months; should not be cached, easy queries, often updated
 
 	    $this->load->model('Motifs_model', '', TRUE);
 
