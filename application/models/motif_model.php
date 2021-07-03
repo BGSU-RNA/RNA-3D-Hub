@@ -579,6 +579,19 @@ class Motif_model extends CI_Model {
         return $result[0]['ml_release_id'];
     }
 
+    function get_first_release_for_motif($motif_id)
+    {
+        $this->db->select('MR.ml_release_id')
+                 ->from('ml_releases AS MR')
+                 ->join('ml_motifs_info AS MM', 'MR.ml_release_id = MM.ml_release_id')
+                 ->where('MM.motif_id',$motif_id)
+                 ->where('MR.type', substr($motif_id, 0, 2))
+                 ->order_by('index','asc')
+                 ->limit(1);
+        $result = $this->db->get()->result_array();
+        return $result[0]['ml_release_id'];
+    }
+
     // history tab
     function get_motif_release_history($motif_id)
     {
@@ -1087,6 +1100,12 @@ class Motif_model extends CI_Model {
     function set_release_id()
     {
         $this->release_id = $this->get_latest_release_for_motif($this->motif_id);
+        return $this->release_id;
+    }
+
+    function set_first_release_id()
+    {
+        $this->release_id = $this->get_first_release_for_motif($this->motif_id);
         return $this->release_id;
     }
 

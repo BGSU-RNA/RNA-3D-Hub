@@ -31,7 +31,7 @@ class Motif extends MY_Controller {
 	    }
 
 	    $this->Motif_model->set_motif_id($motif_id);
-	    $release_id = $this->Motif_model->set_release_id();
+	    $release_id = $this->Motif_model->set_first_release_id();
 
         // handle download requests
         if ( !is_null($format) ) {
