@@ -126,6 +126,7 @@ class Motifs extends CI_Controller {
 	    $motif_type = strtolower($motif_type);
         if ($id == 'current') {
             $id = $this->Motifs_model->get_latest_release($motif_type);
+            $this->output->cache(24*60); # 1 day, in minutes
         }
         $result = $this->Motifs_model->get_release($motif_type,$id);
 
@@ -306,6 +307,8 @@ class Motifs extends CI_Controller {
 
     public function release_history()
     {
+        $this->output->cache(10000); # number of minutes to cache; 1 week
+
         $this->load->model('Motifs_model', '' , TRUE);
         $result = $this->Motifs_model->get_complete_release_history();
 
