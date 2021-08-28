@@ -91,7 +91,7 @@ class Motifs_model extends CI_Model {
                  ->where('MR.type',$motif_type)
                  ->like('ML.loop_id',$motif_type,'after')
                  ->group_by('MR.ml_release_id')
-                 ->order_by('MR.date','desc');
+                 ->order_by('MR.index','desc');
         return $this->db->get();
     }
 
@@ -174,7 +174,7 @@ class Motifs_model extends CI_Model {
         $this->db->select('ml_release_id')
                  ->from('ml_releases')
                  ->where('type',$motif_type)
-                 ->order_by('date','desc');
+                 ->order_by('index','desc');
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
@@ -193,7 +193,7 @@ class Motifs_model extends CI_Model {
         $this->db->select('ml_release_id')
                  ->from('ml_releases')
                  ->where('type',$motif_type)
-                 ->order_by('date','desc')
+                 ->order_by('index','desc')
                  ->limit(1);
         $query = $this->db->get();
 
@@ -303,7 +303,7 @@ class Motifs_model extends CI_Model {
                      ->where('MR.type',$motif_type)
                      ->where('RD.type',$motif_type)
                      ->where('direct_parent',1)
-                     ->order_by('date','desc');
+                     ->order_by('MR.index','desc');
             $query = $this->db->get();
 
             foreach ($query->result() as $row) {
@@ -705,7 +705,7 @@ class Motifs_model extends CI_Model {
         $this->db->select('ml_release_id')
                  ->from('ml_releases')
                  ->where("type = '$motif_type' AND (ml_release_id = '$rel1' OR ml_release_id = '$rel2')")
-                 ->order_by('date', 'asc');
+                 ->order_by('index', 'asc');
         $query = $this->db->get();
 
         $releases = array();
