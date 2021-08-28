@@ -83,11 +83,11 @@ class Rest extends MY_Controller {
 
         // search POST, then GET
         $query = $this->input->get_post('coord_ma');
-        
         $this->output->enable_profiler(TRUE);
         
-        $query_type = $this->_parseInput($query);
+        //$query_type = $this->_parseInput($query);
 
+        /*
         if ( $query_type ) {
             $this->output->set_header("Access-Control-Allow-Origin: *");
             $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
@@ -96,6 +96,13 @@ class Rest extends MY_Controller {
         } else {
             echo $this->messages['invalid'];
         }
+        */
+        $this->load->model('Ajax_model', '', TRUE);
+
+        $this->output->set_header("Access-Control-Allow-Origin: *");
+        $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
+        $data['csv'] = $this->Ajax_model->get_loop_coordinates_MotifAtlas($query);
+        $this->load->view('csv_view', $data);
 
     }
 

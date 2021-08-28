@@ -617,9 +617,11 @@ class Ajax_model extends CI_Model {
         
     }
 
-    function get_loop_coordinates_MotifAtlas($loop_id)
+    function get_loop_coordinates_MotifAtlas($loop_data)
     {
 
+        list($loop_id, $motif_id, $release_id) = explode('|', $loop_data);
+        
         $lines_arr = array();
         $lines_arr2 = array();
         $lines_arr3 = array();
@@ -660,12 +662,13 @@ class Ajax_model extends CI_Model {
 
         $footer = array('#');
 
-        $ml_release_id = $this->get_latest_ml_release_id();
+        //$ml_release_id = $this->get_latest_ml_release_id();
 
         $this->db->select('unit_id')
                  ->from('ml_loop_positions')
                  ->where('loop_id',$loop_id)
-                 ->where('ml_release_id', $ml_release_id)
+                 ->where('ml_release_id', $release_id)
+                 ->where('motif_id', $motif_id)
                  ->order_by('position');
         $query = $this->db->get();
         if ($query->num_rows() == 0) { return 'Loop id is not found'; }
