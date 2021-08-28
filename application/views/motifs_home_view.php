@@ -21,13 +21,11 @@
             </p>
 
             <a class="btn primary large" href="<?=$baseurl?>motifs/release/il/<?=$release_info['il_release']?>">Internal loops</a>
-            <a href="<?=$baseurl?>motifs/graph/il/<?=$release_info['il_release']?>">Graph view</a>
             <em>Current version: <?=$release_info['il_release']?></em>
 
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
             <a class="btn primary large" href="<?=$baseurl?>motifs/release/hl/<?=$release_info['hl_release']?>">Hairpin loops</a>
-            <a href="<?=$baseurl?>motifs/graph/hl/<?=$release_info['hl_release']?>">Graph view</a>
             <em>Current version: <?=$release_info['hl_release']?></em>
 
             <br>
