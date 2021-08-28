@@ -1,6 +1,6 @@
 <?php
 
-ini_set("memory_limit","300M");
+ini_set("memory_limit","512M");
 
 function add_url($n)
 {
@@ -91,6 +91,7 @@ class Nrlist_model extends CI_Model {
             $data['uls'][$labels[$row->resolution]]['num_only_in_2']    = $row->num_removed_groups;
         }
 
+        # this is the only place in this file that the following lines are used
         $query->free_result();
         unset($query);
 
