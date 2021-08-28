@@ -3,7 +3,7 @@ class Nrlist extends CI_Controller {
 
     public function index()
     {
-        $this->output->cache(262974); # 6 months
+        $this->output->cache(10000); # 1 week, in minutes
 
         $this->load->model('Nrlist_model', '', TRUE);
         $result = $this->Nrlist_model->get_all_releases();
@@ -34,6 +34,7 @@ class Nrlist extends CI_Controller {
         $this->load->model('Nrlist_model', '', TRUE);
         if ($id == 'current') {
             $id = $this->Nrlist_model->get_latest_release();
+            $this->output->cache(10000); # 1 week, should stay current this way
         } elseif ( !$this->Nrlist_model->is_valid_release($id) ) {
             show_404();
         }
@@ -143,6 +144,12 @@ class Nrlist extends CI_Controller {
 
     public function compare_releases()
     {
+        # This is the overall page, which presents all pairs of releases to compare
+        # That is a lot of possible pairs; if bots randomly request, we have trouble
+        # rm /var/www/rna3dhub/application/cache/dfae0becbfbfb657ae06976147838179
+
+        $this->output->cache(720); # 12 hours, in minutes
+
         $this->load->model('Nrlist_model', '', TRUE);
         $table = $this->Nrlist_model->get_compare_radio_table();
         $table = $this->table->make_columns($table, 3);
@@ -165,30 +172,37 @@ class Nrlist extends CI_Controller {
     {
         $this->load->model('Nrlist_model', '', TRUE);
 
-        if ($rel1 == NULL and $rel2 == NULL) {
-            list($home1, $home2) = $this->Nrlist_model->get_two_newest_releases();
+        list($home1, $home2) = $this->Nrlist_model->get_two_newest_releases();
 
+        # If no release is specified ...
+        if ($rel1 == NULL and $rel2 == NULL) {
             $rel1 = ( $this->input->post('release1') ) ? $this->input->post('release1') : $home1;
             $rel2 = ( $this->input->post('release2') ) ? $this->input->post('release2') : $home2;
         }
 
-        $this->load->model('Nrlist_model', '' , TRUE);
-        $data = $this->Nrlist_model->get_release_diff($rel1,$rel2);
+        # Only launch the query if Release 2 is the most recent release
+        # That is noted on the page for human users
+        # That will cut way down on bots randomly comparing releases
+        if ($rel2 == $home1) {
 
-        $data['title'] = "{$rel1} | {$rel2}";
-        $data['pageicon'] = base_url() . 'icons/R_icon.png';
+            $this->load->model('Nrlist_model', '' , TRUE);
+            $data = $this->Nrlist_model->get_release_diff($rel1,$rel2);
 
-        $data['rel1']  = $rel1;
-        $data['rel2']  = $rel2;
+            $data['title'] = "{$rel1} | {$rel2}";
+            $data['pageicon'] = base_url() . 'icons/R_icon.png';
 
-        $data['baseurl'] = base_url();
+            $data['rel1']  = $rel1;
+            $data['rel2']  = $rel2;
 
-        #var_dump($data); ### DEBUG
+            $data['baseurl'] = base_url();
 
-        $this->load->view('header_view', $data);
-        $this->load->view('menu_view', $data);
-        $this->load->view('nrlist_release_compare_results_view', $data);
-        $this->load->view('footer');
+            #var_dump($data); ### DEBUG
+
+            $this->load->view('header_view', $data);
+            $this->load->view('menu_view', $data);
+            $this->load->view('nrlist_release_compare_results_view', $data);
+            $this->load->view('footer');
+        }
     }
 
     public function release_history()
