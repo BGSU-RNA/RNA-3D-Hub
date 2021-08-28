@@ -22,8 +22,8 @@
     };
 
     var Info = {
-        width: 750,
-        height: 500,
+        width: 850,
+        height: 566,
         debug: false,
         color: 'white',
         addSelectionOptions: false,
@@ -101,5 +101,5 @@
                     <text x="140" y="45" font-family="sans-serif" font-size="12px" fill="black">RSRZ Scale</text>
                     </svg>
                 </div>
-    <br><input type='checkbox' id='example1' class='jmolInline' data-coord="<?= $coord ?>" data-quality="<?= $coord ?>"<label for='example1'>UNIT IDs entered: </label><?= $coord ?>
+    <br><input type='checkbox' id='example1' class='jmolInline' data-coord="<?= $coord ?>" data-quality="<?= $coord ?>"<label for='example1'>Selection entered: </label><?= $coord ?>
     </div>
