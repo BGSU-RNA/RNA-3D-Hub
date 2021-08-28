@@ -1306,6 +1306,22 @@ class Ajax_model extends CI_Model {
 
     }
 
+    function get_chain_RSR($chain_id)
+    {
+        $this->db->select('unit_id, real_space_r')
+                 ->from('unit_quality')
+                 ->like('unit_id', $chain_id, 'after');
+        $query = $this->db->get();
+
+        if ($query->num_rows() == 0) {
+            return 'No RSR correspondence is found';
+        } else {
+            $RSR = $query->result();
+        }
+
+        return json_encode($RSR);
+    }
+
     function get_exemplar_RSR($motif_id)
     {
         // given a motif_id find the representative loop
@@ -1349,6 +1365,22 @@ class Ajax_model extends CI_Model {
 
         return json_encode($RSRZ);
 
+    }
+
+    function get_chain_RSRZ($chain_id)
+    {
+        $this->db->select('unit_id, real_space_r_z_score')
+                 ->from('unit_quality')
+                 ->like('unit_id', $chain_id, 'after');
+        $query = $this->db->get();
+
+        if ($query->num_rows() == 0) {
+            return 'No RSRZ correspondence is found';
+        } else {
+            $RSRZ = $query->result();
+        }
+
+        return json_encode($RSRZ);
     }
 
     function get_exemplar_RSRZ($motif_id)

@@ -263,6 +263,8 @@ class Rest extends MY_Controller {
         switch ($query_type) :
             case 'loop_id':
                 return $this->Ajax_model->get_loop_RSR($query);
+            case 'chain_id':
+                return $this->Ajax_model->get_chain_RSR($query);
             case 'motif_id':
                 return $this->Ajax_model->get_exemplar_RSR($query);
             case 'unit_id':
@@ -282,6 +284,8 @@ class Rest extends MY_Controller {
         switch ($query_type) :
             case 'loop_id':
                 return $this->Ajax_model->get_loop_RSRZ($query);
+            case 'chain_id':
+                return $this->Ajax_model->get_chain_RSRZ($query);
             case 'motif_id':
                 return $this->Ajax_model->get_exemplar_RSRZ($query);
             case 'unit_id':
