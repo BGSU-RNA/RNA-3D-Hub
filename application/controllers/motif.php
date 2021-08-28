@@ -21,7 +21,7 @@ class Motif extends MY_Controller {
 
 	public function view($motif_id, $format=NULL)
 	{
-        $this->output->cache(262974); # 6 months
+        $this->output->cache(2*7*24*60); # cache for 2 weeks
 
 	    $this->load->model('Motif_model', '', TRUE);
 
@@ -32,6 +32,7 @@ class Motif extends MY_Controller {
 
 	    $this->Motif_model->set_motif_id($motif_id);
 	    $release_id = $this->Motif_model->set_first_release_id();
+        $last_release_id = $this->Motif_model->set_release_id();
 
         // handle download requests
         if ( !is_null($format) ) {
@@ -96,6 +97,7 @@ class Motif extends MY_Controller {
         $data['title']      = $motif_id;
         $data['pageicon'] = base_url() . 'icons/M_icon.png';
         $data['release_id'] = $release_id;
+        $data['last_release_id'] = $last_release_id;
         $data['release_id_label'] = $this->Motif_model->is_current_motif($motif_id);
         $data['motif_id']   = $motif_id;
         $data['author'] = $this->session->userdata('username');
