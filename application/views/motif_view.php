@@ -6,7 +6,7 @@
           <div class="row">
             <div class="span16">
               <h1>Motif <?=$title?>
-                <small>First appeared in release <?=$release_id?></small>
+                <small>Version <?=$title?> of this group appears in releases <?=$release_id?> to <?=$last_release_id?></small>
                 <small class="pull-right">
                   <ul class="tabs">
                   <li class="dropdown" data-dropdown="dropdown">
