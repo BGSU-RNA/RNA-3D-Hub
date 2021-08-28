@@ -3,15 +3,17 @@
       <div class="content">
         <div class="page-header">
           <h1>Compare representative set releases</h1>
+          <br>Note:  Release 2 must be chosen to be the most recent release, otherwise a blank result is returned.
+          This restriction was imposed to reduce the load from bots crawling the web.
         </div>
         <div class="row">
           <div class="span8">
 
             <form method="post" action="<?=$action?>" />
+            <input type='submit' class='btn primary' value="Compare selected">
             <div>
                 <?=$table?>
             </div>
-            <input type='submit' class='btn primary' value="Compare selected">
             </form>
             <br>
 
