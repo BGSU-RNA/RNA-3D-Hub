@@ -916,6 +916,121 @@ class Ajax_model extends CI_Model {
 
     }
 
+
+    function get_chain_coordinates($chain_id)
+    {
+        
+        $headers_cif_fr3d = array (
+
+            'data_view',
+            '#', 
+            'loop_',
+            '_atom_site.group_PDB', 
+            '_atom_site.id', 
+            '_atom_site.type_symbol', 
+            '_atom_site.label_atom_id', 
+            '_atom_site.label_alt_id', 
+            '_atom_site.label_comp_id', 
+            '_atom_site.label_asym_id', 
+            '_atom_site.label_entity_id', 
+            '_atom_site.label_seq_id', 
+            '_atom_site.pdbx_PDB_ins_code', 
+            '_atom_site.Cartn_x', 
+            '_atom_site.Cartn_y', 
+            '_atom_site.Cartn_z', 
+            '_atom_site.occupancy', 
+            '_atom_site.B_iso_or_equiv', 
+            '_atom_site.Cartn_x_esd', 
+            '_atom_site.Cartn_y_esd', 
+            '_atom_site.Cartn_z_esd', 
+            '_atom_site.occupancy_esd', 
+            '_atom_site.B_iso_or_equiv_esd', 
+            '_atom_site.pdbx_formal_charge', 
+            '_atom_site.auth_seq_id', 
+            '_atom_site.auth_comp_id', 
+            '_atom_site.auth_asym_id', 
+            '_atom_site.auth_atom_id', 
+            '_atom_site.pdbx_PDB_model_num' 
+
+        );
+
+        $footer = array('#');
+
+        // get their coordinates
+        $this->db->select('coordinates')
+                ->from('unit_coordinates')
+                ->like('unit_id', $chain_id, 'after');
+        $query = $this->db->get();
+
+        if ($query->num_rows() == 0) { return 'Loop coordinates not found'; }
+
+        foreach ($query->result() as $row) {
+            foreach ($row as $line) {
+                $line= explode("\n", $line);
+                foreach ($line as $line2) {
+                    $model_1_pattern = '/ 1\s*$/';
+                    // If model number is not 1, change to 1
+                    if (!preg_match($model_1_pattern, $line2)) {
+                        $search_pattern = '/([+-]?[0-9]+)\s*$/';
+                        $line2 = preg_replace($search_pattern, '1', $line2);
+                    }      
+                    $lines_arr[] = ($line2);  
+                }   
+            }
+        }
+
+        // get neighborhood
+        $this->db->select('coordinates')
+                 ->distinct()
+                 ->from('unit_coordinates')
+                 ->join('unit_pairs_distances','unit_coordinates.unit_id = unit_pairs_distances.unit_id_1')
+                 ->like('unit_id_2', $chain_id, 'after')
+                 ->not_like('unit_id_1',$chain_id, 'after');
+        $query = $this->db->get();
+
+        // test if atomic coordinates for neighboring atoms are available
+        if ($query->num_rows() != 0) {
+
+            foreach ($query->result() as $row) {
+                foreach ($row as $line) {
+                    $line= explode("\n", $line);
+                    foreach ($line as $line2) {
+                        $model_2_pattern = '/ 2\s*$/';
+                        // If model number is not 2, change to 2
+                        if (!preg_match($model_2_pattern, $line2)) {
+                            $search_pattern = '/([+-]?[0-9]+)\s*$/';
+                            $line2 = preg_replace($search_pattern, '2', $line2);
+                        }      
+                        $lines_arr2[] = ($line2);  
+                    }   
+                }
+            }
+
+            $combine_result = array_merge($headers_cif_fr3d, $lines_arr, $footer, $headers_cif_fr3d, $lines_arr2, $footer);
+        
+            $final_result = '';
+
+            foreach ($combine_result as $output) {
+                $final_result .= $output . "\n";
+            }
+
+            return $final_result;
+
+        } else {
+
+            $combine_result = array_merge($headers_cif_fr3d, $lines_arr, $footer);
+
+            $final_result = '';
+
+            foreach ($combine_result as $output) {
+                $final_result .= $output . "\n";
+            }
+
+            return $final_result;
+
+        }
+    }
+
     
     function get_coord_relative($unit_id)
     {

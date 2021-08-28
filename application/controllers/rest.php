@@ -206,6 +206,8 @@ class Rest extends MY_Controller {
         switch ($query_type) :
             case 'loop_id':
                 return $this->Ajax_model->get_loop_coordinates($query);
+            case 'chain_id':
+                return $this->Ajax_model->get_chain_coordinates($query);
             case 'motif_id':
                 return $this->Ajax_model->get_exemplar_coordinates($query);
             case 'nt_list':
@@ -315,6 +317,8 @@ class Rest extends MY_Controller {
                 return 'loop_id';
             } elseif ( $this->_is_motif_id($query) ) {
                 return 'motif_id';
+            } elseif ( $this->_is_chain_id($query) ) {
+                return 'chain_id';
             } elseif ( $this->_is_nt_list($query) ) {
                 return 'nt_list';
             } elseif ( $this->_is_loop_pair($query) ) {
@@ -346,6 +350,19 @@ class Rest extends MY_Controller {
             }
         }
         return TRUE;
+    }
+
+    private function _is_chain_id($query)
+    {
+        //1FJG|1|A
+        $parts = explode('|', $query);
+        $separators = count($parts);
+        if ( $separators = 3 and
+            $parts[1] != 'AU' and $parts[1] != 'BA1' ) {
+            return TRUE;
+        } else {
+            return FALSE;
+        }
     }
 
     private function _is_loop_id($query)
