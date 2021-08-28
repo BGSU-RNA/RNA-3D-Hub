@@ -3,7 +3,8 @@
       <div class="content">
 
         <div class="page-header">
-          <h1>Detailed Release History</h1>
+          <h1>Detailed Motif Atlas Release History</h1>
+          <br>Under construction as of 2021-07-22
         </div>
 
         <div class="row">
