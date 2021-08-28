@@ -7,6 +7,7 @@ class Motif_model extends CI_Model {
     function __construct()
     {
         $this->release_id  = '';
+        $this->last_release_id = '';
         $this->loops       = array(); // loops in the search order
         $this->nts         = array(); // human-readable nts
         #$this->nt_ids      = array(); // full nt ids
@@ -782,7 +783,7 @@ class Motif_model extends CI_Model {
         #ksort($this->full_nts[$this->loops[$i]]);
         ksort($this->full_units[$this->similarity[$i]]);
         return "<label><input type='checkbox' id='{$this->similarity[$i]}' class='jmolInline'
-               data-coord_ma='{$this->similarity[$i]}' " . " " . "data-core=" . " " . "data-quality='". "{$this->similarity[$i]}" . "'>{$this->similarity[$i]}</label>"
+               data-coord_ma='{$this->similarity[$i]}|{$this->motif_id}|{$this->release_id}'" . " " . "data-core=" . " " . "data-quality='". "{$this->similarity[$i]}" . "'>{$this->similarity[$i]}</label>"
                . "<span class='loop_link'>" . anchor_popup("loops/view/{$this->similarity[$i]}", '&#10140;') . "</span>";
 
     }
@@ -824,7 +825,7 @@ class Motif_model extends CI_Model {
 
     function get_header()
     {
-        $header = array('#D', '#S', 'Loop id', 'PDB', 'Disc', 'Bulges', 'Annotation');
+        $header = array('#D', '#S', 'Loop id', 'PDB', 'Disc', '#Non-core', 'Annotation');
 
         // 1, 2, ..., N
         for ($i = 1; $i <= $this->motiflen; $i++) {
@@ -906,7 +907,7 @@ class Motif_model extends CI_Model {
             } elseif ( $key == 'PDB' ) {
                 $parts = explode("_", $this->similarity[$id]);
                 $row[] = '<a class="pdb">' . $parts[1] . '</a>';
-            } elseif ( $key == 'Bulges' ) {
+            } elseif ( $key == '#Non-core' ) {
                 $row[] = $this->full_length[$this->similarity[$id]] - count($this->full_units[$this->similarity[$id]]);
             } elseif ( $key == 'break' ) {
             	$row[] = '*';
