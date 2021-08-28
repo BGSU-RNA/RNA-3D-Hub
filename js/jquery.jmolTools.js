@@ -326,7 +326,7 @@ if ( typeof Object.create !== 'function' ) {
 
                 }
 
-
+                /*
                 if (bulge_data[i] == "{}") {
                 	console.log('Object is empty');
                 } else {
@@ -352,6 +352,7 @@ if ( typeof Object.create !== 'function' ) {
                         }
                     }
                 }
+                */
                 
 
                 command += "select " + i + ".1, " + i + ".2;" +
