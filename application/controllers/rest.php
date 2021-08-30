@@ -321,16 +321,16 @@ class Rest extends MY_Controller {
                 return 'loop_id';
             } elseif ( $this->_is_motif_id($query) ) {
                 return 'motif_id';
-            } elseif ( $this->_is_chain_id($query) ) {
-                return 'chain_id';
             } elseif ( $this->_is_nt_list($query) ) {
                 return 'nt_list';
             } elseif ( $this->_is_loop_pair($query) ) {
                 return 'loop_pair';
             } elseif ( $this->_is_short_nt_list($query) ) {
                 return 'short_nt_list';
-            } elseif ( $this->_is_unit_id() ) {
+            } elseif ( $this->_is_unit_id($query) ) {
                 return 'unit_id';
+            } elseif ( $this->_is_chain_id($query) ) {
+                return 'chain_id';
             } else {
                 return FALSE;
             }
