@@ -38,7 +38,7 @@ class Rest extends MY_Controller {
         // search POST, then GET
         $query = $this->input->get_post('quality');
         
-        //$this->output->enable_profiler(TRUE);
+        // $this->output->enable_profiler(TRUE);
         
         $query_type = $this->_parseInput($query);
 
@@ -61,7 +61,7 @@ class Rest extends MY_Controller {
         // search POST, then GET
         $query = $this->input->get_post('coord');
         
-        $this->output->enable_profiler(TRUE);
+        // $this->output->enable_profiler(TRUE)
         
         $query_type = $this->_parseInput($query);
 
@@ -83,7 +83,7 @@ class Rest extends MY_Controller {
 
         // search POST, then GET
         $query = $this->input->get_post('coord_ma');
-        $this->output->enable_profiler(TRUE);
+        // $this->output->enable_profiler(TRUE);
         
         //$query_type = $this->_parseInput($query);
 
@@ -115,7 +115,7 @@ class Rest extends MY_Controller {
         // search POST, then GET
         $query = $this->input->get_post('core');
         
-        $this->output->enable_profiler(TRUE);
+        // $this->output->enable_profiler(TRUE);
         
         $query_type = $this->_parseInput($query);
 
@@ -136,7 +136,7 @@ class Rest extends MY_Controller {
         // search POST, then GET
         $query = $this->input->get_post('ife');
         
-        $this->output->enable_profiler(TRUE);
+        // $this->output->enable_profiler(TRUE);
         
         if ( $query ) {
             $this->load->model('Ajax_model', '', TRUE);
@@ -201,7 +201,7 @@ class Rest extends MY_Controller {
         // don't load the database until the input was validated
         $this->load->model('Ajax_model', '', TRUE);
 
-		$this->output->enable_profiler(TRUE);
+		// $this->output->enable_profiler(TRUE);
 		
         switch ($query_type) :
             case 'loop_id':
@@ -228,7 +228,7 @@ class Rest extends MY_Controller {
         // don't load the database until the input was validated
         $this->load->model('Ajax_model', '', TRUE);
 
-        $this->output->enable_profiler(TRUE);
+        // $this->output->enable_profiler(TRUE);
         
         switch ($query_type) :
             case 'loop_id':
@@ -243,7 +243,7 @@ class Rest extends MY_Controller {
         // don't load the database until the input was validated
         $this->load->model('Ajax_model', '', TRUE);
 
-        $this->output->enable_profiler(TRUE);
+        // $this->output->enable_profiler(TRUE);
         
         switch ($query_type) :
             case 'unit_id':
@@ -258,7 +258,7 @@ class Rest extends MY_Controller {
         // don't load the database until the input was validated
         $this->load->model('Ajax_model', '', TRUE);
 
-        //$this->output->enable_profiler(TRUE);
+        // $this->output->enable_profiler(TRUE);
         
         switch ($query_type) :
             case 'loop_id':
