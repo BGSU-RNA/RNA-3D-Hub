@@ -238,6 +238,95 @@ class Ajax_model extends CI_Model {
         return $this->get_nt_json_dcc($nt_ids);
     }
 
+    function get_chain_sequence($pdb, $chain)
+    {
+        $this->db->select('sequence')
+                 ->from('chain_info')
+                 ->where('pdb_id', $pdb)
+                 ->where('chain_name', $chain);
+        $query = $this->db->get();
+        if ($query->num_rows() == 0) { return 'No sequence was found for the given id'; }
+
+        $row = $query->row_array(1);
+
+        return $row['sequence'];
+    }
+
+    function get_sequence_basepairs($pdb, $chain, $nested)
+    {
+
+        // Check for string True, not boolean True
+        if ($nested == "True") {
+            $crossing = "and f_crossing = 0";
+        } else {
+            $crossing = " ";
+        }
+
+        $query_str = "
+        select A.index as seq_id1, concat(A.number, coalesce(A.ins_code, '')) as 3d_id1, A.nucleotide as nt1, f_lwbp as bp, C.index as seq_id2, C.nucleotide as nt2, concat(C.number, coalesce(C.ins_code, '')) as 3d_id2
+        from
+        (
+            select t3.index + 1 as `index`, t3.`normalized_unit` as `nucleotide`, t2.unit_id, t1.number, t1.ins_code
+            from unit_info t1, exp_seq_unit_mapping t2, exp_seq_position t3
+            where t1.pdb_id = " . $this->db->escape($pdb) . " 
+            and t1.chain = " . $this->db->escape($chain) . " 
+            and t1.model = 1
+            and t1.unit_id = t2.unit_id
+            and t2.exp_seq_position_id = t3.exp_seq_position_id
+            and (t1.alt_id = 'A' OR t1.alt_id is null)
+        ) as A
+        JOIN
+        (
+            select unit_id_1, unit_id_2, f_lwbp, t10.pdb_id
+            from unit_pairs_interactions t10, unit_info t11, unit_info t12
+            where
+            t10.pdb_id =" . $this->db->escape($pdb) . " 
+            and f_lwbp is not null
+            and t10.unit_id_1 = t11.unit_id
+            and t10.unit_id_2 = t12.unit_id
+            and t11.number < t12.number
+            and t11.chain = " . $this->db->escape($chain) . " 
+            and t12.chain = " . $this->db->escape($chain) . $crossing . "
+        ) as B
+        JOIN
+        (
+            select t3.index + 1 as `index`, t3.`normalized_unit` as `nucleotide`, t2.unit_id, t1.number, t1.ins_code
+            from unit_info t1, exp_seq_unit_mapping t2, exp_seq_position t3
+            where
+            t1.pdb_id = " . $this->db->escape($pdb) . "
+            and t1.chain = " . $this->db->escape($chain) . "
+            and t1.model = 1
+            and t1.unit_id = t2.unit_id
+            and t2.exp_seq_position_id = t3.exp_seq_position_id
+            and (t1.alt_id = 'A' OR t1.alt_id is null)
+        ) as C
+        on A.unit_id = B.unit_id_1
+        and B.unit_id_2 = C.unit_id
+        order by B.pdb_id, A.index";
+
+        $query = $this->db->query($query_str);
+        $nested_bps = array(); 
+
+        foreach ($query->result_array() as $row)
+        {
+            $nested_bps[] = $row;
+        }
+
+        $sequence = $this->get_chain_sequence($pdb, $chain);
+
+        $data = array(
+            "pdb_id" => $pdb,
+            "chain_id" => $chain,
+            "sequence" => $sequence,
+            "annotations" => $nested_bps
+        );
+
+        $myJSON = json_encode($data);
+
+        return $myJSON;
+           
+    }
+
     function get_bulge_RSRZ($loop_id)
     {
         

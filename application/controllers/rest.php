@@ -76,6 +76,26 @@ class Rest extends MY_Controller {
 
     }
 
+
+    public function getSequenceBasePairs()
+    {
+
+        $pdb = $this->input->get_post('pdb_id');
+        $chain = $this->input->get_post('chain');
+        $nested = $this->input->get_post('only_nested');
+
+        $this->output->enable_profiler(TRUE);
+
+        $this->load->model('Ajax_model', '', TRUE);
+
+        $this->output->set_header("Access-Control-Allow-Origin: *");
+        $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
+        $data['json'] = $this->Ajax_model->get_sequence_basepairs($pdb, $chain, $nested);
+        $this->load->view('json_view', $data);
+
+    }
+
+
     public function getCoordinatesMotifAtlas()
     {
         // should be able to accept loop_id, nt_ids, motif_id, short_nt_id
