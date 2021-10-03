@@ -84,7 +84,7 @@ class Rest extends MY_Controller {
         $chain = $this->input->get_post('chain');
         $nested = $this->input->get_post('only_nested');
 
-        $this->output->enable_profiler(TRUE);
+        // $this->output->enable_profiler(TRUE);
 
         $this->load->model('Ajax_model', '', TRUE);
 
