@@ -312,20 +312,15 @@ class Nrlist_model extends CI_Model {
 
     function get_statistics($id)
     {
-        $this->db->select('pi.pdb_id')
-                 ->select('ii.ife_id')
-                 ->select('pi.title')
-                 ->select('pi.experimental_technique')
-                 ->select('pi.release_date')
-                 ->select('pi.resolution')
-                 ->select('ii.length')
-                 ->select('ii.bp_count')
-                 ->select('ot.class_order')
-                 ->from('pdb_info AS pi')
-                 ->join('ife_info AS ii','pi.pdb_id = ii.pdb_id')
-                 ->join('nr_ordering_test AS ot', 'ii.ife_id = ot.ife_id')
-                 ->where('ot.nr_class_name',$id)
-                 ->order_by('ot.class_order','asc');
+        $this->db->select('nc1.ife_id')
+                 ->select('ca.pdb_id')
+                 ->select('ca.assembly')
+                 ->from('nr_chains AS nc1')
+                 ->join('nr_classes AS nc2','nc1.nr_class_id = nc2.nr_class_id AND nc1.nr_release_id = nc2.nr_release_id')
+                 ->join('chain_annotation AS ca', 'nc1.ife_id = ca.chain')
+                 ->where('nc2.name', $id)
+                 ->order_by('ca.pdb_id','asc')
+                 ->order_by('ca.assembly','asc');
 
         $query = $this->db->get();
 
@@ -334,19 +329,25 @@ class Nrlist_model extends CI_Model {
 
         foreach ($query -> result() as $row) {
             $link = $this->make_pdb_widget_link($row->ife_id);
+            $assembly = $row->assembly;
             //if ( $i==0 ) {
                 //$link = $link . ' <strong>(rep)</strong>';
             //}
             $i++;
             $table[] = array($i,
                              $link,
-                             $row->title,
+                             $row->pdb_id,
                              //$this->get_source_organism($row->ife_id),
                              //$this->get_compound_list($row->pdb_id),
-                             $row->experimental_technique,
-                             $row->resolution,
-                             $row->length);
+                             //$row->resolution,
+                             //$row->length);
                              //$row->bp_count);
+                             $assembly,
+                             $this->get_ribosome_chain($row->pdb_id, $assembly, "LSU_23S"),
+                             $this->get_ribosome_chain($row->pdb_id, $assembly, "mRNA"),
+                             $this->get_ribosome_chain($row->pdb_id, $assembly, "A_tRNA"),
+                             $this->get_ribosome_chain($row->pdb_id, $assembly, "P_tRNA"),
+                             $this->get_ribosome_chain($row->pdb_id, $assembly, "E_tRNA"));
 
         }
 
@@ -500,6 +501,24 @@ class Nrlist_model extends CI_Model {
         $heatmap_data = json_encode($query->result());
 
         return $heatmap_data;
+    }
+
+    function get_ribosome_chain($pdb, $assembly, $value)
+    {
+        $this->db->select('chain')
+                 ->from('chain_annotation')
+                 ->where('pdb_id', $pdb)
+                 ->where('assembly', $assembly)
+                 ->like('value', $value);
+                 
+        $query = $this->db->get();
+
+        $result = "";
+        foreach ($query->result() as $row) {
+            $result = $row->chain;
+        }
+         
+        return $result;
     }
 
     function get_compound_single($ife)
