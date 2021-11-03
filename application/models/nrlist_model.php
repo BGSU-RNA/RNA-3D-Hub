@@ -333,6 +333,25 @@ class Nrlist_model extends CI_Model {
             //if ( $i==0 ) {
                 //$link = $link . ' <strong>(rep)</strong>';
             //}
+            $lsu_23S = $this->get_ribosome_chain($row->pdb_id, $assembly, "LSU_23S");
+            $lsu_5S = $this->get_ribosome_chain($row->pdb_id, $assembly, "LSU_5S");
+            $mrna = $this->get_ribosome_chain($row->pdb_id, $assembly, "mRNA");
+            $aminoacyl_trna = $this->get_ribosome_chain($row->pdb_id, $assembly, "A_tRNA");
+            $peptidyl_trna = $this->get_ribosome_chain($row->pdb_id, $assembly, "P_tRNA");
+            $exit_trna = $this->get_ribosome_chain($row->pdb_id, $assembly, "E_tRNA");
+
+            $trna_chains = array($aminoacyl_trna, $peptidyl_trna, $exit_trna);
+            $trna_chains_filtered = array_filter($trna_chains);
+            $trna_chains_display = join(", ", $trna_chains_filtered);
+
+            $aminoacyl_trna_state = $this->get_trna_occupancy($aminoacyl_trna);
+            $peptidyl_trna_state = $this->get_trna_occupancy($peptidyl_trna);
+            $exit_trna_state = $this->get_trna_occupancy($exit_trna);
+
+            $trna_occupancy = array($aminoacyl_trna_state, $peptidyl_trna_state, $exit_trna_state);
+            $trna_occupancy_filtered = array_filter($trna_occupancy);
+            $trna_occupancy_display = join(",", $trna_occupancy_filtered);
+
             $i++;
             $table[] = array($i,
                              $link,
@@ -343,11 +362,15 @@ class Nrlist_model extends CI_Model {
                              //$row->length);
                              //$row->bp_count);
                              $assembly,
-                             $this->get_ribosome_chain($row->pdb_id, $assembly, "LSU_23S"),
-                             $this->get_ribosome_chain($row->pdb_id, $assembly, "mRNA"),
-                             $this->get_ribosome_chain($row->pdb_id, $assembly, "A_tRNA"),
-                             $this->get_ribosome_chain($row->pdb_id, $assembly, "P_tRNA"),
-                             $this->get_ribosome_chain($row->pdb_id, $assembly, "E_tRNA"));
+                             $lsu_23S,
+                             $lsu_5S,
+                             $mrna,
+                             $trna_chains_display,
+                             $trna_occupancy_display
+                             //$this->get_trna_occupancy($aminoacyl_trna),
+                             //$this->get_trna_occupancy($peptidyl_trna)
+                             //$this->get_trna_occupancy($exit_trna)
+                            );
 
         }
 
@@ -516,6 +539,24 @@ class Nrlist_model extends CI_Model {
         $result = "";
         foreach ($query->result() as $row) {
             $result = $row->chain;
+        }
+         
+        return $result;
+    }
+
+    function get_trna_occupancy($chain)
+    {
+        $this->db->select('value')
+                 ->from('chain_annotation')
+                 ->where('chain', $chain)
+                 ->where('feature', 'tRNA_occupancy');
+                 //->like('value', $value);
+                 
+        $query = $this->db->get();
+
+        $result = "";
+        foreach ($query->result() as $row) {
+            $result = $row->value;
         }
          
         return $result;
