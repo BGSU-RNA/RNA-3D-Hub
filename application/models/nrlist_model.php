@@ -333,10 +333,18 @@ class Nrlist_model extends CI_Model {
             //if ( $i==0 ) {
                 //$link = $link . ' <strong>(rep)</strong>';
             //}
+            
+            $ife_components = explode("|", $row->ife_id);
+            $pdb_id = $ife_components[0];
+
+
             $lsu_23S = $this->get_ribosome_chain($row->pdb_id, $assembly, "LSU_23S");
             $lsu_5S = $this->get_ribosome_chain($row->pdb_id, $assembly, "LSU_5S");
             $mrna = $this->get_ribosome_chain($row->pdb_id, $assembly, "mRNA");
             $aminoacyl_trna = $this->get_ribosome_chain($row->pdb_id, $assembly, "A_tRNA");
+            $aminoacyl_trna_seq = $this->get_trna_sequence($aminoacyl_trna);
+            //print $aminoacyl_trna_seq;
+
             $peptidyl_trna = $this->get_ribosome_chain($row->pdb_id, $assembly, "P_tRNA");
             $exit_trna = $this->get_ribosome_chain($row->pdb_id, $assembly, "E_tRNA");
 
@@ -352,6 +360,13 @@ class Nrlist_model extends CI_Model {
             $trna_occupancy_filtered = array_filter($trna_occupancy);
             $trna_occupancy_display = join(",", $trna_occupancy_filtered);
 
+            $protein_chains = $this->get_bound_protein_chains($lsu_23S);
+            $unique_protein_chains = array_unique($protein_chains);
+
+            $protein_names = $this->get_protein_names($pdb_id, $unique_protein_chains);
+            $protein_factors = array_filter($protein_names, function ($var) { return (stripos($var, 'ribosomal') === false); });
+            $factors_display = $this->format_protein_factors_display($protein_factors);
+
             $i++;
             $table[] = array($i,
                              $link,
@@ -366,7 +381,9 @@ class Nrlist_model extends CI_Model {
                              $lsu_5S,
                              $mrna,
                              $trna_chains_display,
-                             $trna_occupancy_display
+                             $trna_occupancy_display,
+                             $aminoacyl_trna_seq,
+                             $factors_display
                              //$this->get_trna_occupancy($aminoacyl_trna),
                              //$this->get_trna_occupancy($peptidyl_trna)
                              //$this->get_trna_occupancy($exit_trna)
@@ -375,6 +392,89 @@ class Nrlist_model extends CI_Model {
         }
 
         return $table;
+    }
+
+    function get_trna_sequence($chain)
+    {
+        
+        if (!empty($chain)) {
+            $chain_components = explode("|", $chain);
+            $pdb = $chain_components[0];
+            $chain_id = $chain_components[2];
+
+            
+            $anticodon_positions = array(36, 35, 34);
+
+            $this->db->select('unit');
+            $this->db->from('unit_info');
+            $this->db->where('pdb_id', $pdb);
+            $this->db->where('chain', $chain_id);
+            $this->db->where_in('chain_index', $anticodon_positions);
+            $this->db->_protect_identifiers = FALSE;
+            $order = sprintf('FIELD(chain_index, %s)', implode(', ', $anticodon_positions));
+            $this->db->order_by($order);
+            $this->db->_protect_identifiers = TRUE;
+
+            $query = $this->db->get();
+
+            $trna_sequence = array();
+            foreach ($query->result() as $row) {
+                array_push($trna_sequence, $row->unit);
+            }
+
+            $trna_sequence = implode("", $trna_sequence);
+            
+            return $trna_sequence;
+        }
+    }
+
+    function format_protein_factors_display($protein_factors)
+    {
+        if (!empty($protein_factors)) {
+            return join(", ", $protein_factors);
+        } else {
+            return " ";
+        }
+
+    }
+
+    function get_protein_names($pdb_id, $protein_chains)
+    {
+        $this->db->select('compound')
+                 ->from('chain_info')
+                 ->where('pdb_id', $pdb_id)
+                 ->where_in('chain_name', $protein_chains);
+
+        $query = $this->db->get();
+
+        $protein_names = array();
+        foreach ($query->result() as $row) {
+            array_push($protein_names, $row->compound);
+        }
+
+        return $protein_names;
+    }
+
+    function get_bound_protein_chains($chain_id)
+    {
+        $search_keyword = $chain_id . "|";
+
+        $this->db->select('UPD.unit_id_2 AS unit_id_2')
+                 ->from('unit_pairs_distances AS UPD')
+                 ->join('unit_info AS UI', 'UPD.unit_id_2 = UI.unit_id', 'inner')
+                 ->like('UPD.unit_id_1', $search_keyword, 'after')
+                 ->where('UI.unit_type_id', 'aa')
+                 ->where('UPD.distance <=', 8.5);
+
+        $query = $this->db->get();
+
+        $chain_list = array();
+        foreach ($query->result() as $row) {
+            $chain_component = explode("|", $row->unit_id_2);
+            array_push($chain_list, $chain_component[2]);
+        }
+
+        return $chain_list;
     }
 
     function get_heatmap_data_revised_original($id)
