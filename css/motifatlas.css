@@ -9,7 +9,7 @@ body {
     text-align: center; /* center align it with the container */
 }
 .container {
-    width: 940px;
+    width: 80%;
 }
 /* The white background content wrapper */
 .content {

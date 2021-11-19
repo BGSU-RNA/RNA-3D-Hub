@@ -54,7 +54,7 @@
         <?php if ($valid): ?>
 
           <!-- motifs -->
-          <div class="span8 well">
+          <div class="span9 well">
 
             <ul class="pills" data-tabs="tabs">
                 <li class="active"><a href="#ils"><?=$counts['IL']?> Internal loops</a></li>
@@ -103,7 +103,7 @@
 
           <?php if ($counts['IL'] != 0 or $counts['HL'] != 0 or $counts['J3'] != 0): ?>
 
-          <div class="span6 well" id="jmol" >
+          <div class="span8 well" id="jmol" >
 <script>
     jmol_isReady = function(applet) {
         // initialize the plugin
@@ -120,8 +120,8 @@
     };
 
     var Info = {
-        width: 340,
-        height: 340,
+        width: 460,
+        height: 460,
         debug: false,
         color: '#f5f5f5',
         addSelectionOptions: false,

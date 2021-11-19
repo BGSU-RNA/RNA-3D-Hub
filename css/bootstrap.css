@@ -190,7 +190,7 @@ body {
   color: #404040;
 }
 .container {
-  width: 940px;
+  width: 80%;
   margin-left: auto;
   margin-right: auto;
   zoom: 1;
@@ -266,6 +266,8 @@ a:hover {
   float: left;
   margin-left: 20px;
 }
+.span{
+}
 .span1 {
   width: 40px;
 }
@@ -337,6 +339,21 @@ a:hover {
 }
 .span24 {
   width: 1420px;
+}
+.span45p{
+  width: 45%;
+}
+.span50p{
+ width: 50%;
+}
+.span40p{
+ width: 40%;
+}
+.span33p{
+ width: 33%;
+}
+.span100p{
+ width: 100%;
 }
 .row > .offset1 {
   margin-left: 80px;

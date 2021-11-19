@@ -3,7 +3,7 @@
       <div class="content">
         <div class="page-header">
           <h1><?=strtoupper($pdb_id)?>
-          <small><?=strtoupper($method)?> <?=$interaction_type?> pairwise interaction annotations</small>
+          <small><?=strtoupper($method)?> <?=$interaction_type?> Pairwise Interaction Annotations</small>
           <small><a class="btn pull-right success" href="<?=$current_url?>/csv">Download</a></small>
           </h1>
         </div>
@@ -41,11 +41,11 @@
           </div>
           <!-- end annotations -->
 
-          <div class="span7 well" id="jmol">
+          <div class="span9 well" id="jmol">
             <script>
               var Info = {
-                width: 380,
-                height: 350,
+                width: 480,
+                height: 450,
                 debug: false,
                 color: '#f5f5f5',
                 addSelectionOptions: false,

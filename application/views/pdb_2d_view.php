@@ -12,7 +12,7 @@
         <div class="page-header">
           <h1>
             <?=strtoupper($pdb_id)?>
-            <small>2D representation</small>
+            <small>2D Representation</small>
             <small class="pull-right">
             <select data-placeholder="Choose a structure" id="chosen">
               <option value=""></option>
@@ -145,19 +145,19 @@
 
             </div>
 
-          <div id='rna-2d' class='rna2d span8' data-pdb='<?=$pdb_id?>'>
+          <div id='rna-2d' class='rna2d span33p' data-pdb='<?=$pdb_id?>'>
             &nbsp;
           </div>
 
-            <div class="right-side row span6">
+            <div class="right-side row span8">
 
-              <div class="row span6">
+              <div class="row span8">
                 <div id="error-message" class="alert-message error hide fade in" data-alert='alert'>
                    <a class="close" href="#">×</a>
                 </div>
 
 
-<!--                 <div class="row span6">
+<!--                 <div class="row span8">
                     <form class="form-search">
                         <fieldset>
                             <input id='nt-selection-box' type="text" placeholder="Nucleotide selection...">
@@ -166,12 +166,12 @@
                     </form>
                 </div>
  -->
-                <div class="row span6">
-                    <div id="jmol" class="well span6 width-320-px">
+                <div class="row span8">
+                    <div id="jmol" class="well span8">
 <script>
     var Info = {
-        width: 320,
-        height: 320,
+        width: 460,
+        height: 460,
         debug: false,
         color: 'white',
         addSelectionOptions: false,
@@ -250,12 +250,12 @@
                     </div>
                 </div>
 
-                <div class="row span6">
+                <div class="row span8">
                     <div id="about-selection" class="alert-message block-message info hide span6 width-320-px"></div>
                 </div>
 
-                <div class="row span6">
-                    <div id="related-structures" class="alert-message block-message info span6 width-320-px">
+                <div class="row span8">
+                    <div id="related-structures" class="alert-message block-message info span8">
                         <h4>Related 2D Diagrams</h4>
                         <?php if (count($related_pdbs) == 0): ?>
                           <strong>None found</strong>

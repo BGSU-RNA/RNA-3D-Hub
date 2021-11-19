@@ -9,7 +9,7 @@
         </div>
 
         <div class="row">
-          <div class="span16">
+          <div class="span">
             <ul class="tabs" data-tabs="tabs">
                 <li><a>Resolution cutoffs:</a></li>
                 <?php foreach(array('1.5A', '2.0A', '2.5A', '3.0A', '3.5A', '4.0A', '20.0A', 'all') as $res): ?>
