@@ -529,8 +529,8 @@ class Loops_model extends CI_Model {
 
     function make_radio_button($id) {
         $loop_link = anchor_popup("loops/view/$id", '&#10140;');
-        return array('data' => "<label><input type='radio' class='jmolInline' data-type='loop_id'
-                id={$id} data-nt='{$id}' name='l'><span>{$id}</span>
+        return array('data' => "<label><input type='radio' class='jmolInline' data-coord='{$id}'
+                id={$id} data-quality='{$id}' name='l'><span>{$id}</span>
                 <span class='loop_link'>{$loop_link}</span></label>", 'class' => 'loop');
     }
 
