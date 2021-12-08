@@ -937,6 +937,12 @@ class Ajax_model extends CI_Model {
             $complete_units[] = $row->unit_id;
         }
 
+        $first_unit = $complete_units[0];
+        $unit_components = explode("|", $first_unit);
+        $model_identifier = $unit_components[0] . "|" . $unit_components[1] . "|";
+
+        // return $model_identifier;
+
 
         $this->db->select('coordinates')->from('unit_coordinates');
         $this->db->where_in('unit_id', $complete_units);
@@ -973,7 +979,8 @@ class Ajax_model extends CI_Model {
                  ->from('unit_coordinates')
                  ->join('unit_pairs_distances','unit_coordinates.unit_id = unit_pairs_distances.unit_id_1')
                  ->where_in('unit_id_2',$complete_units)
-                 ->where_not_in('unit_id_1',$complete_units);
+                 ->where_not_in('unit_id_1',$complete_units)
+                 ->like('unit_id_1', $model_identifier, 'after');
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
