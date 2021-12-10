@@ -7,10 +7,12 @@
           This restriction was imposed to reduce the load from bots crawling the web.
         </div>
         <div class="row">
-          <div class="span8">
+          <div class="span97p">
 
             <form method="post" action="<?=$action?>" />
-            <input type='submit' class='btn primary' value="Compare selected">
+            <center>
+		<input type='submit' class='btn primary' value="Compare selected" style="margin-bottom:10px;">
+	    </center>
             <div>
                 <?=$table?>
             </div>

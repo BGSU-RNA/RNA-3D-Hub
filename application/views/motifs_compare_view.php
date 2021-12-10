@@ -7,7 +7,7 @@
         </div>
 
         <div class="row">
-          <div class="span8">
+          <div class="span97p">
 
             <ul class="tabs" data-tabs="tabs">
                 <li class="active"><a href="#ils">Internal Loops</a></li>
@@ -16,21 +16,21 @@
 
             <div class="tab-content">
 
-                <div class="tab-pane active" id="ils">
+               <center><div class="tab-pane active" id="ils">
                     <form method="post" action="<?=$action_il?>"  />
                     <?=$table['ils']?>
                     <br>
                     <input type='submit' class='btn primary' value="Compare selected">
                     </form>
-                </div>
+                </div></center>
 
-                <div class="tab-pane" id="hls">
+                <center><div class="tab-pane" id="hls">
                     <form method="post" action="<?=$action_hl?>"  />
                     <?=$table['hls']?>
                     <br>
                     <input type='submit' class='btn primary' value="Compare selected">
                     </form>
-                </div>
+                </div></center>
 
             </div>
 

@@ -110,7 +110,7 @@ class Nrlist_model extends CI_Model {
                  #->select('nrc.version')
                  #->select('nrc.comment')
                  /*->select('nrr.nr_release_id')*/
-                 #->select('nrr.date')
+                 #->select('nrr.date') 
                  ->select('nrr.description')
                  ->from('nr_classes AS nrc')
                  ->join('nr_releases AS nrr','nrc.nr_release_id = nrr.nr_release_id')
@@ -1095,8 +1095,8 @@ class Nrlist_model extends CI_Model {
         $ifes = array_unique($ifes);
         $pdbs = array_unique($pdbs);
 
-        // get general pdb info
-        $this->db->select('pdb_id, title, resolution, experimental_technique')
+        // get general pdb info 
+        $this->db->select('pdb_id, title, resolution, experimental_technique, release_date')
                  ->from('pdb_info')
                  ->where_in('pdb_id', $pdbs )
                  ->group_by('pdb_id');
@@ -1106,6 +1106,8 @@ class Nrlist_model extends CI_Model {
             $pdb[$row->pdb_id]['title']      = $row->title;
             $pdb[$row->pdb_id]['resolution'] = (is_null($row->resolution)) ? '' : number_format($row->resolution, 1) . ' &Aring';
             $pdb[$row->pdb_id]['experimental_technique'] = $row->experimental_technique;
+            $pdb[$row->pdb_id]['release_date'] = $row->release_date;
+
         }
 
         // check if any of the files became obsolete
@@ -1215,6 +1217,8 @@ class Nrlist_model extends CI_Model {
                              '<li>' . $compound . '</li>' .
                              '<li>' . $pdb[$pdb_id]['experimental_technique'] . '</li>' .
                              '<li>Chain(s): ' . $best_chains . '; model(s): ' . $best_models . '</li>' .
+                             '<li>Release Date: ' . $pdb[$pdb_id]['release_date'] . '</li>' .
+                             //'<li>' . $pdb[$pdb_id]['release_date'] '</li>' .//
                              '</ul>',
                              $pdb[$pdb_id]['resolution'],
                              $row->analyzed_length,
