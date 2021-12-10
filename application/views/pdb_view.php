@@ -41,19 +41,19 @@
               <ul class="media-grid">
                 <li>
                   <a href="<?=$baseurl?>pdb/6ZMI">6ZMI
-                    <img src="https://cdn.rcsb.org/images/structures/zm/6zmi/6zmi_assembly-1.jpeg" class="thumbnail span2" alt="6ZMI assembly">
+                    <img src="https://cdn.rcsb.org/images/structures/zm/6zmi/6zmi_assembly-1.jpeg" class="thumbnail span3" alt="6ZMI assembly">
                     Human ribosome
                   </a>
                 </li>
                 <li>
                   <a href="<?=$baseurl?>pdb/4Y4O">4Y4O
-                    <img src="https://cdn.rcsb.org/images/structures/y4/4y4o/4y4o_assembly-1.jpeg" class="thumbnail span2" alt="4Y4O assembly">
+                    <img src="https://cdn.rcsb.org/images/structures/y4/4y4o/4y4o_assembly-1.jpeg" class="thumbnail span3" alt="4Y4O assembly">
                     T. th. ribosome
                   </a>
                 </li>
                 <li>
                   <a href="<?=$baseurl?>pdb/7K00">7K00
-                    <img src="https://cdn.rcsb.org/images/structures/k0/7k00/7k00_assembly-1.jpeg" class="thumbnail span2" alt="7K00 assembly">
+                    <img src="https://cdn.rcsb.org/images/structures/k0/7k00/7k00_assembly-1.jpeg" class="thumbnail span3" alt="7K00 assembly">
                     E. coli ribosome
                   </a>
                 </li>
@@ -71,7 +71,7 @@
                 <?php foreach($recent as $pdb): ?>
                 <li>
                   <a href="<?=$baseurl?>pdb/<?=$pdb?>"><?=$pdb?>
-                    <img src="https://cdn.rcsb.org/images/structures/<?=strtolower(substr($pdb, 1, 2));?>/<?=strtolower($pdb);?>/<?=strtolower($pdb);?>_assembly-1.jpeg" class="thumbnail span2" alt="<?=$pdb?> assembly">
+                    <img src="https://cdn.rcsb.org/images/structures/<?=strtolower(substr($pdb, 1, 2));?>/<?=strtolower($pdb);?>/<?=strtolower($pdb);?>_assembly-1.jpeg" class="thumbnail span3" alt="<?=$pdb?> assembly">
                   </a>
                 </li>
                 <?php endforeach; ?>

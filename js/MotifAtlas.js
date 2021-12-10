@@ -24,7 +24,7 @@ function LookUpPDBInfo()
           content: function(){return data;},
           title: function(){return pdb;},
           trigger: 'hover',
-          delayOut: 2000,
+          delayOut: 2500,
           html: true,
           animate: true,
           placement: a.offset().top - $(window).scrollTop() < 500 ? 'below' : 'above'

@@ -194,6 +194,14 @@ body {
   margin-left: auto;
   margin-right: auto;
   zoom: 1;
+
+}
+container-large{
+  min-width: 1200px;
+  width: 95%;
+  margin-left: auto;
+  margin-right: auto;
+  zoom: 1;
 }
 .container:before, .container:after {
   display: table;
@@ -292,8 +300,14 @@ a:hover {
 .span8 {
   width: 460px;
 }
+.span500px{
+  width: 500px;
+}
 .span9 {
   width: 520px;
+}
+.spanjmol{
+  width: 565px;
 }
 .span10 {
   width: 580px;
@@ -340,6 +354,9 @@ a:hover {
 .span24 {
   width: 1420px;
 }
+.span40p{
+  width: 40%;
+}
 .span45p{
   width: 45%;
 }
@@ -351,6 +368,16 @@ a:hover {
 }
 .span33p{
  width: 33%;
+}
+.span75p{
+ width: 75%;
+}
+.span90p{
+ padding-left: none;
+ width: 90%;	
+}
+.motiftop{
+ margin-top: 15px;
 }
 .span100p{
  width: 100%;
@@ -1750,6 +1777,9 @@ a.menu:after, .dropdown-toggle:after {
 }
 .tab-content > .active, .pill-content > .active {
   display: block;
+}
+.loop-tab{
+  margin-left: 20px;
 }
 .breadcrumb {
   padding: 7px 14px;

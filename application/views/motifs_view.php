@@ -1,4 +1,4 @@
-    <div class="container motifs_view">
+    <div class="container motifsmin motifs_view">
 
       <div class="content">
         <div class="page-header">
@@ -16,7 +16,6 @@
               </ul>
             </small>
           </h1>
-          <a href='<?=$alt_view?>'>Switch to graph view</a>
           <a href='<?=$polymorph_url?>'>Polymorphs</a>
         </div>
         <div class="row">
@@ -25,7 +24,7 @@
             <?=$table?>
           </div>
 
-          <div class="span6" id="jmol">
+          <div class="spanjmol" id="jmol">
               <div class="block-div jmolheight">
 <script>
     jmol_isReady = function(applet) {
@@ -43,7 +42,7 @@
     };
 
     var Info = {
-        width: 340,
+        width: 560,
         height: 340,
         debug: false,
         color: 'white',

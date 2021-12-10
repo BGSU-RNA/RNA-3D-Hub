@@ -13,8 +13,8 @@
           </div>
 
 
-          <div class="span6" id="jmol">
-              <div class="block-div jmolheight">
+          <div class="span10" id="jmol">
+              <div class="block-div span jmolheight">
 <script>
     jmol_isReady = function(applet) {
         // initialize the plugin
@@ -30,7 +30,7 @@
     };
 
     var Info = {
-        width: 340,
+        width: 565,
         height: 340,
         debug: false,
         color: 'white',

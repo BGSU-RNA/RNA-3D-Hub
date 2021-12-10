@@ -1,4 +1,4 @@
-    <div class="container motifview">
+    <div class="container-large motifview">
 
       <div class="content">
 
@@ -23,67 +23,9 @@
           </div>
         </div> <!-- end of page-header -->
 
-        <div class="row">
-            <div class="span4">
-                <div class="block-div resizable" id="annotation-panel">
-                        <dl>
-                            <dt>Annotations</dt>
-                            <dd id="common_name2" class="edit"><?
-                            if ($annotation_test) { foreach($annotation_test as $key => $value) {
-                                echo "<li>" . $key . " ". "(". $value . ")". "</li>";
-                                }
-                            }
-                            ?></dd>
-                            <!--<dt>Description:</dt>
-                            <#?php if ($annotation['common_name']): ?>
-                            <dd id="common_name" class="edit"><?=$annotation['common_name']?></dd>
-                            <#?php else: ?>
-                            <dd id="common_name" class="edit">No description added yet.</dd>
-                            <#?php endif; ?>-->
-                            <dt>Basepair signature</dt>
-                            <dd id="bp_signature" class="edit"><?=$annotation['bp_signature']?></dd>
-                            <!--<dt>Free text annotation:</dt>
-                            <#?php if ($annotation['annotation']): ?>
-                            <dd id="annotation" class="edit_area"><#?=$annotation['annotation']?></dd>
-                            <#?php else: ?>
-                            <dd id="annotation" class="edit_area">No annotation provided yet.</dd>
-                            <#?php endif; ?>-->
-                            <dt>Intraclusteral linkage</dt>
-                            <dd>
-                                <strong>Min</strong> <?php echo number_format($linkage['intra_min_disc'], 2); ?> |
-                                <strong>Avg</strong> <?php echo number_format($linkage['intra_avg_disc'], 2); ?> |
-                                <strong>Max</strong> <?php echo number_format($linkage['intra_max_disc'], 2); ?>
-                            </dd>
-                        </dl>
-
-                        <ul class='media-grid'>
-                            <a href='#' class="hint" rel='twipsy' title='
-                                2D diagram abbreviations:<br>
-                                    Y: pyrimidines (C or U)<br>
-                                    R: purines (G or A)<br>
-                                    W: weak (A or U)<br>
-                                    S: strong (G or C)<br>
-                                    K: keto (G or U)<br>
-                                    M: amino (A or C)<br>
-                                    D: not C<br>
-                                    V: not U<br>
-                                    H: not G<br>
-                                    B: not A<br>
-                                    A: only A<br>
-                                    G: only G<br>
-                                    C: only C<br>
-                                    U: only U<br>
-                                    N: any nucleotide'>
-                                <img class="span3 thumbnail"
-                                     src="<?=$this->config->item('home_url')?>/img/MotifAtlas/<?php echo substr($title,0,2) . $release_id;?>/<?=$title?>.png"
-                                     alt='2D diagram'>
-                            </a>
-                        </ul>
-                        <a href="<?=$this->config->item('home_url')?>/main/rna-3d-hub-help/" target="_blank">Help</a>
-                </div>
-            </div>
-            <div class="span12">
-                <div class="row span12 interactions resizable" id="interactions">
+    <!--    <div class="row">-->
+            <div class="row span">
+                <div class="row span90p interactions resizable" id="interactions">
 
                     <ul class="tabs" data-tabs="tabs">
                         <li class="active"><a href="#int">Pairwise interactions</a></li>
@@ -148,8 +90,68 @@
 
                     </div>
                 </div>
-                <div class="row">
-                    <div class="span6" id="jmolBlock">
+            <!--</div>-->
+	</div>
+            <div class="row motiftop">
+            	<div class="span4">
+                	<div class="block-div resizable" id="annotation-panel">
+                        	<dl>
+                        	    <dt>Annotations</dt>
+                            	    <dd id="common_name2" class="edit"><?
+                            	    if ($annotation_test) { foreach($annotation_test as $key => $value) {
+                                	echo "<li>" . $key . " ". "(". $value . ")". "</li>";
+                                  	}
+                            	    }
+                            	    ?></dd>
+                          	    <!--<dt>Description:</dt>
+                            		<#?php if ($annotation['common_name']): ?>
+                           		 <dd id="common_name" class="edit"><?=$annotation['common_name']?></dd>
+                          		  <#?php else: ?>
+                          		  <dd id="common_name" class="edit">No description added yet.</dd>
+                      		          <#?php endif; ?>-->
+                        		  <dt>Basepair signature</dt>
+                            		  <dd id="bp_signature" class="edit"><?=$annotation['bp_signature']?></dd>
+                     		          <!--<dt>Free text annotation:</dt>
+                     		          <#?php if ($annotation['annotation']): ?>
+                            		  <dd id="annotation" class="edit_area"><#?=$annotation['annotation']?></dd>
+                            		  <#?php else: ?>
+                            		  <dd id="annotation" class="edit_area">No annotation provided yet.</dd>
+                            		  <#?php endif; ?>-->
+                            		  <dt>Intraclusteral linkage</dt>
+                            		  <dd>
+                                		<strong>Min</strong> <?php echo number_format($linkage['intra_min_disc'], 2); ?> |
+                                		<strong>Avg</strong> <?php echo number_format($linkage['intra_avg_disc'], 2); ?> |
+                               			<strong>Max</strong> <?php echo number_format($linkage['intra_max_disc'], 2); ?>
+                            		  </dd>
+                        	</dl>
+
+                        	<ul class='media-grid'>
+                       		     <a href='#' class="hint" rel='twipsy' title='
+                               		 2D diagram abbreviations:<br>
+                                	    Y: pyrimidines (C or U)<br>
+                                	    R: purines (G or A)<br>
+                               		    W: weak (A or U)<br>
+                                   	    S: strong (G or C)<br>
+                                    	    K: keto (G or U)<br>
+                                    	    M: amino (A or C)<br>
+                                    	    D: not C<br>
+                                    	    V: not U<br>
+                                    	    H: not G<br>
+                                    	    B: not A<br>
+                                    	    A: only A<br>
+                                    	    G: only G<br>
+                                    	    C: only C<br>
+                                    	    U: only U<br>
+                                    	    N: any nucleotide'>
+                               	     <img class="span3 thumbnail"
+                                    	 src="<?=$this->config->item('home_url')?>/img/MotifAtlas/<?php echo substr($title,0,2) . $release_id;?>/<?=$title?>.png"
+                                    	 alt='2D diagram'>
+                            	    </a>
+                        	</ul>
+                        	<a href="<?=$this->config->item('home_url')?>/main/rna-3d-hub-help/" target="_blank">Help</a>
+                	</div>
+            	</div>
+                <div class="spanjmol" id="jmolBlock">
                             <div class="block-div jmolheight">
 <script>
     jmol_isReady = function(applet) {
@@ -172,7 +174,7 @@
     };
 
     var Info = {
-        width: 340,
+        width: 565,
         height: 340,
         debug: false,
         color: 'white',
@@ -256,7 +258,7 @@
                     </svg>
                 </div>
                             </div>
-                    <div class="span6 jmolheight mdmatrix" id="mdBlock">
+                    <div class="span6 jmolmatrixheight mdmatrix" id="mdBlock">
                             <?php echo $matrix;?>
 
                             <?php if ($matrix != ''): ?>

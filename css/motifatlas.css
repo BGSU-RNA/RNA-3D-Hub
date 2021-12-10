@@ -11,6 +11,12 @@ body {
 .container {
     width: 80%;
 }
+container-large{
+  width: 95%;
+  margin-left: auto;
+  margin-right: auto;
+  zoom: 1;
+}
 /* The white background content wrapper */
 .content {
     background-color: #fff;
@@ -58,7 +64,12 @@ small .label {
 }
 .jmolheight {
     height:340px;
-    width:350px;
+    width:565px;
+    margin-bottom:10px;
+}
+.jmolmatrixheight{
+    height:340px;
+    width:340px;
     margin-bottom:10px;
 }
 .motifview #annotation-panel {
@@ -904,7 +915,12 @@ body.home {
 .pdb-2d-view .width-320-px {
   width: 320px;
 }
-
+.pdb-2d-view .width-500-px{
+  width: 500px;
+}
+.pdb-2d-view .width-565-px{
+  width: 565px;
+}
 /* Motif Atlas home page */
 .motifs_home_view .hero-unit, .pdb_view .hero-unit {
     padding: 30px;

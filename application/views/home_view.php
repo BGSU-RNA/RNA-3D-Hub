@@ -36,14 +36,14 @@
           <p><a class="btn primary" href="<?php echo $baseurl;?>pdb">Explore</a></p>
         </div>
 
-        <div class="span5">
+        <div class="span6">
           <h2>RNA 3D Motif Atlas</h2>
           <p>A representative collection of recurrent RNA 3D internal and hairpin loop motifs extracted from a representative set of structures.</p>
           <p>Automatic updates <a href="http://rna.bgsu.edu/main/upgrading-rna-3d-hub/">will resume soon</a></p>
           <p><a class="btn primary" href="<?php echo $baseurl;?>motifs">Explore</a></p>
         </div>
 
-        <div class="span5">
+        <div class="span7">
           <h2>Representative Sets</h2>
           <p>RNA 3D structures grouped into equivalence classes by molecule type, organism, and resolution.
           Taking the structure with the best structure quality measures from each equivalence class gives a Representative Set of RNA 3D structures.
