@@ -25,7 +25,7 @@
 
     <!--    <div class="row">-->
             <div class="row span">
-                <div class="row span90p interactions resizable" id="interactions">
+                <div class="row span1140 interactions resizable" id="interactions">
 
                     <ul class="tabs" data-tabs="tabs">
                         <li class="active"><a href="#int">Pairwise interactions</a></li>
@@ -48,12 +48,12 @@
 
                         <div class="tab-pane" id='variants'>
                             <h4>3D structures</h4>
-                            <div class="row span11">
-                                <div class="span5">
+                            <div class="row span100p">
+                                <div class="span45p">
                                     <h5>Complete motif including flanking bases</h5>
                                     <?=$sequence_variation['complete']?>
                                 </div>
-                                <div class="span5">
+                                <div class="span45p">
                                     <h5>Non-Watson-Crick part of the motif</h5>
                                     <?=$sequence_variation['nwc']?>
                                 </div>
