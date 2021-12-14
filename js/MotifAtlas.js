@@ -23,14 +23,17 @@ function LookUpPDBInfo()
           offset: 10,
           content: function(){return data;},
           title: function(){return pdb;},
-          delayOut: 5000,
+          trigger: 'hover',
+          delayOut: 2500,
           html: true,
           animate: true,
           placement: a.offset().top - $(window).scrollTop() < 500 ? 'below' : 'above'
+		 	
         });
         a.addClass('popover-displayed');
         a.popover('show');
     });
+
 
 }
 

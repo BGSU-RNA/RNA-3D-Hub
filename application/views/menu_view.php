@@ -100,14 +100,14 @@
             <li><a href="<?php echo $baseurl?>search">Search</a></li>
 
           </ul>
-            <ul class="nav secondary-nav">
+//            <ul class="nav secondary-nav">
             <?php
-                if ( ! $this->session->userdata('username') ) { //! isset($_SESSION['username'])) {
-                    echo "<li class='pull-left'><a href='{$baseurl}admin'>Login</a></li>";
-                } else {
-                    echo "<li class='pull-left'><a href='{$baseurl}logout'>Logout</a></li>";
+//              if ( ! $this->session->userdata('username') ) { //! isset($_SESSION['username'])) {
+//                    echo "<li class='pull-left'><a href='{$baseurl}admin'>Login</a></li>";
+//                } else {
+//                   echo "<li class='pull-left'><a href='{$baseurl}logout'>Logout</a></li>";
 //                     echo "<li><a href='{$baseurl}logout'>Logout {$_SESSION['username']}</a></li>";
-                }
+//              }
             ?>
           </ul>
 

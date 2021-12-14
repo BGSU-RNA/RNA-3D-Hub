@@ -6,9 +6,9 @@
         </div>
 
         <div class="row">
-          <div class="span12">
+          <div class="span97p">
 
-            <ul class="tabs" data-tabs="tabs">
+            <ul class="tabs span" data-tabs="tabs">
                 <li><a href="#1_5A">1.5A</a></li>
                 <li><a href="#2_0A">2.0A</a></li>
                 <li><a href="#2_5A">2.5A</a></li>

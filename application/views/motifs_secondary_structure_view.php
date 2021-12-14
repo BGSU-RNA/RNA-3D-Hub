@@ -19,11 +19,11 @@
 
         </div>
 
-        <div class="row">
+        <div class="row span100p">
 
             <?php if ( $selected != 'all' ): ?>
 
-              <div class="span16">
+              <div class="span97p">
 
                 <p>
                   <span class="label notice">Help</span>
@@ -41,12 +41,12 @@
                   with questions or feedback.
                 </p>
 
-                <iframe src="<?=$selected['url']?>" height="1200" width="920"></iframe>
+                <iframe src="<?=$selected['url']?>" height="1100" width="97%"></iframe><!--Was h=1200,w=920"-->
               </div>
 
             <?php else: ?>
 
-              <div class="span6">
+              <div class="span45p">
 
                 <h4>Available secondary structures:</h4>
 
@@ -71,7 +71,7 @@
 
               </div>
 
-              <div class="span8">
+              <div class="span45p">
 
                 <p>
                 </p>
