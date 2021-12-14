@@ -21,7 +21,11 @@ class Unitid extends CI_Controller {
         $data['title']   = $unit_id;
         $data['baseurl'] = base_url();
         $data['unit_id'] = $unit_id;
+<<<<<<< HEAD
+        $data['pageicon'] = base_url() . 'icons/U_icon.png';
+=======
         $data['pageicon'] = base_url() . 'icons/2_icon.png';
+>>>>>>> origin/PHPErrors
         $this->load->view('header_view', $data);
         $this->load->view('unit_id_view', $data);
         $this->load->view('menu_view', $data);
