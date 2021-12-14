@@ -1,12 +1,12 @@
 
-    <!-- RNA2D -->
+   <!-- RNA2D -->
     <script type="text/javascript" src="<?=$baseurl?>js/sizzle.js"></script>
     <script type="text/javascript" src="<?=$baseurl?>js/d3.js"></script>
     <script type="text/javascript" src="<?=$baseurl?>js/rna2d.js"></script>
     <script type="text/javascript" src="<?=$baseurl?>js/jquery.rna2d.js"></script>
     <script type="text/javascript" src="<?=$baseurl?>js/rna2d-controls.js"></script>
 
-    <div class="container pdb-2d-view">
+    <div class="container-large pdb-2d-view">
 
       <div class="content">
         <div class="page-header">
@@ -25,8 +25,8 @@
         </div>
 
         <!-- navigation -->
-        <div class="row">
-          <div class="span16">
+<div class="row">
+          <div class="span8">
             <ul class="tabs">
                 <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>">Summary</a></li>
                 <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/motifs">Loops</a></li>
@@ -166,11 +166,11 @@
                     </form>
                 </div>
  -->
-                <div class="row span6">
-                    <div id="jmol" class="well span6 width-320-px">
+                <div class="row spanjmol">
+                    <div id="jmol" class="well spanjmol ">
 <script>
     var Info = {
-        width: 320,
+        width: 565,
         height: 320,
         debug: false,
         color: 'white',
@@ -250,12 +250,12 @@
                     </div>
                 </div>
 
-                <div class="row span6">
-                    <div id="about-selection" class="alert-message block-message info hide span6 width-320-px"></div>
+                <div class="row spanjmol">
+                    <div id="about-selection" class="alert-message block-message info hide spanjmol width-565-px"></div>
                 </div>
 
-                <div class="row span6">
-                    <div id="related-structures" class="alert-message block-message info span6 width-320-px">
+                <div class="row spanjmol">
+                    <div id="related-structures" class="alert-message block-message info spanjmol width-565-px">
                         <h4>Related 2D Diagrams</h4>
                         <?php if (count($related_pdbs) == 0): ?>
                           <strong>None found</strong>

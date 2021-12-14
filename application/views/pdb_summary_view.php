@@ -1,4 +1,4 @@
-    <div class="container pdb_summary_view">
+    <div class="container summarymin pdb_summary_view">
       <div class="content">
         <div class="page-header">
           <h1>
@@ -17,7 +17,7 @@
 
         <!-- navigation -->
         <div class="row">
-          <div class="span16">
+          <div class="span97p">
             <ul class="tabs">
                 <li class="active"><a href="<?=$baseurl?>pdb/<?=$pdb_id?>">Summary</a></li>
                 <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/motifs">Loops</a></li>
@@ -42,14 +42,14 @@
 
         <!-- general info from PDB -->
         <div class="row">
-          <div class="span15 well">
+          <div class="span93p well">
             <div class="row">
               <!-- 3D image -->
-              <div class="span3">
+              <div class="span20p">
                 <ul class="media-grid">
                   <li>
                     <a href="#">
-                      <img src="https://cdn.rcsb.org/images/structures/<?=strtolower(substr($pdb_id, 1, 2));?>/<?=strtolower($pdb_id);?>/<?=strtolower($pdb_id);?>_assembly-1.jpeg" class="span3" alt="<?=$pdb_id?> assembly">
+                      <img src="https://cdn.rcsb.org/images/structures/<?=strtolower(substr($pdb_id, 1, 2));?>/<?=strtolower($pdb_id);?>/<?=strtolower($pdb_id);?>_assembly-1.jpeg" class="span100p" alt="<?=$pdb_id?> assembly">
                     </a>
                   </li>
                 </ul>
@@ -57,7 +57,7 @@
               </div>
 
               <!-- section1 -->
-              <div class="span4">
+              <div class="span10p">
                 <dl>
                   <dt>Structure Title</dt>
                   <dd><?=$title?></dd>
@@ -69,7 +69,7 @@
               </div>
 
               <!-- section2 -->
-              <div class="span3">
+              <div class="span15p">
                 <dl>
                   <dt>Experimental technique</dt>
                   <dd><?=$experimental_technique?></dd>
@@ -96,7 +96,7 @@
               </div>
 
               <!-- section3 -->
-              <div class="span5">
+              <div class="span45p">
                 <dl>
                   <dt>Compounds</dt>
                   <dl><?=$compounds?></dl>
@@ -109,7 +109,7 @@
         <!-- BGSU RNA Site specific data -->
         <div class="row">
               <!-- pairwise interactions -->
-              <div class="span3 well">
+              <div class="span20p well">
                 <h4>Pairwise Interactions</h4>
                 Interactions annotated by <a href="<?=$this->config->item('fr3d_url')?>/FR3D">FR3D</a>:
                 <ul>
@@ -124,7 +124,7 @@
               </div>
 
               <!-- 3D motifs -->
-              <div class="span3 well">
+              <div class="span20p well">
                 <h4>RNA 3D Motifs</h4>
                 In the current release of the <a href="<?=$baseurl?>/motifs">RNA 3D Motif Atlas</a>, <?=$pdb_id?> contains:
                 <ul>
@@ -142,7 +142,7 @@
               </div>
 
               <!-- redundancy -->
-              <div class="span3 well">
+              <div class="span20p well">
                 <h4>3D Redundancy</h4>
                 <?php if (!isset($nr_classes) ): ?>
                     This PDB is not included in any representative set equivalence class. Possibly, this PDB doesn't contain any complete nucleotides.
@@ -162,7 +162,7 @@
               </div>
 
               <!-- related structures -->
-              <div class="span4 well">
+              <div class="span15p well">
                 <h4>Similar structures</h4>
                 <?php if (count($related_pdbs) == 0): ?>
                   None found

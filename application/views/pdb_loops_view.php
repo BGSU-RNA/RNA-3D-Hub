@@ -7,12 +7,12 @@
     </style>
 
 
-    <div class="container pdb_loops_view">
+    <div class="container pdbloopsmin pdb_loops_view">
 
       <div class="content">
         <div class="page-header">
           <h1><?=strtoupper($pdb_id)?>
-          <small>Internal, hairpin and 3-way junction loop motifs</small>
+          <small>Internal, Hairpin and 3-way Junction Loop Motifs</small>
           <small class="pull-right">
             <select data-placeholder="Choose a structure" id="chosen">
              <option value=""></option>
@@ -26,7 +26,7 @@
 
         <!-- navigation -->
         <div class="row">
-          <div class="span9">
+          <div class="span8">
             <ul class="tabs">
                 <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>">Summary</a></li>
                 <li class="active"><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/motifs">Loops</a></li>
@@ -103,7 +103,7 @@
 
           <?php if ($counts['IL'] != 0 or $counts['HL'] != 0 or $counts['J3'] != 0): ?>
 
-          <div class="span6 well" id="jmol" >
+          <div class="spanjmol well" id="jmol" >
 <script>
     jmol_isReady = function(applet) {
         // initialize the plugin
@@ -120,7 +120,7 @@
     };
 
     var Info = {
-        width: 340,
+        width: 565,
         height: 340,
         debug: false,
         color: '#f5f5f5',

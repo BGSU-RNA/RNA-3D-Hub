@@ -1,16 +1,16 @@
-    <div class="container pdb_interactions_view">
+    <div class="container-large pdb_interactions_view">
 
       <div class="content">
         <div class="page-header">
           <h1><?=strtoupper($pdb_id)?>
-          <small><?=strtoupper($method)?> <?=$interaction_type?> pairwise interaction annotations</small>
+          <small><?=strtoupper($method)?> <?=$interaction_type?> Pairwise Interaction Annotations</small>
           <small><a class="btn pull-right success" href="<?=$current_url?>/csv">Download</a></small>
           </h1>
         </div>
 
         <!-- navigation -->
         <div class="row">
-          <div class="span16">
+          <div class="span100p">
             <ul class="tabs">
                 <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>">Summary</a></li>
                 <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/motifs">Loops</a></li>
@@ -41,11 +41,11 @@
           </div>
           <!-- end annotations -->
 
-          <div class="span7 well" id="jmol">
+          <div class="span500px well" id="jmol">
             <script>
               var Info = {
-                width: 380,
-                height: 350,
+                width: 416,
+                height: 250,
                 debug: false,
                 color: '#f5f5f5',
                 addSelectionOptions: false,

@@ -7,13 +7,13 @@
           </h1>
         </div>
         <div class="row">
-          <div class="span8">
+          <div class="span40p">
             <h2></h2>
             <?php echo $table;?>
           </div>
-          <div class="span7">
+          <div class="span45p">
             <div class="row">
-              <div class="span7">
+              <div class="span">
                 <p>
                   The Representative Sets of RNA 3D Structures organize all
                   RNA-containing 3D structures from PDB into sequence/structure equivalence classes
@@ -91,7 +91,7 @@
             </div>
             <br>
             <div class="row">
-              <div class="span7">
+              <div class="span">
                 <p>
                   Please use the following citation when using this resource:
                   <blockquote>

@@ -41,7 +41,7 @@
 
         <div class="row">
 
-            <div class="span16">
+            <div class="span97p">
 
             <div class="well">
             <a class="btn" href="<?=$baseurl?>motifs/2ds">Ribosomal 2D diagrams</a>

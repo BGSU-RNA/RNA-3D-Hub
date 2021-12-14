@@ -39,7 +39,7 @@
 
            <div class="tab-content">
               <div class="tab-pane active" id="members">
-                  <div class="span16">
+                  <div class="span100p">
                       <div>
                         <?=$members?>
                       </div>
@@ -47,14 +47,14 @@
             </div> <!-- members -->
 
             <div class="tab-pane" id="history">
-              <div class="span16">
+              <div class="span100p">
                   <h3>Release history</h3>
                   <div class="horizontal_overflow">
                       <?=$releases?>
                   </div>
               </div>
 
-              <div class="span16" >
+              <div class="span100p" >
                   <h3>Parents</h3>
                   <div class="parents maxheight400">
                       <?=$parents?>
@@ -62,7 +62,7 @@
               </div>
               <br>
 
-              <div class="span16" >
+              <div class="span100p" >
                   <h3>Children</h3>
                   <div class="parents maxheight400">
                       <?=$children?>
@@ -70,8 +70,8 @@
               </div>
             </div> <!-- history -->
 
-            <div class="row span16 interactions resizable" id="heatmap">
-                <div class="span16">
+            <div class="row span100p interactions resizable" id="heatmap">
+                <div class="span100p">
                     <div>
                       <p align="center">Heat map of mutual geometric discrepancy, in Angstroms per nucleotide.  Instances are ordered to put similar structures near each other. The colorbar ranges from 0 to the maximum observed discrepancy, up to 0.5</p>
                       <!-- Not sure what this is -->

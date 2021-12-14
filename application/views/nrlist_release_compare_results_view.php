@@ -6,7 +6,7 @@
         </div>
 
 
-          <div class="span16">
+          <div class="span100p">
 
             <ul class="tabs" data-tabs="tabs">
                 <li><a href="#1_5A">1.5A</a></li>
@@ -31,7 +31,7 @@
 
                 echo <<< EOD
                     <div class="row">
-                        <div class="span16 info">
+                        <div class="span97p info">
                         <h3>Equivalence classes summary</h3>
                         {$uls[$label]['num_motifs1']} equivalence classes in release {$rel1}, {$uls[$label]['num_motifs2']} equivalence classes in release {$rel2}
                         </div>

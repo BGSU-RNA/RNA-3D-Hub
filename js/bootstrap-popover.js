@@ -69,7 +69,6 @@
 
   })
 
-
  /* POPOVER PLUGIN DEFINITION
   * ======================= */
 
