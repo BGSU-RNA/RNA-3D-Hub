@@ -59,7 +59,7 @@ class Ajax_model extends CI_Model {
 
     function get_pdb_info($inp,$cla="")
     {
-        $pdb_url = "http://www.rcsb.org/pdb/explore/explore.do?structureId=";
+        $pdb_url = "https://www.rcsb.org/structure/";
 
         //  Is the input $pdb a pdb_id or an ife_id?
         //  Assess and set the variables accordingly.
