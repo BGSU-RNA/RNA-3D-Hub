@@ -205,7 +205,7 @@ if ( typeof Object.create !== 'function' ) {
 
             k = $.jmolTools.numModels;
 
-            console.log("Color one model: " + k)
+            // console.log("Color one model: " + k)
             
             if ($('#colorOPT :selected').val() === 'RSRZ') {
                 jmolModel.styleModelRSRZ(k, k);
@@ -249,7 +249,8 @@ if ( typeof Object.create !== 'function' ) {
                         'select ' + k + '.1,' + k + '.2,' + k + '.3;' +
                         'spacefill off;' +
                         'center ' + k + '.1;' +
-                        'zoom {'  + k + '.1} 0;';
+                        'zoom {'  + k + '.1} 0;' +
+                        'set measurement angstroms;';
          
                 jmolScript(command);
 

@@ -85,7 +85,7 @@
                   <span class="label notice">Notice</span>
                   PDB files with no full nucleotides are not included in the
                   representative sets. For example, see PDB
-                  <a href="http://www.rcsb.org/pdb/explore/explore.do?structureId=1DV4">1DV4</a>.
+                  <a href="https://www.rcsb.org/structure/1DV4">1DV4</a>.
                 </p>
               </div>
             </div>

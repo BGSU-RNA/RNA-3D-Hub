@@ -251,7 +251,7 @@ class Nrlist_model extends CI_Model {
         return $table;
     }
 
-    function get_statistics_original($id)
+    function get_statistics($id)
     {
         $this->db->select('NR.nr_release_id')
                  ->from('nr_classes AS NC')
@@ -310,7 +310,8 @@ class Nrlist_model extends CI_Model {
         return $table;
     }
 
-    function get_statistics($id)
+    //What Sri was adapting into new get_statistics
+    function get_statistics_test($id)
     {
         $this->db->select('nc1.ife_id')
                  ->select('ca.pdb_id')

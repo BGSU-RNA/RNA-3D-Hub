@@ -4,24 +4,9 @@
         <div class="page-header">
           <h1>
             <?=strtoupper($unit_id)?>
-            <small><?=ucfirst($id_type)?>-style unit id</small>
             <small><?=anchor('unitid', 'Unit id nomenclature')?></small>
           </h1>
         </div>
-
-        <div class="row">
-          <div class="span12">
-            <?php if (count($result) > 1): ?>
-                This new-style unit id is present in both biological assembly and asymmetric unit.
-            <?php elseif ($id_type == 'new' ): ?>
-                New-style unit id description:
-            <?php elseif ($id_type == 'old' ): ?>
-                This old-style id corresponds to this new-style id: <?=$result[0]['unit_id']?>.
-            <?php endif; ?>
-          </div>
-        </div>
-
-        <br>
 
         <div class="row">
 
@@ -35,7 +20,7 @@
                 <dt>PDB <?=$unit_id['pdb_id']?></dt>
                 <dd>
                   View in
-                  <?=anchor_popup("http://www.pdb.org/pdb/explore.do?structureId={$unit_id['pdb_id']}", 'PDB')?>
+                  <?=anchor_popup("https://www.rcsb.org/structure/{$unit_id['pdb_id']}", 'PDB')?>
                   or
                   <?=anchor("pdb/{$unit_id['pdb_id']}", 'BGSU RNA Site')?>
                 </dd>
