@@ -1095,11 +1095,7 @@ class Nrlist_model extends CI_Model {
         $ifes = array_unique($ifes);
         $pdbs = array_unique($pdbs);
 
-<<<<<<< HEAD
         // get general pdb info
-=======
-        // get general pdb info 
->>>>>>> origin/PHPErrors
         $this->db->select('pdb_id, title, resolution, experimental_technique, release_date')
                  ->from('pdb_info')
                  ->where_in('pdb_id', $pdbs )
@@ -1222,10 +1218,7 @@ class Nrlist_model extends CI_Model {
                              '<li>' . $pdb[$pdb_id]['experimental_technique'] . '</li>' .
                              '<li>Chain(s): ' . $best_chains . '; model(s): ' . $best_models . '</li>' .
                              '<li>Release Date: ' . $pdb[$pdb_id]['release_date'] . '</li>' .
-<<<<<<< HEAD
-=======
                              //'<li>' . $pdb[$pdb_id]['release_date'] '</li>' .//
->>>>>>> origin/PHPErrors
                              '</ul>',
                              $pdb[$pdb_id]['resolution'],
                              $row->analyzed_length,
