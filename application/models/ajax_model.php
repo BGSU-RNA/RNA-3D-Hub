@@ -50,8 +50,8 @@ class Ajax_model extends CI_Model {
         $this->db->select('source')
                  ->from('chain_info')
                  ->where('pdb_id', $pdb_id)
-                 ->like('entity_macromolecule_type', 'RNA')
-                 ->where("chain_length = (SELECT max(chain_length) FROM chain_info WHERE pdb_id ='$pdb_id' AND entity_macromolecule_type LIKE '%RNA%')");
+                 ->like('entity_macromolecule_type', 'polyribonucleotide')
+                 ->where("chain_length = (SELECT max(chain_length) FROM chain_info WHERE pdb_id ='$pdb_id' AND (entity_macromolecule_type LIKE '%polyribonucleotide%' OR entity_macromolecule_type LIKE '%RNA%'))");
         $query = $this->db->get()->result();
 
         return $query[0]->source;
