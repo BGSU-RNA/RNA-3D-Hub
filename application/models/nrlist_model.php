@@ -253,47 +253,29 @@ class Nrlist_model extends CI_Model {
 
     function get_statistics($id)
     {
-        $this->db->select('NR.nr_release_id')
-                 ->from('nr_classes AS NC')
-                 ->join('nr_releases AS NR', 'NC.nr_release_id = NR.nr_release_id')
-                 ->where('NC.name', $id)
-                 ->order_by('NR.index', 'DESC')
-                 ->limit(1);
-        $result = $this->db->get()->result_array();
-
-        $release_id = $result[0]['nr_release_id'];
-
         $this->db->select('pi.pdb_id')
-                 ->select('ch.ife_id')
+                 ->select('ii.ife_id')
                  ->select('pi.title')
                  ->select('pi.experimental_technique')
                  ->select('pi.release_date')
                  ->select('pi.resolution')
                  ->select('ii.length')
                  ->select('ii.bp_count')
-                 ->select('nl.index')
+                 ->select('ot.class_order')
                  ->from('pdb_info AS pi')
                  ->join('ife_info AS ii','pi.pdb_id = ii.pdb_id')
-                 ->join('nr_chains AS ch', 'ii.ife_id = ch.ife_id')
-                 ->join('nr_ordering AS nl', 'ch.nr_chain_id = nl.nr_chain_id')
-                 ->join('nr_classes AS cl', 'nl.nr_class_id = cl.nr_class_id AND ch.nr_release_id = cl.nr_release_id')
-                 ->where('cl.name',$id)
-                 ->where('cl.nr_release_id', $release_id)
-                 #->where('nch.nr_release_id',$this->last_seen_in) # what was this doing? still necessary?
-                 //->group_by('pi.pdb_id')
-                 //->group_by('ii.ife_id')
-                 ->order_by('nl.index','asc');
-
+                 ->join('nr_ordering_test AS ot', 'ii.ife_id = ot.ife_id')
+                 ->where('ot.nr_class_name',$id)
+                 ->order_by('ot.class_order','asc');
         $query = $this->db->get();
-
         $i = 0;
         $table = array();
-
         foreach ($query -> result() as $row) {
             $link = $this->make_pdb_widget_link($row->ife_id);
             //if ( $i==0 ) {
                 //$link = $link . ' <strong>(rep)</strong>';
             //}
+
             $i++;
             $table[] = array($i,
                              $link,
@@ -304,9 +286,7 @@ class Nrlist_model extends CI_Model {
                              $row->resolution,
                              $row->length);
                              //$row->bp_count);
-
         }
-
         return $table;
     }
 
