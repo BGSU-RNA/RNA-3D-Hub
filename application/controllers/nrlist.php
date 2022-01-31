@@ -126,7 +126,7 @@ class Nrlist extends CI_Controller {
         $statistics = $this->Nrlist_model->get_statistics($id);
         $tmpl = array( 'table_open'  => "<table class='condensed-table bordered-table zebra-striped pairwise-interactions' id='sort'>" );
         $this->table->set_template($tmpl);
-        $this->table->set_heading('#','Class_IFE','PDBID','Assembly', 'LSU_23S', 'LSU_5S', 'mRNA', 'tRNA/s', 'tRNA_Occupancy', 'A_tRNA_anticodon', 'Protein_factors');
+        $this->table->set_heading('#S','PDB','Title','Method','Resolution','Length');
         $data['statistics'] = $this->table->generate($statistics);
 
         $heatmap = $this->Nrlist_model->get_heatmap_data_revised($id);
