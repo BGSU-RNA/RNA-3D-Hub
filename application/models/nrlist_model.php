@@ -290,6 +290,7 @@ class Nrlist_model extends CI_Model {
         return $table;
     }
 
+    /*
     //What Sri was adapting into new get_statistics
     function get_statistics_test($id)
     {
@@ -457,6 +458,7 @@ class Nrlist_model extends CI_Model {
 
         return $chain_list;
     }
+    */
 
     function get_heatmap_data_revised_original($id)
     {
