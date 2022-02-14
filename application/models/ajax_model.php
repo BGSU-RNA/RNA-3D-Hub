@@ -622,6 +622,10 @@ class Ajax_model extends CI_Model {
 
         $nt_ids = explode(',', $nt_ids);
 
+        $first_unit = $nt_ids[0];
+        $unit_components = explode("|", $first_unit);
+        $model_identifier = $unit_components[0] . "|" . $unit_components[1] . "|";
+
         // get their coordinates
         $this->db->select('coordinates')->from('unit_coordinates');
         $this->db->where_in('unit_id', $nt_ids);
@@ -659,7 +663,8 @@ class Ajax_model extends CI_Model {
                  ->from('unit_coordinates')
                  ->join('unit_pairs_distances','unit_coordinates.unit_id = unit_pairs_distances.unit_id_1')
                  ->where_in('unit_id_2',$nt_ids)
-                 ->where_not_in('unit_id_1',$nt_ids);
+                 ->where_not_in('unit_id_1',$nt_ids)
+                 ->like('unit_id_1', $model_identifier, 'after');
         $query = $this->db->get();
       
         if ($query->num_rows() != 0) {
