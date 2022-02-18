@@ -35,6 +35,7 @@
           <li class="active"><a href="#members">Members (<?=$num_members?>)</a></li>
           <li><a href="#history">History</a></li>
           <li><a href="#heatmap">Heat map</a></li>
+          <li><a href="#annotation">Functional annotation</a></li>
         </ul>
 
            <div class="tab-content">
@@ -90,6 +91,14 @@
                     </div>
                 </div>
             </div> <!-- heatmap -->
+
+            <div class="tab-pane" id="annotation">
+                  <div class="span100p">
+                      <div>
+                        <?=$annotation?>
+                      </div>
+                  </div>
+            </div> <!-- members -->
 
       </div> <!-- content -->
     </div> <!-- container -->

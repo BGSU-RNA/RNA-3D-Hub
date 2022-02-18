@@ -131,8 +131,14 @@ class Nrlist extends CI_Controller {
 
         $heatmap = $this->Nrlist_model->get_heatmap_data_revised($id);
         #$heatmap = $this->Nrlist_model->get_heatmap_data($id, $nr_release_id);
-	#$heatmap = $this->Nrlist_model->get_heatmap_data_revised_original($id);
+	    #$heatmap = $this->Nrlist_model->get_heatmap_data_revised_original($id);
         $data['heatmap_data'] = $heatmap;
+
+        $annotation = $this->Nrlist_model->get_ribosome_annotation($id);
+        $tmpl = array( 'table_open'  => "<table class='condensed-table bordered-table zebra-striped pairwise-interactions' id='sort'>" );
+        $this->table->set_template($tmpl);
+        $this->table->set_heading('#S', '16S', 'PDB', 'Assembly', '23S', '5S', 'mRNA', 'tRNA/s', 'tRNA Occupancy');
+        $data['annotation'] = $this->table->generate($annotation);
 
         $data['title'] = $id;
         $data['baseurl'] = base_url();

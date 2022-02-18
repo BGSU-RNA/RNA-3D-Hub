@@ -290,9 +290,7 @@ class Nrlist_model extends CI_Model {
         return $table;
     }
 
-    /*
-    //What Sri was adapting into new get_statistics
-    function get_statistics_test($id)
+    function get_ribosome_annotation($id)
     {
         $this->db->select('nc1.ife_id')
                  ->select('ca.pdb_id')
@@ -324,7 +322,7 @@ class Nrlist_model extends CI_Model {
             $lsu_5S = $this->get_ribosome_chain($row->pdb_id, $assembly, "LSU_5S");
             $mrna = $this->get_ribosome_chain($row->pdb_id, $assembly, "mRNA");
             $aminoacyl_trna = $this->get_ribosome_chain($row->pdb_id, $assembly, "A_tRNA");
-            $aminoacyl_trna_seq = $this->get_trna_sequence($aminoacyl_trna);
+            //$aminoacyl_trna_seq = $this->get_trna_sequence($aminoacyl_trna);
             //print $aminoacyl_trna_seq;
 
             $peptidyl_trna = $this->get_ribosome_chain($row->pdb_id, $assembly, "P_tRNA");
@@ -342,12 +340,12 @@ class Nrlist_model extends CI_Model {
             $trna_occupancy_filtered = array_filter($trna_occupancy);
             $trna_occupancy_display = join(",", $trna_occupancy_filtered);
 
-            $protein_chains = $this->get_bound_protein_chains($lsu_23S);
-            $unique_protein_chains = array_unique($protein_chains);
+            //$protein_chains = $this->get_bound_protein_chains($lsu_23S);
+            //$unique_protein_chains = array_unique($protein_chains);
 
-            $protein_names = $this->get_protein_names($pdb_id, $unique_protein_chains);
-            $protein_factors = array_filter($protein_names, function ($var) { return (stripos($var, 'ribosomal') === false); });
-            $factors_display = $this->format_protein_factors_display($protein_factors);
+            //$protein_names = $this->get_protein_names($pdb_id, $unique_protein_chains);
+            //$protein_factors = array_filter($protein_names, function ($var) { return (stripos($var, 'ribosomal') === false); });
+            //$factors_display = $this->format_protein_factors_display($protein_factors);
 
             $i++;
             $table[] = array($i,
@@ -363,12 +361,7 @@ class Nrlist_model extends CI_Model {
                              $lsu_5S,
                              $mrna,
                              $trna_chains_display,
-                             $trna_occupancy_display,
-                             $aminoacyl_trna_seq,
-                             $factors_display
-                             //$this->get_trna_occupancy($aminoacyl_trna),
-                             //$this->get_trna_occupancy($peptidyl_trna)
-                             //$this->get_trna_occupancy($exit_trna)
+                             $trna_occupancy_display
                             );
 
         }
@@ -376,6 +369,7 @@ class Nrlist_model extends CI_Model {
         return $table;
     }
 
+    /*
     function get_trna_sequence($chain)
     {
         
