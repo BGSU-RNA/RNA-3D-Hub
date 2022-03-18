@@ -12,12 +12,22 @@
             <li><a href="<?php echo $baseurl;?>pdb">RNA Structure Atlas</a></li>
 
             <li class="dropdown">
+                <a href="#" class="dropdown-toggle">Representative Sets</a>
+                <ul class="dropdown-menu">
+                    <li><a href="<?php echo $baseurl;?>nrlist">Home</a></li>
+                    <li><a href="<?php echo $baseurl;?>nrlist/release_history">Release history</a></li>
+                    <li><a href="<?php echo $baseurl;?>nrlist/compare_releases">Compare releases</a></li>
+                    <li class="divider"></li>
+                    <li><a href="<?php echo $baseurl;?>nrlist/release/current">View current release</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
                 <a href="#" class="dropdown-toggle">RNA 3D Motif Atlas</a>
                 <ul class="dropdown-menu">
                     <li><a href="<?php echo $baseurl;?>motifs">Home</a></li>
                     <li><a href="<?php echo $baseurl;?>motifs/release_history">Release history</a></li>
                     <li><a href="<?php echo $baseurl;?>motifs/compare_releases">Compare releases</a></li>
-                    <li><a href="<?php echo $baseurl;?>motifs/2ds">2D diagrams</a></li>
                     <li class="divider"></li>
                     <li><a href="<?php echo $baseurl;?>motifs/release/il/current">View current ILs</a></li>
                     <li><a href="<?php echo $baseurl;?>motifs/release/hl/current">View current HLs</a></li>
@@ -35,16 +45,6 @@
             </li>
  -->
 
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle">Representative Sets</a>
-                <ul class="dropdown-menu">
-                    <li><a href="<?php echo $baseurl;?>nrlist">Home</a></li>
-                    <li><a href="<?php echo $baseurl;?>nrlist/release_history">Release history</a></li>
-                    <li><a href="<?php echo $baseurl;?>nrlist/compare_releases">Compare releases</a></li>
-                    <li class="divider"></li>
-                    <li><a href="<?php echo $baseurl;?>nrlist/release/current">View current release</a></li>
-                </ul>
-            </li>
 <!--
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle">RNA PDBs</a>
@@ -64,12 +64,14 @@
                     <li><a href="<?=$this->config->item('home_url')?>/WebFR3D">WebFR3D</a></li>
                     <li><a href="<?=$this->config->item('home_url')?>/JAR3D">JAR3D</a></li>
                     <li><a href="<?=$this->config->item('home_url')?>/r3dalign/">R3DAlign</a></li>
-                    <li><a href="<?=$this->config->item('fr3d_url')?>">FR3D</a></li>
+                    <li><a href="https://www.bgsu.edu/research/rna/software/fr3d.html">FR3D</a></li>
                     <li class="divider"></li>
-                    <li><a href="<?php echo $baseurl;?>loops">Loop Atlas</a></li>
+<!--                    <li><a href="<?php echo $baseurl;?>loops">Loop Atlas</a></li>
+-->
                     <li><a href="<?=$this->config->item('home_url')?>/FR3D/basepairs/">RNA Basepair Catalog</a></li>
                     <li><a href="<?=$this->config->item('home_url')?>/Triples/">RNA Base Triple Database</a></li>
                     <li><a href="<?=$this->config->item('home_url')?>/FR3D/BasePhosphates/">RNA Base Phosphate Catalog</a></li>
+                    <li><a href="<?php echo $baseurl;?>motifs/2ds">2D diagrams</a></li>
                 </ul>
             </li>
 
@@ -78,6 +80,7 @@
                 <ul class="dropdown-menu">
                     <li><a href="<?=$this->config->item('home_url')?>">RNA BGSU Home</a></li>
                     <li><a href="<?=$this->config->item('home_url')?>/main/rna-3d-hub-help/">Help</a></li>
+<!--
                     <?php
                         $current = current_url();
                         if ( !strstr($current, 'rna3dhub_dev') ){
@@ -88,11 +91,12 @@
                             echo '<li>' . anchor($link, 'Production') . '</li>';
                         }
                     ?>
+-->
                     <li class="divider"></li>
-                    <li><a href="http://pdb.org">PDB</a></li>
+                    <li><a href="https://www.rcsb.org/">RCSB PDB</a></li>
                     <li><a href="http://ndbserver.rutgers.edu">NDB</a></li>
                     <li class="divider"></li>
-                    <li><a href="https://github.com/BGSU-RNA/RNA-3D-Hub">GitHub</a></li>
+                    <li><a href="https://github.com/BGSU-RNA/">GitHub</a></li>
                     <li><a href="https://twitter.com/#!/RNA3DHub">Twitter updates</a></li>
                 </ul>
             </li>
