@@ -236,8 +236,8 @@ class Rest extends MY_Controller {
             case 'loop_pair':
                 return $this->Ajax_model->get_loop_pair_coordinates($query);
             case 'unit_id':
-                //return $this->Ajax_model->get_unit_id_coordinates($query);
-                return $this->Ajax_model->get_nt_coordinates($query);
+                //return $this->Ajax_model->get_nt_coordinates($query);
+                return $this->Ajax_model->get_new_nt_coordinates($query);
             default: return $this->messages['error'];
         endswitch;
 

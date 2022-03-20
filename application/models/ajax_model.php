@@ -711,6 +711,52 @@ class Ajax_model extends CI_Model {
         
     }
 
+    function get_xyz_coordinates($nt_ids, $pdb_id)
+    {
+        $this->db->select('x, y, z')
+                 ->distinct()
+                 ->from('unit_centers')
+                 ->where('pdb_id', $pdb_id) 
+                 ->where_in('unit_id', $nt_ids); 
+                 $query = $this->db->get();
+                 if ($query->num_rows() == 0) { return 'Loop id is not found'; }
+
+                 $given_x = array();
+                 $given_y = array();
+                 $given_z = array();
+                 foreach ($query->result_array() as $row) {
+                    $given_x[] = $row['x']; 
+                    $given_y[] = $row['y'];
+                    $given_z[] = $row['z'];
+                }
+        $centers_coord = array($given_x, $given_y, $given_z);
+        
+        return $centers_coord;
+
+    }
+
+    function get_new_nt_coordinates($unit_ids, $distance=10, $unit_type='all')
+    {
+        
+        $nts = explode(',', $unit_ids);
+        $fields = explode('|',$nts[0]);
+        $pdb_id = $fields[0]; 
+        // New way to include variables in string. Use double quote
+        $model_identifier = "{$fields[0]}|{$fields[1]}|";
+        $centers_xyz_coord = $this->get_xyz_coordinates($nts, $pdb_id);
+
+        $x_min = min($centers_xyz_coord[0]) - $distance;
+        $x_max = max($centers_xyz_coord[0]) + $distance;
+        $y_min = min($centers_xyz_coord[1]) - $distance;
+        $y_max = max($centers_xyz_coord[1]) + $distance;
+        $z_min = min($centers_xyz_coord[2]) - $distance;
+        $z_max = max($centers_xyz_coord[2]) + $distance;
+
+        return $z_max;
+
+        
+    }
+
     function get_loop_coordinates_MotifAtlas($loop_data)
     {
 
