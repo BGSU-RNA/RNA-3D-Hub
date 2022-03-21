@@ -46,8 +46,8 @@
                   </a>
                 </li>
                 <li>
-                  <a href="<?=$baseurl?>pdb/4Y4O">4Y4O
-                    <img src="https://cdn.rcsb.org/images/structures/y4/4y4o/4y4o_assembly-1.jpeg" class="thumbnail span3" alt="4Y4O assembly">
+                  <a href="<?=$baseurl?>pdb/7RQB">7RQB
+                    <img src="https://cdn.rcsb.org/images/structures/rq/7rqb/7rqb_assembly-1.jpeg" class="thumbnail span3" alt="7RQB assembly">
                     T. th. ribosome
                   </a>
                 </li>
