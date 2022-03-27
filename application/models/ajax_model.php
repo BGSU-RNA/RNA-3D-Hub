@@ -719,15 +719,15 @@ class Ajax_model extends CI_Model {
                  ->where('pdb_id', $pdb_id) 
                  ->where_in('unit_id', $nt_ids); 
                  $query = $this->db->get();
-                 if ($query->num_rows() == 0) { return 'Loop id is not found'; }
+                 if ($query->num_rows() == 0) { return 'No xyz coordinates for the given unit/s'; }
 
                  $given_x = array();
                  $given_y = array();
                  $given_z = array();
                  foreach ($query->result_array() as $row) {
-                    $given_x[] = $row['x']; 
-                    $given_y[] = $row['y'];
-                    $given_z[] = $row['z'];
+                    $given_x[] = floatval($row['x']); 
+                    $given_y[] = floatval($row['y']);
+                    $given_z[] = floatval($row['z']);
                 }
         $centers_coord = array($given_x, $given_y, $given_z);
         
@@ -735,14 +735,101 @@ class Ajax_model extends CI_Model {
 
     }
 
-    function get_new_nt_coordinates($unit_ids, $distance=10, $unit_type='all')
+    function get_xyz_coordinates_between_limits($pdb_id, $nt_ids, $coord_limits)
     {
         
+        $center_type = array('base', 'aa_fg');
+
+        $this->db->select('unit_id, x, y, z')
+                 ->from('unit_centers')
+                 ->where('pdb_id', $pdb_id)
+                 ->where('x >=', $coord_limits[0])
+                 ->where('x <=', $coord_limits[1])
+                 ->where('y >=', $coord_limits[2])
+                 ->where('y <=', $coord_limits[3])
+                 ->where('z >=', $coord_limits[4])
+                 ->where('z <=', $coord_limits[5])
+                 ->where_in('name', $center_type);
+    
+                 $query = $this->db->get();
+                 if ($query->num_rows() == 0) { return 'No xyz coordinates for the given limits'; }
+
+                 
+                 $unit_coord_arr = array();
+                 foreach ($query->result_array() as $row) {
+                    $unit_coord = array(
+                        "unit_id" => $row['unit_id'],
+                        "x" => floatval($row['x']),
+                        "y" => floatval($row['y']),
+                        "z" => floatval($row['z'])
+                    );
+                    $unit_coord_arr[] = $unit_coord;
+                 }
+                 
+        
+
+        return $unit_coord_arr;
+  
+    }
+
+    function get_neighboring_residues($centers_coord, $potential_neighboring_residues, $distance, $nt_ids)
+    {
+        
+        $dmin = 10*$distance*$distance;
+        $output_nt_ids = array();
+        $output_distance_list = array();
+        
+        foreach($potential_neighboring_residues as $unit_arr) {
+
+            foreach($nt_ids as $unit) {
+
+                // check that this unit is not already in the given list of units
+                if ($unit_arr['unit_id'] != $unit) {
+                    for ($i=0; $i < count($centers_coord[0]); $i++) {
+                        // calculate squared distance, keep track of minimum distance
+                        $d2 = pow(($unit_arr['x'] - $centers_coord[0][$i]), 2)  + pow(($unit_arr['y'] - $centers_coord[1][$i]), 2) + pow(($unit_arr['z'] - $centers_coord[2][$i]), 2);
+                        if ($d2 < $dmin) {
+                            $dmin = $d2;
+                        }
+                        if ($dmin < $distance){
+                            // check if this unit is already in the list
+                            if (in_array($unit_arr['unit_id'], $output_nt_ids)) {
+                                // find where and use the smaller distance
+                                $key = array_search($unit_arr['unit_id'], $output_nt_ids);
+                                $output_distance_list[$key] = min($output_distance_list[$key], $dmin);
+
+                            } else {
+                                $output_nt_ids[] = $unit_arr['unit_id'];
+                                $output_distance_list[] = $dmin;
+                            }
+
+                        }
+                    }
+                }
+
+            }
+     
+        }
+
+        return $output_nt_ids;
+    }
+
+    function get_new_nt_coordinates($unit_ids, $distance=10)
+    {
+        
+        // given list of unit
         $nts = explode(',', $unit_ids);
         $fields = explode('|',$nts[0]);
         $pdb_id = $fields[0]; 
+        
         // New way to include variables in string. Use double quote
-        $model_identifier = "{$fields[0]}|{$fields[1]}|";
+        //$model_identifier = "{$fields[0]}|{$fields[1]}|";
+        
+        /*
+            centers_xyz_coord[0] contains the x coordinates
+            centers_xyz_coord[1] contains the y coordinates
+            centers_xyz_coord[2] contains the z coordinates
+        */
         $centers_xyz_coord = $this->get_xyz_coordinates($nts, $pdb_id);
 
         $x_min = min($centers_xyz_coord[0]) - $distance;
@@ -752,7 +839,16 @@ class Ajax_model extends CI_Model {
         $z_min = min($centers_xyz_coord[2]) - $distance;
         $z_max = max($centers_xyz_coord[2]) + $distance;
 
-        return $z_max;
+        // store the limits in an array
+        $coord_limits = array($x_min, $x_max, $y_min, $y_max, $z_min, $z_max);
+
+        // step 3: query to find all units whose x, y, z coordinates are between the limits
+        $potential_neighboring_residues = $this->get_xyz_coordinates_between_limits($pdb_id, $nts, $coord_limits);
+
+        // step 4: calculate distances to units in $nt_ids, record the smallest
+        $neighboring_residues = $this->get_neighboring_residues($centers_xyz_coord, $potential_neighboring_residues, $distance, $nts);
+
+        return var_dump($centers_xyz_coord);
 
         
     }
