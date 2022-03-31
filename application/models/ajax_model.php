@@ -822,13 +822,86 @@ class Ajax_model extends CI_Model {
         return $output_nt_ids;
     }
 
+    
+    function get_unit_coordinates($nt_ids)
+    {
+        // get their coordinates
+        $this->db->select('coordinates')->from('unit_coordinates');
+        $this->db->where_in('unit_id', $nt_ids);
+        $this->db->_protect_identifiers = FALSE; // stop CI adding backticks
+
+        // make SQL to return the correct order of results based on the where_in clause
+        // example of query: SELECT coordinates FROM unit_coordinates WHERE unit_id IN ('2ZM5|1|C|A|31', '2ZM5|1|C|U|32')
+        //                   ORDER BY FIELD (unit_id, '2ZM5|1|C|A|31', '2ZM5|1|C|U|32');
+        $order = sprintf('FIELD(unit_id, %s)', "'" . implode("','", $nt_ids) . "'");
+        $this->db->order_by($order);
+        $this->db->_protect_identifiers = TRUE; // switch on again for security reasons
+        $query = $this->db->get();
+
+        if ($query->num_rows() == 0) { return False; }
+
+        /*
+        // get coordinates
+        foreach ($query->result() as $row) {
+            foreach ($row as $line) {
+                $line= explode("\n", $line);
+                foreach ($line as $line2) {
+                    $model_1_pattern = '/ 1\s*$/';
+                    // If model number is not 1, change to 1
+                    if (!preg_match($model_1_pattern, $line2)) {
+                        $search_pattern = '/([+-]?[0-9]+)\s*$/';
+                        $line2 = preg_replace($search_pattern, '1', $line2);
+                    }      
+                    $lines_arr[] = ($line2);  
+                }   
+            }
+        }
+        */
+
+        return $query;
+
+    }
+
+    function change_model_num($query, $model_num)
+    {
+        // get coordinates
+        foreach ($query->result() as $row) {
+            foreach ($row as $line) {
+                $line= explode("\n", $line);
+                foreach ($line as $line2) {
+                    // $model_1_pattern = '/ 1\s*$/';
+                    $model_1_pattern = '/ ' . $model_num . '\s*$/';
+                    // If model number is not 1, change to 1
+                    if (!preg_match($model_1_pattern, $line2)) {
+                        $search_pattern = '/([+-]?[0-9]+)\s*$/';
+                        $line2 = preg_replace($search_pattern, $model_num, $line2);
+                    }      
+                    $lines_arr[] = ($line2);  
+                }   
+            }
+        }
+
+        return $lines_arr;
+    }
+    
+    
     function get_new_nt_coordinates($unit_ids, $distance=10)
     {
+        
+        global $headers_cif, $footer_cif;
         
         // given list of unit
         $nts = explode(',', $unit_ids);
         $fields = explode('|',$nts[0]);
         $pdb_id = $fields[0]; 
+
+        $core_coord_query = $this->get_unit_coordinates($nts);
+        if ($core_coord_query == False) { return "No coordinate data available for the selection made"; }
+        
+        // core nts will have model num 1
+        $core_coord = $this->change_model_num($core_coord_query, 1);
+
+        return $core_coord;
         
         // New way to include variables in string. Use double quote
         //$model_identifier = "{$fields[0]}|{$fields[1]}|";
@@ -842,8 +915,6 @@ class Ajax_model extends CI_Model {
         // Get all centers of the query residues, including base, sugar, phosphate, aa_fg
         $centers_xyz_coord = $this->get_xyz_coordinates($nts, $pdb_id);
 
-        var_dump($centers_xyz_coord);
-
         $x_min = min($centers_xyz_coord[0]) - $distance;
         $x_max = max($centers_xyz_coord[0]) + $distance;
         $y_min = min($centers_xyz_coord[1]) - $distance;
@@ -854,6 +925,7 @@ class Ajax_model extends CI_Model {
         // store the limits in an array
         $coord_limits = array($x_min, $x_max, $y_min, $y_max, $z_min, $z_max);
 
+        /*
         echo 'coord_limits:<br>';
         echo $x_min;
         echo ' x ';
@@ -867,22 +939,39 @@ class Ajax_model extends CI_Model {
         echo ' z ';
         echo $z_max;
         echo '<br>';
+        */
 
         // step 3: query to find all units whose x, y, z coordinates are between the limits
         $potential_neighboring_residues = $this->get_xyz_coordinates_between_limits($pdb_id, $nts, $coord_limits);
 
+        /*
         echo 'potential_neighboring_residues<br>';
         var_dump($potential_neighboring_residues);
         echo '<br>';
+        */
 
         // step 4: calculate distances to units in $nt_ids, record the smallest
         $neighboring_residues = $this->get_neighboring_residues($centers_xyz_coord, $potential_neighboring_residues, $distance, $nts);
 
+        /*
         echo 'neighboring_residues<br>';
         var_dump($neighboring_residues);
         echo '<br>';
+        */
 
-        return $centers_xyz_coord;
+        $neighboor_coord_query = $this->get_unit_coordinates($nts);
+        //neighboring nts will have model num 2
+        $neighboor_coord = $this->change_model_num($neighboor_coord_query, 2);
+
+        $coord_array = array_merge($headers_cif, $core_coord, $footer_cif, $headers_cif, $neighboor_coord, $footer_cif);
+
+        $final_result = '';
+
+        foreach ($coord_array as $output) {
+            $final_result .= $output . "\n";
+        }
+
+        return $final_result;
     }
 
     function get_loop_coordinates_MotifAtlas($loop_data)
