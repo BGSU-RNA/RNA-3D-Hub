@@ -285,7 +285,7 @@ class Pdb_model extends CI_Model {
                  ->where('upi.pdb_id', $pdb_id)
                  ->where($where)
                  #->order_by('number');
-                 ->order_by('u1.model, u1.chain, u1.chain_index, u2.model, u2.chain, u2.chain_index');
+                 ->order_by('u1.model, u1.chain, u1.sym_op, u1.chain_index, u2.model, u2.chain, u2.sym_op, u2.chain_index');
         $query = $this->db->get();
         //print $query;
         $i = 1;
