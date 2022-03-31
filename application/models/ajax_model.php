@@ -888,6 +888,7 @@ class Ajax_model extends CI_Model {
     function get_new_nt_coordinates($unit_ids, $distance=10)
     {
         
+        // these variables are defined in /var/www/rna3dhub/application/config/constants.php
         global $headers_cif, $footer_cif;
         
         // given list of unit
@@ -900,8 +901,6 @@ class Ajax_model extends CI_Model {
         
         // core nts will have model num 1
         $core_coord = $this->change_model_num($core_coord_query, 1);
-
-        return $core_coord;
         
         // New way to include variables in string. Use double quote
         //$model_identifier = "{$fields[0]}|{$fields[1]}|";
@@ -959,7 +958,7 @@ class Ajax_model extends CI_Model {
         echo '<br>';
         */
 
-        $neighboor_coord_query = $this->get_unit_coordinates($nts);
+        $neighboor_coord_query = $this->get_unit_coordinates($neighboring_residues);
         //neighboring nts will have model num 2
         $neighboor_coord = $this->change_model_num($neighboor_coord_query, 2);
 
