@@ -458,6 +458,10 @@ class Ajax_model extends CI_Model {
     {
         // 1S72_AU_1_0_30_U_
         // $is_nt_list = preg_match('/([a-z]|[A-Z]|[0-9]){4}_[a-zA-Z0-9]{2,3}_\d+_\d+_\d+_\[a-zA-Z]/',$s);
+
+        echo 'Starting get_coordinates';
+        echo $s;
+
         $is_nt_list = substr_count($s,'_');
         if ($is_nt_list > 3) {
             echo $s;
@@ -713,6 +717,9 @@ class Ajax_model extends CI_Model {
 
     function get_xyz_coordinates($nt_ids, $pdb_id)
     {
+        // retrieve the x,y,z coordinates of all centers of all units in $nt_ids
+        // for nucleotides, that will include the base center, glycosidic atom, sugar center, phosphate center
+        // for amino acids, that will include the functional group center and backbone center
         $this->db->select('x, y, z')
                  ->distinct()
                  ->from('unit_centers')
@@ -737,10 +744,12 @@ class Ajax_model extends CI_Model {
 
     function get_xyz_coordinates_between_limits($pdb_id, $nt_ids, $coord_limits)
     {
-        
+        // In the future, if we want to,
+        // only find residues where the base center and the amino acid functional group center
+        // is within the limits
         $center_type = array('base', 'aa_fg');
 
-        $this->db->select('unit_id, x, y, z')
+        $this->db->select('unit_id, x, y, z, name')
                  ->from('unit_centers')
                  ->where('pdb_id', $pdb_id)
                  ->where('x >=', $coord_limits[0])
@@ -748,8 +757,9 @@ class Ajax_model extends CI_Model {
                  ->where('y >=', $coord_limits[2])
                  ->where('y <=', $coord_limits[3])
                  ->where('z >=', $coord_limits[4])
-                 ->where('z <=', $coord_limits[5])
-                 ->where_in('name', $center_type);
+                 ->where('z <=', $coord_limits[5]);
+
+//                 ->where_in('name', $center_type);
     
                  $query = $this->db->get();
                  if ($query->num_rows() == 0) { return 'No xyz coordinates for the given limits'; }
@@ -761,7 +771,8 @@ class Ajax_model extends CI_Model {
                         "unit_id" => $row['unit_id'],
                         "x" => floatval($row['x']),
                         "y" => floatval($row['y']),
-                        "z" => floatval($row['z'])
+                        "z" => floatval($row['z']),
+                        "name" => $row['name']
                     );
                     $unit_coord_arr[] = $unit_coord;
                  }
@@ -775,42 +786,39 @@ class Ajax_model extends CI_Model {
     function get_neighboring_residues($centers_coord, $potential_neighboring_residues, $distance, $nt_ids)
     {
         
-        $dmin = 10*$distance*$distance;
         $output_nt_ids = array();
         $output_distance_list = array();
-        
+        $distance_squared = $distance * $distance;
+
         foreach($potential_neighboring_residues as $unit_arr) {
+            // if unit id of this potential unit is in the query, don't check distances
+            if (!in_array($unit_arr['unit_id'], $nt_ids)) {
+                // if the unit id of this potential unit is already in the output, don't check distances
+                // That misses the possibility of finding an even closer match with a different center.
+                if (!in_array($unit_arr['unit_id'], $output_nt_ids)) {
 
-            foreach($nt_ids as $unit) {
+                    // keep track of minimum distance of potential unit $unit_arr to query x,y,z locations
+                    $d2min = 10*$distance_squared;
 
-                // check that this unit is not already in the given list of units
-                if ($unit_arr['unit_id'] != $unit) {
+                    // loop over query x,y,z locations
                     for ($i=0; $i < count($centers_coord[0]); $i++) {
-                        // calculate squared distance, keep track of minimum distance
+                        // calculate squared distance, keep track of minimum squared distance
                         $d2 = pow(($unit_arr['x'] - $centers_coord[0][$i]), 2)  + pow(($unit_arr['y'] - $centers_coord[1][$i]), 2) + pow(($unit_arr['z'] - $centers_coord[2][$i]), 2);
-                        if ($d2 < $dmin) {
-                            $dmin = $d2;
-                        }
-                        if ($dmin < $distance){
-                            // check if this unit is already in the list
-                            if (in_array($unit_arr['unit_id'], $output_nt_ids)) {
-                                // find where and use the smaller distance
-                                $key = array_search($unit_arr['unit_id'], $output_nt_ids);
-                                $output_distance_list[$key] = min($output_distance_list[$key], $dmin);
-
-                            } else {
-                                $output_nt_ids[] = $unit_arr['unit_id'];
-                                $output_distance_list[] = $dmin;
-                            }
-
+                        if ($d2 < $d2min) {
+                            $d2min = $d2;
                         }
                     }
-                }
 
+                    if ($d2min < $distance_squared){
+                        $output_nt_ids[] = $unit_arr['unit_id'];
+                        // currently not returning $output_distance_list, so don't compute it
+                        //$output_distance_list[] = sqrt($d2min);
+                    }
+                }
             }
-     
         }
 
+        // currently not returning $output_distance_list
         return $output_nt_ids;
     }
 
@@ -830,7 +838,11 @@ class Ajax_model extends CI_Model {
             centers_xyz_coord[1] contains the y coordinates
             centers_xyz_coord[2] contains the z coordinates
         */
+
+        // Get all centers of the query residues, including base, sugar, phosphate, aa_fg
         $centers_xyz_coord = $this->get_xyz_coordinates($nts, $pdb_id);
+
+        var_dump($centers_xyz_coord);
 
         $x_min = min($centers_xyz_coord[0]) - $distance;
         $x_max = max($centers_xyz_coord[0]) + $distance;
@@ -842,15 +854,35 @@ class Ajax_model extends CI_Model {
         // store the limits in an array
         $coord_limits = array($x_min, $x_max, $y_min, $y_max, $z_min, $z_max);
 
+        echo 'coord_limits:<br>';
+        echo $x_min;
+        echo ' x ';
+        echo $x_max;
+        echo '<br>';
+        echo $y_min;
+        echo ' y ';
+        echo $y_max;
+        echo '<br>';
+        echo $z_min;
+        echo ' z ';
+        echo $z_max;
+        echo '<br>';
+
         // step 3: query to find all units whose x, y, z coordinates are between the limits
         $potential_neighboring_residues = $this->get_xyz_coordinates_between_limits($pdb_id, $nts, $coord_limits);
+
+        echo 'potential_neighboring_residues<br>';
+        var_dump($potential_neighboring_residues);
+        echo '<br>';
 
         // step 4: calculate distances to units in $nt_ids, record the smallest
         $neighboring_residues = $this->get_neighboring_residues($centers_xyz_coord, $potential_neighboring_residues, $distance, $nts);
 
-        return var_dump($centers_xyz_coord);
+        echo 'neighboring_residues<br>';
+        var_dump($neighboring_residues);
+        echo '<br>';
 
-        
+        return $centers_xyz_coord;
     }
 
     function get_loop_coordinates_MotifAtlas($loop_data)
