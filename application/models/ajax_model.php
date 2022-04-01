@@ -1045,6 +1045,102 @@ class Ajax_model extends CI_Model {
         return $final_result;
     }
 
+    function get_core_motif_units($loop_id, $release_id, $motif_id)
+    {
+        $this->db->select('unit_id')
+                 ->from('ml_loop_positions')
+                 ->where('loop_id',$loop_id)
+                 ->where('ml_release_id', $release_id)
+                 ->where('motif_id', $motif_id)
+                 ->order_by('position');
+        $query = $this->db->get();
+        if ($query->num_rows() == 0) { return False; }
+
+        $core_units = array();
+        foreach ($query->result() as $row) {
+            $core_units[] = $row->unit_id;
+        }
+        return $core_units;
+    }
+
+    function get_motif_coordinates($loop_data, $distance=10)
+    {
+        global $headers_cif, $footer_cif;
+        
+        list($loop_id, $motif_id, $release_id) = explode('|', $loop_data);
+
+        $core_motif_units = $this->get_core_motif_units($loop_id, $release_id, $motif_id);
+        if ($core_motif_units == False) { return "The core units for {$loop_id} is not available"; }
+
+        $complete_motif_units = $this->get_loop_units($loop_id);
+        if ($complete_motif_units == False) { return "The complete units for {$loop_id} is not available"; }
+
+        // The difference between the complete_motif_units and core_motif_units will give the bulged units
+        $bulged_units = array_diff($complete_motif_units, $core_motif_units);
+        $bulged_units = array_values($bulged_units);
+
+        if (empty($bulged_units)) {
+           $has_bulges = False;
+        } else {
+           $has_bulges = True;
+        }
+
+        $fields = explode('|', $complete_motif_units[0]);
+        $pdb_id = $fields[0]; 
+        $model_num = $fields[1];
+        
+        $core_coord_query = $this->get_unit_coordinates($core_motif_units, $model_num);
+        if ($core_coord_query == False) { return "No coordinate data available for the loop queried"; }
+
+        // core nts will have model num 1
+        $core_coord = $this->change_model_num($core_coord_query, 1);
+
+        if ($has_bulges == True)
+        {
+            $bulged_units_query = $this->get_unit_coordinates($bulged_units, $model_num);
+            // bulged_units will have model num 3
+            $bulged_coord = $this->change_model_num($bulged_units_query, 3);
+        }
+
+        // Get all centers of the query residues, including base, sugar, phosphate, aa_fg
+        $centers_xyz_coord = $this->get_xyz_coordinates($complete_motif_units, $pdb_id);
+
+        $x_min = min($centers_xyz_coord[0]) - $distance;
+        $x_max = max($centers_xyz_coord[0]) + $distance;
+        $y_min = min($centers_xyz_coord[1]) - $distance;
+        $y_max = max($centers_xyz_coord[1]) + $distance;
+        $z_min = min($centers_xyz_coord[2]) - $distance;
+        $z_max = max($centers_xyz_coord[2]) + $distance;
+
+        // store the limits in an array
+        $coord_limits = array($x_min, $x_max, $y_min, $y_max, $z_min, $z_max);
+
+        // step 3: query to find all units whose x, y, z coordinates are between the limits
+        $potential_neighboring_residues = $this->get_xyz_coordinates_between_limits($pdb_id, $complete_motif_units, $coord_limits);
+
+        // step 4: calculate distances to units in $nt_ids, record the smallest
+        $neighboring_residues = $this->get_neighboring_residues($centers_xyz_coord, $potential_neighboring_residues, $distance, $complete_motif_units);
+
+        $neighboor_coord_query = $this->get_unit_coordinates($neighboring_residues, $model_num);
+        //neighboring nts will have model num 2
+        $neighboor_coord = $this->change_model_num($neighboor_coord_query, 2);
+
+        if ($has_bulges == True)
+        {
+            $coord_array = array_merge($headers_cif, $core_coord, $footer_cif, $headers_cif, $neighboor_coord, $footer_cif, $headers_cif, $bulged_coord, $footer_cif);
+        } else {
+            $coord_array = array_merge($headers_cif, $core_coord, $footer_cif, $headers_cif, $neighboor_coord, $footer_cif); 
+        }
+
+        $final_result = '';
+
+        foreach ($coord_array as $output) {
+            $final_result .= $output . "\n";
+        }
+
+        return $final_result;
+    }
+
     function get_loop_coordinates_MotifAtlas($loop_data)
     {
 

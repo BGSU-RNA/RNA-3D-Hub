@@ -121,7 +121,7 @@ class Rest extends MY_Controller {
 
         $this->output->set_header("Access-Control-Allow-Origin: *");
         $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
-        $data['csv'] = $this->Ajax_model->get_loop_coordinates_MotifAtlas($query);
+        $data['csv'] = $this->Ajax_model->get_motif_coordinates($query);
         $this->load->view('csv_view', $data);
 
     }
@@ -229,8 +229,8 @@ class Rest extends MY_Controller {
                 return $this->Ajax_model->get_new_loop_coordinates($query);
             case 'chain_id':
                 return $this->Ajax_model->get_chain_coordinates($query);
-            case 'motif_id':
-                return $this->Ajax_model->get_exemplar_coordinates($query);
+            // case 'motif_id':
+                // return $this->Ajax_model->get_exemplar_coordinates($query);
             // I don't think we're still using the method bekow 
             // case 'nt_list':
                 // return $this->Ajax_model->get_coordinates($query);
@@ -245,20 +245,23 @@ class Rest extends MY_Controller {
 
     }
 
+    /*
     private function _database_lookup_ma($query, $query_type)
     {
         // don't load the database until the input was validated
         $this->load->model('Ajax_model', '', TRUE);
 
-        // $this->output->enable_profiler(TRUE);
+        $this->output->enable_profiler(TRUE);
         
         switch ($query_type) :
             case 'loop_id':
-                return $this->Ajax_model->get_loop_coordinates_MotifAtlas($query);
+                //return $this->Ajax_model->get_loop_coordinates_MotifAtlas($query);
+                return $this->Ajax_model->get_motif_coordinates($query);
             default: return $this->messages['error'];
         endswitch;
 
     }
+    */
 
     private function _database_lookup_relative($query, $query_type)
     {
