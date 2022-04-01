@@ -225,13 +225,15 @@ class Rest extends MY_Controller {
 		
         switch ($query_type) :
             case 'loop_id':
-                return $this->Ajax_model->get_loop_coordinates($query);
+                // return $this->Ajax_model->get_loop_coordinates($query);
+                return $this->Ajax_model->get_new_loop_coordinates($query);
             case 'chain_id':
                 return $this->Ajax_model->get_chain_coordinates($query);
             case 'motif_id':
                 return $this->Ajax_model->get_exemplar_coordinates($query);
-            case 'nt_list':
-                //return $this->Ajax_model->get_coordinates($query);
+            // I don't think we're still using the method bekow 
+            // case 'nt_list':
+                // return $this->Ajax_model->get_coordinates($query);
                 return $this->Ajax_model->get_unit_id_coordinates($query);
             case 'loop_pair':
                 return $this->Ajax_model->get_loop_pair_coordinates($query);
