@@ -229,6 +229,7 @@ class Rest extends MY_Controller {
                 return $this->Ajax_model->get_new_loop_coordinates($query);
             case 'chain_id':
                 return $this->Ajax_model->get_chain_coordinates($query);
+            // Motif_id is handled by getCoordinatesMotifAtlas (line 99)
             // case 'motif_id':
                 // return $this->Ajax_model->get_exemplar_coordinates($query);
             // I don't think we're still using the method bekow 
