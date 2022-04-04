@@ -479,7 +479,7 @@ class Pdb_model extends CI_Model {
                  ->where('cl.resolution', 'all');
         $result = $this->db->get();
         if ( $result->num_rows() == 0 ) {
-            $equivalence_class = 'Not a member of any equivalent class, most likely due to the absence of complete nucleotides.';
+            $equivalence_class = 'Not a member of any equivalence class, most likely due to the absence of complete nucleotides.';
             $equivalence_class_name = "";
             $equivalence_class_found = False;
         } else {
