@@ -214,6 +214,13 @@ class Pdb extends CI_Controller {
             }
         };
 
+        // this would be a good place to call a function that looks up the chains
+        // in this PDB file and defines a list of chains, maybe like this:
+        // $general_info = $this->Pdb_model->get_general_info($pdb_id);
+        // echo $general_info['rna_compounds'][0]['chain'];
+        // $data['chain_list'] = $this->Pdb_model->get_chains($pdb_id)
+
+
         if ( $pdb_status['valid'] ) {
             $nts = $this->Pdb_model->get_airport($pdb_id);
             $data['long_range'] = json_encode($this->Pdb_model->get_longrange_bp($pdb_id));
