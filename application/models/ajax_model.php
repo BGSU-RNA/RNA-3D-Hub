@@ -380,7 +380,6 @@ class Ajax_model extends CI_Model {
     {
         list($pdb, $model, $chain) = explode('|', $ife);
         
-        
         $this->db->select('e1.unit_id')
                  ->select('e3.index')
                  ->select('e3.unit')
@@ -388,8 +387,10 @@ class Ajax_model extends CI_Model {
                  ->join('exp_seq_chain_mapping as e2','e1.exp_seq_chain_mapping_id = e2.exp_seq_chain_mapping_id')
                  ->join('chain_info as c1','e2.chain_id = c1.chain_id')
                  ->join('exp_seq_position as e3','e1.exp_seq_position_id = e3.exp_seq_position_id')
+                 ->join('unit_info as ui','ui.unit_id = e1.unit_id','left outer')
                  ->where('c1.pdb_id ',$pdb)
-                 ->where('c1.chain_name',$chain);
+                 ->where('c1.chain_name',$chain)
+                 ->order_by('e3.index, ui.alt_id, ui.sym_op');
         $query = $this->db->get();
         
         $data = " ";
@@ -399,10 +400,10 @@ class Ajax_model extends CI_Model {
             $index=$row['index'] + 1;
             $unit=$row['unit'];
             if (is_null($unit_id)) {
-                $relation = $pdb . "|Sequence|" . $chain . "|" . $unit . "|" . $index . " observed_as NULL";
+                $relation = $pdb . "|sequence|" . $chain . "|" . $unit . "|" . $index . " observed_as NULL";
                 $data .= $relation . "</br>";
             } else {
-                $relation = $pdb . "|Sequence|" . $chain . "|" . $unit . "|" . $index . " observed_as " . $unit_id;
+                $relation = $pdb . "|sequence|" . $chain . "|" . $unit . "|" . $index . " observed_as " . $unit_id;
                 $data .= $relation . "</br>";
             }
         }
