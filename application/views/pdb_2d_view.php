@@ -25,7 +25,7 @@
         </div>
 
         <!-- navigation -->
-<div class="row">
+        <div class="row">
           <div class="span8">
             <ul class="tabs">
                 <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>">Summary</a></li>
