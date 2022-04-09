@@ -372,8 +372,6 @@ class Ajax_model extends CI_Model {
         } else {
             return json_encode(json_decode ("{}"));
         }
-
-        
     }
 
     function get_seq_unit_mapping($ife) 
@@ -393,10 +391,10 @@ class Ajax_model extends CI_Model {
                  ->order_by('e3.index, ui.alt_id, ui.sym_op');
         $query = $this->db->get();
         
-        $data = " ";
+        $data = "";  // was a space, but that caused trouble; empty may cause trouble?
         foreach ($query->result_array() as $row) {
             $unit_id=$row['unit_id']; 
-            # Add 1 because sequence index begins from 0 in the db
+            # Add 1 because sequence index begins from 0 in the database
             $index=$row['index'] + 1;
             $unit=$row['unit'];
             if (is_null($unit_id)) {
