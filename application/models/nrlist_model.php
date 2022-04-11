@@ -565,6 +565,47 @@ class Nrlist_model extends CI_Model {
         return $heatmap_data;
     }
 
+    ######################## Ding starts coding here #########################################
+    function get_seq_ident_heatmap_data($id)
+        {
+            $this->db->select('NO1.ife_id AS ife1')
+                     ->select('NO1.class_order AS ife1_index')
+                     ->from('nr_ordering_test AS NO1')
+                     ->where('NO1.nr_class_name', $id);
+    
+            $query = $this->db->get();
+    
+            $ife_list = array();                    # This part is useless here, but it is also unharmful to keep. I just leave this here for now.
+            $index_list = array();                  # I will make this cleaner.
+            foreach ($query->result() as $row) {
+                array_push($ife_list,$row->ife1);
+                array_push($index_list,$row->ife1_index);
+            }
+
+            $this->db->select('NO1.ife_id AS ife1')
+                    ->select('NO1.class_order AS ife1_index')
+                    ->select('NO2.ife_id AS ife2')
+                    ->select('NO2.class_order AS ife2_index')
+                    ->select('CCS.discrepancy')
+                    ->from('nr_ordering_test AS NO1')
+                    ->join('nr_ordering_test AS NO2', 'NO1.nr_class_name = NO2.nr_class_name', 'inner')
+                    ->join('ife_chains AS IC1', 'NO1.ife_id = IC1.ife_id AND IC1.index = 0', 'inner')
+                    ->join('ife_chains AS IC2', 'NO2.ife_id = IC2.ife_id AND IC2.index = 0', 'inner')
+                    ->join('chain_chain_similarity AS CCS', 'IC1.chain_id = CCS.chain_id_1 AND IC2.chain_id = CCS.chain_id_2', 'left outer')
+                    ->where('NO1.nr_class_name', $id);
+            
+            $query = $this->db->get();
+
+            $heatmap_data = json_encode($query->result());
+
+            return $heatmap_data;
+        }
+
+    ######################## Ding ends coding here #########################################
+
+
+
+
     function get_heatmap_data($id)
     {
         $this->db->select('NR.nr_release_id')

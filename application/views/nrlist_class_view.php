@@ -91,6 +91,48 @@
                 </div>
             </div> <!-- heatmap -->
 
+
+
+
+            <!-- one to one alignemnt starting here -->
+            <div class="row span100p interactions resizable" id="seqidentheatmap">
+                <div class="span100p">
+                    <div>
+                      <p align="center">Heatmap for percent sequence identity</p>
+                      <!-- Not sure what this is -->
+                      <div id ='chart' style="text-align: center;"></div>
+                      <span class="muted">
+                         Table and heat map follow the same ordering
+                      </span>
+                      <div>
+                        <?=$statistics?>
+                      </div>
+                      <script src="//d3js.org/d3.v4.min.js"></script>
+                      <script type="text/javascript">
+                          var data = <? echo $seq_ident_heatmap_data; ?>;
+                      </script>
+                      <script type="text/javascript" src="<?=$baseurl?>js/heatmap.js"></script>
+                    </div>
+                </div>
+            </div> <!-- heatmap -->
+            <!-- one to one alignemnt ending here -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       </div> <!-- content -->
     </div> <!-- container -->
 

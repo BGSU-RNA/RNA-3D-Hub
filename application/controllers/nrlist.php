@@ -88,7 +88,7 @@ class Nrlist extends CI_Controller {
     #public function view($id, $nr_release_id)
     {
 
-        $this->output->cache(262974); # 6 months
+        # $this->output->cache(262974); # 6 months This line is commented out for testing purpose.
 
         $this->load->model('Nrlist_model', '', TRUE);
 
@@ -131,8 +131,15 @@ class Nrlist extends CI_Controller {
 
         $heatmap = $this->Nrlist_model->get_heatmap_data_revised($id);
         #$heatmap = $this->Nrlist_model->get_heatmap_data($id, $nr_release_id);
-	#$heatmap = $this->Nrlist_model->get_heatmap_data_revised_original($id);
+	    #$heatmap = $this->Nrlist_model->get_heatmap_data_revised_original($id);
         $data['heatmap_data'] = $heatmap;
+
+        ######################### one to one alignment starting here   #################################
+        $heatmap_one_to_one = $this->Nrlist_model->get_seq_ident_heatmap_data($id);
+        $data['seq_ident_heatmap_data'] = $heatmap_one_to_one;
+        ######################## one to one alignment end here   #################################
+        
+
 
         $data['title'] = $id;
         $data['baseurl'] = base_url();
