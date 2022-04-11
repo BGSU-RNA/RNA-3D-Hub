@@ -170,7 +170,7 @@
                     <div id="jmol" class="well spanjmol ">
 <script>
     var Info = {
-        width: 565,
+        width: 320,
         height: 320,
         debug: false,
         color: 'white',
