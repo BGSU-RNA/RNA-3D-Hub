@@ -170,8 +170,8 @@
                     <div id="jmol" class="well spanjmol ">
 <script>
     var Info = {
-        width: 320,
-        height: 320,
+        width: 400,
+        height: 300,
         debug: false,
         color: 'white',
         addSelectionOptions: false,
@@ -251,11 +251,11 @@
                 </div>
 
                 <div class="row spanjmol">
-                    <div id="about-selection" class="alert-message block-message info hide spanjmol width-565-px"></div>
+                    <div id="about-selection" class="alert-message block-message info hide spanjmol width-500-px"></div>
                 </div>
 
                 <div class="row spanjmol">
-                    <div id="related-structures" class="alert-message block-message info spanjmol width-565-px">
+                    <div id="related-structures" class="alert-message block-message info spanjmol width-500-px">
                         <h4>Related 2D Diagrams</h4>
                         <?php if (count($related_pdbs) == 0): ?>
                           <strong>None found</strong>
