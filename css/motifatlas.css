@@ -9,10 +9,10 @@ body {
     text-align: center; /* center align it with the container */
 }
 .container {
-    width: 180%;
+    width: 80%;
 }
 container-large{
-  width: 195%;
+  width: 95%;
   margin-left: auto;
   margin-right: auto;
   zoom: 1;
@@ -21,7 +21,7 @@ container-large{
 .content {
     background-color: #fff;
     padding: 20px;
-    min-height: 500px;
+    min-height: 5000px;
     margin: 0 -20px; /* negative indent the amount of the padding to maintain the grid system */
     -webkit-border-radius: 0 0 6px 6px;
        -moz-border-radius: 0 0 6px 6px;
