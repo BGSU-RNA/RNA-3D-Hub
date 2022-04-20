@@ -49,7 +49,7 @@ small .label {
 	text-align:right;
 }
 .motifview .loop {
-    width:1500px;
+    width:150px;
 }
 #history td {
     white-space: normal;
@@ -60,7 +60,7 @@ small .label {
 }
 */
 .motifview h1 li, .motifs_view h1 li {
-    font-size: small;
+    font-size: large;
 }
 .jmolheight {
     height:340px;
