@@ -9,10 +9,10 @@ body {
     text-align: center; /* center align it with the container */
 }
 .container {
-    width: 80%;
+    width: 180%;
 }
 container-large{
-  width: 95%;
+  width: 195%;
   margin-left: auto;
   margin-right: auto;
   zoom: 1;
@@ -155,7 +155,7 @@ small .label {
     line-height: 0px;
 }
 .motif_compare_view .mdmatrix .annotation {
-    font-size: xx-small;
+    font-size: large;
     text-align: center;
     vertical-align: middle;
 }
