@@ -996,7 +996,7 @@
 
   Rna2D.components.zoom = function(plot) {
     var Zoom = inhert(Rna2D.Component, 'zoom', {
-      scaleExtent: [1, 10],
+      scaleExtent: [1, 50],
       currentScale: 1,
       onChange: Object
     });
@@ -1319,8 +1319,8 @@
     var CENTER;
 
     var Circular = inhert(Rna2D.View, 'circular', {
-      radius: function() { return plot.width() / 4; },
-      width: 4,
+      radius: function() { return plot.width() / 6; },
+      width: 6,
       arcGap: 0.1, // original value: 0.2
       interactionGap: 3,
       letterClass: 'nucleotide-letter',
