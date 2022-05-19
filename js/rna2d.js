@@ -1538,7 +1538,7 @@
     Circular.prototype.addLetter = function(ntData) {
       var innerLabelRadius = this.radius()() + this.labelGap();
       labelArcs = arcGenerator(innerLabelRadius,
-                               innerLabelRadius + this.width());
+                               innerLabelRadius + this.labelsize());
 
       var labelCentroidFor = function(data) {
         var info = computed[plot.nucleotides.getID()(data)];
