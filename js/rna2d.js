@@ -1320,7 +1320,7 @@
 
     var Circular = inhert(Rna2D.View, 'circular', {
       radius: function() { return plot.width() / 4; },
-      width: 18,
+      width: 80,
       arcGap: 0.1, // original value: 0.2
       interactionGap: 3,
       letterClass: 'nucleotide-letter',
