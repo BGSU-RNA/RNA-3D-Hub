@@ -1322,7 +1322,7 @@
       radius: function() { return plot.width() / 4; },
       width: 80,
       arcGap: 0.1, // original value: 0.2
-      interactionGap: 3,
+      interactionGap: 15,
       letterClass: 'nucleotide-letter',
       center: function() {
         return { x: plot.width() / 2, y: plot.height() / 2 };
