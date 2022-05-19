@@ -1320,7 +1320,7 @@
 
     var Circular = inhert(Rna2D.View, 'circular', {
       radius: function() { return plot.width() / 4; },
-      width: 4,
+      width: 8,
       arcGap: 0.1, // original value: 0.2
       interactionGap: 3,
       letterClass: 'nucleotide-letter',
@@ -1538,7 +1538,7 @@
     Circular.prototype.addLetter = function(ntData) {
       var innerLabelRadius = this.radius()() + this.labelGap();
       labelArcs = arcGenerator(innerLabelRadius,
-                               innerLabelRadius + this.labelSize());
+                               innerLabelRadius + this.width());
 
       var labelCentroidFor = function(data) {
         var info = computed[plot.nucleotides.getID()(data)];
