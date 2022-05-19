@@ -1017,7 +1017,7 @@
             //  These debugs work but don't provide anything useful.
             //  This scaling keeps the elements in relative scale,
             //  but has nothing to do with odd inputs.
-            //console.log("scale: ", scale); // DEBUG
+            console.log("scale: ", scale); // DEBUG
             //console.log("translate: ", translate); // DEBUG
             self.currentScale(scale);
             self.onChange()();
