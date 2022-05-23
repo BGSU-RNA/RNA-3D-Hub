@@ -1017,7 +1017,7 @@
             //  These debugs work but don't provide anything useful.
             //  This scaling keeps the elements in relative scale,
             //  but has nothing to do with odd inputs.
-            console.log("scale: ", scale); // DEBUG
+            //console.log("scale: ", scale); // DEBUG
             //console.log("translate: ", translate); // DEBUG
             self.currentScale(scale);
             self.onChange()();
@@ -1320,9 +1320,9 @@
 
     var Circular = inhert(Rna2D.View, 'circular', {
       radius: function() { return plot.width() / 4; },
-      width: 80,
+      width: 4,
       arcGap: 0.1, // original value: 0.2
-      interactionGap: 15,
+      interactionGap: 3,
       letterClass: 'nucleotide-letter',
       center: function() {
         return { x: plot.width() / 2, y: plot.height() / 2 };
