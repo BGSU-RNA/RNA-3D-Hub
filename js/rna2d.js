@@ -1457,7 +1457,7 @@
       var innerLabelRadius = this.radius()() + this.labelGap();
 
       labelArcs = arcGenerator(innerLabelRadius,
-                               innerLabelRadius + this.width());
+                               innerLabelRadius + this.labelsize());
 
       //plot.vis.selectAll(plot.labels['class']())
         //.append('g')
