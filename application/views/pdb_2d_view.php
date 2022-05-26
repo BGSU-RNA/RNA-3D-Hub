@@ -330,8 +330,9 @@
         </div>
         <label><input type="checkbox" id="$data['nts'][$chain]['nts']">LSU</label>
  <script>
-      var a = 2;
-      console.log("The value of a is " + a);
+   $chain.forEach(function($chain) {
+    console.log($chain);
+  }
  </script>
 <script type='text/javascript'>
     NTS = <?=$nts?>;
