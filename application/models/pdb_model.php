@@ -539,9 +539,9 @@ class Pdb_model extends CI_Model {
                                                  'sequence' => $row->sequence);
         }
         return array_values($chain_data);
-        <input type="checkbox" name="checkbox_name" value="checkox_value">
+
     }
-    function get_airport($pdb_id)
+    function get_airport($pdb_id) 
     {
         $new_result = '';
         $table = 'pdb_airport';
