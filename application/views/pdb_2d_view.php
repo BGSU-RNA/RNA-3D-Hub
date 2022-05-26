@@ -328,7 +328,14 @@
             <a class="btn primary" href="<?=$this->config->item('home_url')?>/main/interacting-with-2d-structures" target="_blank">More details</a>
           </div>
         </div>
-
+        <label><input type="checkbox" id="Chains">LSU</label>
+        <label><input type="checkbox" id="Chains">SSU</label>
+        <label><input type="checkbox" id="Chains">mRNA</label>
+        <label><input type="checkbox" id="Chains">tRNA</label>
+ <script>
+      var a = 2;
+      console.log("The value of a is " + a);
+ </script>
 <script type='text/javascript'>
     NTS = <?=$nts?>;
     LONG = <?=$long_range?>;
