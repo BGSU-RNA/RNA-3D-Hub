@@ -328,7 +328,7 @@
             <a class="btn primary" href="<?=$this->config->item('home_url')?>/main/interacting-with-2d-structures" target="_blank">More details</a>
           </div>
         </div>
-        <label><input type="checkbox" id="$data['nts'][$chain]['nts']">LSU</label>
+        <label><input type="checkbox" id="$data['nts']">LSU</label>
  <script>
    $chain.forEach(function($chain) {
     console.log($chain);
