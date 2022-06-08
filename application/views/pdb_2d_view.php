@@ -334,7 +334,7 @@
          </div>
  <script type='text/javascript'>
     console.log("Hello World");
-   $chain.forEach(function($chain) {
+   $chain.forEach(function($chain)) {
     console.log($chain);
   }
  </script>
