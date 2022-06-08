@@ -332,13 +332,15 @@
          </div>        
               <label><input type="checkbox" id="Chains">Lsu</label>
          </div>
- <script>
+ <script type='text/javascript'>
+    console.log("Hello World");
    $chain.forEach(function($chain) {
     console.log($chain);
   }
  </script>
 <script type='text/javascript'>
     NTS = <?=$nts?>;
+    console.log("Hello World After NTS");
     LONG = <?=$long_range?>;
     INTERACTION_URL = "<?=$this->config->item('home_url')?>/rna3dhub/pdb/<?=$pdb_id?>/interactions/fr3d/basepairs/csv";
     LOOP_URL = "<?=$this->config->item('home_url')?>/rna3dhub/loops/download/<?=$pdb_id?>";
