@@ -67,6 +67,12 @@
                 </div>
             </div>
         </div>
+        </div>        
+              <label><input type="checkbox" id="Chains">Lsu</label>
+              <label><input type="checkbox" id="Chains">SSU</label>
+              <label><input type="checkbox" id="Chains">mRNA</label>
+              <label><input type="checkbox" id="Chains">tRNA</label>
+         </div>
 
         <div class="row">
             <div id='controls' class='span1 block-controls'>
@@ -273,13 +279,7 @@
 
         </div>
       </div>
-            </div>        
-              <label><input type="checkbox" id="Chains">Lsu</label>
-              <label><input type="checkbox" id="Chains">SSU</label>
-              <label><input type="checkbox" id="Chains">mRNA</label>
-              <label><input type="checkbox" id="Chains">tRNA</label>
-         </div>
-
+      
         <div id="help-modal" class='modal hide fade' tabindex="-1" role="dialog">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="help-modal" aria-hidden="true">×</button>
