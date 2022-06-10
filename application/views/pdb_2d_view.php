@@ -64,16 +64,15 @@
                     <button id='circular-view' class="btn active view-control" data-view='circular'>
                       Circular
                     </button>
+                        <label><input type="checkbox" id="Chains">Lsu</label>
+                        <label><input type="checkbox" id="Chains">SSU</label>
+                        <label><input type="checkbox" id="Chains">mRNA</label>
+                        <label><input type="checkbox" id="Chains">tRNA</label>
+  
                 </div>
             </div>
         </div>
-        </div>        
-              <label><input type="checkbox" id="Chains">Lsu</label>
-              <label><input type="checkbox" id="Chains">SSU</label>
-              <label><input type="checkbox" id="Chains">mRNA</label>
-              <label><input type="checkbox" id="Chains">tRNA</label>
-         </div>
-
+        
         <div class="row">
             <div id='controls' class='span1 block-controls'>
 
