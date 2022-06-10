@@ -273,6 +273,12 @@
 
         </div>
       </div>
+            </div>        
+              <label><input type="checkbox" id="Chains">Lsu</label>
+              <label><input type="checkbox" id="Chains">SSU</label>
+              <label><input type="checkbox" id="Chains">mRNA</label>
+              <label><input type="checkbox" id="Chains">tRNA</label>
+         </div>
 
         <div id="help-modal" class='modal hide fade' tabindex="-1" role="dialog">
           <div class="modal-header">
@@ -329,14 +335,12 @@
           </div>
         </div>
         
-         </div>        
-              <label><input type="checkbox" id="Chains">Lsu</label>
-         </div>
- <script type='text/javascript'>
-    console.log("Hello World");
-   $chain.forEach(function($chain)) {
-    console.log($chain);
-  }
+  <!--  <script type='text/javascript'>
+           console.log("Hello World");
+           $chain.forEach(function($chain)) {
+           console.log($chain);
+          } 
+  -->
  </script>
 <script type='text/javascript'>
     NTS = <?=$nts?>;
