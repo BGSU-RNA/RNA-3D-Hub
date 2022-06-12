@@ -72,7 +72,7 @@
                         <label><input type="checkbox" id="Chains">SSU</label>
                         <label><input type="checkbox" id="Chains">mRNA</label>
                         <label><input type="checkbox" id="Chains">tRNA</label>
-/* <?php
+<!-- <?php
 if(isset($_POST['submit'])){
 
     if(!empty($_POST['Chain'])) {
@@ -85,7 +85,7 @@ if(isset($_POST['submit'])){
 
 }
 ?>
-*/
+-->
               </div>
             </div>
         </div>
