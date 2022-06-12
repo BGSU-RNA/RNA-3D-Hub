@@ -72,20 +72,16 @@
                         <label><input type="checkbox" id="Chains">SSU</label>
                         <label><input type="checkbox" id="Chains">mRNA</label>
                         <label><input type="checkbox" id="Chains">tRNA</label>
-<!-- <?php
-if(isset($_POST['submit'])){
-
-    if(!empty($_POST['Chain'])) {
-
-        foreach($_POST['Chain'] as $value){
-            echo "Chosen Chain : ".$value.'<br/>';
-        }
-
-    }
-
-}
-?>
--->
+/**     <?php
+ *        if(isset($_POST['submit'])){
+ *        if(!empty($_POST['Chain'])) {
+ *        foreach($_POST['Chain'] as $value){
+ *        echo "Chosen Chain : ".$value.'<br/>';
+ *        }
+ *      }
+ *    }
+ *   ?>
+*/
               </div>
             </div>
         </div>
