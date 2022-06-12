@@ -50,6 +50,10 @@
         <div class="row">
             <div class="span3 offset4">
                 <div id='view-buttons' class='btn-group' data-toggle='buttons-radio'>
+                     <?= $nts?>
+                      <?php
+                      $id = intval($_GET['id']);
+                      ?>
                     <?php if ($has_airport): ?>
                     <button id='airport-view' class="btn view-control" data-view='airport'>
                       Airport
@@ -68,8 +72,7 @@
                         <label><input type="checkbox" id="Chains">SSU</label>
                         <label><input type="checkbox" id="Chains">mRNA</label>
                         <label><input type="checkbox" id="Chains">tRNA</label>
-  
-                </div>
+              </div>
             </div>
         </div>
         
