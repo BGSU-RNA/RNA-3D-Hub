@@ -529,11 +529,14 @@ class Pdb_model extends CI_Model {
                  ->order_by('ui.number', 'asc');
         $query = $this->db->get();
         $chain_data = array();
+        $chain_names = array();
         foreach($query->result() as $row) {
             $chain = $row->chain;
             if ( !array_key_exists($chain, $chain_data) ){
               $chain_data[$chain] = array('id' => 'chain-' + $chain,
+                                          'chain' => $chain,
                                           'nts' => array());
+              $chain_names[$chain] = $chain;
             }
             $chain_data[$chain]['nts'][] = array('id' => $row->id,
                                                  'sequence' => $row->sequence);
