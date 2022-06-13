@@ -50,10 +50,19 @@
         <div class="row">
             <div class="span3 offset4">
                 <div id='view-buttons' class='btn-group' data-toggle='buttons-radio'>
-                     <?= $nts?>
-                      <?php
-                      $id = intval($_GET['id']);
-                      ?>
+                    <?= $nts?>
+                    <br>
+                    <?= var_dump($nts[0])?>;
+                    <br>
+                    <?= var_dump($nts[1])?>;
+                    <br>
+                    <?= var_dump($nts[2])?>;
+                    <br>
+                    <?= var_dump($nts[3])?>;
+                    <br>
+
+                    <!-- <?php $id = intval($_GET['id']);?> -->
+
                     <?php if ($has_airport): ?>
                     <button id='airport-view' class="btn view-control" data-view='airport'>
                       Airport
@@ -346,6 +355,8 @@
  </script>
 <script type='text/javascript'>
     NTS = <?=$nts?>;
+
+    console.log(NTS)
     console.log("Hello World After NTS");
     LONG = <?=$long_range?>;
     INTERACTION_URL = "<?=$this->config->item('home_url')?>/rna3dhub/pdb/<?=$pdb_id?>/interactions/fr3d/basepairs/csv";
