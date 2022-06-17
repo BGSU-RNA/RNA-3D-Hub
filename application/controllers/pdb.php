@@ -228,7 +228,10 @@ class Pdb extends CI_Controller {
                 $data['has_airport'] = TRUE;
                 $data['nts'] = $nts;
             } else {
-                $data['nts'] = json_encode($this->Pdb_model->get_ordered_nts($pdb_id));
+                $nts = $this->Pdb_model->get_ordered_nts($pdb_id);
+                // extract an array of chain names here, pass to next functions
+                $data['chains'] = array('X','Y','Z');  // wrong!  but a start
+                $data['nts'] = json_encode($nts);
             }
         } else {
             $data['message'] = $pdb_status['message'];

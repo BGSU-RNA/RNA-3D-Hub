@@ -52,6 +52,8 @@
                 <div id='view-buttons' class='btn-group' data-toggle='buttons-radio'>
                     <?= $nts?>
                     <br>
+                    <?= $chains[0]?>
+                    <br>
                     <?= var_dump($nts[0])?>;
                     <br>
                     <?= var_dump($nts[1])?>;
@@ -77,10 +79,33 @@
                     <button id='circular-view' class="btn active view-control" data-view='circular'>
                       Circular
                     </button>
-                        <label><input type="checkbox" id="Chains">Lsu</label>
-                        <label><input type="checkbox" id="Chains">SSU</label>
-                        <label><input type="checkbox" id="Chains">mRNA</label>
-                        <label><input type="checkbox" id="Chains">tRNA</label>
+
+                    <!--
+                    php $chain_names = array("LSU","SSU","mRNA","tRNA","X","Y");
+                    foreach($chain in $chain_names)
+                      <label><input type="checkbox" id="Chains">$chain</label>
+                    ?>
+                   --> 
+                     <!-- 
+                       php  $chain_names=$_POST['nts'];
+                       for($i=0; $i<sizeof($nts);$i++){
+                        echo $nts[$i];
+                       };
+                      ?>
+                    -->              
+
+                    <label><input type="checkbox" id="Chains">Lsu</label>
+                    <label><input type="checkbox" id="Chains">SSU</label>
+                    <label><input type="checkbox" id="Chains">mRNA</label>
+                    <label><input type="checkbox" id="Chains">tRNA</label>
+                  <?php if(isset($_POST['submit'])){
+                          if(!empty($_POST['chain'])) {
+                           foreach($_POST['chain'] as $nts){
+                              echo "Chosen chain : ".$nts.'<br/>';
+                            }
+                          }
+                        }
+                  ?> 
          </div>
             </div>
         </div>
