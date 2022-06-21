@@ -42,8 +42,8 @@ if ( typeof Object.create !== 'function' ) {
     $.jmolTools = {
         neighborhood : false,
         stereo: false,
-        models : {}, // all model objects, both loaded and not
-        numModels: 0, // number of loaded models
+        models : {}, // all model objects, both loaded and not; each instance is called a model
+        numModels: 0, // number of loaded models; each model may have 1, 2, 3 PDB models within
         showNumbers: false,
         showRSR: false,
         showRSRZ: false
@@ -174,19 +174,22 @@ if ( typeof Object.create !== 'function' ) {
         // superimpose this model onto the first one using spine atoms in nucleic acids
         superimpose: function() {
             var self = this;
-            if ( self.superimposed ) { return; }
+            if ( self.superimposed ) { return; }  // commented out 2022-06-19
             var m = self.modelNumber;
             if ( m < 2 ) { return; } // m == 1; nothing to superimpose on
 
-                for (var i = 0; i < 3; i++) {
+                // Not sure why there is a loop over i, commented out 2022-06-19
+                //for (var i = 0; i < 3; i++) {
+
                 // if the same number of phosphates, try to superimpose,
-                // otherwise take the first four spine atoms
+                // otherwise take the spine atoms of the first four structures
                 var command = 'if ({*.P/' + m + '.1}.length == {*.P/1.1}) ' +
                               '{x=compare({spine/' + m + '.1},{spine/1.1});}' +
                               'else {x=compare({(spine/' + m + '.1)[1][4]},{(spine/1.1)[1][4]});};' +
                               'select ' + m + '.1,' + m + '.2,' + m + '.3; rotate selected @{x};';
                 jmolScript(command);
-                }
+
+                //}
 
             self.superimposed = true;
         },
