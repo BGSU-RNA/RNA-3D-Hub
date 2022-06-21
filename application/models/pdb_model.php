@@ -522,7 +522,7 @@ class Pdb_model extends CI_Model {
                  ->join('ife_chains AS ic', 'ii.ife_id = ic.ife_id AND ii.model = ic.model')
                  ->join('chain_info AS ci', 'ic.chain_id = ci.chain_id AND ui.pdb_id = ci.pdb_id AND ui.chain = ci.chain_name')
                  ->where('ui.pdb_id', $pdb_id)
-                 ->where('unit_type_id', 'rna')
+                 ->where('chain_index is NOT NULL', NULL, FALSE)
                  ->group_by('ui.pdb_id, ui.model, ui.chain, ui.number, ui.unit, ui.alt_id')
                  ->group_by('ui.ins_code, ui.chain_index')
                  ->order_by('ui.chain', 'asc')
