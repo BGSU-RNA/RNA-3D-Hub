@@ -513,6 +513,7 @@ class Pdb_model extends CI_Model {
                      'eq_class' => $equivalence_class_name,
                      'representative' => $representative);
     }
+
     function get_ordered_nts($pdb_id)
     {
         $this->db->select('ui.unit_id as id, ui.chain, ui.unit as sequence')
@@ -541,7 +542,37 @@ class Pdb_model extends CI_Model {
             $chain_data[$chain]['nts'][] = array('id' => $row->id,
                                                  'sequence' => $row->sequence);
         }
-        return array_values($chain_data);
+
+    function get_chain_info($pdb_id)
+    {
+        $this->db->select('ui.unit_id as id, ui.chain, ui.unit as sequence')
+                 ->select_min('ui.sym_op')
+                 ->from('unit_info AS ui')
+                 ->join('ife_info AS ii', 'ui.pdb_id = ii.pdb_id AND ui.model = ii.model')
+                 ->join('ife_chains AS ic', 'ii.ife_id = ic.ife_id AND ii.model = ic.model')
+                 ->join('chain_info AS ci', 'ic.chain_id = ci.chain_id AND ui.pdb_id = ci.pdb_id AND ui.chain = ci.chain_name')
+                 ->where('ui.pdb_id', $pdb_id)
+                 ->where('chain_index is NOT NULL', NULL, FALSE)
+                 ->group_by('ui.pdb_id, ui.model, ui.chain, ui.number, ui.unit, ui.alt_id')
+                 ->group_by('ui.ins_code, ui.chain_index')
+                 ->order_by('ui.chain', 'asc')
+                 ->order_by('ui.number', 'asc');
+        $query = $this->db->get();
+        $chain_data = array();
+        $chain_names = array();
+        foreach($query->result() as $row) {
+            $chain = $row->chain;
+            if ( !array_key_exists($chain, $chain_data) ){
+              $chain_data[$chain] = array('id' => 'chain-' + $chain,
+                                          'chain' => $chain,
+                                          'nts' => array());
+              $chain_names[$chain] = $chain;
+            }
+            $chain_data[$chain]['nts'][] = array('id' => $row->id,
+                                                 'sequence' => $row->sequence);
+        }
+
+        return array_values($chain_names);
 
     }
     function get_airport($pdb_id) 
