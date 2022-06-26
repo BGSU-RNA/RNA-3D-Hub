@@ -348,6 +348,7 @@ class Pdb_model extends CI_Model {
                 $data['rna_chains']++;
                 $organisms[] = $row->source;
                 $data['rna_compounds'][] = array("chain"    => $row->chain_id,
+                                                 "chain_name" => $row->chain_name,
                                                  "compound" => $row->compound,
                                                  "length"   => $row->chain_length,
                                                  "organism" => $row->source);
