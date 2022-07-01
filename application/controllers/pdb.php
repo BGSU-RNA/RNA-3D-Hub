@@ -214,12 +214,6 @@ class Pdb extends CI_Controller {
             }
         };
 
-        // this would be a good place to call a function that looks up the chains
-        // in this PDB file and defines a list of chains, maybe like this:
-        // $general_info = $this->Pdb_model->get_general_info($pdb_id);
-        // echo $general_info['rna_compounds'][0]['chain'];
-        // $data['chain_list'] = $this->Pdb_model->get_chains($pdb_id)
-
      
         if ( $pdb_status['valid'] ) {
             $nts = $this->Pdb_model->get_airport($pdb_id);
@@ -229,10 +223,12 @@ class Pdb extends CI_Controller {
                 $data['nts'] = $nts;
             } else {
                 $nts = $this->Pdb_model->get_ordered_nts($pdb_id);
-                $data['nts'] = json_encode($nts);
+                $data['nts'] = json_encode(array_values($nts));
+
                 // extract an array of chain names here, pass to next functions
-                $chains= $this->Pdb_model->get_chain_names($pdb_id);
-                $data['chains'] = $chains;
+                // $chains= $this->Pdb_model->get_chain_names($pdb_id);
+                // $data['chains'] = $chains;
+                $data['chains'] = array_keys($nts);
               }
         } else {
             $data['message'] = $pdb_status['message'];
