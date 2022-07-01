@@ -66,7 +66,7 @@ class Pdb extends CI_Controller {
         //print $interaction_type;
 
         // validate inputs
-        $interaction_types = array('basepairs', 'stacking', 'basephosphate', 'baseribose', 'baseaa', 'all');
+        $interaction_types = array('basepairs', 'stacking', 'basephosphate', 'baseribose', 'baseaa', 'oxygenstacking','all');
         if ( !preg_match('/fr3d/i', $method) or array_search($interaction_type, $interaction_types) === false ) {
             show_404();
         }
@@ -220,7 +220,7 @@ class Pdb extends CI_Controller {
         // echo $general_info['rna_compounds'][0]['chain'];
         // $data['chain_list'] = $this->Pdb_model->get_chains($pdb_id)
 
-
+     
         if ( $pdb_status['valid'] ) {
             $nts = $this->Pdb_model->get_airport($pdb_id);
             $data['long_range'] = json_encode($this->Pdb_model->get_longrange_bp($pdb_id));
@@ -229,10 +229,11 @@ class Pdb extends CI_Controller {
                 $data['nts'] = $nts;
             } else {
                 $nts = $this->Pdb_model->get_ordered_nts($pdb_id);
-                // extract an array of chain names here, pass to next functions
-                $data['chains'] = array('X','Y','Z');  // wrong!  but a start
                 $data['nts'] = json_encode($nts);
-            }
+                // extract an array of chain names here, pass to next functions
+                $chains= $this->Pdb_model->get_chain_names($pdb_id);
+                $data['chains'] = $chains;
+              }
         } else {
             $data['message'] = $pdb_status['message'];
             $view = 'pdb_invalid_view';
