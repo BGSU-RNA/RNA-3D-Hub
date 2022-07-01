@@ -221,7 +221,7 @@ class Pdb extends CI_Controller {
                 $data['has_airport'] = TRUE;
                 $data['nts'] = $nts;
             } else {
-                $data['nts'] = json_encode($this->Pdb_model->get_ordered_nts($pdb_id));
+                $data['nts'] = json_encode(array_values($this->Pdb_model->get_ordered_nts($pdb_id)));
             }
         } else {
             $data['message'] = $pdb_status['message'];
