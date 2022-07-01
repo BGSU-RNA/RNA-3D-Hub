@@ -212,7 +212,7 @@ class Pdb_model extends CI_Model {
     }
     function get_interactions($pdb_id, $interaction_type)
     {
-        /* Commented out since we don't have aa-nt annotations yet
+        /* Commented out since we don't have aa-nt annotations yet 
         if ( $interaction_type == 'baseaa' ) {
             $unit_ids = $this->_get_unit_ids($pdb_id);
             $this->db->select('uai.na_unit_id, uai.aa_unit_id, uai.annotation, uai.value')
@@ -254,7 +254,26 @@ class Pdb_model extends CI_Model {
                           'header' => array('#', 'Nucleotide id', 'Amino acid id', "Base-amino acid")
                      );
         }
-        */
+         */
+	  /* Preliminary code to add Base-Oxygen Interactions which are stored in a new table */
+	  /*if ( $interaction_type == 'oxygenstacking' ) {
+            $unit_ids = $this->_get_unit_ids($pdb_id);
+            $this->db->select('upi.unit_id_1, upi.unit_id_2,' . $db_field)
+                 ->from('unit_pairs_interactions AS upi')
+                 ->join('unit_info AS u1', 'upi.unit_id_1 = u1.unit_id')
+                 ->join('unit_info AS u2', 'upi.unit_id_1 = u2.unit_id')
+                 ->where('upi.pdb_id', $pdb_id)
+                 ->where($where)
+                 #->order_by('number');
+                 ->order_by('u1.model, u1.chain, u1.sym_op, u1.chain_index, u2.model, u2.chain, u2.sym_op, u2.chain_index');
+            $query = $this->db->get();
+            foreach($query->result() as $row) {
+                $na_unit_id[] = $row->na_unit_id;
+                $aa_unit_id[] = $row->aa_unit_id;
+                $annotation[] = $row->annotation;
+                $value[] = $row->value;
+            }
+	  }*/
 
         $url_parameters = array('basepairs', 'stacking', 'basephosphate', 'baseribose');
         $db_fields      = array('f_lwbp', 'f_stacks', 'f_bphs', 'f_brbs');
@@ -538,12 +557,18 @@ class Pdb_model extends CI_Model {
                                           'chain' => $chain,
                                           'nts' => array());
               $chain_names[$chain] = $chain;
+                             
             }
             $chain_data[$chain]['nts'][] = array('id' => $row->id,
                                                  'sequence' => $row->sequence);
-        }
+        } 
 
-    function get_chain_info($pdb_id)
+        // return array_values($chain_data);
+        return $chain_data;
+    }
+
+    // This function may not be needed as of 2022-07-01
+    function get_chain_names($pdb_id)
     {
         $this->db->select('ui.unit_id as id, ui.chain, ui.unit as sequence')
                  ->select_min('ui.sym_op')
@@ -567,14 +592,19 @@ class Pdb_model extends CI_Model {
                                           'chain' => $chain,
                                           'nts' => array());
               $chain_names[$chain] = $chain;
+                             
             }
             $chain_data[$chain]['nts'][] = array('id' => $row->id,
                                                  'sequence' => $row->sequence);
-        }
+        } 
+
 
         return array_values($chain_names);
+       
 
     }
+
+     
     function get_airport($pdb_id) 
     {
         $new_result = '';
