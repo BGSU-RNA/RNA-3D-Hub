@@ -525,12 +525,12 @@ class Pdb_model extends CI_Model {
                  ->where('chain_index is NOT NULL', NULL, FALSE)
                  ->where('unit_type_id !=', $aa)
                  ->where('model','1')
-                 ->group_by('ui.pdb_id, ui.model, ui.sym_op, ui.chain, ui.number, ui.unit, ui.alt_id')
-                 ->group_by('ui.ins_code, ui.chain_index')
                  ->order_by('ui.model', 'asc')
                  ->order_by('ui.sym_op', 'asc')
                  ->order_by('ui.chain', 'asc')
-                 ->order_by('ui.number', 'asc');
+                 ->order_by('ui.chain_index', 'asc')
+                 ->order_by('ui.alt_id', 'desc')
+                 ->group_by('ui.pdb_id, ui.model, ui.sym_op, ui.chain, ui.number, ui.unit, ui.ins_code');
         $query = $this->db->get();
         $chain_data = array();
         foreach($query->result() as $row) {
