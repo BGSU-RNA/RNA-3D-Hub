@@ -535,6 +535,44 @@ class Pdb_model extends CI_Model {
 
     function get_ordered_nts($pdb_id)
     {
+        $aa = 'aa';
+        $this->db->select('ui.unit_id as id, ui.model, ui.chain, ui.sym_op, ui.unit as sequence')
+                 ->select_min('ui.sym_op')
+                 ->from('unit_info AS ui')
+                 ->where('ui.pdb_id', $pdb_id)
+                 ->where('chain_index is NOT NULL', NULL, FALSE)
+                 ->where('unit_type_id !=', $aa)
+                 ->where('model','1')
+                 ->group_by('ui.pdb_id, ui.model, ui.sym_op, ui.chain, ui.number, ui.unit, ui.alt_id')
+                 ->group_by('ui.ins_code, ui.chain_index')
+                 ->order_by('ui.model', 'asc')
+                 ->order_by('ui.sym_op', 'asc')
+                 ->order_by('ui.chain', 'asc')
+                 ->order_by('ui.number', 'asc');
+        $query = $this->db->get();
+        $chain_data = array();
+        foreach($query->result() as $row) {
+
+            if ($row->sym_op == '1_555') {
+                $chain = $pdb_id . '|' . $row->model . '|' . $row->chain;
+            } else {
+                $chain = $pdb_id . '|' . $row->model . '|' . $row->chain . ' ' . $row->sym_op;
+            }
+            // $chain = $row->chain + '|' + $row->sym_op;
+            if ( !array_key_exists($chain, $chain_data) ){
+              $chain_data[$chain] = array('id' => $chain,
+                                          'chain' => $chain,
+                                          'nts' => array());
+            }
+            $chain_data[$chain]['nts'][] = array('id' => $row->id,
+                                                 'sequence' => $row->sequence);
+        } 
+
+        return $chain_data;
+    }
+
+    function get_ordered_nts_old($pdb_id)
+    {
         $this->db->select('ui.unit_id as id, ui.chain, ui.unit as sequence')
                  ->select_min('ui.sym_op')
                  ->from('unit_info AS ui')
@@ -557,11 +595,11 @@ class Pdb_model extends CI_Model {
                                           'chain' => $chain,
                                           'nts' => array());
               $chain_names[$chain] = $chain;
-                             
+
             }
             $chain_data[$chain]['nts'][] = array('id' => $row->id,
                                                  'sequence' => $row->sequence);
-        } 
+        }
 
         // return array_values($chain_data);
         return $chain_data;
