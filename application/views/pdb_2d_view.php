@@ -48,27 +48,6 @@
         <!-- end navigation -->
 
         <div class="row">
-            <div class="span3 offset4">
-                <div id='view-buttons' class='btn-group' data-toggle='buttons-radio'>
-                    <?php if ($has_airport): ?>
-                    <button id='airport-view' class="btn view-control" data-view='airport'>
-                      Airport
-                    </button>
-                    <?php else: ?>
-                    <button id='airport-view' disabled="disabled"
-                        class="btn hasTooltip disabled view-control" data-view='airport'
-                        title="No airport diagram is available yet">
-                      Airport
-                    </button>
-                    <?php endif; ?>
-                    <button id='circular-view' class="btn active view-control" data-view='circular'>
-                      Circular
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="row">
             <div id='controls' class='span1 block-controls'>
 
               <button data-controls-modal="help-modal" data-backdrop="true"
