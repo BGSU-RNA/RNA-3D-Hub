@@ -349,7 +349,7 @@
     NTS = <?=$nts?>;
 
     console.log(NTS)
-    console.log("Hello World After NTS");
+
     LONG = <?=$long_range?>;
     INTERACTION_URL = "<?=$this->config->item('home_url')?>/rna3dhub/pdb/<?=$pdb_id?>/interactions/fr3d/basepairs/csv";
     LOOP_URL = "<?=$this->config->item('home_url')?>/rna3dhub/loops/download/<?=$pdb_id?>";
