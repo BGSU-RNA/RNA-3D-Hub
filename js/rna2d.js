@@ -1330,7 +1330,7 @@
       letterSize: 20,
       chainBreakSize: 0.05, // original value: 0.1
       labelGap: 3,
-      labelSize: 10
+      labelSize: 2
     });
 
     var globalIndex = 0;
@@ -1457,7 +1457,7 @@
       var innerLabelRadius = this.radius()() + this.labelGap();
 
       labelArcs = arcGenerator(innerLabelRadius,
-                               innerLabelRadius + this.labelsize());
+                               innerLabelRadius + this.labelSize());
 
       //plot.vis.selectAll(plot.labels['class']())
         //.append('g')
@@ -1538,7 +1538,7 @@
     Circular.prototype.addLetter = function(ntData) {
       var innerLabelRadius = this.radius()() + this.labelGap();
       labelArcs = arcGenerator(innerLabelRadius,
-                               innerLabelRadius + this.labelsize());
+                               innerLabelRadius + this.labelSize());
 
       var labelCentroidFor = function(data) {
         var info = computed[plot.nucleotides.getID()(data)];
