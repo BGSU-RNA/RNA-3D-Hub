@@ -224,10 +224,6 @@ class Pdb extends CI_Controller {
             } else {
                 $nts = $this->Pdb_model->get_ordered_nts($pdb_id);
                 $data['nts'] = json_encode(array_values($nts));
-
-                // extract an array of chain names here, pass to next functions
-                // $chains= $this->Pdb_model->get_chain_names($pdb_id);
-                // $data['chains'] = $chains;
                 $data['chains'] = array_keys($nts);
               }
         } else {
