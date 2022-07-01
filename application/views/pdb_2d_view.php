@@ -50,19 +50,6 @@
         <div class="row">
             <div class="span3 offset4">
                 <div id='view-buttons' class='btn-group' data-toggle='buttons-radio'>
-                    <?= $nts?>
-                    <br>
-                    <?= $chains[0]?>
-                    <br>
-                    <?= var_dump($nts[0])?>;
-                    <br>
-                    <?= var_dump($nts[1])?>;
-                    <br>
-                    <?= var_dump($nts[2])?>;
-                    <br>
-                    <?= var_dump($nts[3])?>;
-                    <br>
-
                     <!-- <?php $id = intval($_GET['id']);?> -->
 
                     <?php if ($has_airport): ?>
@@ -80,33 +67,13 @@
                       Circular
                     </button>
 
-                    <!--
-                    php $chain_names = array("LSU","SSU","mRNA","tRNA","X","Y");
-                    foreach($chain in $chain_names)
-                      <label><input type="checkbox" id="Chains">$chain</label>
-                    ?>
-                   --> 
-                     <!-- 
-                       php  $chain_names=$_POST['nts'];
-                       for($i=0; $i<sizeof($nts);$i++){
-                        echo $nts[$i];
-                       };
-                      ?>
-                    -->              
+                    <?php
+                    foreach($chains as $ch): ?>
+                      <label><input type="checkbox" id="<?=$ch?>" checked><?=$ch?></label>
+                    <?php endforeach; ?>
 
-                    <label><input type="checkbox" id="Chains">Lsu</label>
-                    <label><input type="checkbox" id="Chains">SSU</label>
-                    <label><input type="checkbox" id="Chains">mRNA</label>
-                    <label><input type="checkbox" id="Chains">tRNA</label>
-                  <?php if(isset($_POST['submit'])){
-                          if(!empty($_POST['chain'])) {
-                           foreach($_POST['chain'] as $nts){
-                              echo "Chosen chain : ".$nts.'<br/>';
-                            }
-                          }
-                        }
-                  ?> 
-         </div>
+                     
+               </div>
             </div>
         </div>
         
