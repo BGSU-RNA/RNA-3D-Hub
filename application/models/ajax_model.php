@@ -1538,6 +1538,55 @@ class Ajax_model extends CI_Model {
         return json_encode($RSRZ);
     }
 
+    // function get_bulge_RSRZ($loop_id)
+    // {
+        
+    //     $this->db->select('unit_id')
+    //              ->from('ml_loop_positions')
+    //              ->where('loop_id',$loop_id)
+    //              ->where('ml_release_id',4.24)
+    //              ->order_by('position');
+    //     $query = $this->db->get();
+    //     if ($query->num_rows() == 0) { return 'Loop id not found'; }
+
+    //     $core_units = array();
+    //     foreach ($query->result() as $row) {
+    //         $core_units[] = $row->unit_id;
+    //     }
+
+    //     $this->db->select('unit_id')
+    //              ->from('loop_positions')
+    //              ->where('loop_id',$loop_id)
+    //              ->order_by('position');
+    //     $query = $this->db->get();
+
+    //     $complete_units = array();
+    //     foreach ($query->result() as $row) {
+    //         $complete_units[] = $row->unit_id;
+    //     }
+        
+    //     $bulged_units = array_diff($complete_units, $core_units);
+    //     $bulged_units = array_values($bulged_units);
+
+    //     if(!empty($bulged_units)) {
+    //         $this->db->select('unit_id, real_space_r_z_score')
+    //              ->from('unit_quality')
+    //              ->where_in('unit_id',$bulged_units);
+    //         $query = $this->db->get();
+        
+    //         if ($query->num_rows() == 0) {
+    //             return json_encode(json_decode ("{}"));
+    //         } else {
+    //             $RSRZ = $query->result();
+    //             return json_encode($RSRZ);
+    //         }
+    //     } else {
+    //         return json_encode(json_decode ("{}"));
+    //     }
+
+        
+    // }
+
 }
 
 /* End of file ajax_model.php */

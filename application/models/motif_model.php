@@ -783,7 +783,7 @@ class Motif_model extends CI_Model {
         #ksort($this->full_nts[$this->loops[$i]]);
         ksort($this->full_units[$this->similarity[$i]]);
         return "<label><input type='checkbox' id='{$this->similarity[$i]}' class='jmolInline'
-               data-coord_ma='{$this->similarity[$i]}|{$this->motif_id}|{$this->release_id}'" . " " . "data-core=" . " " . "data-quality='". "{$this->similarity[$i]}" . "'>{$this->similarity[$i]}</label>"
+               data-coord_ma='{$this->similarity[$i]}|{$this->motif_id}|{$this->release_id}'" . " " . "data-quality='". "{$this->similarity[$i]}" . "'>{$this->similarity[$i]}</label>"
                . "<span class='loop_link'>" . anchor_popup("loops/view/{$this->similarity[$i]}", '&#10140;') . "</span>";
 
     }

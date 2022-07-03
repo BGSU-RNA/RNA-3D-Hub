@@ -31,27 +31,27 @@ class Rest extends MY_Controller {
         echo $this->Ajax_model->get_pdb_info($pdb,$cla,$res);
     }
 
-    public function getBulge()
-    {
-        // should be able to accept loop_id and unit_id
+    // public function getBulge()
+    // {
+    //     // should be able to accept loop_id and unit_id
 
-        // search POST, then GET
-        $query = $this->input->get_post('quality');
+    //     // search POST, then GET
+    //     $query = $this->input->get_post('quality_ma');
         
-        // $this->output->enable_profiler(TRUE);
+    //     // $this->output->enable_profiler(TRUE);
         
-        $query_type = $this->_parseInput($query);
+    //     $query_type = $this->_parseInput($query);
 
-        if ( $query_type ) {
-            $this->output->set_header("Access-Control-Allow-Origin: *");
-            $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
-            $data['json'] = $this->_database_lookup_bulge($query, $query_type);
-            $this->load->view('json_view', $data);
-        } else {
-            echo $this->messages['invalid'];
-        }
+    //     if ( $query_type ) {
+    //         $this->output->set_header("Access-Control-Allow-Origin: *");
+    //         $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
+    //         $data['json'] = $this->_database_lookup_bulge($query, $query_type);
+    //         $this->load->view('json_view', $data);
+    //     } else {
+    //         echo $this->messages['invalid'];
+    //     }
 
-    }
+    // }
 
     public function getCoordinates()
     {
@@ -315,22 +315,22 @@ class Rest extends MY_Controller {
 
     }
 
-    private function _database_lookup_bulge($query, $query_type)
-    {
-        // don't load the database until the input was validated
-        $this->load->model('Ajax_model', '', TRUE);
+    // private function _database_lookup_bulge($query, $query_type)
+    // {
+    //     // don't load the database until the input was validated
+    //     $this->load->model('Ajax_model', '', TRUE);
 
-        // $this->output->enable_profiler(TRUE);
+    //     // $this->output->enable_profiler(TRUE);
         
-        switch ($query_type) :
-            case 'loop_id':
-                return $this->Ajax_model->get_bulge_RSRZ($query);
-            case 'unit_id':
-                return $this->Ajax_model->get_unit_RSRZ($query);
-            default: return $this->messages['error'];
-        endswitch;
+    //     switch ($query_type) :
+    //         case 'loop_id':
+    //             return $this->Ajax_model->get_bulge_RSRZ($query);
+    //         case 'unit_id':
+    //             return $this->Ajax_model->get_unit_RSRZ($query);
+    //         default: return $this->messages['error'];
+    //     endswitch;
 
-    }
+    // }
 
     private function _parseInput($query)
     {

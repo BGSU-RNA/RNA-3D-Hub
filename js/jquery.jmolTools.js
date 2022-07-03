@@ -99,7 +99,7 @@ if ( typeof Object.create !== 'function' ) {
                 }).done(function(data) {
                     RSRZ_JSON = data;      
                     RSRZ_data[$.jmolTools.numModels+1] = data;
-                    console.log(RSRZ_data)
+                    // console.log(RSRZ_data)
             });
 
             // This AJAX call gets the RSR data
@@ -317,7 +317,7 @@ if ( typeof Object.create !== 'function' ) {
                         } else {
                             var RSRZ = (parseFloat(RSRZ_data[i][k].real_space_r_z_score)*100)/100;
                             if (RSRZ < 1.00) {
-                                command += "select " + split_unitid[4] + "/" + i + ".1;" + " color green; ";   
+                                command += "select " + split_unitid[4] + "/" + i + ".1;" + " color green; "; 
                             } else if (RSRZ < 2.00) {
                                 command += "select " + split_unitid[4] + "/" + i + ".1;" + " color yellow; ";  
                             } else if (RSRZ < 3.00) {
@@ -808,8 +808,8 @@ if ( typeof Object.create !== 'function' ) {
         serverUrlRSRZ   : loc + '/rna3dhub/rest/getRSRZ',
         dataAttributeRSRZ: 'quality',
 
-        serverUrlBulgeUnit   : loc + '/rna3dhub/rest/getBulge',
-        dataAttributeBulgeUnit: 'quality',
+        // serverUrlBulgeUnit   : loc + '/rna3dhub/rest/getBulge',
+        // dataAttributeBulgeUnit: 'quality',
 
         toggleCheckbox: true,      // by default each model will monitor the checked state of its corresponding checkbox
         mutuallyExclusive:  false, // by default will set to false for checkboxes and false for radiobuttons
