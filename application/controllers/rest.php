@@ -76,7 +76,6 @@ class Rest extends MY_Controller {
 
     }
 
-
     public function getSequenceBasePairs()
     {
 
@@ -91,6 +90,28 @@ class Rest extends MY_Controller {
         $this->output->set_header("Access-Control-Allow-Origin: *");
         $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
         $data['json'] = $this->Ajax_model->get_sequence_basepairs($pdb, $chain, $nested);
+        $this->load->view('json_view', $data);
+
+    }
+
+
+    public function getChainSequenceBasePairs()
+    {
+        // For one RNA or DNA chain, return the Leontis-Westhof basepairs
+        // When only_nested is 'True', return those with crossing number 0
+        // When only_nested is 'False', return all
+
+        $pdb = $this->input->get_post('pdb_id');
+        $chain = $this->input->get_post('chain');
+        $nested = $this->input->get_post('only_nested');
+
+        // $this->output->enable_profiler(TRUE);
+
+        $this->load->model('Ajax_model', '', TRUE);
+
+        $this->output->set_header("Access-Control-Allow-Origin: *");
+        $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
+        $data['json'] = $this->Ajax_model->get_chain_sequence_basepairs($pdb, $chain, $nested);
         $this->load->view('json_view', $data);
 
     }
