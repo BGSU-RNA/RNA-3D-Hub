@@ -325,13 +325,6 @@ class Ajax_model extends CI_Model {
     function get_chain_sequence_basepairs($pdb, $chain, $nested)
     {
 
-        // Check for string True, not boolean True
-        if ($nested == "True") {
-            $crossing = "and f_crossing = 0";
-        } else {
-            $crossing = " ";
-        }
-
         // A refers to a query of the unit_info table.
         // unit_info.index is seq_id1
         // unit_info.number and ins_code is combined to become 3d_id1
@@ -347,10 +340,10 @@ class Ajax_model extends CI_Model {
         // C refers to a query of unit_info table, another view of it to get seq_id2, 3d_id2, nt2
 
         $query_str = "
-        select A.index as seq_id1, concat(A.number, coalesce(A.ins_code, '')) as 3d_id1, A.nucleotide as nt1, f_lwbp as bp, C.index as seq_id2, C.nucleotide as nt2, concat(C.number, coalesce(C.ins_code, '')) as 3d_id2, B.f_crossing as crossing
+        select A.index as seq_id1, concat(A.number, coalesce(A.ins_code, '')) as 3d_id1, A.nucleotide as nt1, A.unit1, B.annotation as bp, C.index as seq_id2, C.nucleotide as nt2, C.unit2, concat(C.number, coalesce(C.ins_code, '')) as 3d_id2, B.crossing
         from
         (
-            select t3.index + 1 as `index`, t3.`normalized_unit` as `nucleotide`, t2.unit_id, t1.number, t1.ins_code
+            select t3.index + 1 as `index`, t3.`normalized_unit` as `nucleotide`, t2.unit_id, t1.number, t1.ins_code, t1.unit as `unit1`
             from unit_info t1, exp_seq_unit_mapping t2, exp_seq_position t3
             where t1.pdb_id = " . $this->db->escape($pdb) . "
             and t1.chain = " . $this->db->escape($chain) . "
@@ -361,11 +354,12 @@ class Ajax_model extends CI_Model {
         ) as A
         JOIN
         (
-            select unit_id_1, unit_id_2, f_lwbp, t10.pdb_id, f_crossing
-            from unit_pairs_interactions t10, unit_info t11, unit_info t12
+            select unit_id_1, unit_id_2, annotation, t10.pdb_id, crossing
+            from pair_annotations t10, unit_info t11, unit_info t12
             where
             t10.pdb_id =" . $this->db->escape($pdb) . "
-            and f_lwbp is not null
+            and annotation is not null
+            and category = 'basepair'
             and t10.unit_id_1 = t11.unit_id
             and t10.unit_id_2 = t12.unit_id
             and t11.number < t12.number
@@ -374,7 +368,7 @@ class Ajax_model extends CI_Model {
         ) as B
         JOIN
         (
-            select t3.index + 1 as `index`, t3.`normalized_unit` as `nucleotide`, t2.unit_id, t1.number, t1.ins_code
+            select t3.index + 1 as `index`, t3.`normalized_unit` as `nucleotide`, t2.unit_id, t1.number, t1.ins_code, t1.unit as `unit2`
             from unit_info t1, exp_seq_unit_mapping t2, exp_seq_position t3
             where
             t1.pdb_id = " . $this->db->escape($pdb) . "
@@ -390,11 +384,15 @@ class Ajax_model extends CI_Model {
 
         $query = $this->db->query($query_str);
 
+        $LW = array('cWW','tWW','cWH','cHW','tWH','tHW','cWS','cSW','tWS','tSW','cHH','tHH','cHS','cSH','tHS','tSH','cSS','tSS');
+
         $nested_bps = array();
         foreach ($query->result_array() as $row)
         {
             if ($nested == 'False' or $row['crossing'] == 0) {
-                $nested_bps[] = $row;
+                if (in_array($row['bp'], $LW)) {
+                    $nested_bps[] = $row;
+                }
             }
         }
 
