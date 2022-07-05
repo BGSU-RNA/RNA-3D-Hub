@@ -185,8 +185,7 @@ class Nrlist_model extends CI_Model {
         $this->db->select('source, taxonomy_id')
                  ->from('chain_info')
                  ->where('pdb_id', $pdb_id)
-                 ->where('chain_name', $chain)
-                 ->like('entity_macromolecule_type', 'RNA');
+                 ->where('chain_name', $chain);
         $query = $this->db->get();
 
         if ( $query->num_rows() > 0 ) {
@@ -200,7 +199,7 @@ class Nrlist_model extends CI_Model {
                 return $sid;
             }
         } else {
-            return '';
+            return '??';
         }
     }
 
@@ -1136,8 +1135,8 @@ class Nrlist_model extends CI_Model {
                  ->select('ii.pdb_id')
                  ->select('ii.length AS analyzed_length')
                  ->select('group_concat(DISTINCT ci.compound separator ", ") as compound', FALSE)
-                 ->select('sm.species_name')
-                 ->select('sm.species_mapping_id AS species_id')
+                 ->select('ci.source as species_name')     # changed 2022-06-29
+                 ->select('ci.taxonomy_id AS species_id')  # changed 2022-06-29
                  ->select('nl.nr_class_id')
                  #->select('COUNT(DISTINCT ii.ife_id) AS num')
                  ->from('nr_chains AS nc')
@@ -1145,7 +1144,7 @@ class Nrlist_model extends CI_Model {
                  ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
                  ->join('ife_chains AS ic', 'ii.ife_id = ic.ife_id')
                  ->join('chain_info AS ci', 'ic.chain_id = ci.chain_id')
-                 ->join('species_mapping AS sm', 'ci.taxonomy_id = sm.species_mapping_id', 'left')
+                 #->join('species_mapping AS sm', 'ci.taxonomy_id = sm.species_mapping_id', 'left')
                  ->where('nl.nr_release_id', $id)
                  ->where('nl.resolution', $resolution)
                  ->group_by('nl.name')

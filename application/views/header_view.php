@@ -29,7 +29,12 @@
     <script src="<?=$baseurl?>js/jquery.tablesorter.min.js" type="text/javascript"></script>
 
     <script src="<?=$baseurl?>js/MotifAtlas.js" type="text/javascript"></script>
+
+    <!--
+    https://www.rcsb.org/pdb/widgets/rcsbPdbWidgets.css was failing to load.
+    Commenting this out helps, but maybe we lose some important functionality somewhere?
     <script src="<?=$baseurl?>js/rcsbPdbImageLib.min.js" type="text/javascript"> </script>
+    -->
 
     <!-- jEditable -->
     <?php if ($this->session->userdata('username')): ?>

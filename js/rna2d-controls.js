@@ -17,9 +17,12 @@ $(document).ready(function() {
       ntData = {},
       pdb = $("#rna-2d").data('pdb');
 
+  /*
+  This API does not exist as of 2022-07-01.  The site still seems to work without it.
   $.get("http://rna.bgsu.edu/api/v1/pdb/" + pdb + "/nucleotides", function (data) {
     $.each(data, function(_, nt) { ntData[nt.id] = nt; });
   });
+  */
 
   if (NTS[0].nts[0].hasOwnProperty('x') && getURLParameter('view') !== 'circular') {
     plot.view('airport');

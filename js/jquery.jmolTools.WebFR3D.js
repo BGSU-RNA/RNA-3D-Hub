@@ -76,19 +76,6 @@ if ( typeof Object.create !== 'function' ) {
             var self = this;
             if ( self.loaded ) { return; }
 
-            // This AJAX call gets the bulge units
-            $.ajax({
-                url: $.fn.jmolTools.options.serverUrlBulgeUnit,
-                type: 'GET',
-                dataType: 'json',
-                contentType: 'application/json',
-                data: {'quality' : self.$elem.data($.fn.jmolTools.options.dataAttributeBulgeUnit)}
-                }).done(function(data) {
-                    //bulge_units= data;      
-                    bulge_data[$.jmolTools.numModels+1] = data;
-                    //console.log(bulge_data)
-            });
-
             // This AJAX call gets the RSRZ data
             $.ajax({
                 url: $.fn.jmolTools.options.serverUrlRSRZ,
@@ -99,7 +86,7 @@ if ( typeof Object.create !== 'function' ) {
                 }).done(function(data) {
                     RSRZ_JSON = data;      
                     RSRZ_data[$.jmolTools.numModels+1] = data;
-                    // console.log(RSRZ_data)
+                    console.log(RSRZ_data)
             });
 
             // This AJAX call gets the RSR data
@@ -131,22 +118,6 @@ if ( typeof Object.create !== 'function' ) {
                 }
             });
 
-            // This AJAX call gets the coordinate data for Motif Atlas pages
-            $.ajax({
-                url: $.fn.jmolTools.options.serverUrlCoordMotifAtlas,
-                type: 'POST',
-                data: {'coord_ma' : self.$elem.data($.fn.jmolTools.options.dataAttributeCoordMotifAtlas)}
-            }).done(function(data) {
-                self.appendData(data);
-                if ( self.loaded ) {
-                    self.updateModelCounts();
-                    modelNum = self.modelNumber;
-                    self.superimpose();
-                    self.labelnucleotides();
-                    self.colorOneModel();
-                    self.show();
-                }
-            });
 
                
         },
@@ -317,7 +288,7 @@ if ( typeof Object.create !== 'function' ) {
                         } else {
                             var RSRZ = (parseFloat(RSRZ_data[i][k].real_space_r_z_score)*100)/100;
                             if (RSRZ < 1.00) {
-                                command += "select " + split_unitid[4] + "/" + i + ".1;" + " color green; "; 
+                                command += "select " + split_unitid[4] + "/" + i + ".1;" + " color green; ";   
                             } else if (RSRZ < 2.00) {
                                 command += "select " + split_unitid[4] + "/" + i + ".1;" + " color yellow; ";  
                             } else if (RSRZ < 3.00) {
@@ -617,6 +588,7 @@ if ( typeof Object.create !== 'function' ) {
             });
         },
 
+        // not needed with WebFR3D since you can select in the heat map, and this often fails anyway
         showAll: function() {
             $.each($.jmolTools.models, function(ind, model) {
                 if ( ! model.loaded ) {
@@ -628,6 +600,7 @@ if ( typeof Object.create !== 'function' ) {
             });
         },
 
+        // should always be available
         hideAll: function() {
             $.jmolTools.models[$.fn.jmolTools.elems[0].id].hideAll();
         },
@@ -716,16 +689,7 @@ if ( typeof Object.create !== 'function' ) {
             $('#' + $.fn.jmolTools.options.showNeighborhoodId).on('click', Helpers.toggleNeighborhood);
             $('#' + $.fn.jmolTools.options.showNumbersId).on('click', Helpers.toggleNumbers);
             $('#' + $.fn.jmolTools.options.colorOption).on('click', Helpers.toggleColor);
-            $('#' + $.fn.jmolTools.options.showAllId)
-                    .toggle(Helpers.showAll, Helpers.hideAll)
-                    .toggle(
-                function() {
-                    $(this).val('Hide all');
-                },
-                function() {
-                    $(this).val('Show all');
-                }
-            );
+            $('#' + $.fn.jmolTools.options.showAllId).on('click', Helpers.hideAll);
             $('#' + $.fn.jmolTools.options.showNextId).on('click', Helpers.showNext);
             $('#' + $.fn.jmolTools.options.showPrevId).on('click', Helpers.showPrev);
             $('#' + $.fn.jmolTools.options.clearId).on('click', Helpers.hideAll);
@@ -808,8 +772,8 @@ if ( typeof Object.create !== 'function' ) {
         serverUrlRSRZ   : loc + '/rna3dhub/rest/getRSRZ',
         dataAttributeRSRZ: 'quality',
 
-        // serverUrlBulgeUnit   : loc + '/rna3dhub/rest/getBulge',
-        // dataAttributeBulgeUnit: 'quality',
+        serverUrlBulgeUnit   : loc + '/rna3dhub/rest/getBulge',
+        dataAttributeBulgeUnit: 'quality',
 
         toggleCheckbox: true,      // by default each model will monitor the checked state of its corresponding checkbox
         mutuallyExclusive:  false, // by default will set to false for checkboxes and false for radiobuttons

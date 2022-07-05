@@ -25,7 +25,7 @@
         </div>
 
         <!-- navigation -->
-<div class="row">
+        <div class="row">
           <div class="span8">
             <ul class="tabs">
                 <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>">Summary</a></li>
@@ -47,36 +47,6 @@
         </div>
         <!-- end navigation -->
 
-        <div class="row">
-            <div class="span3 offset4">
-                <div id='view-buttons' class='btn-group' data-toggle='buttons-radio'>
-                    <!-- <?php $id = intval($_GET['id']);?> -->
-
-                    <?php if ($has_airport): ?>
-                    <button id='airport-view' class="btn view-control" data-view='airport'>
-                      Airport
-                    </button>
-                    <?php else: ?>
-                    <button id='airport-view' disabled="disabled"
-                        class="btn hasTooltip disabled view-control" data-view='airport'
-                        title="No airport diagram is available yet">
-                      Airport
-                    </button>
-                    <?php endif; ?>
-                    <button id='circular-view' class="btn active view-control" data-view='circular'>
-                      Circular
-                    </button>
-
-                    <?php
-                    foreach($chains as $ch): ?>
-                      <label><input type="checkbox" id="<?=$ch?>" checked><?=$ch?></label>
-                    <?php endforeach; ?>
-
-                     
-               </div>
-            </div>
-        </div>
-        
         <div class="row">
             <div id='controls' class='span1 block-controls'>
 
@@ -348,7 +318,7 @@
 <script type='text/javascript'>
     NTS = <?=$nts?>;
 
-    console.log(NTS)
+    console.log(NTS);
 
     LONG = <?=$long_range?>;
     INTERACTION_URL = "<?=$this->config->item('home_url')?>/rna3dhub/pdb/<?=$pdb_id?>/interactions/fr3d/basepairs/csv";
