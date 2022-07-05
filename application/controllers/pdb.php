@@ -226,7 +226,15 @@ class Pdb extends CI_Controller {
             //    $data['nts'] = json_encode(array_values($this->Pdb_model->get_ordered_nts($pdb_id)));
             //}
             $data['long_range'] = json_encode($this->Pdb_model->get_longrange_bp($pdb_id));
-            $data['nts'] = json_encode(array_values($this->Pdb_model->get_ordered_nts($pdb_id)));
+
+            $nts = $this->Pdb_model->get_ordered_nts($pdb_id);
+            $data['nts'] = json_encode(array_values($nts));
+
+            // extract an array of chain names here, pass to next functions
+            // $chains= $this->Pdb_model->get_chain_names($pdb_id);
+            // $data['chains'] = $chains;
+            $data['chains'] = array_keys($nts);
+
         } else {
             $data['message'] = $pdb_status['message'];
             $view = 'pdb_invalid_view';
