@@ -559,16 +559,14 @@ class Pdb_model extends CI_Model {
             } else {
                 $chain = $pdb_id . '|' . $row->model . '|' . $row->chain . ' ' . $row->sym_op;
             }
-
             if ( !array_key_exists($chain, $chain_data) ){
               $chain_data[$chain] = array('id' => $chain,
                                           'chain' => $chain,
                                           'nts' => array());
             }
-
             $chain_data[$chain]['nts'][] = array('id' => $row->id,
                                                  'sequence' => $row->sequence);
-        }
+        } 
 
         return $chain_data;
     }
