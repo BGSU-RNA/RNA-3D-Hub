@@ -48,6 +48,13 @@
         <!-- end navigation -->
 
         <div class="row">
+          <?php
+          foreach($chains as $ch): ?>
+            <label><input type="checkbox" id="<?=$ch?>" checked><?=$ch?></label>
+          <?php endforeach; ?>
+        </div>
+
+        <div class="row">
             <div id='controls' class='span1 block-controls'>
 
               <button data-controls-modal="help-modal" data-backdrop="true"
