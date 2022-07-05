@@ -255,15 +255,8 @@ class Ajax_model extends CI_Model {
     function get_sequence_basepairs($pdb, $chain, $nested)
     {
 
-        // Check for string True, not boolean True
-        if ($nested == "True") {
-            $crossing = "and f_crossing = 0";
-        } else {
-            $crossing = " ";
-        }
-
         $query_str = "
-        select A.index as seq_id1, concat(A.number, coalesce(A.ins_code, '')) as 3d_id1, A.nucleotide as nt1, f_lwbp as bp, C.index as seq_id2, C.nucleotide as nt2, concat(C.number, coalesce(C.ins_code, '')) as 3d_id2
+        select A.index as seq_id1, concat(A.number, coalesce(A.ins_code, '')) as 3d_id1, A.nucleotide as nt1, f_lwbp as bp, C.index as seq_id2, C.nucleotide as nt2, concat(C.number, coalesce(C.ins_code, '')) as 3d_id2, B.f_crossing as crossing
         from
         (
             select t3.index + 1 as `index`, t3.`normalized_unit` as `nucleotide`, t2.unit_id, t1.number, t1.ins_code
@@ -277,7 +270,7 @@ class Ajax_model extends CI_Model {
         ) as A
         JOIN
         (
-            select unit_id_1, unit_id_2, f_lwbp, t10.pdb_id
+            select unit_id_1, unit_id_2, f_lwbp, t10.pdb_id, f_crossing
             from unit_pairs_interactions t10, unit_info t11, unit_info t12
             where
             t10.pdb_id =" . $this->db->escape($pdb) . " 
@@ -286,7 +279,7 @@ class Ajax_model extends CI_Model {
             and t10.unit_id_2 = t12.unit_id
             and t11.number < t12.number
             and t11.chain = " . $this->db->escape($chain) . " 
-            and t12.chain = " . $this->db->escape($chain) . $crossing . "
+            and t12.chain = " . $this->db->escape($chain) . "
         ) as B
         JOIN
         (
@@ -309,7 +302,9 @@ class Ajax_model extends CI_Model {
 
         foreach ($query->result_array() as $row)
         {
-            $nested_bps[] = $row;
+            if ($nested == 'False' or $row['crossing'] == 0) {
+                $nested_bps[] = $row;
+            }
         }
 
         $sequence = $this->get_chain_sequence($pdb, $chain);
@@ -325,6 +320,95 @@ class Ajax_model extends CI_Model {
 
         return $myJSON;
            
+    }
+
+    function get_chain_sequence_basepairs($pdb, $chain, $nested)
+    {
+
+        // A refers to a query of the unit_info table.
+        // unit_info.index is seq_id1
+        // unit_info.number and ins_code is combined to become 3d_id1
+        // unit_info.nucleotide no longer exists ... probably should be unit ... will be nt1
+        // Within query A,
+        //   t1 refers to unit_info, t2 refers to exp_seq_unit_mapping, t3 refers to exp_seq_position
+        //
+        // B refers to a query of unit_pairs_interactions
+        // Within query B,
+        //   t10 refers to unit_pairs_interactions, t11 refers to unit_info, t12 refers to unit_info
+        //
+        // unit_pairs_interactions.f_lwbp is bp
+        // C refers to a query of unit_info table, another view of it to get seq_id2, 3d_id2, nt2
+
+        $query_str = "
+        select A.index as seq_id1, concat(A.number, coalesce(A.ins_code, '')) as 3d_id1, A.nucleotide as nt1, A.unit1, B.annotation as bp, C.index as seq_id2, C.nucleotide as nt2, C.unit2, concat(C.number, coalesce(C.ins_code, '')) as 3d_id2, B.crossing
+        from
+        (
+            select t3.index + 1 as `index`, t3.`normalized_unit` as `nucleotide`, t2.unit_id, t1.number, t1.ins_code, t1.unit as `unit1`
+            from unit_info t1, exp_seq_unit_mapping t2, exp_seq_position t3
+            where t1.pdb_id = " . $this->db->escape($pdb) . "
+            and t1.chain = " . $this->db->escape($chain) . "
+            and t1.model = 1
+            and t1.unit_id = t2.unit_id
+            and t2.exp_seq_position_id = t3.exp_seq_position_id
+            and (t1.alt_id = 'A' OR t1.alt_id is null)
+        ) as A
+        JOIN
+        (
+            select unit_id_1, unit_id_2, annotation, t10.pdb_id, crossing
+            from pair_annotations t10, unit_info t11, unit_info t12
+            where
+            t10.pdb_id =" . $this->db->escape($pdb) . "
+            and annotation is not null
+            and category = 'basepair'
+            and t10.unit_id_1 = t11.unit_id
+            and t10.unit_id_2 = t12.unit_id
+            and t11.number < t12.number
+            and t11.chain = " . $this->db->escape($chain) . "
+            and t12.chain = " . $this->db->escape($chain) . "
+        ) as B
+        JOIN
+        (
+            select t3.index + 1 as `index`, t3.`normalized_unit` as `nucleotide`, t2.unit_id, t1.number, t1.ins_code, t1.unit as `unit2`
+            from unit_info t1, exp_seq_unit_mapping t2, exp_seq_position t3
+            where
+            t1.pdb_id = " . $this->db->escape($pdb) . "
+            and t1.chain = " . $this->db->escape($chain) . "
+            and t1.model = 1
+            and t1.unit_id = t2.unit_id
+            and t2.exp_seq_position_id = t3.exp_seq_position_id
+            and (t1.alt_id = 'A' OR t1.alt_id is null)
+        ) as C
+        on A.unit_id = B.unit_id_1
+        and B.unit_id_2 = C.unit_id
+        order by B.pdb_id, A.index";
+
+        $query = $this->db->query($query_str);
+
+        $LW = array('cWW','tWW','cWH','cHW','tWH','tHW','cWS','cSW','tWS','tSW','cHH','tHH','cHS','cSH','tHS','tSH','cSS','tSS');
+
+        $nested_bps = array();
+        foreach ($query->result_array() as $row)
+        {
+            if ($nested == 'False' or $row['crossing'] == 0) {
+                if (in_array($row['bp'], $LW)) {
+                    $nested_bps[] = $row;
+                }
+            }
+        }
+
+        $sequence = $this->get_chain_sequence($pdb, $chain);
+
+        $data = array(
+            "pdb_id" => $pdb,
+            "chain_id" => $chain,
+            "sequence" => $sequence,
+            "annotations" => $nested_bps
+        );
+
+        $myJSON = json_encode($data);
+
+        return $myJSON;
+
     }
 
     function get_bulge_RSRZ($loop_id)
@@ -372,14 +456,11 @@ class Ajax_model extends CI_Model {
         } else {
             return json_encode(json_decode ("{}"));
         }
-
-        
     }
 
     function get_seq_unit_mapping($ife) 
     {
         list($pdb, $model, $chain) = explode('|', $ife);
-        
         
         $this->db->select('e1.unit_id')
                  ->select('e3.index')
@@ -388,21 +469,23 @@ class Ajax_model extends CI_Model {
                  ->join('exp_seq_chain_mapping as e2','e1.exp_seq_chain_mapping_id = e2.exp_seq_chain_mapping_id')
                  ->join('chain_info as c1','e2.chain_id = c1.chain_id')
                  ->join('exp_seq_position as e3','e1.exp_seq_position_id = e3.exp_seq_position_id')
+                 ->join('unit_info as ui','ui.unit_id = e1.unit_id','left outer')
                  ->where('c1.pdb_id ',$pdb)
-                 ->where('c1.chain_name',$chain);
+                 ->where('c1.chain_name',$chain)
+                 ->order_by('e3.index, ui.alt_id, ui.sym_op');
         $query = $this->db->get();
         
-        $data = " ";
+        $data = "";  // was a space, but that caused trouble; empty may cause trouble?
         foreach ($query->result_array() as $row) {
             $unit_id=$row['unit_id']; 
-            # Add 1 because sequence index begins from 0 in the db
+            # Add 1 because sequence index begins from 0 in the database
             $index=$row['index'] + 1;
             $unit=$row['unit'];
             if (is_null($unit_id)) {
-                $relation = $pdb . "|Sequence|" . $chain . "|" . $unit . "|" . $index . " observed_as NULL";
+                $relation = $pdb . "|sequence|" . $chain . "|" . $unit . "|" . $index . " observed_as NULL";
                 $data .= $relation . "</br>";
             } else {
-                $relation = $pdb . "|Sequence|" . $chain . "|" . $unit . "|" . $index . " observed_as " . $unit_id;
+                $relation = $pdb . "|sequence|" . $chain . "|" . $unit . "|" . $index . " observed_as " . $unit_id;
                 $data .= $relation . "</br>";
             }
         }
@@ -1538,6 +1621,55 @@ class Ajax_model extends CI_Model {
 
         return json_encode($RSRZ);
     }
+
+    // function get_bulge_RSRZ($loop_id)
+    // {
+        
+    //     $this->db->select('unit_id')
+    //              ->from('ml_loop_positions')
+    //              ->where('loop_id',$loop_id)
+    //              ->where('ml_release_id',4.24)
+    //              ->order_by('position');
+    //     $query = $this->db->get();
+    //     if ($query->num_rows() == 0) { return 'Loop id not found'; }
+
+    //     $core_units = array();
+    //     foreach ($query->result() as $row) {
+    //         $core_units[] = $row->unit_id;
+    //     }
+
+    //     $this->db->select('unit_id')
+    //              ->from('loop_positions')
+    //              ->where('loop_id',$loop_id)
+    //              ->order_by('position');
+    //     $query = $this->db->get();
+
+    //     $complete_units = array();
+    //     foreach ($query->result() as $row) {
+    //         $complete_units[] = $row->unit_id;
+    //     }
+        
+    //     $bulged_units = array_diff($complete_units, $core_units);
+    //     $bulged_units = array_values($bulged_units);
+
+    //     if(!empty($bulged_units)) {
+    //         $this->db->select('unit_id, real_space_r_z_score')
+    //              ->from('unit_quality')
+    //              ->where_in('unit_id',$bulged_units);
+    //         $query = $this->db->get();
+        
+    //         if ($query->num_rows() == 0) {
+    //             return json_encode(json_decode ("{}"));
+    //         } else {
+    //             $RSRZ = $query->result();
+    //             return json_encode($RSRZ);
+    //         }
+    //     } else {
+    //         return json_encode(json_decode ("{}"));
+    //     }
+
+        
+    // }
 
 }
 

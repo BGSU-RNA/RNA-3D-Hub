@@ -367,6 +367,7 @@ class Pdb_model extends CI_Model {
                 $data['rna_chains']++;
                 $organisms[] = $row->source;
                 $data['rna_compounds'][] = array("chain"    => $row->chain_id,
+                                                 "chain_name" => $row->chain_name,
                                                  "compound" => $row->compound,
                                                  "length"   => $row->chain_length,
                                                  "organism" => $row->source);
@@ -498,7 +499,7 @@ class Pdb_model extends CI_Model {
                  ->where('cl.resolution', 'all');
         $result = $this->db->get();
         if ( $result->num_rows() == 0 ) {
-            $equivalence_class = 'Not a member of any equivalence class, most likely due to the absence of complete nucleotides.';
+            $equivalence_class = 'Not a member of any equivalence class, possibly due to the absence of complete nucleotides.';
             $equivalence_class_name = "";
             $equivalence_class_found = False;
         } else {
@@ -543,12 +544,12 @@ class Pdb_model extends CI_Model {
                  ->where('chain_index is NOT NULL', NULL, FALSE)
                  ->where('unit_type_id !=', $aa)
                  ->where('model','1')
-                 ->group_by('ui.pdb_id, ui.model, ui.sym_op, ui.chain, ui.number, ui.unit, ui.alt_id')
-                 ->group_by('ui.ins_code, ui.chain_index')
                  ->order_by('ui.model', 'asc')
                  ->order_by('ui.sym_op', 'asc')
                  ->order_by('ui.chain', 'asc')
-                 ->order_by('ui.number', 'asc');
+                 ->order_by('ui.chain_index', 'asc')
+                 ->order_by('ui.alt_id', 'desc')
+                 ->group_by('ui.pdb_id, ui.model, ui.sym_op, ui.chain, ui.number, ui.unit, ui.ins_code');
         $query = $this->db->get();
         $chain_data = array();
         foreach($query->result() as $row) {
@@ -558,15 +559,16 @@ class Pdb_model extends CI_Model {
             } else {
                 $chain = $pdb_id . '|' . $row->model . '|' . $row->chain . ' ' . $row->sym_op;
             }
-            // $chain = $row->chain + '|' + $row->sym_op;
+
             if ( !array_key_exists($chain, $chain_data) ){
               $chain_data[$chain] = array('id' => $chain,
                                           'chain' => $chain,
                                           'nts' => array());
             }
+
             $chain_data[$chain]['nts'][] = array('id' => $row->id,
                                                  'sequence' => $row->sequence);
-        } 
+        }
 
         return $chain_data;
     }

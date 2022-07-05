@@ -13,9 +13,7 @@
             </p>
 
             <p>
-              In Summer 2021, we are filling in previous releases based on representative sets
-              from the last few years.
-              We are adjusting the clustering methodology.
+              In Summer 2021 we made small adjustments to the clustering methodology.
               See the <a href="https://docs.google.com/document/d/1OpeT3w00PsFly5eVMLXxyTgxrf9odadse1m6Slpqhkc/edit?usp=sharing">release notes for each release</a>.
               Follow us on <a href="https://twitter.com/rna3dhub">Twitter</a>.
             </p>
