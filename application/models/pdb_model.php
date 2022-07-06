@@ -518,12 +518,11 @@ class Pdb_model extends CI_Model {
     function get_ordered_nts($pdb_id)
     {
         $aa = 'aa';
-        $this->db->select('ui.unit_id as id, ui.model, ui.chain, ui.sym_op, ui.unit as sequence')
+        $this->db->select('ui.unit_id as id, ui.model, ui.chain, ui.sym_op, ui.unit as sequence, ui.unit_type_id')
                  ->select_min('ui.sym_op')
                  ->from('unit_info AS ui')
                  ->where('ui.pdb_id', $pdb_id)
                  ->where('chain_index is NOT NULL', NULL, FALSE)
-                 ->where('unit_type_id !=', $aa)
                  ->where('model','1')
                  ->order_by('ui.model', 'asc')
                  ->order_by('ui.sym_op', 'asc')
@@ -535,20 +534,25 @@ class Pdb_model extends CI_Model {
         $chain_data = array();
         foreach($query->result() as $row) {
 
-            if ($row->sym_op == '1_555') {
-                $chain = $pdb_id . '|' . $row->model . '|' . $row->chain;
-            } else {
-                $chain = $pdb_id . '|' . $row->model . '|' . $row->chain . ' ' . $row->sym_op;
-            }
+            // modified nts can have null unit_type_id, but avoid 'aa'
+            if (is_null($row->unit_type_id) or $row->unit_type_id != 'aa') {
+                if ($row->sym_op == '1_555') {
+                    $chain = $pdb_id . '|' . $row->model . '|' . $row->chain;
+                } else {
+                    $chain = $pdb_id . '|' . $row->model . '|' . $row->chain . ' ' . $row->sym_op;
+                }
 
-            if ( !array_key_exists($chain, $chain_data) ){
-              $chain_data[$chain] = array('id' => $chain,
-                                          'chain' => $chain,
-                                          'nts' => array());
-            }
+                if ( !array_key_exists($chain, $chain_data) ){
+                  $chain_data[$chain] = array('id' => $chain,
+                                              'chain' => $chain,
+                                              'nts' => array());
+                }
 
-            $chain_data[$chain]['nts'][] = array('id' => $row->id,
+                $chain_data[$chain]['nts'][] = array('id' => $row->id,
                                                  'sequence' => $row->sequence);
+            }
+
+
         }
 
         return $chain_data;
@@ -576,6 +580,7 @@ class Pdb_model extends CI_Model {
               $chain_data[$chain] = array('id' => 'chain-' + $chain,
                                           'nts' => array());
             }
+
             $chain_data[$chain]['nts'][] = array('id' => $row->id,
                                                  'sequence' => $row->sequence);
         }
