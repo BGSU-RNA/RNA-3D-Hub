@@ -200,6 +200,7 @@ class Motif_model extends CI_Model {
     }
 
     // compare two motifs page
+    // http://rna.bgsu.edu/rna3dhub/motif/compare/IL_56467.6/IL_39521.5 for example
     function compare_motifs($motif1, $motif2)
     {
         // get ordering and loop ids
@@ -227,24 +228,40 @@ class Motif_model extends CI_Model {
             $seqs[$row->loop_id] = $row->seq;
         }
 
+        // get mutual discrepancies - old, because loop_search_qa is no longer being populated
+        //$this->db->select('MMD.loop_id_1 as loop1,
+        //                   MMD.loop_id_2 as loop2,
+        //                   MMD.discrepancy as disc,
+        //                   LQ.status as status,
+        //                   LQ.message as qa_message,
+        //                   LQ.status as qa_status')
+        //         ->from('ml_mutual_discrepancy AS MMD')
+        //         ->join('loop_search_qa AS LQ', 'MMD.loop_id_1 = LQ.loop_id_1 AND MMD.loop_id_2 = LQ.loop_id_2', 'left')
+        //         ->where_in('MMD.loop_id_1', $loop_ids)
+        //         ->where_in('MMD.loop_id_2', $loop_ids);
+        //$query = $this->db->get();
+
         // get mutual discrepancies
-        $this->db->select('LS.loop_id_1 as loop1,
-                           LS.loop_id_2 as loop2,
-                           LS.disc as disc,
-                           LQ.status as status,
-                           LQ.message as qa_message,
-                           LQ.status as qa_status')
-                 ->from('loop_searches AS LS')
-                 ->join('loop_search_qa AS LQ', 'LS.loop_id_1 = LQ.loop_id_1 AND LS.loop_id_2 = LQ.loop_id_2', 'left')
-                 ->where_in('LS.loop_id_1', $loop_ids)
-                 ->where_in('LS.loop_id_2', $loop_ids);
+        // Problem!  We no longer seem to store discrepancies for loops that end up in
+        // different motif groups!  So the query ends up being empty, it seems
+        // Except maybe for a loop id with itself, which gives discrepancy 0 but which
+        // is never displayed on the page
+        $this->db->select('MMD.loop_id_1 as loop1,
+                           MMD.loop_id_2 as loop2,
+                           MMD.discrepancy as disc')
+                 ->from('ml_mutual_discrepancy AS MMD')
+                 ->where_in('MMD.loop_id_1', $loop_ids)
+                 ->where_in('MMD.loop_id_2', $loop_ids);
         $query = $this->db->get();
 
         $matrix = array();
 
         foreach ($query->result() as $row) {
-            $qa_status[$row->loop1][$row->loop2] = $row->qa_status;
-            $qa_message[$row->loop1][$row->loop2] = $row->qa_message;
+            //$qa_status[$row->loop1][$row->loop2] = $row->qa_status;
+            //$qa_message[$row->loop1][$row->loop2] = $row->qa_message;
+
+            $qa_status[$row->loop1][$row->loop2] = $row->loop1;
+            $qa_message[$row->loop1][$row->loop2] = $row->loop2;
             $matrix[$row->loop1][$row->loop2] = $row->disc;
         }
 
