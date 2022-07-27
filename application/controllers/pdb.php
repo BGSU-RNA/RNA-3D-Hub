@@ -217,23 +217,31 @@ class Pdb extends CI_Controller {
      
         if ( $pdb_status['valid'] ) {
             // Only a few airport diagrams work, and we need to link to R2DT diagrams instead
-            // Comment out this code, and remove the Airport and Circular buttons
+            // Soon, Comment out this code, and remove the Airport and Circular buttons
             //$nts = $this->Pdb_model->get_airport($pdb_id);
             //if ($nts) {
             //    $data['has_airport'] = TRUE;
             //    $data['nts'] = $nts;
+                //$data['nts'] = json_encode($nts);
             //} else {
-            //    $data['nts'] = json_encode(array_values($this->Pdb_model->get_ordered_nts($pdb_id)));
+                // $data['nts'] = json_encode(array_values($this->Pdb_model->get_ordered_nts($pdb_id)));
+            //    $nts = $this->Pdb_model->get_ordered_nts($pdb_id);
+            //    $data['nts'] = json_encode(array_values($nts));
+            //    $data['chains'] = array_keys($nts);
             //}
-            $data['long_range'] = json_encode($this->Pdb_model->get_longrange_bp($pdb_id));
 
             $nts = $this->Pdb_model->get_ordered_nts($pdb_id);
             $data['nts'] = json_encode(array_values($nts));
+            $data['chains'] = array_keys($nts);
+
+            // pretend that there is an airport diagram so we can see what happens when we click the button
+            $data['has_airport'] = TRUE;
+
+            $data['long_range'] = json_encode($this->Pdb_model->get_longrange_bp($pdb_id));
 
             // extract an array of chain names here, pass to next functions
             // $chains= $this->Pdb_model->get_chain_names($pdb_id);
             // $data['chains'] = $chains;
-            $data['chains'] = array_keys($nts);
 
         } else {
             $data['message'] = $pdb_status['message'];

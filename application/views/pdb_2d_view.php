@@ -47,13 +47,33 @@
         </div>
         <!-- end navigation -->
 
+            <div class="span3 offset4">
+                <div id='view-buttons' class='btn-group' data-toggle='buttons-radio'>
+
+
+                    <?php if ($has_airport): ?>
+                    <button id='airport-view' class="btn view-control" data-view='airport'>
+                      Airport
+                    </button>
+                    <?php else: ?>
+                    <button id='airport-view' disabled="disabled"
+                        class="btn hasTooltip disabled view-control" data-view='airport'
+                        title="No airport diagram is available yet">
+                      Airport
+                    </button>
+                    <?php endif; ?>
+                    <button id='circular-view' class="btn active view-control" data-view='circular'>
+                      Circular
+                    </button>
+               </div>
+            </div>
+
         <div class="row">
           <?php
           foreach($chains as $ch): ?>
             <label><input type="checkbox" id="<?=$ch?>" checked><?=$ch?></label>
           <?php endforeach; ?>
         </div>
-
         <div class="row">
             <div id='controls' class='span1 block-controls'>
 
@@ -73,8 +93,7 @@
                 <button type='button' id='rsr-controls' class='btn btn-block nt-color'
                   data-toggle='button' data-attr='real_space_r'>RsR</button>
               </div>
-
-              <div id="control-groups">
+                <div id="control-groups">
                 <div id="interaction-controls">
                     <button type="button" id="all-toggle" class="btn btn-block
                       toggle-control" data-toggle='button'
