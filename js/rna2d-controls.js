@@ -65,6 +65,15 @@ $(document).ready(function() {
 
   plot.airport.fontSize(8);
 
+  console.log("About to plot nucleotides")
+  console.log("Chains in this file are")
+  for (i=0; i < NTS.length; i++) {
+    console.log("Chain " + NTS[i]["chain"] + " state is " + document.getElementById(NTS[i]["chain"]).checked)
+  }
+   // plot.chains(NTS.slice(0,1)); 
+   // var chains_to_plot = [4,5,6];
+   //  plot.chains(chains_to_plot.map(i => NTS[i]));
+
   plot.chains(NTS);
 
   plot.nucleotides

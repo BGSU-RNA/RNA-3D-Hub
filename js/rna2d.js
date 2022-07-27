@@ -69,6 +69,13 @@
         console.log("margin-above: ", margin.above);
         console.log("margin-below: ", margin.below);
 
+        console.log("About to plot nucleotides")
+        console.log("Chains in this file are")
+        for (i=0; i < NTS.length; i++) {
+          console.log("Chain " + NTS[i]["chain"] + " state is " + document.getElementById(NTS[i]["chain"]).checked)
+        }
+
+
         // Generate the components - brush, frame, zoom, etc
         components.generate();
 
@@ -359,6 +366,7 @@
     },
 
     generate: function(){
+      console.log('Running Generate function');
       this.update();
       this.coordinates();
       this.connections();
