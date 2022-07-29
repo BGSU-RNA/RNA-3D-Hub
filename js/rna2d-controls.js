@@ -65,16 +65,25 @@ $(document).ready(function() {
 
   plot.airport.fontSize(8);
 
-  console.log("About to plot nucleotides")
+  console.log("About to plot nucleotides for the first time")
   console.log("Chains in this file are")
+
+  var chains_to_plot = [];
   for (i=0; i < NTS.length; i++) {
     console.log("Chain " + NTS[i]["chain"] + " state is " + document.getElementById(NTS[i]["chain"]).checked)
+    //if chain i is checked, append i to the variable chains_to_plot
+    if (document.getElementById(NTS[i]["chain"]).checked) {
+      chains_to_plot.push(i);
+    }
   }
-   // plot.chains(NTS.slice(0,1)); 
-   // var chains_to_plot = [4,5,6];
-   //  plot.chains(chains_to_plot.map(i => NTS[i]));
 
-  plot.chains(NTS);
+  console.log(chains_to_plot);
+
+  // plot.chains(NTS.slice(0,1));
+
+  plot.chains(chains_to_plot.map(i => NTS[i]));
+
+  // plot.chains(NTS);
 
   plot.nucleotides
     .encodeID(convertNTID)
