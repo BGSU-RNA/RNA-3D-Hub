@@ -520,6 +520,7 @@
 
     var brush = new Brush();
     brush.attach(plot);
+    console.log('Running plot chain line 523');
 
     //console.log("brush-x: ",brush.x().value);
     //console.log("brush-y: ",brush.y().value);
@@ -528,12 +529,22 @@
   };
 
   Rna2D.components.chains = function(plot) {
-
+     console.log('Running plot chain in 532');
     var Chains = inhert(Rna2D.Component, 'chains', {
       getID: function(d, i) { return d.id; },
       'class': 'chain',
       classOf: function(d, i) { return []; },
-      getNTData: function(d, i) { return d.nts; },
+      getNTData: function(d, i) {
+        console.log('Chain is ', i)
+        //return d.nts;
+
+
+        if (document.getElementById(d.chain).checked) {
+          return d.nts;
+        } else {
+          return [];
+        }
+      },
       chainOf: function(d, i) {
         var ntsOf = plot.chains.getNTData(),
             chainIndex = -1,
@@ -550,11 +561,12 @@
           if (compare(d, i, chain)) {
             chainIndex = index;
           }
-        });
+        }); 
+       console.log('Running plot chains in 555');
         return chainIndex;
       }
     });
-
+   
     var chain = new Chains();
     chain.attach(plot);
 
@@ -1361,6 +1373,7 @@
     };
 
     Circular.prototype.xCoord = function() {
+      console.log("Co-ordinates in circular");
       return function(d, i) { return CENTER.x + ntCentroid(d, i)[0]; };
     };
 
