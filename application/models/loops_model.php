@@ -55,6 +55,28 @@ class Loops_model extends CI_Model {
         return $table;
     }
 
+    function get_loop_list_with_breaks($pdb_id)
+    {
+        $this->db->select('group_concat(unit_id) AS unit_ids, group_concat(border) AS borders, LI.loop_id', FALSE)
+                 ->from('loop_info AS LI')
+                 ->join('loop_positions AS LP', 'LI.loop_id = LP.loop_id')
+                 ->where('LI.pdb_id', $pdb_id)
+                 ->group_by('LI.loop_id');
+        $query = $this->db->get();
+
+        if ( $query->num_rows() > 0 ) {
+            $data = array();
+            foreach($query->result() as $row) {
+                $data[] = '"' . implode('","', array($row->loop_id, $row->unit_ids, $row->borders)) . '"';
+            }
+            $table = implode("\n", $data);
+        } else {
+            $table = 'No loops found';
+        }
+
+        return $table;
+    }
+
     function get_loop_info($id)
     {
         $result = array();

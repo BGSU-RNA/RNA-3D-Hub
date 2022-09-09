@@ -156,6 +156,21 @@ class Loops extends CI_Controller {
         $this->load->view('csv_view', $data);
     }
 
+    function download_with_breaks($pdb_id)
+    {
+        $this->load->model('Loops_model', '', TRUE);
+
+        $data['csv'] = $this->Loops_model->get_loop_list_with_breaks($pdb_id);
+
+        $filename = "{$pdb_id}_loops_with_breaks.csv";
+        $this->output->set_header("Access-Control-Allow-Origin: *")
+                     ->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin")
+                     ->set_header("Content-disposition: attachment; filename=$filename")
+                     ->set_content_type('text/csv');
+
+        $this->load->view('csv_view', $data);
+    }
+
     function view($id, $similar=NULL)
     {
         $this->output->cache(262974); # 6 months
