@@ -176,7 +176,12 @@ class Nrlist_model extends CI_Model {
 
     function get_source_organism($ife_id)
     {
-        if ( 1 == substr_count($ife_id, '|') ) {
+        if ( substr_count($ife_id, '+') >= 1 ) {
+            $chain_list = explode('+', $ife_id);
+            $ife_id = $chain_list[0];
+        }
+
+        if ( substr_count($ife_id, '|') == 1 ) {
             list($pdb_id, $chain) = explode('|', $ife_id);
         } else {
             list($pdb_id, $model_num, $chain) = explode('|', $ife_id);
