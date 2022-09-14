@@ -91,6 +91,33 @@
                 </div>
             </div> <!-- heatmap -->
 
+
+            <!-- new heatmap is making here -->
+            <div class="row span100p interactions resizable" id="newheatmap">
+                <div class="span100p">
+                    <div>
+                      <p align="center">Heatmap for sequence alignment scores</p>
+                      <!-- Not sure what this is -->
+                      <div id ='chart' style="text-align: center;"></div>
+                      <span class="muted">
+                         Table and heat map follow the same ordering
+                      </span>
+                      <div>
+                        <?=$statistics?>
+                      </div>
+                      <script src="//d3js.org/d3.v4.min.js"></script>
+                      <script type="text/javascript">
+                          var data = <? echo $seq_ali_heatmap_data; ?>;
+                      </script>
+                      <script type="text/javascript" src="<?=$baseurl?>js/heatmap.js"></script>
+                    </div>
+                </div>
+            </div> <!-- heatmap -->
+            <!-- new heatmap is ending here -->
+
+
+
+
       </div> <!-- content -->
     </div> <!-- container -->
 

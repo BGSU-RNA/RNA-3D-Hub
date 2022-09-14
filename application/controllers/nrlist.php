@@ -131,8 +131,14 @@ class Nrlist extends CI_Controller {
 
         $heatmap = $this->Nrlist_model->get_heatmap_data_revised($id);
         #$heatmap = $this->Nrlist_model->get_heatmap_data($id, $nr_release_id);
-	#$heatmap = $this->Nrlist_model->get_heatmap_data_revised_original($id);
+	    #$heatmap = $this->Nrlist_model->get_heatmap_data_revised_original($id);
         $data['heatmap_data'] = $heatmap;
+
+        ######################### seq alignment starting here   #################################
+        $heatmap_ali_seq_score = $this->Nrlist_model->get_seq_ident_heatmap_data($id);
+        $data['seq_ali_heatmap_data'] = $heatmap_ali_seq_score;
+        ######################## seq alignment ending here   #################################
+
 
         $data['title'] = $id;
         $data['baseurl'] = base_url();
