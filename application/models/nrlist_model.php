@@ -581,34 +581,53 @@ class Nrlist_model extends CI_Model {
                 array_push($ife_list,$row->ife1);
                 array_push($index_list,$row->ife1_index);
             }
-
-            // $this->db->select('NO1.ife_id AS ife1')
-            //         ->select('NO1.class_order AS ife1_index')
-            //         ->select('NO2.ife_id AS ife2')
-            //         ->select('NO2.class_order AS ife2_index')
-            //         ->select('CI.aligned_count/CI.length')
-            //         ->from('nr_ordering_test AS NO1')
-            //         ->join('nr_ordering_test AS NO2', 'NO1.nr_class_name = NO2.nr_class_name', 'inner')
-            //         ->join('ife_chains AS IC1', 'NO1.ife_id = IC1.ife_id AND IC1.index = 0', 'inner')
-            //         ->join('ife_chains AS IC2', 'NO2.ife_id = IC2.ife_id AND IC2.index = 0', 'inner')
-            //         ->join('chain_chain_similarity AS CCS', 'IC1.chain_id = CCS.chain_id_1 AND IC2.chain_id = CCS.chain_id_2', 'left outer')
-            //         ->join('correspondence_info as CI', 'CSS.correspondence_id = CI.correspondence_id', 'inner')
-            //         ->where('NO1.nr_class_name', $id);
+            //CI.aligned_count/CI.length
             $this->db->select('NO1.ife_id AS ife1')
                     ->select('NO1.class_order AS ife1_index')
                     ->select('NO2.ife_id AS ife2')
                     ->select('NO2.class_order AS ife2_index')
-                    ->select('CCS.discrepancy')
+                    ->select('CI.aligned_count AS alignedcount')
+                    ->select('CI.length AS length')
+                    // ->select('CI.aligned_count/CI.length AS ratio')
                     ->from('nr_ordering_test AS NO1')
                     ->join('nr_ordering_test AS NO2', 'NO1.nr_class_name = NO2.nr_class_name', 'inner')
                     ->join('ife_chains AS IC1', 'NO1.ife_id = IC1.ife_id AND IC1.index = 0', 'inner')
                     ->join('ife_chains AS IC2', 'NO2.ife_id = IC2.ife_id AND IC2.index = 0', 'inner')
                     ->join('chain_chain_similarity AS CCS', 'IC1.chain_id = CCS.chain_id_1 AND IC2.chain_id = CCS.chain_id_2', 'left outer')
+                    ->join('correspondence_info as CI', 'CCS.correspondence_id = CI.correspondence_id', 'inner')
                     ->where('NO1.nr_class_name', $id);
+            // $this->db->select('NO1.ife_id AS ife1')
+            //         ->select('NO1.class_order AS ife1_index')
+            //         ->select('NO2.ife_id AS ife2')
+            //         ->select('NO2.class_order AS ife2_index')
+            //         ->select('CCS.discrepancy')
+            //         ->from('nr_ordering_test AS NO1')
+            //         ->join('nr_ordering_test AS NO2', 'NO1.nr_class_name = NO2.nr_class_name', 'inner')
+            //         ->join('ife_chains AS IC1', 'NO1.ife_id = IC1.ife_id AND IC1.index = 0', 'inner')
+            //         ->join('ife_chains AS IC2', 'NO2.ife_id = IC2.ife_id AND IC2.index = 0', 'inner')
+            //         ->join('chain_chain_similarity AS CCS', 'IC1.chain_id = CCS.chain_id_1 AND IC2.chain_id = CCS.chain_id_2', 'left outer')
+            //         ->where('NO1.nr_class_name', $id);
             
             $query = $this->db->get();
+            #### new method starting here ####
+            $ife1 = array();
+            $ife2 = array();
+            $ife1_index = array();
+            $ife2_index = array();
+            $newscore = array();
+            foreach ($query->result() as $row) {
+                array_push($ife1,$row->ife1);
+                array_push($ife2,$row->ife2);
+                array_push($ife1_index,$row->ife1_index);
+                array_push($ife2_index,$row->ife2_index);
+                array_push($newscore,($row->alignedcount)/($row->length));
+                # array_push($newscore,1);
+            }
+            $newresult = array($ife1,$ife2,$ife1_index,$ife2_index,$newscore)
+            #### new method ending here ####
 
-            $heatmap_data = json_encode($query->result());
+            # $heatmap_data = json_encode($query->result());
+            $heatmap_data = json_encode($newresult);
 
             return $heatmap_data;
         }
