@@ -581,7 +581,7 @@ class Nrlist_model extends CI_Model {
                 array_push($ife_list,$row->ife1);
                 array_push($index_list,$row->ife1_index);
             }
-            //CI.aligned_count/CI.length
+
             $this->db->select('NO1.ife_id AS ife1')
                     ->select('NO1.class_order AS ife1_index')
                     ->select('NO2.ife_id AS ife2')
@@ -609,24 +609,67 @@ class Nrlist_model extends CI_Model {
             //         ->where('NO1.nr_class_name', $id);
             
             $query = $this->db->get();
-            #### new method starting here ####
-            $ife1 = array();
-            $ife2 = array();
-            $ife1_index = array();
-            $ife2_index = array();
-            $newscore = array();
+            ####### new trial start ######
+            ####### Note: we have discrepancy here, but it actually is the ratio of alignedcount and length
+            $newresult = array();
             foreach ($query->result() as $row) {
-                array_push($ife1,$row->ife1);
-                array_push($ife2,$row->ife2);
-                array_push($ife1_index,$row->ife1_index);
-                array_push($ife2_index,$row->ife2_index);
-                array_push($newscore,($row->alignedcount)/($row->length));
-                # array_push($newscore,1);
+                $new_ratio = new stdClass();
+                $new_ratio->ife1 = $row->ife1;
+                $new_ratio->ife1_index = $row->ife1_index;
+                $new_ratio->ife2 = $row->ife2;
+                $new_ratio->ife2_index = $row->ife2_index;
+                $new_ratio->discrepancy = ($row->alignedcount)/($row->length);
+
+                array_push($newresult,$new_ratio);
             }
-            $newresult = array($ife1,$ife2,$ife1_index,$ife2_index,$newscore)
+            // foreach ($newresult as $newrow){
+            //     echo $newrow->ife1;
+            //     echo $newrow->ife1_index;
+            // }
+
+            ####### new trial end ######
+
+
+
+            #### new method starting here ####
+            // $ife1 = array();
+            // $ife2 = array();
+            // $ife1_index = array();
+            // $ife2_index = array();
+            // $discrepancy = array();
+            // foreach ($query->result() as $row) {
+            //     array_push($ife1,$row->ife1);
+            //     array_push($ife2,$row->ife2);
+            //     array_push($ife1_index,$row->ife1_index);
+            //     array_push($ife2_index,$row->ife2_index);
+            //     array_push($discrepancy,($row->alignedcount)/($row->length));
+            //     // echo '(';
+            //     // echo $row->alignedcount;
+            //     // echo '|';
+            //     // echo $row->length;
+            //     // echo ')';
+            //     # array_push($newscore,1);
+            // }
+            // $newresult = array($ife1,$ife2,$ife1_index,$ife2_index,$discrepancy);
+            // echo gettype($newresult);
+            // echo $newresult;
+            // echo gettype($query->result());
+            // echo $query->result();
+            
+            // foreach ($query->result() as $row) {
+            //     echo gettype($row->ife1);
+            //     echo $row->ife1;
+            //     echo gettype($row->ife1_index);
+            //     echo $row->ife1_index;
+            //     echo gettype($row->alignedcount);
+            //     echo $row->alignedcount;
+            // }
+            // foreach ($discrepancy as $rate) {
+            //     echo $rate;
+            // }
             #### new method ending here ####
 
-            # $heatmap_data = json_encode($query->result());
+            // $heatmap_data = json_encode($query->result());
             $heatmap_data = json_encode($newresult);
 
             return $heatmap_data;
