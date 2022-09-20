@@ -83,7 +83,8 @@
                                     echo '<dl>';
                                     foreach($proteins as $chain => $desc) {
                                         echo "<dt>Chain $chain</dt>";
-                                        echo "<dd>{$desc['description']} (Uniprot: {$desc['uniprot']})</dd>";
+                                        echo "<dd>{$desc['description']}</dd>";
+                                        //echo "<dd>{$desc['description']} (Uniprot: {$desc['uniprot']})</dd>";
                                     }
                                     echo '</dl>';
                                 } else {
