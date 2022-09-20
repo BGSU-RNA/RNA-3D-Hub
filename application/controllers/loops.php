@@ -173,7 +173,7 @@ class Loops extends CI_Controller {
 
     function view($id, $similar=NULL)
     {
-        $this->output->cache(262974); # 6 months
+        //$this->output->cache(262974); # 6 months
 
         $this->load->model('Loops_model', '', TRUE);
 
