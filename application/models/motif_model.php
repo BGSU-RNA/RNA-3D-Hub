@@ -929,19 +929,11 @@ class Motif_model extends CI_Model {
             } elseif ( $key == 'break' ) {
             	$row[] = '*';
             } elseif ( is_int($key) ) {
-                #$parts = explode(' ', $this->nts[$this->loops[$id]][$key]);
-                $parts = explode(' ', $this->units[$this->similarity[$id]][$key]);
+                $parts = explode('|', $this->units[$this->similarity[$id]][$key]);
 
-                $foo = count($parts) - 1;
-                ###echo "<p>id: $id<br>key: $key<br>#parts: $foo</p>";
-                ###echo "<p>parts: " . var_dump($parts) . "</p>";
+                $row[] = $parts[3];  # base sequence
+                $row[] = implode('|',array_slice($parts,4)); # number and all remaining fields in the unit id
 
-                $row[] = $parts[$foo]; // ISSUE
-                ###echo "<p>row(1): $row</p>";
-                ###echo "<p>row(1): " . var_dump($row) . "</p>";
-                $row[] = $parts[0]; // ISSUE
-                ###echo "<p>row(2): $row</p>";
-                ###echo "<p>row(2): " . var_dump($row) . "</p>";
             } elseif ( $key == ' ' ) {
                 // do nothing
             } elseif ( $key == 'Disc' ) {
@@ -1051,21 +1043,8 @@ class Motif_model extends CI_Model {
         $result = $this->db->get()->result_array();
 
         for ($i = 0; $i < count($result); $i++) {
-            #$parts_ntid = explode("_", $result[$i]['nt_id']);
-            $parts_unit = explode("|", $result[$i]['unit_id']);
-            #$ic_unit = (isset($parts_unit[7])) ? ' ' . $parts_unit[7] : "";
-            $ic_unit = (isset($parts_unit[7])) ? '^' . $parts_unit[7] : "";
-            #$nt_id = $parts_ntid[4] . $parts_ntid[6] . ' ' . $parts_ntid[5];
-            $unit_id = $parts_unit[4] . $ic_unit . ' ' . $parts_unit[3];
-            if ( $ic_unit <> "" ) {
-                #echo "<p>i: $i<br>4: $parts_unit[4]<br>ic: $ic_unit<br>3: $parts_unit[3]<br>unit: $unit_id</p>";
-            }
 
-            ###echo "<p>index $i:  nt: [$nt_id] // unit: [$unit_id]</p>"; ### DEBUG
-
-            #$nts[$result[$i]['loop_id']][$result[$i]['position']] = $nt_id;
-            #$this->full_nts[$result[$i]['loop_id']][$result[$i]['position']] = $result[$i]['nt_id'];
-            #$this->nt_ids[$result[$i]['nt_id']] = $nt_id;
+            $unit_id = $result[$i]['unit_id'];
 
             $units[$result[$i]['loop_id']][$result[$i]['position']] = $unit_id;
             $this->full_units[$result[$i]['loop_id']][$result[$i]['position']] = $result[$i]['unit_id'];
