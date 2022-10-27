@@ -235,14 +235,22 @@ if ( typeof Object.create !== 'function' ) {
             
             for (var k=a; k <= b; k++) {
             
-                command = 'select [U]/' + k + '.1; color navy;' +
+                command = 'select [U]/' + k + '.1; color cyan;' +
                         'select [G]/' + k + '.1; color chartreuse;' +
                         'select [C]/' + k + '.1; color gold;' +
                         'select [A]/' + k + '.1; color red;' +
+                        'select [DA]/' + k + '.1; color red;' +
+                        'select [DC]/' + k + '.1; color gold;' +
+                        'select [DG]/' + k + '.1; color chartreuse;' +
+                        'select [DT]/' + k + '.1; color blue;' +
                         'select [U]/' + k + '.3; color mediumblue;' +
                         'select [G]/' + k + '.3; color palegreen;' +
                         'select [C]/' + k + '.3; color khaki;' +
                         'select [A]/' + k + '.3; color tomato;' +
+                        'select [DT]/' + k + '.3; color navy;' +
+                        'select [DG]/' + k + '.3; color palegreen;' +
+                        'select [DC]/' + k + '.3; color khaki;' +
+                        'select [DA]/' + k + '.3; color tomato;' +
                         'select protein and ' + k + '.1; color CPK;' +
                         'select nucleic and ' + k + '.2; color grey;' +
                         'select protein and ' + k + '.2; color purple;' +
