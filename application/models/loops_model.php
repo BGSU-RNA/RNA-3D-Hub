@@ -267,21 +267,35 @@ class Loops_model extends CI_Model {
             $motif = $this->get_most_recent_motif_assignment($id);
             $old_release = TRUE;
         }
-
+        // get motif annotations
+        $this->db->select()
+        ->from('loop_annotations')
+        ->where('loop_id', $id);
+        $query = $this->db->get();
+        $result['annotation_1'] = 'Not assigned yet';
+        $result['annotation_2'] = 'Not assigned yet';
+        if ($query->num_rows >0) {
+            $annotation_1 = $query->row()->annotation_1;
+            if ($annotation_1 != Null and $annotation_1 != 'NULL') {
+                $result['annotation_1'] = $annotation_1;
+            } 
+            // get annotation 2 
+            $annotation_2 = $query->row()->annotation_2;
+            if ($annotation_2 != Null and $annotation_2 != 'NULL') {
+                $result['annotation_2'] = $annotation_2;
+            } 
+        }
         if ($motif != NULL) {
             $result['motif_id'] = $motif['motif_id'];
             $result['motif_url'] = anchor_popup('motif/view/' . $motif['motif_id'], $motif['motif_id']);
-            // get motif annotations
+
+            // get basepair signature
             $this->db->select()
                      ->from('ml_motif_annotations')
                      ->where('motif_id', $result['motif_id']);
             $query = $this->db->get();
             $annotation = $query->row();
-            if ($annotation->common_name != Null) {
-                $result['motif_common_name'] = $annotation->common_name;
-            } else {
-                $result['motif_common_name'] = 'Not assigned yet';
-            }
+
             $result['bp_signature'] = $annotation->bp_signature;
             // get number of motif instances
             $this->db->select()
@@ -298,7 +312,6 @@ class Loops_model extends CI_Model {
             $result['motif_url'] = "This loop hasn't been annotated with motifs yet";
             $result['bp_signature'] = 'Not available';
             $result['motif_instances'] = 0;
-            $result['motif_common_name'] = 'Not available';
         }
 
         return $result;

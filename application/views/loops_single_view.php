@@ -64,15 +64,16 @@
                     </div>
                     <div class="row">
                         <div class="span3 well">
-                            <h4>Motif assignment</h4>
                             <dl>
+                                <dt>Detailed Annotation</dt>
+                                <dd><?=$annotation_1?></dd>
+                                <dt>Broad Annotation</dt>
+                                <dd><?=$annotation_2?></dd>
                                 <dt>Motif group</dt>
                                 <dd><?=$motif_url?></dd>
-                                <dt>Common name</dt>
-                                <dd><?=$motif_common_name?></dd>
                                 <dt>Basepair signature</dt>
                                 <dd><?=$bp_signature?></dd>
-                                <dt>Number of instances</dt>
+                                <dt>Number of instances in this motif group</dt>
                                 <dd><?=$motif_instances?></dd>
                             </dl>
                         </div>
