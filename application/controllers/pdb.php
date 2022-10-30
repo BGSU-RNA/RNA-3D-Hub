@@ -3,7 +3,7 @@ class Pdb extends CI_Controller {
 
 	public function index()
 	{
-        $this->output->cache(262974); # 6 months
+        // $this->output->cache(262974); # 6 months
 
         $this->load->model('Pdb_model', '', TRUE);
         $data['pdbs'] = $this->Pdb_model->get_all_pdbs();
@@ -21,7 +21,7 @@ class Pdb extends CI_Controller {
     {
         // main pdb landing page with general info and links to specific pages
 
-        $this->output->cache(262974); # 6 months
+        // $this->output->cache(262974); # 6 months
 
         $this->load->model('Pdb_model', '', TRUE);
         $pdb_status = $this->is_valid_pdb($id, 'il');
@@ -142,7 +142,7 @@ class Pdb extends CI_Controller {
 
 	public function motifs($id)
 	{
-        $this->output->cache(262974); # 6 months
+        // $this->output->cache(262974); # 6 months
 
 	    $this->load->model('Pdb_model', '', TRUE);
         // check the pdb id
@@ -157,7 +157,7 @@ class Pdb extends CI_Controller {
                 // valid loops
                 $tmpl = array( 'table_open'  => '<table class="condensed-table bordered-table">' );
                 $this->table->set_template($tmpl);
-                $this->table->set_heading('#', 'loop id', 'location', 'motif');
+                $this->table->set_heading('#', 'loop id', 'location', 'annotation', 'motif');
                 if (count($results['valid'][$loop_type]) > 0) {
                     $data['loops'][$loop_type]['valid'] = $this->table->generate($results['valid'][$loop_type]);
                 } else {

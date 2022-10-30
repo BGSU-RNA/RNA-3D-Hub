@@ -79,8 +79,10 @@ class Pdb_model extends CI_Model {
                  ->select('lq.complementary')
                  ->select('li.unit_ids')
                  ->select('li.loop_name')
+                 ->select('la.annotation_1')
                  ->from('loop_qa AS lq')
                  ->join('loop_info AS li', 'li.loop_id = lq.loop_id')
+                 ->join('loop_annotations AS la', 'lq.loop_id = la.loop_id', 'left')
                  ->where('pdb_id', $pdb_id);
         $query = $this->db->get();
 
@@ -93,33 +95,41 @@ class Pdb_model extends CI_Model {
         $motifs = array_merge($motifs, $this->get_latest_motif_assignments($pdb_id, 'HL'));
         foreach ($query->result() as $row) {
             $loop_type = substr($row->loop_id, 0, 2);
+            if (!is_null($row->annotation_1)){
+                $annotation_1 = $row->annotation_1;
+            } else {
+                $annotation_1 = 'NA';
+            }
             if ($row->status == 1 or $row->status == 3) {
                 if ( array_key_exists($row->loop_id, $motifs) ) {
                     $motif_id = anchor_popup("motif/view/{$motifs[$row->loop_id]}", $motifs[$row->loop_id]);
                 } else {
                     $motif_id = 'NA';
                 }
-                $valid_tables[$loop_type][] = array(count($valid_tables[$loop_type]) + 1,
+
+                $valid_tables[$loop_type][] = array(count($valid_tables[$loop_type]) + 1, //index
                                                     array( 'class' => 'loop',
                                                            'data'  => $this->get_checkbox($row->loop_id, $row->unit_ids)
-                                                          ),
-                                                    $row->loop_name,
+                                                          ), //loop_id
+                                                    $row->loop_name, //location
+                                                    // $motif_id, //motif 
+                                                    $annotation_1,
                                                     $motif_id
                                                     );
             } else {
-                if (!is_null($row->complementary)) {
-                    $annotation = $row->complementary;
-                } elseif (!is_null($row->modifications)) {
-                    $annotation = $row->modifications;
-                } else {
-                    $annotation = $row->nt_signature;
-                }
+                // if (!is_null($row->complementary)) {
+                //     $annotation = $row->complementary;
+                // } elseif (!is_null($row->modifications)) {
+                //     $annotation = $row->modifications;
+                // } else {
+                //     $annotation = $row->nt_signature;
+                // }
                 $invalid_tables[$loop_type][] = array(count($invalid_tables[$loop_type])+1,
                                                       array( 'class' => 'loop',
                                                              'data'  => $this->get_checkbox($row->loop_id, $row->unit_ids)
                                                             ),
                                                       $this->make_reason_label($row->status),
-                                                      $annotation);
+                                                      $annotation_1);
             }
         }
         return array('valid' => $valid_tables, 'invalid' => $invalid_tables);
