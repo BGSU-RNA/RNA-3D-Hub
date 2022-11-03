@@ -940,7 +940,6 @@ class Motif_model extends CI_Model {
                 $loop_index = array_search($this->similarity[$id], $this->loops);
                 $row[] = $this->disc[$this->loops[1]][$this->loops[$loop_index]];
             } elseif( $key == 'Annotation' ) {
-#                $row[] = $this->loop_annotation1["zzz"];
                  # Check if the motif instance has an annotation associated with it
                  if (array_key_exists($this->similarity[$id], $this->loop_annotation1)) {
                     $row[] = $this->loop_annotation1[$this->similarity[$id]];
