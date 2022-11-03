@@ -842,7 +842,7 @@ class Motif_model extends CI_Model {
 
     function get_header()
     {
-        $header = array('#D', '#S', 'Loop id', 'PDB', 'Disc', '#Non-core', 'Annotation');
+        $header = array('#D', '#S', 'Loop id', 'PDB', 'Disc', '#Non-core', 'Annotation', 'Chain');
 
         // 1, 2, ..., N
         for ($i = 1; $i <= $this->motiflen; $i++) {
@@ -946,7 +946,17 @@ class Motif_model extends CI_Model {
                  } else {
                     $row[] = ' ';
                  }
-            } else {
+            } elseif( $key == 'Chain' ) {
+                // if ()
+                // $parts = explode('|', $this->units[$this->similarity[$id]][1]);
+                // $chains = array();
+                // array_push($chains, $parts[2]);
+
+
+
+                $parts = explode('|', $this->units[$this->similarity[$id]][1]);
+                $row[] = $parts[2];
+           } else {
                 $parts = explode('-', $key);
 
                 #$nt1 = $this->nts[$this->loops[$id]][$parts[0]]; // ISSUE
