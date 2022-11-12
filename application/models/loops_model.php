@@ -77,6 +77,21 @@ class Loops_model extends CI_Model {
         return $table;
     }
 
+    function get_unit_id($id)
+    {
+        $result = array();
+
+        // info from loops_all
+        $this->db->select('unit_id')
+                 ->from('loop_positions')
+                 ->where('loop_id',$id);
+        $query = $this->db->get();
+
+        if ($query->num_rows() > 0) {
+            $unit_id = $query->row();
+            $result['full_unit_id'] = $unit_id->unit_id;
+        }
+    }
     function get_loop_info($id)
     {
         $result = array();

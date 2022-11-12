@@ -44,8 +44,8 @@
                                 <dd><?=$pdb_exptechnique?></dd>
                                 <dt>Resolution</dt>
                                 <dd><?=$pdb_resolution?></dd>
-                                <dt>Representative set classes</dt>
-                                <dd><?=$nr_classes?></dd>
+                                <!-- <dt>Representative set classes</dt>
+                                <dd><?=$nr_classes?></dd> remove representative set classes section-->
                             </dl>
                         </div>
                         <div class="span4 well">
@@ -77,6 +77,12 @@
                                 <dd><?=$motif_instances?></dd>
                             </dl>
                         </div>
+                        <!-- <div class="span4 well">
+                            <h4>Unit ID</h4>
+                            <dd><?=$full_unit_id?></dd>
+                        </div> -->
+                    </div>
+                    <div class="row">
                         <div class="span4 well">
                             <h4>Nearby proteins</h4>
                             <?php

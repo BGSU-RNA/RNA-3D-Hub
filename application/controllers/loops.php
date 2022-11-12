@@ -191,6 +191,7 @@ class Loops extends CI_Controller {
             $data['show_similar'] = TRUE;
         } else {
             $data = array_merge($data, $this->Loops_model->get_loop_info($id));
+            // $data = array_merge($data, $this->Loops_model->get_unit_id($id));
             $data = array_merge($data, $this->Loops_model->get_pdb_info($id));
             $data = array_merge($data, $this->Loops_model->get_motif_info($id));
             $data = array_merge($data, $this->Loops_model->get_protein_info($id));
