@@ -77,10 +77,10 @@
                                 <dd><?=$motif_instances?></dd>
                             </dl>
                         </div>
-                        <!-- <div class="span4 well">
+                        <div class="span4 well">
                             <h4>Unit ID</h4>
-                            <dd><?=$full_unit_id?></dd>
-                        </div> -->
+                            <!-- <dd><?=$units?></dd> -->
+                        </div>
                     </div>
                     <div class="row">
                         <div class="span4 well">

@@ -144,6 +144,40 @@ class Loops_model extends CI_Model {
             $result['qa'] = 'QA data not found';
         }
 
+        // // get list of unit id
+        // $this->db->select('unit_id')
+        //          ->from('loop_positions')
+        //          ->where('loop_id',$id)
+        //          ->order_by('position');
+        // $query = $this->db->get();
+
+        // if ($query->num_rows() > 0) {
+        //     $unit_ids = arrary();
+
+        //     foreach ($query->result() as $row) {
+        //         $unit_ids = $row->unit_id;
+        //     }
+
+        //     $result['unit_ids'] = $unit_ids;
+        // } else {
+        //     $result['unit_ids'] = "None detected";
+        // }
+        // $this->db->select('unit_id')
+        //          ->from('loop_positions')
+        //          ->where('loop_id',$id);
+        // $query = $this->db->get()->result_array();
+
+        // for ($i = 0; $i < count($query); $i++) {
+
+        //     $unit_id = $query[$i]['unit_id'];
+
+        //     $units[$query[$i]['loop_id']] = $unit_id;
+        //     $this->full_units[$query[$i]['loop_id']] = $query[$i]['unit_id'];
+        //     $this->unit_ids[$query[$i]['unit_id']] = $unit_id;
+        // }
+
+        // $this->units = $units;
+
         // get list of bulges
         $this->db->select('unit_id')
                  ->from('loop_positions')
