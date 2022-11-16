@@ -79,7 +79,7 @@
                         </div>
                         <div class="span4 well">
                             <h4>Unit ID</h4>
-                            <!-- <dd><?=$units?></dd> -->
+                            <dd><?=$unit_ids?></dd>
                         </div>
                     </div>
                     <div class="row">
