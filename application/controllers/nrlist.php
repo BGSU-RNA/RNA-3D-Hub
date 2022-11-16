@@ -88,7 +88,7 @@ class Nrlist extends CI_Controller {
     #public function view($id, $nr_release_id)
     {
 
-        $this->output->cache(262974); # 6 months
+        // $this->output->cache(262974); # 6 months
 
         $this->load->model('Nrlist_model', '', TRUE);
 

@@ -73,7 +73,10 @@
             <div class="row span100p interactions resizable" id="heatmap">
                 <div class="span100p">
                     <div>
-                      <p align="center">Heat map of mutual geometric discrepancy, in Angstroms per nucleotide.  Instances are ordered to put similar structures near each other. The colorbar ranges from 0 to the maximum observed discrepancy, up to 0.5</p>
+                      <p align="center">First heatmap: heat map of mutual geometric discrepancy, in Angstroms per nucleotide.  
+                      Instances are ordered to put similar structures near each other. The colorbar ranges from 0 to the maximum observed discrepancy,
+                      clamped into [0.1,0.5].</br>Second heatmap: percent difference between chain sequences, 
+                       the colorbar ranges from 0 up to the maximum percent difference, clamped into [0.1,0.5].</p>
                       <!-- Not sure what this is -->
                       <div id ='chart' style="text-align: center;"></div>
                       <span class="muted">
@@ -92,11 +95,11 @@
             </div> <!-- heatmap -->
 
 
-            <!-- new heatmap is making here -->
+            <!-- sequence different heatmap is making here -->
             <div class="row span100p interactions resizable" id="newheatmap">
                 <div class="span100p">
                     <div>
-                      <p align="center">Heatmap for sequence alignment scores</p>
+                      <p align="center">Percent difference between chain sequences</p>
                       <!-- Not sure what this is -->
                       <div id ='chart' style="text-align: center;"></div>
                       <span class="muted">
@@ -113,7 +116,7 @@
                     </div>
                 </div>
             </div> <!-- heatmap -->
-            <!-- new heatmap is ending here -->
+            <!-- sequence different heatmap is ending here -->
 
 
 

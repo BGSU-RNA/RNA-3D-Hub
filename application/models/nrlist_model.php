@@ -594,7 +594,7 @@ class Nrlist_model extends CI_Model {
                     ->join('ife_chains AS IC1', 'NO1.ife_id = IC1.ife_id AND IC1.index = 0', 'inner')
                     ->join('ife_chains AS IC2', 'NO2.ife_id = IC2.ife_id AND IC2.index = 0', 'inner')
                     ->join('chain_chain_similarity AS CCS', 'IC1.chain_id = CCS.chain_id_1 AND IC2.chain_id = CCS.chain_id_2', 'left outer')
-                    ->join('correspondence_info as CI', 'CCS.correspondence_id = CI.correspondence_id', 'inner')
+                    ->join('correspondence_info as CI', 'CCS.correspondence_id = CI.correspondence_id', 'left outer')
                     ->where('NO1.nr_class_name', $id);
             // $this->db->select('NO1.ife_id AS ife1')
             //         ->select('NO1.class_order AS ife1_index')
@@ -618,10 +618,20 @@ class Nrlist_model extends CI_Model {
                 $new_ratio->ife1_index = $row->ife1_index;
                 $new_ratio->ife2 = $row->ife2;
                 $new_ratio->ife2_index = $row->ife2_index;
-                $new_ratio->discrepancy = ($row->alignedcount)/($row->length);
-
+                if (($row->ife1) === ($row->ife2)){
+                    $new_ratio->discrepancy = 0;
+                } elseif ($row->length == null) {
+                    $new_ratio->discrepancy = null;
+                }
+                 else {
+                    $new_ratio->discrepancy = round(1-($row->alignedcount)/($row->length),2);
+                }
+                // echo 'ife1:' . $row->ife1 . '<br>';
+                // echo 'ife2:' . $row->ife2 . '<br>';
+                // $new_ratio->discrepancy = 1-($row->alignedcount)/($row->length);
                 array_push($newresult,$new_ratio);
             }
+            // echo "<script>console.log(".json_encode($newresult).");</script>";
             // foreach ($newresult as $newrow){
             //     echo $newrow->ife1;
             //     echo $newrow->ife1_index;
@@ -629,45 +639,6 @@ class Nrlist_model extends CI_Model {
 
             ####### new trial end ######
 
-
-
-            #### new method starting here ####
-            // $ife1 = array();
-            // $ife2 = array();
-            // $ife1_index = array();
-            // $ife2_index = array();
-            // $discrepancy = array();
-            // foreach ($query->result() as $row) {
-            //     array_push($ife1,$row->ife1);
-            //     array_push($ife2,$row->ife2);
-            //     array_push($ife1_index,$row->ife1_index);
-            //     array_push($ife2_index,$row->ife2_index);
-            //     array_push($discrepancy,($row->alignedcount)/($row->length));
-            //     // echo '(';
-            //     // echo $row->alignedcount;
-            //     // echo '|';
-            //     // echo $row->length;
-            //     // echo ')';
-            //     # array_push($newscore,1);
-            // }
-            // $newresult = array($ife1,$ife2,$ife1_index,$ife2_index,$discrepancy);
-            // echo gettype($newresult);
-            // echo $newresult;
-            // echo gettype($query->result());
-            // echo $query->result();
-            
-            // foreach ($query->result() as $row) {
-            //     echo gettype($row->ife1);
-            //     echo $row->ife1;
-            //     echo gettype($row->ife1_index);
-            //     echo $row->ife1_index;
-            //     echo gettype($row->alignedcount);
-            //     echo $row->alignedcount;
-            // }
-            // foreach ($discrepancy as $rate) {
-            //     echo $rate;
-            // }
-            #### new method ending here ####
 
             // $heatmap_data = json_encode($query->result());
             $heatmap_data = json_encode($newresult);
