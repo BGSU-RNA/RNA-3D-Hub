@@ -130,17 +130,27 @@ class Loops_model extends CI_Model {
         }
 
         // get Unit ID section 
-        $this->db->select('unit_id')
+        $this->db->select('unit_id, border')
                  ->from('loop_positions')
                  ->where('loop_id',$id);
         $query = $this->db->get();
 
         $unit_ids = array();
+        $count_border = 0;
 
         foreach ($query->result() as $row) {
-            $unit_ids[] = $row->unit_id;
+            if($row->border==1){
+                $count_border++;
+                if($count_border != 3 and $count_border != 5){
+                    $unit_ids[] = $row->unit_id;
+                }else{
+                    $unit_ids[] = '<br> * <br>' . $row->unit_id;
+                }
+            }else{
+                $unit_ids[] = $row->unit_id;
+            }
         }
-        $result['unit_ids'] = implode(', ', $unit_ids);
+        $result['unit_ids'] = implode('  ', $unit_ids);
 
         // get list of bulges
         $this->db->select('unit_id')
