@@ -230,18 +230,10 @@ class Rest extends MY_Controller {
 		
         switch ($query_type) :
             case 'loop_id':
-                // get a list of nucleotides in this loop
-                $nts = $this->Ajax_model->get_loop_units($query);
-                if ($nts == False) { return "Loop id is not found"; }
-
-                return $this->Ajax_model->get_new_nt_coordinates($nts,$distance);
+                return $this->Ajax_model->get_loop_coordinates($query,$distance);
 
             case 'chain_id':
-                // get a list of nucleotides in this loop
-                $nts = $this->Ajax_model->get_chain_units($query);
-                if ($nts == False) { return "Chain is not found"; }
-
-                return $this->Ajax_model->get_new_nt_coordinates($nts,$distance);
+                return $this->Ajax_model->get_chain_coordinates($query,$distance);
 
             case 'loop_pair':
                 return $this->Ajax_model->get_loop_pair_coordinates($query);
