@@ -321,6 +321,53 @@ class Loops_model extends CI_Model {
         return $result;
     }
 
+
+    function get_protein_info_2022($id)
+    {
+        // Get all nearby units
+        // Reduce to unique nearby chains
+        // Return nearby protein chains
+
+        $result = array();
+
+        $neighboring_unitids = $this->Ajax_model->get_neighboring_residues($nts,$pdb_id,$distance);
+
+        // get nearby protein chains
+        $this->db->select('UI.chain')
+                 ->distinct()
+                 ->from('loop_positions AS LP')
+                 ->join('unit_pairs_distances AS UP', 'LP.unit_id = UP.unit_id_1')
+                 ->join('unit_coordinates AS UC', 'UP.unit_id_2 = UC.unit_id')
+                 ->join('unit_info AS UI', 'UC.unit_id = UI.unit_id')
+                 ->where('LP.loop_id', $id)
+                 ->where('char_length(UI.unit) = 3')
+                 ->not_like('UC.coordinates','HETATM','after');
+        $query = $this->db->get();
+
+        if ($query->num_rows() > 0) {
+            $chains = array();
+
+            foreach ($query->result() as $row) {
+                $chains[] = $row->chain;
+            }
+
+            $this->db->select('chain_name, compound')
+                     ->from('chain_info')
+                     ->where('pdb_id', substr($id,3,4))
+                     ->where_in('chain_name', $chains);
+            $query = $this->db->get();
+
+            foreach ($query->result() as $row) {
+                $result['proteins'][$row->chain_name]['description'] = $row->compound;
+            }
+        } else {
+            $result['proteins'] = array();
+        }
+
+        return $result;
+    }
+
+
     function get_current_motif_release($motif_type)
     {
         $this->db->select()
