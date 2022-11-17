@@ -717,9 +717,9 @@ class Ajax_model extends CI_Model {
         // get unit ids of neighboring units
         $neighboring_residues = $this->get_neighboring_residues($nts,$pdb_id,$distance);
         // get coordinates of neighboring units
-        $neighboor_coord_query = $this->get_unit_coordinates($neighboring_residues, $model_num);
+        $neighbor_coordinates = $this->get_unit_coordinates($neighboring_residues, $model_num);
         //neighboring nts will have model num 2
-        $neighboor_coord = $this->change_model_num($neighboor_coord_query, 2);
+        $neighboor_coord = $this->change_model_num($neighbor_coordinates, 2);
 
         // these variables are defined in /var/www/rna3dhub/application/config/constants.php
         global $headers_cif, $footer_cif;
@@ -787,6 +787,9 @@ class Ajax_model extends CI_Model {
 
     function get_core_motif_units($loop_id, $release_id, $motif_id)
     {
+        // look up the list of unit ids in core positions
+        // that excludes "non-core" nucleotides
+
         $this->db->select('unit_id')
                  ->from('ml_loop_positions')
                  ->where('loop_id',$loop_id)
@@ -806,71 +809,58 @@ class Ajax_model extends CI_Model {
 
     function get_motif_coordinates($loop_data, $distance=10)
     {
-        global $headers_cif, $footer_cif;
-        
+        // retrieve coordinates, neighbors, and bulged bases and
+        // put them in models 1, 2, 3, respectively
+
+        //return "{$loop_data} text {$loop_id} {$motif_id} {$release_id}";
+
+        // apparently these fields are separated by | but I don't know where that happens
         list($loop_id, $motif_id, $release_id) = explode('|', $loop_data);
 
+        return "{$loop_data} text {$loop_id} {$motif_id} {$release_id}";
+
+        // get a list of core unit ids
+        // the next line is causing trouble
         $core_motif_units = $this->get_core_motif_units($loop_id, $release_id, $motif_id);
-        if ($core_motif_units == False) { return "The core units for {$loop_id} is not available"; }
+        if ($core_motif_units == False) { return "The core units for {$loop_data} and {$loop_id} is not available"; }
 
+        // get a list of all unit ids in the loop
         $complete_motif_units = $this->get_loop_units($loop_id);
-        if ($complete_motif_units == False) { return "The complete units for {$loop_id} is not available"; }
-
-        // The difference between the complete_motif_units and core_motif_units will give the bulged units
-        $bulged_units = array_diff($complete_motif_units, $core_motif_units);
-        $bulged_units = array_values($bulged_units);
-
-        if (empty($bulged_units)) {
-           $has_bulges = False;
-        } else {
-           $has_bulges = True;
-        }
+        if ($complete_motif_units == False) { return "The complete units for {$loop_data} and {$loop_id} is not available"; }
 
         $fields = explode('|', $complete_motif_units[0]);
         $pdb_id = $fields[0]; 
         $model_num = $fields[1];
         
+        // get coordinates of the core nucleotides
         $core_coord_query = $this->get_unit_coordinates($core_motif_units, $model_num);
-        if ($core_coord_query == False) { return "No coordinate data available for the loop queried"; }
+        if ($core_coord_query == False) { return "No coordinate data available for for {$loop_data} and {$loop_id}"; }
 
         // core nts will have model num 1
         $core_coord = $this->change_model_num($core_coord_query, 1);
 
-        if ($has_bulges == True)
-        {
-            $bulged_units_query = $this->get_unit_coordinates($bulged_units, $model_num);
-            // bulged_units will have model num 3
-            $bulged_coord = $this->change_model_num($bulged_units_query, 3);
-        }
-
-        // Get all centers of the query residues, including base, sugar, phosphate, aa_fg
-        $centers_xyz_coord = $this->get_xyz_coordinates($complete_motif_units, $pdb_id);
-
-        $x_min = min($centers_xyz_coord[0]) - $distance;
-        $x_max = max($centers_xyz_coord[0]) + $distance;
-        $y_min = min($centers_xyz_coord[1]) - $distance;
-        $y_max = max($centers_xyz_coord[1]) + $distance;
-        $z_min = min($centers_xyz_coord[2]) - $distance;
-        $z_max = max($centers_xyz_coord[2]) + $distance;
-
-        // store the limits in an array
-        $coord_limits = array($x_min, $x_max, $y_min, $y_max, $z_min, $z_max);
-
-        // step 3: query to find all units whose x, y, z coordinates are between the limits
-        $potential_neighboring_residues = $this->get_xyz_coordinates_between_limits($pdb_id, $complete_motif_units, $coord_limits);
-
-        // step 4: calculate distances to units in $nt_ids, record the smallest
-        $neighboring_residues = $this->filter_neighboring_residues($centers_xyz_coord, $potential_neighboring_residues, $distance, $complete_motif_units);
-
-        $neighboor_coord_query = $this->get_unit_coordinates($neighboring_residues, $model_num);
+        // get neighboring unit ids
+        $neighboring_residues = get_neighboring_residues($complete_motif_units,$pdb_id,$distance=10);
+        // get neighboring coordinates
+        $neighbor_coordinates = $this->get_unit_coordinates($neighboring_residues, $model_num);
         //neighboring nts will have model num 2
-        $neighboor_coord = $this->change_model_num($neighboor_coord_query, 2);
+        $neighboor_coord = $this->change_model_num($neighbor_coordinates, 2);
 
-        if ($has_bulges == True)
-        {
-            $coord_array = array_merge($headers_cif, $core_coord, $footer_cif, $headers_cif, $neighboor_coord, $footer_cif, $headers_cif, $bulged_coord, $footer_cif);
+        // The difference between the complete_motif_units and core_motif_units will give the bulged units
+        $bulged_units = array_diff($complete_motif_units, $core_motif_units);
+        $bulged_units = array_values($bulged_units);
+
+        global $headers_cif, $footer_cif;
+
+        if (empty($bulged_units)) {
+            $coord_array = array_merge($headers_cif, $core_coord, $footer_cif, $headers_cif, $neighboor_coord, $footer_cif);
         } else {
-            $coord_array = array_merge($headers_cif, $core_coord, $footer_cif, $headers_cif, $neighboor_coord, $footer_cif); 
+            // get bulged unit coordinates
+            $bulged_units_coordinates = $this->get_unit_coordinates($bulged_units, $model_num);
+            // bulged_units will have model num 3
+            $bulged_coord = $this->change_model_num($bulged_units_coordinates, 3);
+            // merge the set of coordinates into the output
+            $coord_array = array_merge($headers_cif, $core_coord, $footer_cif, $headers_cif, $neighboor_coord, $footer_cif, $headers_cif, $bulged_coord, $footer_cif);
         }
 
         $final_result = '';
@@ -880,184 +870,6 @@ class Ajax_model extends CI_Model {
         }
 
         return $final_result;
-    }
-
-
-    function get_loop_coordinates_MotifAtlas($loop_data)
-    {
-        // It looks as though this code is no longer used as of November 2022
-
-        list($loop_id, $motif_id, $release_id) = explode('|', $loop_data);
-        
-        $lines_arr = array();
-        $lines_arr2 = array();
-        $lines_arr3 = array();
-
-        $headers_cif_fr3d = array (
-
-            'data_view',
-            '#', 
-            'loop_',
-            '_atom_site.group_PDB', 
-            '_atom_site.id', 
-            '_atom_site.type_symbol', 
-            '_atom_site.label_atom_id', 
-            '_atom_site.label_alt_id', 
-            '_atom_site.label_comp_id', 
-            '_atom_site.label_asym_id', 
-            '_atom_site.label_entity_id', 
-            '_atom_site.label_seq_id', 
-            '_atom_site.pdbx_PDB_ins_code', 
-            '_atom_site.Cartn_x', 
-            '_atom_site.Cartn_y', 
-            '_atom_site.Cartn_z', 
-            '_atom_site.occupancy', 
-            '_atom_site.B_iso_or_equiv', 
-            '_atom_site.Cartn_x_esd', 
-            '_atom_site.Cartn_y_esd', 
-            '_atom_site.Cartn_z_esd', 
-            '_atom_site.occupancy_esd', 
-            '_atom_site.B_iso_or_equiv_esd', 
-            '_atom_site.pdbx_formal_charge', 
-            '_atom_site.auth_seq_id', 
-            '_atom_site.auth_comp_id', 
-            '_atom_site.auth_asym_id', 
-            '_atom_site.auth_atom_id', 
-            '_atom_site.pdbx_PDB_model_num' 
-
-        );
-
-        $footer = array('#');
-
-        //$ml_release_id = $this->get_latest_ml_release_id();
-
-        $this->db->select('unit_id')
-                 ->from('ml_loop_positions')
-                 ->where('loop_id',$loop_id)
-                 ->where('ml_release_id', $release_id)
-                 ->where('motif_id', $motif_id)
-                 ->order_by('position');
-        $query = $this->db->get();
-        if ($query->num_rows() == 0) { return 'Loop id is not found'; }
-
-        $core_units = array();
-        foreach ($query->result() as $row) {
-            $core_units[] = $row->unit_id;
-        }
-
-        $this->db->select('unit_id')
-                 ->from('loop_positions')
-                 ->where('loop_id',$loop_id)
-                 ->order_by('position');
-        $query = $this->db->get();
-
-        $complete_units = array();
-        foreach ($query->result() as $row) {
-            $complete_units[] = $row->unit_id;
-        }
-
-        $bulged_units = array_diff($complete_units, $core_units);
-        $bulged_units = array_values($bulged_units);
-
-
-        if (empty($bulged_units)) {
-           $has_bulges = False;
-        } else {
-           $has_bulges = True;
-
-        }
-
-
-        $this->db->select('coordinates')->from('unit_coordinates');
-        $this->db->where_in('unit_id', $core_units);
-        $this->db->_protect_identifiers = FALSE; // stop CI adding backticks
-
-        // make SQL to return the correct order of results based on the where_in clause
-        // example of query: SELECT coordinates FROM unit_coordinates WHERE unit_id IN ('2ZM5|1|C|A|31', '2ZM5|1|C|U|32')
-        //                   ORDER BY FIELD (unit_id, '2ZM5|1|C|A|31', '2ZM5|1|C|U|32');
-        $order = sprintf('FIELD(unit_id, %s)', "'" . implode("','", $core_units) . "'");
-        $this->db->order_by($order);
-        $this->db->_protect_identifiers = TRUE; // switch on again for security reasons
-        $query = $this->db->get();
-
-        if ($query->num_rows() == 0) { return 'Loop coordinates not found'; }
-
-        foreach ($query->result() as $row) {
-            foreach ($row as $line) {
-                $line= explode("\n", $line);
-                foreach ($line as $line2) {
-                    $model_1_pattern = '/ 1\s*$/';
-                    // If model number is not 1, change to 1
-                    if (!preg_match($model_1_pattern, $line2)) {
-                        $search_pattern = '/([+-]?[0-9]+)\s*$/';
-                        $line2 = preg_replace($search_pattern, '1', $line2);
-                    }      
-                    $lines_arr[] = ($line2);  
-                }   
-            }
-        }
-
-
-        if ($has_bulges == True) {
-            
-            // get the coordinates of bulged nucleotides
-            $this->db->select('coordinates')
-                ->from('unit_coordinates')
-                ->where_in('unit_id', $bulged_units);
-            $query = $this->db->get();
-
-            foreach ($query->result() as $row) {
-                foreach ($row as $line) {
-                    $line= explode("\n", $line);
-                    foreach ($line as $line2) {
-                        $model_3_pattern = '/ 3\s*$/';
-                        // If model number is not 2, change to 2
-                        if (!preg_match($model_3_pattern, $line2)) {
-                            $search_pattern = '/([+-]?[0-9]+)\s*$/';
-                            $line2 = preg_replace($search_pattern, '3', $line2);
-                        }      
-                        $lines_arr3[] = ($line2);  
-                    }   
-                }
-            }
-
-        }
-
-        // get the coordinates of neighboring residues
-        $this->db->select('coordinates')
-                 ->distinct()
-                 ->from('unit_coordinates')
-                 ->join('unit_pairs_distances','unit_coordinates.unit_id = unit_pairs_distances.unit_id_1')
-                 ->where_in('unit_id_2',$complete_units)
-                 ->where_not_in('unit_id_1',$complete_units);
-        $query = $this->db->get();
-
-        foreach ($query->result() as $row) {
-            foreach ($row as $line) {
-                $line= explode("\n", $line);
-                foreach ($line as $line2) {
-                    $model_2_pattern = '/ 2\s*$/';
-                    // If model number is not 2, change to 2
-                    if (!preg_match($model_2_pattern, $line2)) {
-                        $search_pattern = '/([+-]?[0-9]+)\s*$/';
-                        $line2 = preg_replace($search_pattern, '2', $line2);
-                    }      
-                    $lines_arr2[] = ($line2);  
-                }   
-            }
-        }
-
-        $combine_result = array_merge($headers_cif_fr3d, $lines_arr, $footer, $headers_cif_fr3d, $lines_arr2, $footer, $headers_cif_fr3d, $lines_arr3, $footer);
-        
-        $final_result = '';
-
-        foreach ($combine_result as $output) {
-            $final_result .= $output . "\n";
-        }
-
-        
-        return $final_result;        
-
     }
 
 
