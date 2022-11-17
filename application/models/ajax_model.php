@@ -708,15 +708,14 @@ class Ajax_model extends CI_Model {
         $pdb_id = $fields[0]; 
         $model_num = $fields[1];
 
+        // get coordinates of the given units
         $core_coord_query = $this->get_unit_coordinates($nts, $model_num);
         if ($core_coord_query == False) { return "No coordinate data available for the selection made"; }
-        
         // core nts will have model num 1
         $core_coord = $this->change_model_num($core_coord_query, 1);
         
         // get unit ids of neighboring units
         $neighboring_residues = $this->get_neighboring_residues($nts,$pdb_id,$distance);
-
         // get coordinates of neighboring units
         $neighboor_coord_query = $this->get_unit_coordinates($neighboring_residues, $model_num);
         //neighboring nts will have model num 2
@@ -724,7 +723,6 @@ class Ajax_model extends CI_Model {
 
         // these variables are defined in /var/www/rna3dhub/application/config/constants.php
         global $headers_cif, $footer_cif;
-
 
         $coord_array = array_merge($headers_cif, $core_coord, $footer_cif, $headers_cif, $neighboor_coord, $footer_cif);
 
