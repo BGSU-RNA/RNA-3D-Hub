@@ -812,23 +812,14 @@ class Ajax_model extends CI_Model {
         // retrieve coordinates, neighbors, and bulged bases and
         // put them in models 1, 2, 3, respectively
 
-        //return "{$loop_data} text {$loop_id} {$motif_id} {$release_id}";
-
         // apparently these fields are separated by | but I don't know where that happens
         list($loop_id, $motif_id, $release_id) = explode('|', $loop_data);
 
-        return "{$loop_data} text {$loop_id} {$motif_id} {$release_id}";
-
         // get a list of core unit ids
-        // the next line is causing trouble
         $core_motif_units = $this->get_core_motif_units($loop_id, $release_id, $motif_id);
         if ($core_motif_units == False) { return "The core units for {$loop_data} and {$loop_id} is not available"; }
 
-        // get a list of all unit ids in the loop
-        $complete_motif_units = $this->get_loop_units($loop_id);
-        if ($complete_motif_units == False) { return "The complete units for {$loop_data} and {$loop_id} is not available"; }
-
-        $fields = explode('|', $complete_motif_units[0]);
+        $fields = explode('|', $core_motif_units[0]);
         $pdb_id = $fields[0]; 
         $model_num = $fields[1];
         
@@ -839,11 +830,15 @@ class Ajax_model extends CI_Model {
         // core nts will have model num 1
         $core_coord = $this->change_model_num($core_coord_query, 1);
 
+        // get a list of all unit ids in the loop
+        $complete_motif_units = $this->get_loop_units($loop_id);
+        if ($complete_motif_units == False) { return "The complete units for {$loop_data} and {$loop_id} is not available"; }
+
         // get neighboring unit ids
-        $neighboring_residues = get_neighboring_residues($complete_motif_units,$pdb_id,$distance=10);
+        $neighboring_residues = $this->get_neighboring_residues($complete_motif_units,$pdb_id,$distance=10);
         // get neighboring coordinates
         $neighbor_coordinates = $this->get_unit_coordinates($neighboring_residues, $model_num);
-        //neighboring nts will have model num 2
+        // neighboring nts will have model num 2
         $neighboor_coord = $this->change_model_num($neighbor_coordinates, 2);
 
         // The difference between the complete_motif_units and core_motif_units will give the bulged units

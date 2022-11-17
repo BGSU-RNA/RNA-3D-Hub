@@ -92,37 +92,22 @@ class Rest extends MY_Controller {
         $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
         $data['json'] = $this->Ajax_model->get_sequence_basepairs($pdb, $chain, $nested);
         $this->load->view('json_view', $data);
-
     }
 
 
     public function getCoordinatesMotifAtlas()
     {
         // search POST, then GET
+        // this must get loop id, motif id, and motif release
         $query = $this->input->get_post('coord_ma');
 
         //$this->output->enable_profiler(TRUE);
         
-        //$query_type = $this->_parseInput($query);
-
-        /*
-        if ( $query_type ) {
-            $this->output->set_header("Access-Control-Allow-Origin: *");
-            $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
-            $data['csv'] = $this->_database_lookup_ma($query, $query_type);
-            $this->load->view('csv_view', $data);
-        } else {
-            echo $this->messages['invalid'];
-        }
-        */
-
         $this->load->model('Ajax_model', '', TRUE);
-
         $this->output->set_header("Access-Control-Allow-Origin: *");
         $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
         $data['csv'] = $this->Ajax_model->get_motif_coordinates($query);
         $this->load->view('csv_view', $data);
-
     }
 
 
@@ -240,28 +225,14 @@ class Rest extends MY_Controller {
             case 'unit_id':
                 return $this->Ajax_model->get_new_nt_coordinates($query,$distance);
 
+            case 'motif_id':
+                return $this->Ajax_model->get_exemplar_coordinates($query);
+
             default: return $this->messages['error'];
         endswitch;
 
     }
 
-    /*
-    private function _database_lookup_ma($query, $query_type)
-    {
-        // don't load the database until the input was validated
-        $this->load->model('Ajax_model', '', TRUE);
-
-        $this->output->enable_profiler(TRUE);
-        
-        switch ($query_type) :
-            case 'loop_id':
-                //return $this->Ajax_model->get_loop_coordinates_MotifAtlas($query);
-                return $this->Ajax_model->get_motif_coordinates($query);
-            default: return $this->messages['error'];
-        endswitch;
-
-    }
-    */
 
     private function _database_lookup_relative($query, $query_type)
     {
