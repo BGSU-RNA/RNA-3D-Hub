@@ -909,6 +909,7 @@ class Ajax_model extends CI_Model {
 
     function get_loop_coordinates_MotifAtlas($loop_data)
     {
+        // It looks as though this code is no longer used as of November 2022
 
         list($loop_id, $motif_id, $release_id) = explode('|', $loop_data);
         
