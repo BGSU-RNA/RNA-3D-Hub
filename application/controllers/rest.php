@@ -98,12 +98,10 @@ class Rest extends MY_Controller {
 
     public function getCoordinatesMotifAtlas()
     {
-        // should be able to accept loop_id, nt_ids, motif_id, short_nt_id
-        // and loop pairs (returns the first loop of the two)
-
         // search POST, then GET
         $query = $this->input->get_post('coord_ma');
-        // $this->output->enable_profiler(TRUE);
+
+        //$this->output->enable_profiler(TRUE);
         
         //$query_type = $this->_parseInput($query);
 
@@ -117,6 +115,7 @@ class Rest extends MY_Controller {
             echo $this->messages['invalid'];
         }
         */
+
         $this->load->model('Ajax_model', '', TRUE);
 
         $this->output->set_header("Access-Control-Allow-Origin: *");
