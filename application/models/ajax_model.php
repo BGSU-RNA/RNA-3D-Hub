@@ -894,7 +894,11 @@ class Ajax_model extends CI_Model {
         global $headers_cif, $footer_cif;
         
         // given list of unit
-        $nts = explode(',', $unit_ids);
+        if (is_string($unit_ids)) {
+            $nts = explode(',', $unit_ids);
+        } else {
+            $nts = $unit_ids;
+        }
         $fields = explode('|',$nts[0]);
         $pdb_id = $fields[0]; 
         $model_num = $fields[1];
@@ -978,6 +982,9 @@ class Ajax_model extends CI_Model {
 
     function get_loop_units($loop_id)
     {
+        // query the database for loop_id
+        // return the units that make up that loop_id
+
         $this->db->select('unit_id')
                  ->from('loop_positions')
                  ->where('loop_id', $loop_id)
@@ -993,8 +1000,41 @@ class Ajax_model extends CI_Model {
         return $complete_units;
     }
 
+
+    function get_chain_units($chain_id)
+    {
+        // query the database for chain_id
+        // return the units that make up that chain_id
+
+        $fields = explode("|",$chain_id);
+        $pdb_id = $fields[0];
+        $model  = $fields[1];
+        $chain  = $fields[2];
+
+        $this->db->select('unit_id')
+                ->from('unit_info')
+                ->where('pdb_id', $pdb_id)
+                ->where('model',  $model)
+                ->where('chain',  $chain)
+                ->order_by('number');
+        $query = $this->db->get();
+
+        if ($query->num_rows() == 0) { return False; }
+
+        $complete_units = array();
+        foreach ($query->result() as $row) {
+            $complete_units[] = $row->unit_id;
+        }
+
+        return $complete_units;
+    }
+
+
     function get_new_loop_coordinates($loop_id, $distance=10)
     {
+        // New in 2022
+        // Screen for x,y,z coordinates within distance of given nucleotides
+
         // these variables are defined in /var/www/rna3dhub/application/config/constants.php
         global $headers_cif, $footer_cif;
         
@@ -1320,6 +1360,8 @@ class Ajax_model extends CI_Model {
 
     function get_loop_coordinates($loop_id)
     {
+        // from before 2022, relies on unit_pairs_distances
+        // deprecated
 
         $lines_arr = array();
         $lines_arr2 = array();
