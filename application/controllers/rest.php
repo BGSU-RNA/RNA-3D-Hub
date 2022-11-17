@@ -239,7 +239,7 @@ class Rest extends MY_Controller {
                 return $this->Ajax_model->get_loop_pair_coordinates($query);
 
             case 'unit_id':
-                return $this->Ajax_model->get_new_nt_coordinates($query);
+                return $this->Ajax_model->get_new_nt_coordinates($query,$distance);
 
             default: return $this->messages['error'];
         endswitch;
