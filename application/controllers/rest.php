@@ -216,8 +216,13 @@ class Rest extends MY_Controller {
 
     }
 
-    private function _database_lookup($query, $query_type)
+    private function _database_lookup($query, $query_type, $distance=10)
     {
+        // Retrieve coordinates from the database.
+        // Accept a variety of input types.
+        // Return the requested nucleotides in model 1
+        // Return neighboring nucleotides in model 2 up to a distance of 10
+
         // don't load the database until the input was validated
         $this->load->model('Ajax_model', '', TRUE);
 
@@ -225,22 +230,25 @@ class Rest extends MY_Controller {
 		
         switch ($query_type) :
             case 'loop_id':
-                // return $this->Ajax_model->get_loop_coordinates($query);
-                return $this->Ajax_model->get_new_loop_coordinates($query);
+                // get a list of nucleotides in this loop
+                $nts = $this->Ajax_model->get_loop_units($query);
+                if ($nts == False) { return "Loop id is not found"; }
+
+                return $this->Ajax_model->get_new_nt_coordinates($nts,$distance);
+
             case 'chain_id':
-                return $this->Ajax_model->get_chain_coordinates($query);
-            // Motif_id is handled by getCoordinatesMotifAtlas (line 99)
-            // case 'motif_id':
-                // return $this->Ajax_model->get_exemplar_coordinates($query);
-            // I don't think we're still using the method bekow 
-            // case 'nt_list':
-                // return $this->Ajax_model->get_coordinates($query);
-                return $this->Ajax_model->get_unit_id_coordinates($query);
+                // get a list of nucleotides in this loop
+                $nts = $this->Ajax_model->get_chain_units($query);
+                if ($nts == False) { return "Chain is not found"; }
+
+                return $this->Ajax_model->get_new_nt_coordinates($nts,$distance);
+
             case 'loop_pair':
                 return $this->Ajax_model->get_loop_pair_coordinates($query);
+
             case 'unit_id':
-                //return $this->Ajax_model->get_nt_coordinates($query);
                 return $this->Ajax_model->get_new_nt_coordinates($query);
+
             default: return $this->messages['error'];
         endswitch;
 
