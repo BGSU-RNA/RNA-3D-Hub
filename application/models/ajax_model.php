@@ -562,7 +562,7 @@ class Ajax_model extends CI_Model {
         return $unit_coord_arr;
     }
 
-    function get_neighboring_residues($centers_coord, $potential_neighboring_residues, $distance, $nt_ids)
+    function filter_neighboring_residues($centers_coord, $potential_neighboring_residues, $distance, $nt_ids)
     {
         
         $output_nt_ids = array();
@@ -665,37 +665,9 @@ class Ajax_model extends CI_Model {
         return $lines_arr;
     }
     
-    
-    function get_new_nt_coordinates($unit_ids, $distance=10)
-    {
-        
-        // these variables are defined in /var/www/rna3dhub/application/config/constants.php
-        global $headers_cif, $footer_cif;
-        
-        // given list of unit
-        if (is_string($unit_ids)) {
-            $nts = explode(',', $unit_ids);
-        } else {
-            $nts = $unit_ids;
-        }
-        $fields = explode('|',$nts[0]);
-        $pdb_id = $fields[0]; 
-        $model_num = $fields[1];
 
-        $core_coord_query = $this->get_unit_coordinates($nts, $model_num);
-        if ($core_coord_query == False) { return "No coordinate data available for the selection made"; }
-        
-        // core nts will have model num 1
-        $core_coord = $this->change_model_num($core_coord_query, 1);
-        
-        // New way to include variables in string. Use double quote
-        //$model_identifier = "{$fields[0]}|{$fields[1]}|";
-        
-        /*
-            centers_xyz_coord[0] contains the x coordinates
-            centers_xyz_coord[1] contains the y coordinates
-            centers_xyz_coord[2] contains the z coordinates
-        */
+    function get_neighboring_residues($nts,$pdb_id,$distance=10)
+    {
 
         // Get all centers of the query residues, including base, sugar, phosphate, aa_fg
         $centers_xyz_coord = $this->get_xyz_coordinates($nts, $pdb_id);
@@ -710,43 +682,49 @@ class Ajax_model extends CI_Model {
         // store the limits in an array
         $coord_limits = array($x_min, $x_max, $y_min, $y_max, $z_min, $z_max);
 
-        /*
-        echo 'coord_limits:<br>';
-        echo $x_min;
-        echo ' x ';
-        echo $x_max;
-        echo '<br>';
-        echo $y_min;
-        echo ' y ';
-        echo $y_max;
-        echo '<br>';
-        echo $z_min;
-        echo ' z ';
-        echo $z_max;
-        echo '<br>';
-        */
-
-        // step 3: query to find all units whose x, y, z coordinates are between the limits
+        // query to find all units whose x, y, z coordinates are between the limits
         $potential_neighboring_residues = $this->get_xyz_coordinates_between_limits($pdb_id, $nts, $coord_limits);
 
-        /*
-        echo 'potential_neighboring_residues<br>';
-        var_dump($potential_neighboring_residues);
-        echo '<br>';
-        */
+        // calculate distances to units in $nt_ids, record the smallest
+        $neighboring_residues = $this->filter_neighboring_residues($centers_xyz_coord, $potential_neighboring_residues, $distance, $nts);
 
-        // step 4: calculate distances to units in $nt_ids, record the smallest
-        $neighboring_residues = $this->get_neighboring_residues($centers_xyz_coord, $potential_neighboring_residues, $distance, $nts);
+        return $neighboring_residues;
+    }
+    
+    function get_new_nt_coordinates($unit_ids, $distance=10)
+    {
+        // Get the coordinates of the specified units and return in model 1
+        // Get the coordinates of neighboring units and return in model 2
 
-        /*
-        echo 'neighboring_residues<br>';
-        var_dump($neighboring_residues);
-        echo '<br>';
-        */
+        // given list of units, as string or array
+        if (is_string($unit_ids)) {
+            $nts = explode(',', $unit_ids);
+        } else {
+            $nts = $unit_ids;
+        }
 
+        // get the pdb id and model number from the first unit id
+        $fields = explode('|',$nts[0]);
+        $pdb_id = $fields[0]; 
+        $model_num = $fields[1];
+
+        $core_coord_query = $this->get_unit_coordinates($nts, $model_num);
+        if ($core_coord_query == False) { return "No coordinate data available for the selection made"; }
+        
+        // core nts will have model num 1
+        $core_coord = $this->change_model_num($core_coord_query, 1);
+        
+        // get unit ids of neighboring units
+        $neighboring_residues = $this->get_neighboring_residues($nts,$pdb_id,$distance);
+
+        // get coordinates of neighboring units
         $neighboor_coord_query = $this->get_unit_coordinates($neighboring_residues, $model_num);
         //neighboring nts will have model num 2
         $neighboor_coord = $this->change_model_num($neighboor_coord_query, 2);
+
+        // these variables are defined in /var/www/rna3dhub/application/config/constants.php
+        global $headers_cif, $footer_cif;
+
 
         $coord_array = array_merge($headers_cif, $core_coord, $footer_cif, $headers_cif, $neighboor_coord, $footer_cif);
 
@@ -884,7 +862,7 @@ class Ajax_model extends CI_Model {
         $potential_neighboring_residues = $this->get_xyz_coordinates_between_limits($pdb_id, $complete_motif_units, $coord_limits);
 
         // step 4: calculate distances to units in $nt_ids, record the smallest
-        $neighboring_residues = $this->get_neighboring_residues($centers_xyz_coord, $potential_neighboring_residues, $distance, $complete_motif_units);
+        $neighboring_residues = $this->filter_neighboring_residues($centers_xyz_coord, $potential_neighboring_residues, $distance, $complete_motif_units);
 
         $neighboor_coord_query = $this->get_unit_coordinates($neighboring_residues, $model_num);
         //neighboring nts will have model num 2
