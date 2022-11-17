@@ -78,8 +78,7 @@
                             </dl>
                         </div>
                         <div class="span4 well">
-                            <h4>Unit IDs</h4>
-                            <p>(<i>explore in</i> <i><a href="https://www.bgsu.edu/research/rna/help/rna-3d-hub-help/unit-ids.html" target="_blank">BGSU RNA Site</a></i>)</p>
+                            <h4><a href="https://www.bgsu.edu/research/rna/help/rna-3d-hub-help/unit-ids.html" target="_blank">Unit IDs</a></h4>
                             <p><?=$unit_ids?></p>
                         </div>
                     </div>
