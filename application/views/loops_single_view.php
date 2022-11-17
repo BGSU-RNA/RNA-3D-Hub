@@ -78,8 +78,9 @@
                             </dl>
                         </div>
                         <div class="span4 well">
-                            <h4>Unit ID</h4>
-                            <dd><?=$unit_ids?></dd>
+                            <h4>Unit IDs</h4>
+                            <p>(<i>explore in</i> <i><a href="https://www.bgsu.edu/research/rna/help/rna-3d-hub-help/unit-ids.html" target="_blank">BGSU RNA Site</a></i>)</p>
+                            <p><?=$unit_ids?></p>
                         </div>
                     </div>
                     <div class="row">
@@ -232,9 +233,11 @@
       <script>
         $('#sortable').tablesorter();
 
-        var offset_left = $('#left_content').offset().left + 530; // 530 = span9 width
-        var offset_top  = $('#left_content').offset().top;
-        $('#jmol').css('position','fixed')
+        // var offset_left = $('#left_content').offset().left + 530; // 530 = span9 width
+        // var offset_top  = $('#left_content').offset().top;
+        var offset_left = $('#left_content').offset().left - 350; // 530 = span9 width
+        var offset_top  = $('#left_content').offset().top - 185;
+        $('#jmol').css('position','relative')
                   .css('left',offset_left)
                   .css('top',offset_top);
 

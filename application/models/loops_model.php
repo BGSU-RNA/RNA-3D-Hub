@@ -81,20 +81,64 @@ class Loops_model extends CI_Model {
     {
         $result = array();
 
+        // // info from loops_all
+        // $this->db->select('length, seq')
+        //          ->from('loop_info')
+        //          ->where('loop_id',$id);
+        // $query = $this->db->get();
+
+        // if ($query->num_rows() > 0) {
+        //     $loop_info = $query->row();
+        //     $result['length'] = $loop_info->length;
+        //     $result['sequence'] = $loop_info->seq;
+        // } else {
+        //     $result['length'] = '';
+        //     $result['sequence'] = '';
+        // }
+
+
         // info from loops_all
-        $this->db->select('length, seq')
-                 ->from('loop_info')
+        $this->db->select('length')
+                ->from('loop_info')
+                ->where('loop_id',$id);
+       $query = $this->db->get();
+
+       if ($query->num_rows() > 0) {
+           $loop_info = $query->row();
+           $result['length'] = $loop_info->length;
+       } else {
+           $result['length'] = '';
+       }
+
+        // get Unit ID section 
+        $this->db->select('unit_id, border')
+                 ->from('loop_positions')
                  ->where('loop_id',$id);
         $query = $this->db->get();
 
-        if ($query->num_rows() > 0) {
-            $loop_info = $query->row();
-            $result['length'] = $loop_info->length;
-            $result['sequence'] = $loop_info->seq;
-        } else {
-            $result['length'] = '';
-            $result['sequence'] = '';
+        $sequence = array();
+        $count_border = 0;
+
+        foreach ($query->result() as $row) {
+            $parts = explode('|', $row->unit_id);
+            // $sequence[] = $parts[3];
+            if($row->border==1){
+                $count_border++;
+                if($count_border != 3 and $count_border != 5){
+                    $sequence[] = $parts[3];
+                }else{
+                    $sequence[] = '*' . $parts[3];
+                }
+            }else{
+                $sequence[] = $parts[3];
+            }
         }
+        $result['sequence'] = implode('', $sequence);
+
+
+
+
+
 
         // qa info
         $this->db->select('status, modifications, nt_signature, complementary')
@@ -142,12 +186,12 @@ class Loops_model extends CI_Model {
             if($row->border==1){
                 $count_border++;
                 if($count_border != 3 and $count_border != 5){
-                    $unit_ids[] = $row->unit_id;
+                    $unit_ids[] = $row->unit_id . '<br>';
                 }else{
-                    $unit_ids[] = '<br> * <br>' . $row->unit_id;
+                    $unit_ids[] = '* <br>' . $row->unit_id . '<br>';
                 }
             }else{
-                $unit_ids[] = $row->unit_id;
+                $unit_ids[] = $row->unit_id . '<br>';
             }
         }
         $result['unit_ids'] = implode('  ', $unit_ids);
@@ -234,20 +278,20 @@ class Loops_model extends CI_Model {
     function get_current_motif_id_from_loop_id($id)
     {
         // get current motif release id
-        $this->db->select()
+        $this->db->select('ml_release_id')
                  ->from('ml_releases')
                  ->order_by('date','desc')
                  ->where('type',substr($id, 0, 2))
                  ->limit(1);
         $query = $this->db->get();
-
         $release = $query->row();
 
         // get motif id
         $this->db->select()
                  ->from('ml_loops')
-                 ->where('ml_release_id',$release->ml_release_id)
+                //  ->where('ml_release_id',$release->ml_release_id)            
                  ->where('loop_id',$id);
+
         $query = $this->db->get();
 
         if ($query->num_rows() > 0) {
