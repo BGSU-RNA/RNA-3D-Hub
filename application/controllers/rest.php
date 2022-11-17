@@ -61,7 +61,7 @@ class Rest extends MY_Controller {
         // search POST, then GET
         $query = $this->input->get_post('coord');
         
-        $this->output->enable_profiler(TRUE);
+        //$this->output->enable_profiler(TRUE);
         
         $query_type = $this->_parseInput($query);
 
