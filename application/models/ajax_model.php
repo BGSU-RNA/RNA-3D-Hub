@@ -890,6 +890,26 @@ class Ajax_model extends CI_Model {
     }
 
 
+    function get_loop_coordinates($loop_id,$distance=10)
+    {
+        // Convert loop_id to unit ids then get coordinates
+        $nts = $this->get_loop_units($loop_id);
+        if ($nts == False) { return "Loop id is not found"; }
+
+        return $this->get_new_nt_coordinates($nts,$distance);
+    }
+
+
+    function get_chain_coordinates($chain_id,$distance=10)
+    {
+        // Convert chain id to unit ids then get coordinates
+        $nts = $this->get_chain_units($chain_id);
+        if ($nts == False) { return "Chain is not found"; }
+
+        return $this->get_new_nt_coordinates($nts,$distance);
+    }
+
+
     function get_motif_coordinates($loop_data, $distance=10)
     {
         // retrieve coordinates, neighbors, and bulged bases and
@@ -909,7 +929,6 @@ class Ajax_model extends CI_Model {
         // get coordinates of the core nucleotides
         $core_coord_query = $this->get_unit_coordinates($core_motif_units, $model_num);
         if ($core_coord_query == False) { return "No coordinate data available for for {$loop_data} and {$loop_id}"; }
-
         // core nts will have model num 1
         $core_coord = $this->change_model_num($core_coord_query, 1);
 
@@ -951,27 +970,60 @@ class Ajax_model extends CI_Model {
     }
 
 
-    function get_loop_coordinates($loop_id,$distance=10)
-    {
-        // Convert loop_id to unit ids then get coordinates
-        $nts = $this->get_loop_units($loop_id);
-        if ($nts == False) { return "Loop id is not found"; }
-
-        return $this->get_new_nt_coordinates($nts,$distance);
-    }
-
-
-    function get_chain_coordinates($chain_id,$distance=10)
-    {
-        // Convert chain id to unit ids then get coordinates
-        $nts = $this->get_chain_units($chain_id);
-        if ($nts == False) { return "Chain is not found"; }
-
-        return $this->get_new_nt_coordinates($nts,$distance);
-    }
-
-    
     function get_coord_relative($unit_id)
+    {
+        // input is a comma-separated string of unit ids
+        // first 10 are "core" and go in model 1
+        // other nucleotides are "loop" and go in model 4
+        // neighborhood goes in model 2
+
+        $final_result = '';
+
+        return $final_result;
+
+        $unit_id = explode(',', $unit_id);
+        $core_units = array_slice($unit_id, 0, 10);
+        $loop_units = array_slice($unit_id, 10);
+
+        $fields = explode('|', $core_units[0]);
+        $pdb_id = $fields[0];
+        $model_num = $fields[1];
+
+        // get coordinates of the core nucleotides
+        $core_coordinates = $this->get_unit_coordinates($core_units, $model_num);
+        if ($core_coordinates == False) { return "No coordinate data available for for {$unit_id}"; }
+        // core nts will have model num 1
+        $core_coord = $this->change_model_num($core_coordinates, 1);
+
+        // get neighboring unit ids based on all unit ids
+        $neighboring_residues = $this->get_neighboring_residues($unit_id,$pdb_id,$distance=10);
+        // get neighboring coordinates
+        $neighbor_coordinates = $this->get_unit_coordinates($neighboring_residues, $model_num);
+        // neighboring nts will have model num 2
+        $neighboor_coord = $this->change_model_num($neighbor_coordinates, 2);
+
+        // get coordinates of the other nucleotides
+        $loop_coordinates = $this->get_unit_coordinates($loop_units, $model_num);
+        if ($loop_coordinates == False) { return "No coordinate data available for for {$unit_id}"; }
+        // loop nts will have model num 4 so they can be displayed separately if desired
+        $loop_coord = $this->change_model_num($loop_coordinates, 4);
+
+        global $headers_cif, $footer_cif;
+
+        $coord_array = array_merge($headers_cif, $core_coord, $footer_cif, $headers_cif, $neighboor_coord, $footer_cif, $headers_cif, $loop_coord, $footer_cif);
+
+        $final_result = '';
+
+        foreach ($coord_array as $output) {
+            $final_result .= $output . "\n";
+        }
+
+        return $final_result;
+
+    }
+
+
+    function get_coord_relative_old($unit_id)
     {
         $unit_id = explode(',', $unit_id);
         $core_units = array_slice($unit_id, 0, 10);
@@ -980,38 +1032,38 @@ class Ajax_model extends CI_Model {
         $lines_arr = array();
         $lines_arr2 = array();
         $lines_arr3 = array();
-        
+
         $headers_cif_fr3d = array (
 
             'data_view',
-            '#', 
+            '#',
             'loop_',
-            '_atom_site.group_PDB', 
-            '_atom_site.id', 
-            '_atom_site.type_symbol', 
-            '_atom_site.label_atom_id', 
-            '_atom_site.label_alt_id', 
-            '_atom_site.label_comp_id', 
-            '_atom_site.label_asym_id', 
-            '_atom_site.label_entity_id', 
-            '_atom_site.label_seq_id', 
-            '_atom_site.pdbx_PDB_ins_code', 
-            '_atom_site.Cartn_x', 
-            '_atom_site.Cartn_y', 
-            '_atom_site.Cartn_z', 
-            '_atom_site.occupancy', 
-            '_atom_site.B_iso_or_equiv', 
-            '_atom_site.Cartn_x_esd', 
-            '_atom_site.Cartn_y_esd', 
-            '_atom_site.Cartn_z_esd', 
-            '_atom_site.occupancy_esd', 
-            '_atom_site.B_iso_or_equiv_esd', 
-            '_atom_site.pdbx_formal_charge', 
-            '_atom_site.auth_seq_id', 
-            '_atom_site.auth_comp_id', 
-            '_atom_site.auth_asym_id', 
-            '_atom_site.auth_atom_id', 
-            '_atom_site.pdbx_PDB_model_num' 
+            '_atom_site.group_PDB',
+            '_atom_site.id',
+            '_atom_site.type_symbol',
+            '_atom_site.label_atom_id',
+            '_atom_site.label_alt_id',
+            '_atom_site.label_comp_id',
+            '_atom_site.label_asym_id',
+            '_atom_site.label_entity_id',
+            '_atom_site.label_seq_id',
+            '_atom_site.pdbx_PDB_ins_code',
+            '_atom_site.Cartn_x',
+            '_atom_site.Cartn_y',
+            '_atom_site.Cartn_z',
+            '_atom_site.occupancy',
+            '_atom_site.B_iso_or_equiv',
+            '_atom_site.Cartn_x_esd',
+            '_atom_site.Cartn_y_esd',
+            '_atom_site.Cartn_z_esd',
+            '_atom_site.occupancy_esd',
+            '_atom_site.B_iso_or_equiv_esd',
+            '_atom_site.pdbx_formal_charge',
+            '_atom_site.auth_seq_id',
+            '_atom_site.auth_comp_id',
+            '_atom_site.auth_asym_id',
+            '_atom_site.auth_atom_id',
+            '_atom_site.pdbx_PDB_model_num'
 
         );
 
@@ -1040,9 +1092,9 @@ class Ajax_model extends CI_Model {
                     if (!preg_match($model_1_pattern, $line2)) {
                         $search_pattern = '/([+-]?[0-9]+)\s*$/';
                         $line2 = preg_replace($search_pattern, '1', $line2);
-                    }      
-                    $lines_arr[] = ($line2);  
-                }   
+                    }
+                    $lines_arr[] = ($line2);
+                }
             }
         }
 
@@ -1064,9 +1116,9 @@ class Ajax_model extends CI_Model {
                     if (!preg_match($model_2_pattern, $line2)) {
                         $search_pattern = '/([+-]?[0-9]+)\s*$/';
                         $line2 = preg_replace($search_pattern, '2', $line2);
-                    }      
-                    $lines_arr2[] = ($line2);  
-                }   
+                    }
+                    $lines_arr2[] = ($line2);
+                }
             }
         }
 
@@ -1093,14 +1145,14 @@ class Ajax_model extends CI_Model {
                     if (!preg_match($model_3_pattern, $line2)) {
                         $search_pattern = '/([+-]?[0-9]+)\s*$/';
                         $line2 = preg_replace($search_pattern, '3', $line2);
-                    }      
-                    $lines_arr3[] = ($line2);  
-                }   
+                    }
+                    $lines_arr3[] = ($line2);
+                }
             }
         }
 
         $combine_result = array_merge($headers_cif_fr3d, $lines_arr, $footer, $headers_cif_fr3d, $lines_arr2, $footer, $headers_cif_fr3d, $lines_arr3, $footer);
-        
+
         $final_result = '';
 
         foreach ($combine_result as $output) {
@@ -1108,9 +1160,8 @@ class Ajax_model extends CI_Model {
         }
 
         return $final_result;
-        
+
     }
-    
 
     function get_loop_pair_coordinates($loop_pair)
     {
