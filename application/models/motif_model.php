@@ -199,7 +199,8 @@ class Motif_model extends CI_Model {
         }
     }
 
-    // compare two motifs page
+    // compare two motif groups
+    // http://rnatest.bgsu.edu/rna3dhub/motif/compare/IL_28750.1/IL_69191.1
     function compare_motifs($motif1, $motif2)
     {
         // get ordering and loop ids
@@ -309,12 +310,23 @@ class Motif_model extends CI_Model {
 
                 $data = '';
                 $class = '';
+                $error_code = 0;
                 // for asymmetric searches choose the real discrepancy over -1's
                 // if both searches not loaded in the db yet, assign -2
-                if ( $matrix[$loop1][$loop2] == '' and $matrix[$loop2][$loop1] == '' ) {
+                if (!array_key_exists($loop1, $matrix)) {
                     $disc = -2;
+                } elseif (!array_key_exists($loop2, $matrix[$loop1])) {
+                    $disc = -2;
+                } elseif (!array_key_exists($loop2, $matrix)) {
+                    $disc = -2;
+                } elseif (!array_key_exists($loop1, $matrix[$loop2])) {
+                    $disc = -2;
+                } elseif ( $matrix[$loop1][$loop2] == '' and $matrix[$loop2][$loop1] == '' ) {
+                    $disc = -2;
+                    $error_code = max($qa_status[$loop1][$loop2], $qa_status[$loop2][$loop1]);
                 } else {
                     $disc = max($matrix[$loop1][$loop2], $matrix[$loop2][$loop1]);
+                    $error_code = max($qa_status[$loop1][$loop2], $qa_status[$loop2][$loop1]);
                 }
 
                 if ( $disc == -1 ) {
@@ -327,8 +339,7 @@ class Motif_model extends CI_Model {
 
                 $title = implode(', ', array("{$loop1}:{$loop2}", $annotation));
 
-                if ($qa_status[$loop1][$loop2] or $qa_status[$loop2][$loop1]) {
-                    $error_code = max($qa_status[$loop1][$loop2], $qa_status[$loop2][$loop1]);
+                if ($error_code > 0) {
                     $class = '';
                     $data = 'x';
 

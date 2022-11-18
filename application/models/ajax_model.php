@@ -710,7 +710,7 @@ class Ajax_model extends CI_Model {
 
         // get coordinates of the given units
         $core_coord_query = $this->get_unit_coordinates($nts, $model_num);
-        if ($core_coord_query == False) { return "No coordinate data available for the selection made"; }
+        if ($core_coord_query == False) { return "No coordinate data available for the selection {$unit_ids} made"; }
         // core nts will have model num 1
         $core_coord = $this->change_model_num($core_coord_query, 1);
         
@@ -1031,7 +1031,35 @@ class Ajax_model extends CI_Model {
 
     function get_loop_pair_coordinates($loop_pair)
     {
-        // IL_1J5E_001:IL_1J5E_002
+        // This function is called by the compare motif group page
+        // http://rnatest.bgsu.edu/rna3dhub/motif/compare/IL_28750.1/IL_69191.1
+        // The input may be of the form:
+        // IL_1J5E_001:@IL_1J5E_002
+        $loop_ids = explode(':', $loop_pair);
+
+        if ($loop_ids[0][0] == '@') {
+            $loop_to_return = 1;
+            $loop_ids[0] = substr($loop_ids[0], 1);
+            $loop_id = $loop_ids[0];
+        } elseif ($loop_ids[1][0] == '@') {
+            $loop_to_return = 2;
+            $loop_ids[1] = substr($loop_ids[1], 1);
+            $loop_id = $loop_ids[1];
+        } else {
+            return 'Invalid loop pair';
+        }
+
+        return $this->get_loop_coordinates($loop_id);
+
+
+
+        // the old code below returns old unit ids on rnatest as of November 2022
+        // in order to do this properly, one would want to return just the
+        // aligned unit ids from whichever loop has the @
+
+
+        // The input may be of the form:
+        // IL_1J5E_001:@IL_1J5E_002
         $loop_ids = explode(':', $loop_pair);
 
         if ($loop_ids[0][0] == '@') {
@@ -1043,6 +1071,7 @@ class Ajax_model extends CI_Model {
         } else {
             return 'Invalid loop pair';
         }
+
 
         // get coordinates from the alignment of loop1 and loop2
         if ( $loop_to_return == 1 ) {
@@ -1086,12 +1115,20 @@ class Ajax_model extends CI_Model {
 
         $nt_ids = explode(',', $row[$nt_list]);
 
+        #return $this->get_loop_coordinates($loop_ids[0]);
+
+        // see the list, using developer tools and looking
+        // at the response from getCoordinates
+        return $row[$nt_list];
+
         return $this->get_new_nt_coordinates($nt_ids);
     }
 
     function get_exemplar_coordinates($motif_id)
     {
-        // given a motif_id find the representative loop
+        // given a motif id find the representative loop
+        // and return its coordinates
+
         $this->db->select('loop_id')
                  ->from('ml_loop_order')
                  ->where('motif_id',$motif_id)
