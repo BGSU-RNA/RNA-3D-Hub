@@ -199,10 +199,11 @@ class Motif_model extends CI_Model {
         }
     }
 
-    // compare two motifs page
-    // http://rna.bgsu.edu/rna3dhub/motif/compare/IL_56467.6/IL_39521.5 for example
     function compare_motifs($motif1, $motif2)
     {
+        // compare two motifs page
+        // http://rna.bgsu.edu/rna3dhub/motif/compare/IL_56467.6/IL_39521.5 for example
+
         // get ordering and loop ids
         $this->db->select()
                  ->from('ml_loop_order')
@@ -326,12 +327,23 @@ class Motif_model extends CI_Model {
 
                 $data = '';
                 $class = '';
+                $error_code = 0;
                 // for asymmetric searches choose the real discrepancy over -1's
                 // if both searches not loaded in the db yet, assign -2
-                if ( $matrix[$loop1][$loop2] == '' and $matrix[$loop2][$loop1] == '' ) {
+                if (!array_key_exists($loop1, $matrix)) {
                     $disc = -2;
+                } elseif (!array_key_exists($loop2, $matrix[$loop1])) {
+                    $disc = -2;
+                } elseif (!array_key_exists($loop2, $matrix)) {
+                    $disc = -2;
+                } elseif (!array_key_exists($loop1, $matrix[$loop2])) {
+                    $disc = -2;
+                } elseif ( $matrix[$loop1][$loop2] == '' and $matrix[$loop2][$loop1] == '' ) {
+                    $disc = -2;
+                    $error_code = max($qa_status[$loop1][$loop2], $qa_status[$loop2][$loop1]);
                 } else {
                     $disc = max($matrix[$loop1][$loop2], $matrix[$loop2][$loop1]);
+                    $error_code = max($qa_status[$loop1][$loop2], $qa_status[$loop2][$loop1]);
                 }
 
                 if ( $disc == -1 ) {
@@ -344,8 +356,7 @@ class Motif_model extends CI_Model {
 
                 $title = implode(', ', array("{$loop1}:{$loop2}", $annotation));
 
-                if ($qa_status[$loop1][$loop2] or $qa_status[$loop2][$loop1]) {
-                    $error_code = max($qa_status[$loop1][$loop2], $qa_status[$loop2][$loop1]);
+                if ($error_code > 0) {
                     $class = '';
                     $data = 'x';
 

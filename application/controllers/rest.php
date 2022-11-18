@@ -61,7 +61,7 @@ class Rest extends MY_Controller {
         // search POST, then GET
         $query = $this->input->get_post('coord');
         
-        $this->output->enable_profiler(TRUE);
+        //$this->output->enable_profiler(TRUE);
         
         $query_type = $this->_parseInput($query);
 
@@ -91,7 +91,6 @@ class Rest extends MY_Controller {
         $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
         $data['json'] = $this->Ajax_model->get_sequence_basepairs($pdb, $chain, $nested);
         $this->load->view('json_view', $data);
-
     }
 
 
@@ -119,32 +118,17 @@ class Rest extends MY_Controller {
 
     public function getCoordinatesMotifAtlas()
     {
-        // should be able to accept loop_id, nt_ids, motif_id, short_nt_id
-        // and loop pairs (returns the first loop of the two)
-
         // search POST, then GET
+        // this must get loop id, motif id, and motif release
         $query = $this->input->get_post('coord_ma');
-        // $this->output->enable_profiler(TRUE);
+
+        //$this->output->enable_profiler(TRUE);
         
-        //$query_type = $this->_parseInput($query);
-
-        /*
-        if ( $query_type ) {
-            $this->output->set_header("Access-Control-Allow-Origin: *");
-            $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
-            $data['csv'] = $this->_database_lookup_ma($query, $query_type);
-            $this->load->view('csv_view', $data);
-        } else {
-            echo $this->messages['invalid'];
-        }
-        */
         $this->load->model('Ajax_model', '', TRUE);
-
         $this->output->set_header("Access-Control-Allow-Origin: *");
         $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
-        $data['csv'] = $this->Ajax_model->get_loop_coordinates_MotifAtlas($query);
+        $data['csv'] = $this->Ajax_model->get_motif_coordinates($query);
         $this->load->view('csv_view', $data);
-
     }
 
 
@@ -237,8 +221,13 @@ class Rest extends MY_Controller {
 
     }
 
-    private function _database_lookup($query, $query_type)
+    private function _database_lookup($query, $query_type, $distance=10)
     {
+        // Retrieve coordinates from the database.
+        // Accept a variety of input types.
+        // Return the requested nucleotides in model 1
+        // Return neighboring nucleotides in model 2 up to a distance of 10
+
         // don't load the database until the input was validated
         $this->load->model('Ajax_model', '', TRUE);
 
@@ -246,38 +235,25 @@ class Rest extends MY_Controller {
 		
         switch ($query_type) :
             case 'loop_id':
-                return $this->Ajax_model->get_loop_coordinates($query);
+                return $this->Ajax_model->get_loop_coordinates($query,$distance);
+
             case 'chain_id':
-                return $this->Ajax_model->get_chain_coordinates($query);
-            case 'motif_id':
-                return $this->Ajax_model->get_exemplar_coordinates($query);
-            case 'nt_list':
-                //return $this->Ajax_model->get_coordinates($query);
-                return $this->Ajax_model->get_unit_id_coordinates($query);
+                return $this->Ajax_model->get_chain_coordinates($query,$distance);
+
             case 'loop_pair':
                 return $this->Ajax_model->get_loop_pair_coordinates($query);
+
             case 'unit_id':
-                //return $this->Ajax_model->get_unit_id_coordinates($query);
-                return $this->Ajax_model->get_nt_coordinates($query);
+                return $this->Ajax_model->get_new_nt_coordinates($query,$distance);
+
+            case 'motif_id':
+                return $this->Ajax_model->get_exemplar_coordinates($query);
+
             default: return $this->messages['error'];
         endswitch;
 
     }
 
-    private function _database_lookup_ma($query, $query_type)
-    {
-        // don't load the database until the input was validated
-        $this->load->model('Ajax_model', '', TRUE);
-
-        // $this->output->enable_profiler(TRUE);
-        
-        switch ($query_type) :
-            case 'loop_id':
-                return $this->Ajax_model->get_loop_coordinates_MotifAtlas($query);
-            default: return $this->messages['error'];
-        endswitch;
-
-    }
 
     private function _database_lookup_relative($query, $query_type)
     {
