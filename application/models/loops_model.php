@@ -277,6 +277,10 @@ class Loops_model extends CI_Model {
 
     function get_current_motif_id_from_loop_id($id)
     {
+        // this does not work!
+        // deprecated as of November 2022
+
+
         // get current motif release id
         $this->db->select('ml_release_id')
                  ->from('ml_releases')
@@ -287,10 +291,9 @@ class Loops_model extends CI_Model {
         $release = $query->row();
 
         // get motif id
-        $this->db->select()
-                 ->from('ml_loops')
-                //  ->where('ml_release_id',$release->ml_release_id)            
-                 ->where('loop_id',$id);
+        $this->db->select('motif_id','ml_release_id')
+                ->from('ml_loops')
+                ->where('loop_id',$id);
 
         $query = $this->db->get();
 
@@ -306,6 +309,8 @@ class Loops_model extends CI_Model {
 
     function get_most_recent_motif_assignment($loop_id)
     {
+        // This technique works properly
+
         $loop_type = substr($loop_id, 0, 2);
         $this->db->select('ML.motif_id as motif_id, MR.ml_release_id as release_id')
                  ->from('ml_loops AS ML')
@@ -326,14 +331,8 @@ class Loops_model extends CI_Model {
     function get_motif_info($id)
     {
         $result = array();
-        $motif = $this->get_current_motif_id_from_loop_id($id);
+        $motif = $this->get_most_recent_motif_assignment($id);
 
-        $old_release = FALSE;
-        // try to get motif assignment from previous releases
-        if ($motif == NULL) {
-            $motif = $this->get_most_recent_motif_assignment($id);
-            $old_release = TRUE;
-        }
         // get motif annotations
         $this->db->select()
         ->from('loop_annotations')
@@ -363,7 +362,12 @@ class Loops_model extends CI_Model {
             $query = $this->db->get();
             $annotation = $query->row();
 
-            $result['bp_signature'] = $annotation->bp_signature;
+            if ($query->num_rows()>0) {
+                $result['bp_signature'] = $annotation->bp_signature;
+            } else {
+                $result['bp_signature'] = 'Not available';
+            }
+
             // get number of motif instances
             $this->db->select()
                      ->from('ml_loops')
@@ -371,9 +375,6 @@ class Loops_model extends CI_Model {
                      ->where('motif_id', $motif['motif_id']);
             $query = $this->db->get();
             $result['motif_instances'] = $query->num_rows();
-            if ( $old_release ) {
-                $result['motif_url'] = $result['motif_url'] . " (release {$motif['release_id']})";
-            }
         } else {
             $result['motif_id'] = "This loop hasn't been annotated with motifs yet";
             $result['motif_url'] = "This loop hasn't been annotated with motifs yet";
@@ -384,86 +385,47 @@ class Loops_model extends CI_Model {
         return $result;
     }
 
-    function get_protein_info($id)
+    function get_nearby_chains($loop_id,$distance=10)
     {
         $result = array();
+        $result['proteins'] = array();
+        $this->load->model('Ajax_model', '', TRUE);
 
-        // get nearby protein chains
-        $this->db->select('UI.chain')
-                 ->distinct()
-                 ->from('loop_positions AS LP')
-                 ->join('unit_pairs_distances AS UP', 'LP.unit_id = UP.unit_id_1')
-                 ->join('unit_coordinates AS UC', 'UP.unit_id_2 = UC.unit_id')
-                 ->join('unit_info AS UI', 'UC.unit_id = UI.unit_id')
-                 ->where('LP.loop_id', $id)
-                 ->where('char_length(UI.unit) = 3')
-                 ->not_like('UC.coordinates','HETATM','after');
-        $query = $this->db->get();
+        $unit_ids = $this->Ajax_model->get_loop_units($loop_id);
 
-        if ($query->num_rows() > 0) {
-            $chains = array();
+        $neighbor_units = $this->Ajax_model->get_neighboring_units($unit_ids,$distance);
 
-            foreach ($query->result() as $row) {
-                $chains[] = $row->chain;
+        if (count($neighbor_units) > 0) {
+
+            $known_chains = array();
+            foreach ($unit_ids as $ui) {
+                $fields = explode('|',$ui);
+                $pdb_id = $fields[0];
+                $known_chains[] = $fields[2];
             }
 
-            $this->db->select('chain_name, compound')
-                     ->from('chain_info')
-                     ->where('pdb_id', substr($id,3,4))
-                     ->where_in('chain_name', $chains);
-            $query = $this->db->get();
+            $new_chains = array();
+            foreach ($neighbor_units as $nu) {
+                $fields = explode('|',$nu);
+                $chain = $fields[2];
 
-            foreach ($query->result() as $row) {
-                $result['proteins'][$row->chain_name]['description'] = $row->compound;
-            }
-        } else {
-            $result['proteins'] = array();
-        }
-
-        return $result;
-    }
-
-
-    function get_protein_info_2022($id)
-    {
-        // Get all nearby units
-        // Reduce to unique nearby chains
-        // Return nearby protein chains
-
-        $result = array();
-
-        $neighboring_unitids = $this->Ajax_model->get_neighboring_residues($nts,$pdb_id,$distance);
-
-        // get nearby protein chains
-        $this->db->select('UI.chain')
-                 ->distinct()
-                 ->from('loop_positions AS LP')
-                 ->join('unit_pairs_distances AS UP', 'LP.unit_id = UP.unit_id_1')
-                 ->join('unit_coordinates AS UC', 'UP.unit_id_2 = UC.unit_id')
-                 ->join('unit_info AS UI', 'UC.unit_id = UI.unit_id')
-                 ->where('LP.loop_id', $id)
-                 ->where('char_length(UI.unit) = 3')
-                 ->not_like('UC.coordinates','HETATM','after');
-        $query = $this->db->get();
-
-        if ($query->num_rows() > 0) {
-            $chains = array();
-
-            foreach ($query->result() as $row) {
-                $chains[] = $row->chain;
+                if (!in_array($chain,$known_chains)) {
+                    $known_chains[] = $chain;
+                    $new_chains[] = $chain;
+                }
             }
 
-            $this->db->select('chain_name, compound')
-                     ->from('chain_info')
-                     ->where('pdb_id', substr($id,3,4))
-                     ->where_in('chain_name', $chains);
-            $query = $this->db->get();
+            if (count($new_chains) > 0) {
+                $this->db->select('chain_name, compound')
+                         ->from('chain_info')
+                         ->where('pdb_id', $pdb_id)
+                         ->where_in('chain_name', $new_chains);
+                $query = $this->db->get();
 
-            foreach ($query->result() as $row) {
-                $result['proteins'][$row->chain_name]['description'] = $row->compound;
+                foreach ($query->result() as $row) {
+                    $result['proteins'][$row->chain_name]['description'] = $row->compound;
+                }
             }
-        } else {
-            $result['proteins'] = array();
         }
 
         return $result;
