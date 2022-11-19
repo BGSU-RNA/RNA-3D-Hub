@@ -244,7 +244,7 @@ class Rest extends MY_Controller {
                 return $this->Ajax_model->get_loop_pair_coordinates($query);
 
             case 'unit_id':
-                return $this->Ajax_model->get_new_nt_coordinates($query,$distance);
+                return $this->Ajax_model->get_unit_and_neighbor_coordinates($query,$distance);
 
             case 'motif_id':
                 return $this->Ajax_model->get_exemplar_coordinates($query);
