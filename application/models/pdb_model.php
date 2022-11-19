@@ -35,7 +35,14 @@ class Pdb_model extends CI_Model {
     }
     function get_latest_motif_assignments($pdb_id, $loop_type)
     {
+        // This does not actually get all the most recent assignments
+        // It only searches the most recent motif atlas release
+        // If the structure has loops in that release, they are shown
+        // If it does not, then no motif assignments are shown
+        // That may be safer for structures that used to be in the Motif Atlas
+
         // $loop_type = IL or HL
+
         $latest_release = $this->get_latest_motif_release($loop_type);
 
         $this->db->select()
@@ -433,6 +440,8 @@ class Pdb_model extends CI_Model {
     }
     function get_latest_motif_release($motif_type)
     {
+        // this is unreliable as a way to find most recent motif assignment
+
         $this->db->select('ml_release_id')
                  ->from('ml_releases')
                  ->order_by('date', 'desc')
