@@ -84,7 +84,7 @@
                     </div>
                     <div class="row">
                         <div class="span4 well">
-                            <h4>Nearby proteins</h4>
+                            <h4>Nearby chains</h4>
                             <?php
                                 if (count($proteins) > 0) {
                                     echo '<dl>';
@@ -95,7 +95,7 @@
                                     }
                                     echo '</dl>';
                                 } else {
-                                    echo "No proteins within 16&Aring;";
+                                    echo "No other chains within 10&Aring;";
                                 }
                             ?>
                         </div>
