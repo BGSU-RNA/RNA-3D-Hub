@@ -228,11 +228,11 @@ class Rest extends MY_Controller {
         // Return the requested nucleotides in model 1
         // Return neighboring nucleotides in model 2 up to a distance of 10
 
-        // don't load the database until the input was validated
         $this->load->model('Ajax_model', '', TRUE);
 
 		// $this->output->enable_profiler(TRUE);
 		
+        // don't load the database until the input was validated
         switch ($query_type) :
             case 'loop_id':
                 return $this->Ajax_model->get_loop_coordinates($query,$distance);
