@@ -580,14 +580,15 @@ class Ajax_model extends CI_Model {
     }
 
 
-    function get_unit_coordinates($nt_ids, $model_num)
+    function get_unit_coordinates($nt_ids)
     {
         // get the coordinates of the listed units
+        // Seems to be just as fast without joining to get $model_num
 
         $this->db->select('coordinates')->from('unit_coordinates');
-        $this->db->join('unit_info', 'unit_coordinates.unit_id = unit_info.unit_id');
+        //$this->db->join('unit_info', 'unit_coordinates.unit_id = unit_info.unit_id');
+        //$this->db->where('unit_info.model', $model_num);
         $this->db->where_in('unit_coordinates.unit_id', $nt_ids);
-        $this->db->where('unit_info.model', $model_num);
         $this->db->_protect_identifiers = FALSE; // stop CI adding backticks
 
         // make SQL to return the correct order of results based on the where_in clause
@@ -747,12 +748,17 @@ class Ajax_model extends CI_Model {
     }
 
 
-    function get_neighboring_residues($unit_ids,$pdb_id,$model_num,$distance=10)
+    function get_neighboring_units($unit_ids,$distance=10)
     {
         // Starting with $unit_ids, find the x,y,z coordinates of their centers,
         // expand by $distance to a rectangular box around them,
         // then find other units within that box,
         // then filter down to ones that are within $distance of one of the centers in $unit_ids
+
+        // get the pdb id and model number from the first unit id
+        $fields = explode('|',$unit_ids[0]);
+        $pdb_id = $fields[0];
+        $model_num = $fields[1];
 
         // Get all centers of $unit_ids, including base, sugar, phosphate, aa_fg
         $centers_xyz_coord = $this->get_xyz_coordinates($unit_ids, $pdb_id);
@@ -794,36 +800,21 @@ class Ajax_model extends CI_Model {
             $nts = $unit_ids;
         }
 
-        // get the pdb id and model number from the first unit id
-        $fields = explode('|',$nts[0]);
-        $pdb_id = $fields[0]; 
-        $model_num = $fields[1];
-
         // get coordinates of the given units
-        $core_coord_query = $this->get_unit_coordinates($nts, $model_num);
+        $core_coord_query = $this->get_unit_coordinates($nts);
         if ($core_coord_query == False) { return "No coordinate data available for the selection {$unit_ids} made"; }
         // core nts will have model num 1
         $core_coord = $this->change_model_num($core_coord_query, 1);
 
         // get unit ids of neighboring units
-        $neighboring_residues = $this->get_neighboring_residues($nts,$pdb_id,$model_num,$distance);
+        $neighboring_residues = $this->get_neighboring_units($nts,$distance);
 
         // these variables are defined in /var/www/rna3dhub/application/config/constants.php
         global $headers_cif, $footer_cif;
 
         if (count($neighboring_residues) > 0) {
             // get coordinates of neighboring units
-            $neighbor_coordinates = $this->get_unit_coordinates($neighboring_residues, $model_num);
-
-            //return "Got to line 815";
-            //$output = '';
-            //foreach ($neighboring_residues as $nr) {
-            //    $output .= $nr . ",";
-            //}
-            //return $output;
-            //return count($neighboring_residues);
-
-
+            $neighbor_coordinates = $this->get_unit_coordinates($neighboring_residues);
             //neighboring nts will have model num 2
             $neighboor_coord = $this->change_model_num($neighbor_coordinates, 2);
 
@@ -833,7 +824,6 @@ class Ajax_model extends CI_Model {
         }
 
         $final_result = '';
-
         foreach ($coord_array as $output) {
             $final_result .= $output . "\n";
         }
@@ -951,7 +941,7 @@ class Ajax_model extends CI_Model {
         $model_num = $fields[1];
         
         // get coordinates of the core nucleotides
-        $core_coord_query = $this->get_unit_coordinates($core_motif_units, $model_num);
+        $core_coord_query = $this->get_unit_coordinates($core_motif_units);
         if ($core_coord_query == False) { return "No coordinate data available for for {$loop_data} and {$loop_id}"; }
         // core nts will have model num 1
         $core_coord = $this->change_model_num($core_coord_query, 1);
@@ -961,9 +951,9 @@ class Ajax_model extends CI_Model {
         if ($complete_motif_units == False) { return "The complete units for {$loop_data} and {$loop_id} is not available"; }
 
         // get neighboring unit ids
-        $neighboring_residues = $this->get_neighboring_residues($complete_motif_units,$pdb_id,$model_num,$distance=10);
+        $neighboring_residues = $this->get_neighboring_units($complete_motif_units,$distance=10);
         // get neighboring coordinates
-        $neighbor_coordinates = $this->get_unit_coordinates($neighboring_residues, $model_num);
+        $neighbor_coordinates = $this->get_unit_coordinates($neighboring_residues);
         // neighboring nts will have model num 2
         $neighboor_coord = $this->change_model_num($neighbor_coordinates, 2);
 
@@ -977,7 +967,7 @@ class Ajax_model extends CI_Model {
             $coord_array = array_merge($headers_cif, $core_coord, $footer_cif, $headers_cif, $neighboor_coord, $footer_cif);
         } else {
             // get bulged unit coordinates
-            $bulged_units_coordinates = $this->get_unit_coordinates($bulged_units, $model_num);
+            $bulged_units_coordinates = $this->get_unit_coordinates($bulged_units);
             // bulged_units will have model num 3
             $bulged_coord = $this->change_model_num($bulged_units_coordinates, 3);
             // merge the set of coordinates into the output
@@ -1014,20 +1004,20 @@ class Ajax_model extends CI_Model {
         $model_num = $fields[1];
 
         // get coordinates of the core nucleotides
-        $core_coordinates = $this->get_unit_coordinates($core_units, $model_num);
+        $core_coordinates = $this->get_unit_coordinates($core_units);
         if ($core_coordinates == False) { return "No coordinate data available for for {$unit_id}"; }
         // core nts will have model num 1
         $core_coord = $this->change_model_num($core_coordinates, 1);
 
         // get neighboring unit ids based on all unit ids
-        $neighboring_residues = $this->get_neighboring_residues($unit_id,$pdb_id,$model_num,$distance=10);
+        $neighboring_residues = $this->get_neighboring_units($unit_id,$distance=10);
         // get neighboring coordinates
-        $neighbor_coordinates = $this->get_unit_coordinates($neighboring_residues, $model_num);
+        $neighbor_coordinates = $this->get_unit_coordinates($neighboring_residues);
         // neighboring nts will have model num 2
         $neighboor_coord = $this->change_model_num($neighbor_coordinates, 2);
 
         // get coordinates of the other nucleotides
-        $loop_coordinates = $this->get_unit_coordinates($loop_units, $model_num);
+        $loop_coordinates = $this->get_unit_coordinates($loop_units);
         if ($loop_coordinates == False) { return "No coordinate data available for for {$unit_id}"; }
         // loop nts will have model num 4 so they can be displayed separately if desired
         $loop_coord = $this->change_model_num($loop_coordinates, 4);
