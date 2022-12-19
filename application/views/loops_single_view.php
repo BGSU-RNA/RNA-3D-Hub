@@ -232,11 +232,6 @@
       <script>
         $('#sortable').tablesorter();
 
-        // var offset_left = $('#left_content').offset().left + 530; // 530 = span9 width
-        // var offset_top  = $('#left_content').offset().top;
-        // $('#jmol').css('position','fixed')
-        //           .css('left',offset_left)
-        //           .css('top',offset_top);
         var offset_left = $('#left_content').offset().left + 530; // 530 = span9 width
         var offset_top  = $('#left_content').offset().top;
         $('#jmol').css('position','absolute')
