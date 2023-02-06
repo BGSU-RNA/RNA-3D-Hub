@@ -786,6 +786,30 @@ class Ajax_model extends CI_Model {
 
         return $neighboring_residues;
     }
+
+    function get_complete_units($unit_ids)
+    // Get the complete unit ids including the ones with alternative ids
+    {
+        $complete_units = array();
+        foreach ($unit_ids as $unit_id) {
+            $unit_alternative_id = $unit_id . "|%";
+
+            $this->db->select('unit_id')
+                 ->from('unit_info')
+                 ->where('unit_id like', $unit_id)
+                 ->or_where('unit_id like', $unit_alternative_id)
+                 ->order_by('alt_id')
+                 ->limit(1);
+            $query = $this->db->get();
+            
+            if ($query->num_rows() == 0) { return False; }
+
+            foreach ($query->result() as $row) {
+                $complete_units[] = $row->unit_id;
+            }
+        }
+        return $complete_units;
+    }
     
 
     function get_unit_and_neighbor_coordinates($unit_ids, $distance=10)
@@ -799,6 +823,8 @@ class Ajax_model extends CI_Model {
         } else {
             $nts = $unit_ids;
         }
+
+        $nts = $this->get_complete_units($nts);
 
         // get coordinates of the given units
         $core_coord_query = $this->get_unit_coordinates($nts);
