@@ -146,12 +146,15 @@ if ( typeof Object.create !== 'function' ) {
             // if there are different numbers of C1' atoms, for example if different numbers of nucleotides,
             // use the first four spine atoms it seems
 
-            // Previous for 2 nt: "{x=compare({(*.C1'/" + m + ".1,*.C3'/" + m + ".1)},{(*.C1'/1.1,*.C3'/1.1)});}" +
+            // "{x=compare({(*.C1'/" + m + ".1,A.C4/" + m + ".1,A.C8/" + m + ".1,G.C4/" + m + ".1,G.C8/" + m + ".1,*.N3/" + m + ".1)[1][3]},{(*.C1'/1.1,*.C4/1.1,*.N3/1.1)[1][3]});}" +
+
+            // Superimpose 3 atoms of the first base:
+            //                           "{x=compare({(*.C1'/" + m + ".1,*.C4/" + m + ".1,*.N3/" + m + ".1)[1][3]},{(*.C1'/1.1,*.C4/1.1,*.N3/1.1)[1][3]});}" +
 
             var command = "if ({*.C1'/" + m + ".1}.length == {*.C1'/1.1}.length & {*.C1'/1.1}.length >= 3) " +
                           "{x=compare({(*.C1'/" + m + ".1)},{(*.C1'/1.1)});}" +
-                          "elseif ({*.C1'/" + m + ".1}.length == {*.C1'/1.1}.length & {*.C1'/1.1}.length <= 2) " +
-                          "{x=compare({(*.C1'/" + m + ".1,*.C4/" + m + ".1,*.N3/" + m + ".1)[1][3]},{(*.C1'/1.1,*.C4/1.1,*.N3/1.1)[1][3]});}" +
+                          "elseif ({*.C1'/" + m + ".1}.length == {*.C1'/1.1}.length & {*.C1'/1.1}.length == 2) " +
+                          "{x=compare({(*.C1'/" + m + ".1,*.C3'/" + m + ".1)},{(*.C1'/1.1,*.C3'/1.1)});}" +
                           "else {x=compare({(spine/" + m + ".1)[2][6]},{(spine/1.1)[2][6]});};" +
                           "select " + m + ".1," + m + ".2; rotate selected @{x};";
             jmolScript(command);
