@@ -113,11 +113,13 @@ class Loops_model extends CI_Model {
         // get Unit ID section 
         $this->db->select('unit_id, border')
                  ->from('loop_positions')
+                 ->order_by('position_2023','asc')
                  ->where('loop_id',$id);
         $query = $this->db->get();
 
         $sequence = array();
         $count_border = 0;
+
 
         foreach ($query->result() as $row) {
             $parts = explode('|', $row->unit_id);
@@ -130,10 +132,18 @@ class Loops_model extends CI_Model {
                     $sequence[] = '*' . $parts[3];
                 }
             }else{
-                $sequence[] = $parts[3];
+                if (strlen($parts[3]) == 1){
+                    $sequence[] = $parts[3];
+                }else{
+                    $sequence[] = '(' . $parts[3] . ')';
+                }
+                
             }
         }
+
         $result['sequence'] = implode('', $sequence);
+
+        
 
 
 
@@ -176,6 +186,7 @@ class Loops_model extends CI_Model {
         // get Unit ID section 
         $this->db->select('unit_id, border')
                  ->from('loop_positions')
+                 ->order_by('position_2023','asc')
                  ->where('loop_id',$id);
         $query = $this->db->get();
 
