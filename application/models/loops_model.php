@@ -96,28 +96,34 @@ class Loops_model extends CI_Model {
         //     $result['sequence'] = '';
         // }
 
-
+            /*
+            Having a new method to get length of sequence,
+            This method is not using any more    
+            */
         // info from loops_all
-        $this->db->select('length')
-                ->from('loop_info')
-                ->where('loop_id',$id);
-       $query = $this->db->get();
+    //     $this->db->select('length')
+    //             ->from('loop_info')
+    //             ->where('loop_id',$id);
+    //    $query = $this->db->get();
 
-       if ($query->num_rows() > 0) {
-           $loop_info = $query->row();
-           $result['length'] = $loop_info->length;
-       } else {
-           $result['length'] = '';
-       }
+    //    if ($query->num_rows() > 0) {
+    //        $loop_info = $query->row();
+    //        $result['length'] = $loop_info->length;
+    //    } else {
+    //        $result['length'] = '';
+    //    }
 
         // get Unit ID section 
         $this->db->select('unit_id, border')
                  ->from('loop_positions')
+                 ->order_by('position_2023','asc')
                  ->where('loop_id',$id);
         $query = $this->db->get();
 
         $sequence = array();
         $count_border = 0;
+        $length_sequence = 0;
+
 
         foreach ($query->result() as $row) {
             $parts = explode('|', $row->unit_id);
@@ -130,9 +136,15 @@ class Loops_model extends CI_Model {
                     $sequence[] = '*' . $parts[3];
                 }
             }else{
-                $sequence[] = $parts[3];
+                if (strlen($parts[3]) == 1){
+                    $sequence[] = $parts[3];
+                }else{
+                    $sequence[] = '(' . $parts[3] . ')';
+                }
             }
+            $length_sequence += 1;
         }
+        $result['length'] = $length_sequence;
         $result['sequence'] = implode('', $sequence);
 
 
@@ -157,7 +169,13 @@ class Loops_model extends CI_Model {
                     $result['qa'] = 'Missing nucleotides: ' . $loop_qa->nt_signature;
                     break;
                 case 3:
-                    $result['qa'] = 'Modified nucleotides: ' . $loop_qa->modifications;
+                    // $result['qa'] = 'Modified nucleotides: ' . $loop_qa->modifications;
+                    $modified_nucleotides = $loop_qa->modifications;
+                    
+                    $each = explode(', ', $modified_nucleotides);
+                    $uniqueEach = array_values(array_unique($each));
+
+                    $result['qa'] = 'Modified nucleotides: ' . implode(', ', $uniqueEach);
                     break;
                 case 4:
                     $result['qa'] = 'Abnormal chains';
@@ -176,6 +194,7 @@ class Loops_model extends CI_Model {
         // get Unit ID section 
         $this->db->select('unit_id, border')
                  ->from('loop_positions')
+                 ->order_by('position_2023','asc')
                  ->where('loop_id',$id);
         $query = $this->db->get();
 

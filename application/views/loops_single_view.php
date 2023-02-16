@@ -55,7 +55,7 @@
                                 <dd><?=$sequence?></dd>
                                 <dt>Length</dt>
                                 <dd><?=$length?> nucleotides</dd>
-                                <dt>Bulged bases</dt>
+                                <dt>Bulged bases (A, C, G, U)</dt>
                                 <dd><?=$bulges?></dd>
                                 <dt>QA status</dt>
                                 <dd><?=$qa?></dd>
