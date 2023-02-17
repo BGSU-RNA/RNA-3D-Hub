@@ -95,25 +95,23 @@
                                     }
                                     echo '</dl>';
                                 } else {
-                                    echo "No other chains within 10&Aring;";
-                                }
-<<<<<<< HEAD
-                                
-                                #Consensus naming
+                                    echo "No other protein chains within 10&Aring;";
+                                    echo '<br>';
+                                }                             #Consensus naming
+                                echo '<br>';
                                 if (count($rna_chains) > 0) {
                                     echo '<dl>';
-                                    echo "Test data is present.";
+                                    // print_r($rna_chains);
                                     foreach($rna_chains as $chain => $prop) {
                                         echo "<dt>Chain $chain</dt>";
-                                        echo "<dd>{$prop['property']}</dd>";
+                                        echo "<dd><b>Standardized Name:</b> {$prop['property']}</dd>";
                                         //echo "<dd>{$desc['description']} (Uniprot: {$desc['uniprot']})</dd>";
                                     }
                                     echo '</dl>';
                                 } else {
-                                    echo "No other chains within 10&Aring;";
+                                    echo "No other RNA chains within 10&Aring;";
                                 }
-=======
->>>>>>> 99cc56a597e3104f9c840e70e6ef4a578db9063f
+                                
                             ?>
                         </div>
                     </div>

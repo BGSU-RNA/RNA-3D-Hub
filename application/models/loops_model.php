@@ -428,6 +428,7 @@ class Loops_model extends CI_Model {
     {
         $result = array();
         $result['proteins'] = array();
+        $result['rna_chains'] = array(); # standard name array edit
         $this->load->model('Ajax_model', '', TRUE);
 
         $unit_ids = $this->Ajax_model->get_loop_units($loop_id);
@@ -464,22 +465,19 @@ class Loops_model extends CI_Model {
                 foreach ($query->result() as $row) {
                     $result['proteins'][$row->chain_name]['description'] = $row->compound;
                 }
-<<<<<<< HEAD
 
-                #Consensus naming addition:
-                $this->db->select('chain, value')
-                         ->from('chain_consensus_name')
+                
+            }
+            $this->db->select('chain, value')
+                         ->from('chain_property_value')
                          ->where('pdb_id', $pdb_id)
-                         ->where('property', 'Consensus_name')
-                         ->where_in('chain', $new_chains);
+                         ->where('property', 'standard_name');
                 $query = $this->db->get();
 
                 foreach ($query->result() as $row) {
                     $result['rna_chains'][$row->chain]['property'] = $row->value;
                 }
-=======
->>>>>>> 99cc56a597e3104f9c840e70e6ef4a578db9063f
-            }
+
         }
 
         return $result;
