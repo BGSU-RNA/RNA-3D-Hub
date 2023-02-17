@@ -438,17 +438,17 @@ class Loops_model extends CI_Model {
                     $result['proteins'][$row->chain_name]['description'] = $row->compound;
                 }
 
-                #Consensus naming addition:
-                $this->db->select('chain, value')
-                         ->from('chain_consensus_name')
-                         ->where('pdb_id', $pdb_id)
-                         ->where('property', 'Consensus_name')
-                         ->where_in('chain', $new_chains);
-                $query = $this->db->get();
+                // #Consensus naming addition:
+                // $this->db->select('chain, value')
+                //          ->from('chain_consensus_name')
+                //          ->where('pdb_id', $pdb_id)
+                //          ->where('property', 'Consensus_name')
+                //          ->where_in('chain', $new_chains);
+                // $query = $this->db->get();
 
-                foreach ($query->result() as $row) {
-                    $result['rna_chains'][$row->chain]['property'] = $row->value;
-                }
+                // foreach ($query->result() as $row) {
+                //     $result['rna_chains'][$row->chain]['property'] = $row->value;
+                // }
             }
         }
 
