@@ -55,7 +55,7 @@
                                 <dd><?=$sequence?></dd>
                                 <dt>Length</dt>
                                 <dd><?=$length?> nucleotides</dd>
-                                <dt>Bulged bases</dt>
+                                <dt>Bulged bases (A, C, G, U)</dt>
                                 <dd><?=$bulges?></dd>
                                 <dt>QA status</dt>
                                 <dd><?=$qa?></dd>
@@ -97,20 +97,23 @@
                                 } else {
                                     echo "No other chains within 10&Aring;";
                                 }
+<<<<<<< HEAD
                                 
-                                // #Consensus naming
-                                // if (count($rna_chains) > 0) {
-                                //     echo '<dl>';
-                                //     echo "Test data is present.";
-                                //     foreach($rna_chains as $chain => $prop) {
-                                //         echo "<dt>Chain $chain</dt>";
-                                //         echo "<dd>{$prop['property']}</dd>";
-                                //         //echo "<dd>{$desc['description']} (Uniprot: {$desc['uniprot']})</dd>";
-                                //     }
-                                //     echo '</dl>';
-                                // } else {
-                                //     echo "No other chains within 10&Aring;";
-                                // }
+                                #Consensus naming
+                                if (count($rna_chains) > 0) {
+                                    echo '<dl>';
+                                    echo "Test data is present.";
+                                    foreach($rna_chains as $chain => $prop) {
+                                        echo "<dt>Chain $chain</dt>";
+                                        echo "<dd>{$prop['property']}</dd>";
+                                        //echo "<dd>{$desc['description']} (Uniprot: {$desc['uniprot']})</dd>";
+                                    }
+                                    echo '</dl>';
+                                } else {
+                                    echo "No other chains within 10&Aring;";
+                                }
+=======
+>>>>>>> 99cc56a597e3104f9c840e70e6ef4a578db9063f
                             ?>
                         </div>
                     </div>
