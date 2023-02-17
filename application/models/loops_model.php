@@ -35,7 +35,27 @@ class Loops_model extends CI_Model {
                  ->group_by('loop_info.loop_id');
 */
         ### TESTING THIS QUERY -- REMOVE LINES 30-37 WHEN APPROVED
-        $this->db->select('group_concat(unit_id) AS unit_ids, LI.loop_id', FALSE)
+        // $this->db->select('group_concat(unit_id order by "LP.position_2023" desc) AS unit_ids, LI.loop_id', FALSE)
+        //          ->from('loop_info AS LI')
+        //          ->join('loop_positions AS LP', 'LI.loop_id = LP.loop_id')
+        //          ->where('LI.pdb_id', $pdb_id)
+        //          ->group_by('LI.loop_id');
+        // $query = $this->db->get();
+
+        // if ( $query->num_rows() > 0 ) {
+        //     $data = array();
+        //     foreach($query->result() as $row) {
+        //         $data[] = '"' . implode('","', array($row->loop_id, $row->unit_ids)) . '"';
+        //     }
+        //     $table = implode("\n", $data);
+        // } else {
+        //     $table = 'No loops found';
+        // }
+
+        // return $table;
+
+
+        $this->db->select('group_concat(unit_id order by "LP.position_2023") AS unit_ids, LI.loop_id', FALSE)
                  ->from('loop_info AS LI')
                  ->join('loop_positions AS LP', 'LI.loop_id = LP.loop_id')
                  ->where('LI.pdb_id', $pdb_id)
@@ -54,6 +74,7 @@ class Loops_model extends CI_Model {
 
         return $table;
     }
+
 
     function get_loop_list_with_breaks($pdb_id)
     {
@@ -123,7 +144,7 @@ class Loops_model extends CI_Model {
         $sequence = array();
         $count_border = 0;
         $length_sequence = 0;
-
+        $modified_nucleotides = array();
 
         foreach ($query->result() as $row) {
             $parts = explode('|', $row->unit_id);
@@ -140,12 +161,17 @@ class Loops_model extends CI_Model {
                     $sequence[] = $parts[3];
                 }else{
                     $sequence[] = '(' . $parts[3] . ')';
+                    $modified_nucleotides[] = $parts[3];
                 }
             }
             $length_sequence += 1;
         }
+        
         $result['length'] = $length_sequence;
         $result['sequence'] = implode('', $sequence);
+
+        $unique_modifications = array_values(array_unique($modified_nucleotides));
+        $modifications = implode(', ', $unique_modifications);
 
 
 
@@ -169,13 +195,7 @@ class Loops_model extends CI_Model {
                     $result['qa'] = 'Missing nucleotides: ' . $loop_qa->nt_signature;
                     break;
                 case 3:
-                    // $result['qa'] = 'Modified nucleotides: ' . $loop_qa->modifications;
-                    $modified_nucleotides = $loop_qa->modifications;
-                    
-                    $each = explode(', ', $modified_nucleotides);
-                    $uniqueEach = array_values(array_unique($each));
-
-                    $result['qa'] = 'Modified nucleotides: ' . implode(', ', $uniqueEach);
+                    $result['qa'] = 'Modified nucleotides: ' . $modifications;
                     break;
                 case 4:
                     $result['qa'] = 'Abnormal chains';

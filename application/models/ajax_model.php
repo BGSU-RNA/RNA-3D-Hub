@@ -763,6 +763,12 @@ class Ajax_model extends CI_Model {
         // Get all centers of $unit_ids, including base, sugar, phosphate, aa_fg
         $centers_xyz_coord = $this->get_xyz_coordinates($unit_ids, $pdb_id);
 
+        //echo "Centers returned";
+        //echo count($centers_xyz_coord);
+
+        // If no centers are really returned, don't look for neighbors
+        if (count($centers_xyz_coord) < 3) { return array(); }
+
         // Find the maxima and minima and expand by $distance
         $x_min = min($centers_xyz_coord[0]) - $distance;
         $x_max = max($centers_xyz_coord[0]) + $distance;
