@@ -35,7 +35,7 @@ class Loops_model extends CI_Model {
                  ->group_by('loop_info.loop_id');
 */
         ### TESTING THIS QUERY -- REMOVE LINES 30-37 WHEN APPROVED
-        // $this->db->select('group_concat(unit_id order by "LP.position_2023" desc) AS unit_ids, LI.loop_id', FALSE)
+        // $this->db->select('group_concat(unit_id) AS unit_ids, LI.loop_id', FALSE)
         //          ->from('loop_info AS LI')
         //          ->join('loop_positions AS LP', 'LI.loop_id = LP.loop_id')
         //          ->where('LI.pdb_id', $pdb_id)
@@ -55,11 +55,11 @@ class Loops_model extends CI_Model {
         // return $table;
 
 
-        $this->db->select('group_concat(unit_id order by "LP.position_2023") AS unit_ids, LI.loop_id', FALSE)
-                 ->from('loop_info AS LI')
-                 ->join('loop_positions AS LP', 'LI.loop_id = LP.loop_id')
-                 ->where('LI.pdb_id', $pdb_id)
-                 ->group_by('LI.loop_id');
+        $this->db->select('loop_info.loop_id, group_concat(unit_id order by position_2023) as unit_ids')
+                 ->from('loop_info')
+                 ->join('loop_positions', 'loop_info.loop_id = loop_positions.loop_id')
+                 ->where('loop_info.pdb_id', $pdb_id)
+                 ->group_by('loop_info.loop_id');
         $query = $this->db->get();
 
         if ( $query->num_rows() > 0 ) {
@@ -72,13 +72,14 @@ class Loops_model extends CI_Model {
             $table = 'No loops found';
         }
 
-        return $table;
+        return $table;        
+
     }
 
 
     function get_loop_list_with_breaks($pdb_id)
     {
-        $this->db->select('group_concat(unit_id) AS unit_ids, group_concat(border) AS borders, LI.loop_id', FALSE)
+        $this->db->select('group_concat(unit_id order by position_2023) AS unit_ids, group_concat(border order by position_2023) AS borders, LI.loop_id', FALSE)
                  ->from('loop_info AS LI')
                  ->join('loop_positions AS LP', 'LI.loop_id = LP.loop_id')
                  ->where('LI.pdb_id', $pdb_id)
