@@ -469,15 +469,19 @@ class Loops_model extends CI_Model {
 
                 
             }
-            $this->db->select('chain, value')
-                         ->from('chain_property_value')
-                         ->where('pdb_id', $pdb_id)
-                         ->where('property', 'standard_name');
-                $query = $this->db->get();
+            /* Currently production server does not have chain_property_value table, the following code will crash websites.
+            Comment them out for now. 
+            */
 
-                foreach ($query->result() as $row) {
-                    $result['rna_chains'][$row->chain]['property'] = $row->value;
-                }
+            // $this->db->select('chain, value')
+            //              ->from('chain_property_value')
+            //              ->where('pdb_id', $pdb_id)
+            //              ->where('property', 'standard_name');
+            //     $query = $this->db->get();
+
+            //     foreach ($query->result() as $row) {
+            //         $result['rna_chains'][$row->chain]['property'] = $row->value;
+            //     }
 
         }
 
