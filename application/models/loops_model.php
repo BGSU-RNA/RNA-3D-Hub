@@ -428,7 +428,7 @@ class Loops_model extends CI_Model {
     {
         $result = array();
         $result['proteins'] = array();
-        $result['rna_chains'] = array(); # standard name array edit
+        // $result['rna_chains'] = array(); # standard name array edit
         $this->load->model('Ajax_model', '', TRUE);
 
         $unit_ids = $this->Ajax_model->get_loop_units($loop_id);
@@ -467,17 +467,18 @@ class Loops_model extends CI_Model {
                 }
 
                 
-            }
-            $this->db->select('chain, value')
-                         ->from('chain_property_value')
-                         ->where('pdb_id', $pdb_id)
-                         ->where('property', 'standard_name');
+                // Possibly replace with standardized.
+                $this->db->select('chain, value')
+                            ->from('chain_property_value')
+                            ->where('pdb_id', $pdb_id)
+                            ->where('property', 'standard_name')
+                            ->where_in('chain', $new_chains);
                 $query = $this->db->get();
 
                 foreach ($query->result() as $row) {
-                    $result['rna_chains'][$row->chain]['property'] = $row->value;
+                    $result['proteins'][$row->chain]['description'] = $row->value;
                 }
-
+            }
         }
 
         return $result;

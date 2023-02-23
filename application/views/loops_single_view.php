@@ -84,7 +84,7 @@
                     </div>
                     <div class="row">
                         <div class="span4 well">
-                            <h4>Nearby chains</h4>
+                            <h4>Nearby chains</h4> 
                             <?php
                                 if (count($proteins) > 0) {
                                     echo '<dl>';
@@ -95,22 +95,22 @@
                                     }
                                     echo '</dl>';
                                 } else {
-                                    echo "No other protein chains within 10&Aring;";
+                                    echo "No other chains within 10&Aring;";
                                     echo '<br>';
-                                }                             #Consensus naming
-                                echo '<br>';
-                                if (count($rna_chains) > 0) {
-                                    echo '<dl>';
-                                    // print_r($rna_chains);
-                                    foreach($rna_chains as $chain => $prop) {
-                                        echo "<dt>Chain $chain</dt>";
-                                        echo "<dd><b>Standardized Name:</b> {$prop['property']}</dd>";
-                                        //echo "<dd>{$desc['description']} (Uniprot: {$desc['uniprot']})</dd>";
-                                    }
-                                    echo '</dl>';
-                                } else {
-                                    echo "No other RNA chains within 10&Aring;";
-                                }
+                                }                             #standard name naming
+                                // echo '<br>';
+                                // if (count($rna_chains) > 0) {
+                                //     echo '<dl>';
+                                //     // print_r($rna_chains);
+                                //     foreach($rna_chains as $chain => $prop) {
+                                //         echo "<dt>Chain $chain</dt>";
+                                //         echo "<dd><b>Standardized Name:</b> {$prop['property']}</dd>";
+                                //         //echo "<dd>{$desc['description']} (Uniprot: {$desc['uniprot']})</dd>";
+                                //     }
+                                //     echo '</dl>';
+                                // } else {
+                                //     echo "No other RNA chains within 10&Aring;";
+                                // }
                                 
                             ?>
                         </div>
