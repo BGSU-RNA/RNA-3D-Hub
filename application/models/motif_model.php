@@ -750,6 +750,39 @@ class Motif_model extends CI_Model {
         return $matrix;
     }
 
+
+    function get_mutual_discrepancy_matrix_efficient()
+    {
+        ini_set('memory_limit', '512M');
+
+        $this->db->select()
+                 ->from('ml_mutual_discrepancy')
+                 ->where('ml_release_id', $this->release_id)
+                 ->where_in('loop_id_1', $this->loops)
+                 ->where_in('loop_id_2', $this->loops);
+        $result = $this->db->get()->result_array();
+
+        $disc = array(); // $disc['IL_1S72_001']['IL_1J5E_023'] = 0.2897
+        for ($i = 0; $i < count($result); $i++) {
+            $disc[$result[$i]['loop_id_1']][$result[$i]['loop_id_2']] = $result[$i]['discrepancy'];
+        }
+
+        $matrix = array();
+        for ($i = 1; $i <= $this->num_loops; $i++) {
+            $loop_id_1 = $this->similarity[$i];
+            for ($j = 1; $j <= $this->num_loops; $j++) {
+                $loop_id_2 = $this->similarity[$j];
+                $cell = array('data-disc' => $disc[$loop_id_1][$loop_id_2],
+                              'data-pair' => "$loop_id_1:$loop_id_2",
+                              'class'     => $this->get_css_class($disc[$loop_id_1][$loop_id_2]),
+                              'rel'       => 'twipsy',
+                              'title'     => "$loop_id_1:$loop_id_2, {$disc[$loop_id_1][$loop_id_2]}");
+                $matrix[] = $cell;
+            }
+        }
+        return $matrix;
+    }
+
     function get_css_class($disc)
     {
         $class = '';
