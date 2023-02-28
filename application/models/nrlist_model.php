@@ -210,6 +210,7 @@ class Nrlist_model extends CI_Model {
 
     function get_members($id)
     {
+        # get information about ifes, which have model numbers and might have + symbols
         $this->db->select('pi.pdb_id')
                  ->select('ch.ife_id')
                  ->select('pi.title')
@@ -221,12 +222,63 @@ class Nrlist_model extends CI_Model {
                  ->join('nr_chains AS ch', 'ii.ife_id = ch.ife_id')
                  ->join('nr_classes AS cl', 'ch.nr_class_id = cl.nr_class_id AND ch.nr_release_id = cl.nr_release_id')
                  ->where('cl.name',$id)
-                 #->where('nch.nr_release_id',$this->last_seen_in) # what was this doing? still necessary?
                  ->group_by('pi.pdb_id')
                  ->group_by('ii.ife_id')
                  ->order_by('ch.rep','desc');
         $query = $this->db->get();
 
+        # get chain, domain, rfam, standardized names for pdb ids in this equivalence class
+        $this->db->select('ii.pdb_id')
+                 ->select('ch.ife_id')
+                 ->select('cpv.chain')
+                 ->select('cpv.property')
+                 ->select('cpv.value')
+                 ->from('ife_info AS ii')
+                 ->join('nr_chains AS ch', 'ii.ife_id = ch.ife_id')
+                 ->join('nr_classes AS cl', 'ch.nr_class_id = cl.nr_class_id AND ch.nr_release_id = cl.nr_release_id')
+                 ->join('chain_property_value AS cpv', 'cpv.pdb_id = ii.pdb_id')
+                 ->where('cl.name',$id);
+        $query_cpv = $this->db->get();
+        $ife_to_cpv = array();
+
+        foreach ($query_cpv->result() as $row) {
+            // for development, display the result of this query on the screen
+            // echo $row->pdb_id,"\n";
+            // echo $row->ife_id,"\n";
+            // echo $row->chain,"\n";
+            // echo $row->property,"\n";
+            // echo $row->value,"\n\n";
+
+            $row_pdb = $row->pdb_id;
+            $row_ife = $row->ife_id;
+            $row_chain = $row->chain;
+            $row_property = $row->property;
+            $row_value = $row->value;
+
+            
+            $ife_chain_list = explode('+', $row_ife);
+            foreach ($ife_chain_list as $ife_chain){
+                $chain = end(explode('|', $ife_chain));
+                if ($row_chain == $chain) {
+                    $ife_to_cpv["{$row_pdb}_{$row_chain}_{$row_property}"] = $row_value;
+                }
+            }
+            
+            // if chain matches the third field of the ife_id (those are the only ones we actually need)
+                // put data from this query into a dictionary
+                // key could be pdb_id + "_" + chain
+                // key could be pdb_id + "_" + chain + "_" + property  <-- then you only need one dictionary
+                
+            // }
+            // maybe make one dictionary for name, one for domain, one for rfam?
+            // depending on the property, you fill in a different dictionary
+
+        }
+
+        // foreach ($ife_to_cpv as $key=>$value){
+        //     echo "{$key} : {$value}\n";
+        // }
+            
         $i = 0;
         $table = array();
 
@@ -238,9 +290,65 @@ class Nrlist_model extends CI_Model {
             }
 
             $i++;
+            
+            // explode by +: split by +
+            // explode by |: for each chain, extract pdb_id and chain
+            // make the key you need
+            // plug into a dictionary to map to standardized name, domain, Rfam family?
+            // Use the long version of the standardized name, I guess
+            // join those by + sign
 
+            // echo "Name, domain, rfam for ",$row->ife_id," is \n";
+            $row_ife = $row->ife_id;
+            $ife_chain_list = explode('+', $row_ife);
+            
+            $rfam_str = "";
+            $domain_str = "";
+            $standard_name_str = "";
+
+            $j = 0;
+            foreach ($ife_chain_list as $ife_item){
+                $ife_chain = end(explode('|', $ife_item));
+                $ife_list = explode('|', $ife_item);
+                $pdb_from_ife = $ife_list[0];
+                $rfam_key = "{$pdb_from_ife}_{$chain}_rfam_family";
+                $domain_key = "{$pdb_from_ife}_{$chain}_domain";
+                $standard_name_key = "{$pdb_from_ife}_{$chain}_standard_name";
+                
+            //     if (array_key_exists($rfam_key, $ife_to_cpv)){
+            //         $rfam_str .= "{$ife_to_cpv[$rfam_key]}";
+            //     }
+            //     if (array_key_exists($domain_key, $ife_to_cpv)){
+            //         $domain_str .= "{$ife_to_cpv[$domain_key]}";
+            //     }
+            //     if (array_key_exists($standard_name_key, $ife_to_cpv)){
+            //         $standard_name_str .= "{$ife_to_cpv[$standard_name_key]}";
+            //     }
+                
+            //     // echo " {$standard_name_key} : {$standard_name_str} \n";
+            
+            //     if (count($ife_chain_list) > 1 and $j < count($ife_chain_list)){
+            //         if (!empty($rfam_str)){
+            //             $rfam_str .= " + ";
+
+            //         }
+            //         if (!empty($domain_str)){
+            //             $domain_str .= " + ";
+
+            //         }
+            //         if (!empty($standard_name_str)){
+            //             $standard_name_str .= " + ";
+            //         }
+            //     }
+            //     $j++;
+            }
+
+            ### Standard name edit
             $table[] = array($i,
                              $link,
+                             $standard_name_str,
+                             $domain_str,
+                             $rfam_str,
                              $this->get_compound_single($row->ife_id),
                              #  may add get_compound_list as popover
                              #  to get_compound_single field
@@ -250,6 +358,7 @@ class Nrlist_model extends CI_Model {
                              $row->experimental_technique,
                              $row->resolution,
                              $row->release_date);
+                             #$row->value;
         }
 
         return $table;
