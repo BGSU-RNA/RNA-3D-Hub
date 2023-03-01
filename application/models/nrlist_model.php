@@ -346,9 +346,9 @@ class Nrlist_model extends CI_Model {
             ### Standard name edit
             $table[] = array($i,
                              $link,
-                             $standard_name_str,
-                             $domain_str,
-                             $rfam_str,
+                            //  $standard_name_str,
+                            //  $domain_str,
+                            //  $rfam_str,
                              $this->get_compound_single($row->ife_id),
                              #  may add get_compound_list as popover
                              #  to get_compound_single field
