@@ -255,11 +255,12 @@ class Nrlist_model extends CI_Model {
             $row_property = $row->property;
             $row_value = $row->value;
 
+            // echo "{$row_chain}:{$row_value}\n";
             
             $ife_chain_list = explode('+', $row_ife);
             foreach ($ife_chain_list as $ife_chain){
                 $chain = end(explode('|', $ife_chain));
-                if ($row_chain == $chain) {
+                if ($row_chain == $chain and !empty($row_value)) {
                     $ife_to_cpv["{$row_pdb}_{$row_chain}_{$row_property}"] = $row_value;
                 }
             }
@@ -306,49 +307,94 @@ class Nrlist_model extends CI_Model {
             $domain_str = "";
             $standard_name_str = "";
 
+            $rfam_list = array();
+            $standard_name_list = array();
+            $domain_list = array();
+
             $j = 0;
             foreach ($ife_chain_list as $ife_item){
+                // echo "{$ife_item}\n";
                 $ife_chain = end(explode('|', $ife_item));
                 $ife_list = explode('|', $ife_item);
+                
+                // echo "{$ife_chain}\n";
+    
                 $pdb_from_ife = $ife_list[0];
-                $rfam_key = "{$pdb_from_ife}_{$chain}_rfam_family";
-                $domain_key = "{$pdb_from_ife}_{$chain}_domain";
-                $standard_name_key = "{$pdb_from_ife}_{$chain}_standard_name";
+                $rfam_key = "{$pdb_from_ife}_{$ife_chain}_rfam_family";
+                $domain_key = "{$pdb_from_ife}_{$ife_chain}_domain";
+                $standard_name_key = "{$pdb_from_ife}_{$ife_chain}_standard_name";
                 
-            //     if (array_key_exists($rfam_key, $ife_to_cpv)){
-            //         $rfam_str .= "{$ife_to_cpv[$rfam_key]}";
-            //     }
-            //     if (array_key_exists($domain_key, $ife_to_cpv)){
-            //         $domain_str .= "{$ife_to_cpv[$domain_key]}";
-            //     }
-            //     if (array_key_exists($standard_name_key, $ife_to_cpv)){
-            //         $standard_name_str .= "{$ife_to_cpv[$standard_name_key]}";
-            //     }
+
+                if (array_key_exists($rfam_key, $ife_to_cpv)){
+                    array_push($rfam_list, $ife_to_cpv[$rfam_key]);
+                }
+                if (empty($domain_str) and array_key_exists($domain_key, $ife_to_cpv)){
+                    array_push($domain_list, $ife_to_cpv[$domain_key]);
+                }
+                if (array_key_exists($standard_name_key, $ife_to_cpv)){
+                    $standard_name = explode(';', $ife_to_cpv[$standard_name_key]);
+                    array_push($standard_name_list, $standard_name[0]);
+                }
+                // echo "\n-------";
+                // echo "{$rfam_key} | {$rfam_str}\n";
+                // echo "{$domain_key} | {$domain_str}\n";
+                // echo "{$standard_name_key}| {$standard_name_str}\n";
                 
-            //     // echo " {$standard_name_key} : {$standard_name_str} \n";
+                // echo " {$standard_name_key} : {$standard_name_str} \n";
             
-            //     if (count($ife_chain_list) > 1 and $j < count($ife_chain_list)){
-            //         if (!empty($rfam_str)){
-            //             $rfam_str .= " + ";
-
-            //         }
-            //         if (!empty($domain_str)){
-            //             $domain_str .= " + ";
-
-            //         }
-            //         if (!empty($standard_name_str)){
-            //             $standard_name_str .= " + ";
-            //         }
-            //     }
-            //     $j++;
             }
+
+            $domain_list = array_unique($domain_list);
+            if (count($domain_list) > 1){
+                $j = 0;
+                foreach ($domain_list as $domain_item){
+                    $domain_str .= $domain_item;
+                    if ($j < count($domain_list) - 1){
+                        $domain_str .= " + ";
+                    }
+                    $j++;
+                }
+            } elseif(!empty($domain_list)){
+                $domain_str .= $domain_list[0];
+                
+            }
+
+            $j = 0;
+            foreach ($rfam_list as $rfam_item){
+                $rfam_str .= $rfam_item;
+                if ($j < count($rfam_list) - 1){
+                    $rfam_str .= " + ";
+                }
+                $j++;
+            }
+
+            $j = 0;
+            foreach ($standard_name_list as $standard_name_item){
+                $standard_name_str .= $standard_name_item;
+                if ($j < count($standard_name_list) - 1){
+                    $standard_name_str .= " + ";
+                }
+                $j++;
+            }
+
+            // if(substr($standard_name_str, -1) == "+") {
+            //     $new_name = substr($standard_name_str, 0, -1);
+            //     $standard_name_str = $new_name[0];
+            // }
+            // if(substr($rfam_str, -1) == "+") {
+            //     $new_rfam = substr($rfam_str, 0, -1);
+            //     $rfam_str =  $new_rfam[0];
+            // }
+
+            // echo "{$standard_name_str}";
+
 
             ### Standard name edit
             $table[] = array($i,
                              $link,
-                            //  $standard_name_str,
-                            //  $domain_str,
-                            //  $rfam_str,
+                             $standard_name_str,
+                             $domain_str,
+                             $rfam_str,
                              $this->get_compound_single($row->ife_id),
                              #  may add get_compound_list as popover
                              #  to get_compound_single field
