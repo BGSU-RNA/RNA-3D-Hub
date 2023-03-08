@@ -208,8 +208,56 @@ class Nrlist_model extends CI_Model {
         }
     }
 
+    // function get_members($id)
+    // {
+    //     $this->db->select('pi.pdb_id')
+    //              ->select('ch.ife_id')
+    //              ->select('pi.title')
+    //              ->select('pi.experimental_technique')
+    //              ->select('pi.release_date')
+    //              ->select('pi.resolution')
+    //              ->from('pdb_info AS pi')
+    //              ->join('ife_info AS ii','pi.pdb_id = ii.pdb_id')
+    //              ->join('nr_chains AS ch', 'ii.ife_id = ch.ife_id')
+    //              ->join('nr_classes AS cl', 'ch.nr_class_id = cl.nr_class_id AND ch.nr_release_id = cl.nr_release_id')
+    //              ->where('cl.name',$id)
+    //              #->where('nch.nr_release_id',$this->last_seen_in) # what was this doing? still necessary?
+    //              ->group_by('pi.pdb_id')
+    //              ->group_by('ii.ife_id')
+    //              ->order_by('ch.rep','desc');
+    //     $query = $this->db->get();
+
+    //     $i = 0;
+    //     $table = array();
+
+    //     foreach ($query->result() as $row) {
+    //         $link = $this->make_pdb_widget_link(str_replace('+','+ ',$row->ife_id));
+
+    //         if ( $i==0 ) {
+    //             $link = $link . ' <strong>(rep)</strong>';
+    //         }
+
+    //         $i++;
+
+    //         $table[] = array($i,
+    //                          $link,
+    //                          $this->get_compound_single($row->ife_id),
+    //                          #  may add get_compound_list as popover
+    //                          #  to get_compound_single field
+    //                          #$this->get_compound_list($row->pdb_id),
+    //                          $this->get_source_organism($row->ife_id),
+    //                          $row->title,
+    //                          $row->experimental_technique,
+    //                          $row->resolution,
+    //                          $row->release_date);
+    //     }
+
+    //     return $table;
+    // }
+
     function get_members($id)
     {
+        # get information about ifes, which have model numbers and might have + symbols
         $this->db->select('pi.pdb_id')
                  ->select('ch.ife_id')
                  ->select('pi.title')
@@ -221,12 +269,64 @@ class Nrlist_model extends CI_Model {
                  ->join('nr_chains AS ch', 'ii.ife_id = ch.ife_id')
                  ->join('nr_classes AS cl', 'ch.nr_class_id = cl.nr_class_id AND ch.nr_release_id = cl.nr_release_id')
                  ->where('cl.name',$id)
-                 #->where('nch.nr_release_id',$this->last_seen_in) # what was this doing? still necessary?
                  ->group_by('pi.pdb_id')
                  ->group_by('ii.ife_id')
                  ->order_by('ch.rep','desc');
         $query = $this->db->get();
 
+        # get chain, domain, rfam, standardized names for pdb ids in this equivalence class
+        $this->db->select('ii.pdb_id')
+                 ->select('ch.ife_id')
+                 ->select('cpv.chain')
+                 ->select('cpv.property')
+                 ->select('cpv.value')
+                 ->from('ife_info AS ii')
+                 ->join('nr_chains AS ch', 'ii.ife_id = ch.ife_id')
+                 ->join('nr_classes AS cl', 'ch.nr_class_id = cl.nr_class_id AND ch.nr_release_id = cl.nr_release_id')
+                 ->join('chain_property_value AS cpv', 'cpv.pdb_id = ii.pdb_id')
+                 ->where('cl.name',$id);
+        $query_cpv = $this->db->get();
+        $ife_to_cpv = array();
+
+        foreach ($query_cpv->result() as $row) {
+            // for development, display the result of this query on the screen
+            // echo $row->pdb_id,"\n";
+            // echo $row->ife_id,"\n";
+            // echo $row->chain,"\n";
+            // echo $row->property,"\n";
+            // echo $row->value,"\n\n";
+
+            $row_pdb = $row->pdb_id;
+            $row_ife = $row->ife_id;
+            $row_chain = $row->chain;
+            $row_property = $row->property;
+            $row_value = $row->value;
+
+            // echo "{$row_chain}:{$row_value}\n";
+            
+            $ife_chain_list = explode('+', $row_ife);
+            foreach ($ife_chain_list as $ife_chain){
+                $chain = end(explode('|', $ife_chain));
+                if ($row_chain == $chain and !empty($row_value)) {
+                    $ife_to_cpv["{$row_pdb}_{$row_chain}_{$row_property}"] = $row_value;
+                }
+            }
+            
+            // if chain matches the third field of the ife_id (those are the only ones we actually need)
+                // put data from this query into a dictionary
+                // key could be pdb_id + "_" + chain
+                // key could be pdb_id + "_" + chain + "_" + property  <-- then you only need one dictionary
+                
+            // }
+            // maybe make one dictionary for name, one for domain, one for rfam?
+            // depending on the property, you fill in a different dictionary
+
+        }
+
+        // foreach ($ife_to_cpv as $key=>$value){
+        //     echo "{$key} : {$value}\n";
+        // }
+            
         $i = 0;
         $table = array();
 
@@ -238,18 +338,120 @@ class Nrlist_model extends CI_Model {
             }
 
             $i++;
+            
+            // explode by +: split by +
+            // explode by |: for each chain, extract pdb_id and chain
+            // make the key you need
+            // plug into a dictionary to map to standardized name, domain, Rfam family?
+            // Use the long version of the standardized name, I guess
+            // join those by + sign
 
+            // echo "Name, domain, rfam for ",$row->ife_id," is \n";
+            $row_ife = $row->ife_id;
+            $ife_chain_list = explode('+', $row_ife);
+            
+            $rfam_str = "";
+            $domain_str = "";
+            $standard_name_str = "";
+
+            $rfam_list = array();
+            $standard_name_list = array();
+            $domain_list = array();
+
+            $j = 0;
+            foreach ($ife_chain_list as $ife_item){
+                // echo "{$ife_item}\n";
+                $ife_chain = end(explode('|', $ife_item));
+                $ife_list = explode('|', $ife_item);
+                
+                // echo "{$ife_chain}\n";
+    
+                $pdb_from_ife = $ife_list[0];
+                $rfam_key = "{$pdb_from_ife}_{$ife_chain}_rfam_family";
+                $domain_key = "{$pdb_from_ife}_{$ife_chain}_domain";
+                $standard_name_key = "{$pdb_from_ife}_{$ife_chain}_standard_name";
+                
+
+                if (array_key_exists($rfam_key, $ife_to_cpv)){
+                    array_push($rfam_list, $ife_to_cpv[$rfam_key]);
+                }
+                if (empty($domain_str) and array_key_exists($domain_key, $ife_to_cpv)){
+                    array_push($domain_list, $ife_to_cpv[$domain_key]);
+                }
+                if (array_key_exists($standard_name_key, $ife_to_cpv)){
+                    $standard_name = explode(';', $ife_to_cpv[$standard_name_key]);
+                    array_push($standard_name_list, $standard_name[0]);
+                }
+                // echo "\n-------";
+                // echo "{$rfam_key} | {$rfam_str}\n";
+                // echo "{$domain_key} | {$domain_str}\n";
+                // echo "{$standard_name_key}| {$standard_name_str}\n";
+                
+                // echo " {$standard_name_key} : {$standard_name_str} \n";
+            
+            }
+
+            $domain_list = array_unique($domain_list);
+            if (count($domain_list) > 1){
+                $j = 0;
+                foreach ($domain_list as $domain_item){
+                    $domain_str .= $domain_item;
+                    if ($j < count($domain_list) - 1){
+                        $domain_str .= " + ";
+                    }
+                    $j++;
+                }
+            } elseif(!empty($domain_list)){
+                $domain_str .= $domain_list[0];
+                
+            }
+
+            $j = 0;
+            foreach ($rfam_list as $rfam_item){
+                $rfam_str .= $rfam_item;
+                if ($j < count($rfam_list) - 1){
+                    $rfam_str .= " + ";
+                }
+                $j++;
+            }
+
+            $j = 0;
+            foreach ($standard_name_list as $standard_name_item){
+                $standard_name_str .= $standard_name_item;
+                if ($j < count($standard_name_list) - 1){
+                    $standard_name_str .= " + ";
+                }
+                $j++;
+            }
+
+            // if(substr($standard_name_str, -1) == "+") {
+            //     $new_name = substr($standard_name_str, 0, -1);
+            //     $standard_name_str = $new_name[0];
+            // }
+            // if(substr($rfam_str, -1) == "+") {
+            //     $new_rfam = substr($rfam_str, 0, -1);
+            //     $rfam_str =  $new_rfam[0];
+            // }
+
+            // echo "{$standard_name_str}";
+
+
+            ### Standard name edit
             $table[] = array($i,
                              $link,
+                             $standard_name_str,
                              $this->get_compound_single($row->ife_id),
+                             $this->get_source_organism($row->ife_id),
+                             $domain_str,
+                             $rfam_str,
                              #  may add get_compound_list as popover
                              #  to get_compound_single field
                              #$this->get_compound_list($row->pdb_id),
-                             $this->get_source_organism($row->ife_id),
                              $row->title,
                              $row->experimental_technique,
                              $row->resolution,
                              $row->release_date);
+                             #$row->value;
         }
 
         return $table;
