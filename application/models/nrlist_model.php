@@ -393,13 +393,13 @@ class Nrlist_model extends CI_Model {
             $table[] = array($i,
                              $link,
                              $standard_name_str,
+                             $this->get_compound_single($row->ife_id),
+                             $this->get_source_organism($row->ife_id),
                              $domain_str,
                              $rfam_str,
-                             $this->get_compound_single($row->ife_id),
                              #  may add get_compound_list as popover
                              #  to get_compound_single field
                              #$this->get_compound_list($row->pdb_id),
-                             $this->get_source_organism($row->ife_id),
                              $row->title,
                              $row->experimental_technique,
                              $row->resolution,

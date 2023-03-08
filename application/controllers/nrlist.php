@@ -112,7 +112,7 @@ class Nrlist extends CI_Controller {
         $tmpl = array( 'table_open'  => "<table class='zebra-striped bordered-table' id='members_table'>" );
         $this->table->set_template($tmpl);
         // $this->table->set_heading('#','IFE', 'Compound(s)','RNA source organism','Title','Method','Resolution','Date');
-        $this->table->set_heading('#','IFE','Standard Name', 'Domain', 'Rfam', 'Compound(s)','RNA source organism','Title','Method','Resolution','Date');
+        $this->table->set_heading('#','IFE','Standard Name', 'Compound(s)', 'RNA source organism', 'Domain', 'Rfam', 'Title','Method','Resolution','Date');
         $data['members'] = $this->table->generate($members);
         $data['num_members'] = count($members);
 
