@@ -1316,7 +1316,7 @@ class Nrlist_model extends CI_Model {
         foreach ($query->result() as $row) {
             $class_id = $row->name;
             #$nums     = $row->num;
-            $ife_id   = $reps[$class_id];
+            $ife_id   = $reps[$class_id]; //Representative IFE
             $pdb_id   = $row->pdb_id;
             $tax_link = $this->tax_url . $row->species_id;
 

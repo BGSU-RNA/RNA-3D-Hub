@@ -303,7 +303,7 @@ small .label {
     width:40px;
 }
 .nrlist_class_view #members_table th:nth-of-type(5) { /*changed row width for title on class pages*/
-    width:240px;
+    width:40px;
 }
 
 
