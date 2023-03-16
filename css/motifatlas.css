@@ -307,7 +307,7 @@ small .label {
 }
 
 .nrlist_class_view #members_table th:nth-of-type(2) {
-    width: 30px;
+    width: 15px;
 }
 .nrlist_class_view #members_table th:nth-of-type(3) {
     width: 30px;
@@ -333,10 +333,10 @@ small .label {
     width: 20px;
 }
 .nrlist_class_view #members_table th:nth-of-type(10) {
-    width: 3%;
+    width: 1px;
 }
 .nrlist_class_view #members_table th:nth-of-type(11) {
-    width: 20px;
+    width: 10px;
 }
 
 
