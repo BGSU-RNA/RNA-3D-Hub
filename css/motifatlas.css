@@ -296,7 +296,7 @@ small .label {
     table-layout: fixed;
 }
 
-.nrlist_class_view #members_table {
+/* .nrlist_class_view #members_table {
     table-layout: fixed;
 }
 .nrlist_class_view #members_table th:nth-of-type(1) {
@@ -304,6 +304,14 @@ small .label {
 }
 .nrlist_class_view #members_table th:nth-of-type(5) {
     width:240px;
+} */
+
+.nrlist_class_view #members_table {
+    table-layout: auto;
+    width: 100%;
+}
+.nrlist_class_view #members_table th:nth-of-type(1) {
+    width: 10px;
 }
 
 
