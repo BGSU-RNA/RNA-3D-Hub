@@ -1204,7 +1204,7 @@ class Nrlist_model extends CI_Model {
     }
 */
 
-    function get_release($id, $resolution)
+    function get_release($id, $resolution) // This function populates the Representative set pages
     {
         $resolution = str_replace('A', '', $resolution);
 
@@ -1313,6 +1313,21 @@ class Nrlist_model extends CI_Model {
                  ->order_by('ii.length','desc');
         $query = $this->db->get();
 
+        # get chain, domain, rfam, standardized names for pdb ids in this equivalence class
+        $this->db->select('ii.pdb_id')
+            ->select('ch.ife_id')
+            ->select('cpv.chain')
+            ->select('cpv.property')
+            ->select('cpv.value')
+            ->from('ife_info AS ii')
+            ->join('nr_chains AS ch', 'ii.ife_id = ch.ife_id')
+            ->join('nr_classes AS cl', 'ch.nr_class_id = cl.nr_class_id AND ch.nr_release_id = cl.nr_release_id')
+            ->join('chain_property_value AS cpv', 'cpv.pdb_id = ii.pdb_id')
+            ->where('cl.name',$id);
+        $query_cpv = $this->db->get();
+        $ife_to_cpv = array();
+
+
         foreach ($query->result() as $row) {
             $class_id = $row->name;
             #$nums     = $row->num;
@@ -1323,6 +1338,7 @@ class Nrlist_model extends CI_Model {
             $source   = ( is_null($row->species_name) ) ? "" : anchor_popup("$tax_link", "$row->species_name");
             $compound = (strlen($row->compound) > 40 ) ? substr($row->compound, 0, 40) . "[...]" : $row->compound;
 
+            // this if else block could be reduced to a single explode function / made more efficient
             if (preg_match('/\+/',$ife_id)){
                 $best_chains = "";
                 $best_models = "";
@@ -1347,6 +1363,7 @@ class Nrlist_model extends CI_Model {
                 $best_chains = $ife_split[2];
                 $best_models = $ife_split[1];
             }
+
 
             // $id refers to the release_id
             $table[] = array($i,
