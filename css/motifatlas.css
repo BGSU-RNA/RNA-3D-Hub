@@ -297,12 +297,14 @@ small .label {
 }
 
 .nrlist_class_view #members_table {
-    table-layout: auto;
+    table-layout: fixed;
     width: 100%;
+    word-wrap: break-word;
 }
 .nrlist_class_view #members_table th:nth-of-type(1) {
     width: 10px;
 }
+
 
 .nrlist_class_view .parents table {
     table-layout: fixed;
