@@ -886,7 +886,7 @@ class Motif_model extends CI_Model {
 
     function get_header()
     {
-        $header = array('#D', '#S', 'Loop id', 'PDB', 'Disc', '#Non-core', 'Annotation', 'Chain', 'Standardized name');
+        $header = array('#D', '#S', 'Loop id', 'PDB', 'Disc', '#Non-core', 'Annotation', 'Chain');
 
         // 1, 2, ..., N
         for ($i = 1; $i <= $this->motiflen; $i++) {
@@ -991,25 +991,16 @@ class Motif_model extends CI_Model {
                     $row[] = ' ';
                  }
             } elseif( $key == 'Chain' ) {
+                // if ()
+                // $parts = explode('|', $this->units[$this->similarity[$id]][1]);
+                // $chains = array();
+                // array_push($chains, $parts[2]);
+
+
 
                 $parts = explode('|', $this->units[$this->similarity[$id]][1]);
                 $row[] = $parts[2];
-                
-           } /*** elseif( $key == 'Standardized name' ) {
-                // pdb
-                $parts = explode("_", $this->similarity[$id]); 
-                $row[] = $parts[2];
-                
-                // chain
-                $parts = explode('|', $this->units[$this->similarity[$id]][1]);
-                $row[] = $parts[2];
-                
-
-
-
-               
-               
-           } ***/ else {
+           } else {
                 $parts = explode('-', $key);
 
                 #$nt1 = $this->nts[$this->loops[$id]][$parts[0]]; // ISSUE
@@ -1122,19 +1113,6 @@ class Motif_model extends CI_Model {
         // $nt_ids['1S72_AU_...'] = 'A 102'
         // $full_nts['IL_1S72_001'][1] = '1S72_AU_...'
     }
-
-    // function get_standardized_name()
-    // {
-    //     $this->db->select('MLP.loop_id, MLP.position, UI.unit_id')
-    //              ->from('ml_loop_positions AS MLP')
-    //              ->join('unit_info AS UI', 'MLP.unit_id = UI.unit_id')
-    //              ->where('ml_release_id', $this->release_id)
-    //              ->where('motif_id', $this->motif_id);
-    //     $result = $this->db->get()->result_array();
-        
-        
-
-    // }
 
     function remove_empty_columns($rows)
     {
