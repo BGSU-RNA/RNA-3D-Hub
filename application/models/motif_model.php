@@ -886,7 +886,7 @@ class Motif_model extends CI_Model {
 
     function get_header()
     {
-        $header = array('#D', '#S', 'Loop id', 'PDB', 'Disc', '#Non-core', 'Annotation', 'Chain');
+        $header = array('#D', '#S', 'Loop id', 'PDB', 'Disc', '#Non-core', 'Annotation', 'Chain', 'Standard name');
 
         // 1, 2, ..., N
         for ($i = 1; $i <= $this->motiflen; $i++) {
@@ -991,15 +991,42 @@ class Motif_model extends CI_Model {
                     $row[] = ' ';
                  }
             } elseif( $key == 'Chain' ) {
-                // if ()
-                // $parts = explode('|', $this->units[$this->similarity[$id]][1]);
-                // $chains = array();
-                // array_push($chains, $parts[2]);
 
 
 
                 $parts = explode('|', $this->units[$this->similarity[$id]][1]);
                 $row[] = $parts[2];
+           } elseif( $key == 'Standard name'){
+                $parts = explode('|', $this->units[$this->similarity[$id]][1]);
+
+                $this->db->select('value')
+                        ->from('chain_property_value')
+                        ->where('property', 'standard_name')
+                        ->where('pdb_id', $parts[0])
+                        ->where('chain', $parts[2])
+                        ->limit(1);
+                $result = $this->db->get()->result_array();
+                if ( count($result) > 0 ){
+                    $standard_name = $result[0]['value'];
+                    $short_standard_name = explode(';', $standard_name);
+                    $row[] = end($short_standard_name);
+                } else {
+                    $this->db->select('macromolecule_type')
+                            ->from('chain_info')
+                            ->where('pdb_id', $parts[0])
+                            ->where('chain_id', $parts[2])
+                            ->limit(1);
+                    $result = $this->db->get()->result_array();
+                    if ( count($result) > 0 ){
+                        $macromolecule_type = $result[0]['value'];
+                        $row[] = $macromolecule_type;
+                    } else{
+                        $row[] = ' ';
+                    }
+                }
+                              
+
+
            } else {
                 $parts = explode('-', $key);
 
