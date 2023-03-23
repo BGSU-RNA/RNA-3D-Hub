@@ -995,9 +995,19 @@ class Motif_model extends CI_Model {
 
 
                 $parts = explode('|', $this->units[$this->similarity[$id]][1]);
-                $row[] = $parts[2];
+
+
+                $partsend = explode('|', end($this->units[$this->similarity[$id]]));
+                
+                if ($parts[2] != $partsend[2]){
+                    $row[] = $parts[2] .'*'. $partsend[2];
+                } else {
+                    $row[] = $parts[2];
+                }
+                    
            } elseif( $key == 'Standard name'){
                 $parts = explode('|', $this->units[$this->similarity[$id]][1]);
+                // $partsend = explode('|', end($this->units[$this->similarity[$id]]));
 
                 $this->db->select('value')
                         ->from('chain_property_value')
@@ -1009,7 +1019,8 @@ class Motif_model extends CI_Model {
                 if ( count($result) > 0 ){
                     $standard_name = $result[0]['value'];
                     $short_standard_name = explode(';', $standard_name);
-                    $row[] = end($short_standard_name);
+                    // $row[] = end($short_standard_name);
+                    $short_standard_name  = end($short_standard_name);
                 } else {
                     $this->db->select('macromolecule_type')
                             ->from('chain_info')
@@ -1018,15 +1029,18 @@ class Motif_model extends CI_Model {
                             ->limit(1);
                     $result = $this->db->get()->result_array();
                     if ( count($result) > 0 ){
-                        $macromolecule_type = $result[0]['value'];
-                        $row[] = $macromolecule_type;
+                        $short_standard_name = $result[0]['macromolecule_type'];
+                        // $row[] = $short_standard_name;
                     } else{
-                        $row[] = ' ';
+                        // $row[] = ' ';
                     }
                 }
-                              
 
-
+                if (isset($short_standard_name)) {
+                    $row[] = $short_standard_name;
+                } else {
+                    $row[] = ' ';
+                }
            } else {
                 $parts = explode('-', $key);
 
@@ -1208,5 +1222,6 @@ class Motif_model extends CI_Model {
 
 }
 
+// 2023-03-23
 /* End of file motif_model.php */
 /* Location: ./application/model/motif_model.php */
