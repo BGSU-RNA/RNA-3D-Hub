@@ -1022,14 +1022,14 @@ class Motif_model extends CI_Model {
                     $short_standard_name = explode(';', $standard_name);
                     $short_standard_name  = end($short_standard_name);
                 } else {
-                    $this->db->select('macromolecule_type')
+                    $this->db->select('compound')
                             ->from('chain_info')
                             ->where('pdb_id', $parts[0])
                             ->where('chain_name', $parts[2])
                             ->limit(1);
                     $result = $this->db->get()->result_array();
                     if ( count($result) > 0 ){
-                        $short_standard_name = $result[0]['macromolecule_type'];
+                        $short_standard_name = $result[0]['compound'];
                     } else{
 
                     }
