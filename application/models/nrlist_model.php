@@ -1360,6 +1360,37 @@ class Nrlist_model extends CI_Model {
                  ->order_by('ii.length','desc');
         $query = $this->db->get();
 
+        # Query the entire cpv table. Load all data approach.
+        $this->db->select('cpv.pdb_id')
+            ->select('cpv.chain')
+            ->select('cpv.property')
+            ->select('cpv.value')
+            ->from('chain_property_value AS cpv');
+        $query_cpv = $this->db->get();
+        $ife_to_cpv = array();
+
+        //Creating dicts to store cpv data
+        $chain_to_standardized_name = array();
+        $chain_to_domain = array();
+        $chain_to_rfam = array();
+        // $i = 0;
+
+        //populating dicts with cpv data
+        foreach ($query_cpv->result() as $row) {
+            $row_pdb = $row->pdb_id;
+            $row_chain = $row->chain;
+            $row_property = $row->property;
+            $row_value = $row->value;
+            if ($row_property == "standard_name"){
+                $chain_to_standardized_name["{$row_pdb}_{$row_chain}"] = $row_value;
+            }
+            elseif ($row_property == "domain") {
+                $chain_to_domain["{$row_pdb}_{$row_chain}"] = $row_value;
+            }
+            elseif ($row_property == "rfam_family"){
+                $chain_to_rfam["{$row_pdb}_{$row_chain}"] = $row_value;
+            }
+        }
         foreach ($query->result() as $row) {
             $class_id = $row->name;
             #$nums     = $row->num;
@@ -1395,6 +1426,43 @@ class Nrlist_model extends CI_Model {
                 $best_models = $ife_split[1];
             }
 
+            // adding cpv data using the representative ife as the key to stdname, domain and rfam dicts.
+            $ife_chain_list = explode('+', $ife_id);
+            $rfam_representative = "";
+            $domain_representative = "";
+            $standardized_name_representative = "";
+            foreach ($ife_chain_list as $ife_chain){
+                $chain = end(explode('|', $ife_chain));
+                $ife_split = explode('|', $ife_chain);
+                $ife_pdb_id = $ife_split[0];
+                if (array_key_exists("{$ife_pdb_id}_{$chain}", $chain_to_rfam)){
+                    $rfam_representative .= $chain_to_rfam["{$ife_pdb_id}_{$chain}"] . " + ";
+                }
+                if (array_key_exists("{$ife_pdb_id}_{$chain}", $chain_to_domain)){
+                    $domain_representative = $chain_to_domain["{$ife_pdb_id}_{$chain}"];
+                }
+                if (array_key_exists("{$ife_pdb_id}_{$chain}", $chain_to_standardized_name)){
+                    $stdname = $chain_to_standardized_name["{$ife_pdb_id}_{$chain}"];
+                    $short_name = end(explode(';', $stdname));
+                    $standardized_name_representative .= $short_name . " + ";
+                }
+                
+            }
+            //creating a single string with <li> tags corresponding to the cpv data.
+            // If a cpv datum is none for the ife, that datum will not be listed.
+            $cpv_html_list_item = "";
+            if (!empty($standardized_name_representative)){
+                $standardized_name_representative = substr($standardized_name_representative, 0, -3);
+                $cpv_html_list_item .= '<li>Standardized name: ' . $standardized_name_representative . '</li>';
+            }
+            if (!empty($domain_representative)){
+                $cpv_html_list_item .= '<li>Domain: ' . $domain_representative . '</li>';
+            }
+            if (!empty($rfam_representative)){
+                $rfam_representative = substr($rfam_representative, 0, -3);
+                $cpv_html_list_item .= '<li>Rfam: ' . $rfam_representative . '</li>';
+            }
+
             // $id refers to the release_id
             $table[] = array($i,
                              anchor(base_url("nrlist/view/".$class_id),$class_id)
@@ -1408,6 +1476,7 @@ class Nrlist_model extends CI_Model {
                              '<li>Chain(s): ' . $best_chains . '; model(s): ' . $best_models . '</li>' .
                              '<li>Release Date: ' . $pdb[$pdb_id]['release_date'] . '</li>' .
                              //'<li>' . $pdb[$pdb_id]['release_date'] '</li>' .//
+                             $cpv_html_list_item.
                              '</ul>',
                              $pdb[$pdb_id]['resolution'],
                              $row->analyzed_length,
