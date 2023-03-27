@@ -886,7 +886,7 @@ class Motif_model extends CI_Model {
 
     function get_header()
     {
-        $header = array('#D', '#S', 'Loop id', 'PDB', 'Disc', '#Non-core', 'Annotation', 'Chain', 'Standard name');
+        $header = array('#D', '#S', 'Loop id', 'PDB', 'Disc', '#Non-core', 'Annotation', 'Chain(s)', 'Standardized name');
 
         // 1, 2, ..., N
         for ($i = 1; $i <= $this->motiflen; $i++) {
@@ -990,7 +990,7 @@ class Motif_model extends CI_Model {
                  } else {
                     $row[] = ' ';
                  }
-            } elseif( $key == 'Chain' ) {
+            } elseif( $key == 'Chain(s)' ) {
 
 
 
@@ -1000,14 +1000,14 @@ class Motif_model extends CI_Model {
                 $partsend = explode('|', end($this->units[$this->similarity[$id]]));
                 
                 if ($parts[2] != $partsend[2]){
-                    $row[] = $parts[2] .' * '. $partsend[2];
+                    $row[] = $parts[2] .'*'. $partsend[2];
                 } else {
                     $row[] = $parts[2];
                 }
                     
-            } elseif( $key == 'Standard name'){
+            } elseif( $key == 'Standardized name'){
                 $parts = explode('|', $this->units[$this->similarity[$id]][1]);
-                // $partsend = explode('|', end($this->units[$this->similarity[$id]]));
+                $partsend = explode('|', end($this->units[$this->similarity[$id]]));
 
                 $this->db->select('value')
                         ->from('chain_property_value')
@@ -1035,11 +1035,43 @@ class Motif_model extends CI_Model {
                     }
                 }
 
-                if (isset($short_standard_name)) {
-                    $row[] = $short_standard_name;
+                if ($parts[2] == $partsend[2]){
+                    if (isset($short_standard_name)) {
+                        $row[] = $short_standard_name;
+                    } else {
+                        $row[] = ' ';
+                    }
                 } else {
-                    $row[] = ' ';
+                    $this->db->select('value')
+                        ->from('chain_property_value')
+                        ->where('property', 'standard_name')
+                        ->where('pdb_id', $partsend[0])
+                        ->where('chain', $partsend[2])
+                        ->limit(1);
+                    $result = $this->db->get()->result_array();
+
+                    if ( count($result) > 0 ){
+                        $standard_name_2 = $result[0]['value'];
+                        $short_standard_name_2 = explode(';', $standard_name_2);
+                        $short_standard_name_2  = end($short_standard_name_2);
+                    } else {
+                        $this->db->select('compound')
+                                ->from('chain_info')
+                                ->where('pdb_id', $partsend[0])
+                                ->where('chain_name', $partsend[2])
+                                ->limit(1);
+                        $result = $this->db->get()->result_array();
+                        if ( count($result) > 0 ){
+                            $short_standard_name_2 = $result[0]['compound'];
+                        } else{
+
+                        }
+                    }
+                    $row[] = $short_standard_name. ' <br>* ' . $short_standard_name_2;
                 }
+                
+
+                
             } else {
                 $parts = explode('-', $key);
 
@@ -1218,6 +1250,8 @@ class Motif_model extends CI_Model {
             return '';
         }
     }
+
+    
 
 }
 
