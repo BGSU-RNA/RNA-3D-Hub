@@ -1411,7 +1411,13 @@ class Nrlist_model extends CI_Model {
                 $cpv_html_list_item .= '<li>Standardized name: ' . $standardized_name_representative . '</li>';
             }
             if (!empty($domain_representative)){
-                $cpv_html_list_item .= '<li>Domain: ' . $domain_representative . '</li>';
+                $biological_context = "Domain";
+                if ($domain_representative == "Mitochondria" or $domain_representative == "Chloroplast"){
+                    $biological_context = "Organelle";
+                } elseif ($domain_representative == "Synthetic"){
+                    $biological_context = "Source";
+                }
+                $cpv_html_list_item .= '<li>' . $biological_context . ': ' . $domain_representative . '</li>';
             }
             if (!empty($rfam_representative)){
                 $rfam_representative = substr($rfam_representative, 0, -3);
@@ -1429,7 +1435,7 @@ class Nrlist_model extends CI_Model {
                              '<ul>' .
                              '<li>' . $compound . '</li>' .
                              '<li>' . $pdb[$pdb_id]['experimental_technique'] . '</li>' .
-                             '<li>Chain(s): ' . $best_chains . '; model(s): ' . $best_models . '</li>' .
+                            //  '<li>Chain(s): ' . $best_chains . '; model(s): ' . $best_models . '</li>' .
                              '<li>Release Date: ' . $pdb[$pdb_id]['release_date'] . '</li>' .
                              $cpv_html_list_item.
                              //'<li>' . $pdb[$pdb_id]['release_date'] '</li>' .//
