@@ -239,6 +239,22 @@ class Nrlist_model extends CI_Model {
                  ->join('chain_property_value AS cpv', 'cpv.pdb_id = ii.pdb_id')
                  ->where('cl.name',$id);
         $query_cpv = $this->db->get();
+        // Converting experimental technique to lower case equivalent (without changing pdb_info table)
+        $experimental_technique = array();
+        $experimental_technique['X-RAY DIFFRACTION'] = 'X-ray diffraction';
+        $experimental_technique['ELECTRON MICROSCOPY'] = 'Electron microscopy';
+        $experimental_technique['SOLUTION NMR'] = 'Solution NMR';
+        $experimental_technique['FIBER DIFFRACTION'] = 'Fiber diffraction';
+        $experimental_technique['THEORETICAL MODEL, SOLUTION NMR'] = 'Theoretical model, solution NMR';
+        $experimental_technique['FLUORESCENCE TRANSFER'] = 'Fluorescence transfer';
+        $experimental_technique['NEUTRON DIFFRACTION'] = 'Neutron diffraction';
+        $experimental_technique['SOLUTION NMR, SOLUTION SCATTERING'] = 'Solution NMR, solution scattering';
+        $experimental_technique['SOLUTION SCATTERING, SOLUTION NMR'] = 'Solution scattering, solution NMR';
+        $experimental_technique['SOLID-STATE NMR'] = 'Solid-state NMR';
+        $experimental_technique['ELECTRON MICROSCOPY, SOLUTION NMR'] = 'Electron microscopy, solution NMR';
+        $experimental_technique['X-RAY DIFFRACTION, SOLUTION SCATTERING'] = 'X-ray diffraction, solution scattering';
+
+        
         $ife_to_cpv = array();
 
         foreach ($query_cpv->result() as $row) {
@@ -388,7 +404,6 @@ class Nrlist_model extends CI_Model {
 
             // echo "{$standard_name_str}";
 
-
             ### Standard name edit
             $table[] = array($i,
                              $link,
@@ -401,7 +416,7 @@ class Nrlist_model extends CI_Model {
                              #  to get_compound_single field
                              #$this->get_compound_list($row->pdb_id),
                              $row->title,
-                             $row->experimental_technique,
+                             $experimental_technique[$row->experimental_technique],
                              $row->resolution,
                              $row->release_date);
                              #$row->value;
@@ -1243,11 +1258,26 @@ class Nrlist_model extends CI_Model {
                  ->where_in('pdb_id', $pdbs )
                  ->group_by('pdb_id');
         $query = $this->db->get();
+        // converting experimental_technique without changing pdb_info table.
+        $experimental_technique = array();
+        $experimental_technique['X-RAY DIFFRACTION'] = 'X-ray diffraction';
+        $experimental_technique['ELECTRON MICROSCOPY'] = 'Electron microscopy';
+        $experimental_technique['SOLUTION NMR'] = 'Solution NMR';
+        $experimental_technique['FIBER DIFFRACTION'] = 'Fiber diffraction';
+        $experimental_technique['THEORETICAL MODEL, SOLUTION NMR'] = 'Theoretical model, solution NMR';
+        $experimental_technique['FLUORESCENCE TRANSFER'] = 'Fluorescence transfer';
+        $experimental_technique['NEUTRON DIFFRACTION'] = 'Neutron diffraction';
+        $experimental_technique['SOLUTION NMR, SOLUTION SCATTERING'] = 'Solution NMR, solution scattering';
+        $experimental_technique['SOLUTION SCATTERING, SOLUTION NMR'] = 'Solution scattering, solution NMR';
+        $experimental_technique['SOLID-STATE NMR'] = 'Solid-state NMR';
+        $experimental_technique['ELECTRON MICROSCOPY, SOLUTION NMR'] = 'Electron microscopy, solution NMR';
+        $experimental_technique['X-RAY DIFFRACTION, SOLUTION SCATTERING'] = 'X-ray diffraction, solution scattering';
+
 
         foreach($query->result() as $row) {
             $pdb[$row->pdb_id]['title']      = $row->title;
             $pdb[$row->pdb_id]['resolution'] = (is_null($row->resolution)) ? '' : number_format($row->resolution, 1) . ' &Aring';
-            $pdb[$row->pdb_id]['experimental_technique'] = $row->experimental_technique;
+            $pdb[$row->pdb_id]['experimental_technique'] = $experimental_technique[$row->experimental_technique];
             $pdb[$row->pdb_id]['release_date'] = $row->release_date;
 
         }
