@@ -773,10 +773,12 @@ class Motif_model extends CI_Model {
             for ($j = 1; $j <= $this->num_loops; $j++) {
                 $loop_id_2 = $this->similarity[$j];
                 $cell = array('data-disc' => $disc[$loop_id_1][$loop_id_2],
-                              'data-pair' => "$loop_id_1:$loop_id_2",
-                              'class'     => $this->get_css_class($disc[$loop_id_1][$loop_id_2]),
-                              'rel'       => 'twipsy',
-                              'title'     => "$loop_id_1:$loop_id_2, {$disc[$loop_id_1][$loop_id_2]}");
+                            //   'data-pair' => "$loop_id_1:$loop_id_2",
+                            //   'class'     => $this->get_css_class($disc[$loop_id_1][$loop_id_2]),
+                            //   'rel'       => 'twipsy',
+                            //   'title'     => "$loop_id_1:$loop_id_2, {$disc[$loop_id_1][$loop_id_2]}"
+                            );
+                // <td title='IL_3U4M_004:IL_3U4M_004, 0' rel='twipsy' class='md00' data-pair='IL_3U4M_004:IL_3U4M_004' data-disc='0'></td>
                 $matrix[] = $cell;
             }
         }
@@ -1006,9 +1008,13 @@ class Motif_model extends CI_Model {
                 }
                     
             } elseif( $key == 'Standardized name'){
+
+
+                  
                 $parts = explode('|', $this->units[$this->similarity[$id]][1]);
                 $partsend = explode('|', end($this->units[$this->similarity[$id]]));
-
+                
+                //get first nuclotide 
                 $this->db->select('value')
                         ->from('chain_property_value')
                         ->where('property', 'standard_name')
@@ -1030,13 +1036,21 @@ class Motif_model extends CI_Model {
                     $result = $this->db->get()->result_array();
                     if ( count($result) > 0 ){
                         $short_standard_name = $result[0]['compound'];
+                        // $short_standard_name = parseRNA($result[0]['compound']);
+                        $short_standard_name = $this->parseRna($short_standard_name);
                     } else{
 
                     }
                 }
 
+                //get the last nuclotide
                 if ($parts[2] == $partsend[2]){
                     if (isset($short_standard_name)) {
+                        // if (strlen($short_standard_name)>=25){
+                        //     $row[] = 'RNA (25-MER)';
+                        // } else {
+                        //     $row[] = $short_standard_name;
+                        // }
                         $row[] = $short_standard_name;
                     } else {
                         $row[] = ' ';
@@ -1067,7 +1081,9 @@ class Motif_model extends CI_Model {
 
                         }
                     }
-                    $row[] = $short_standard_name. ' <br>* ' . $short_standard_name_2;
+
+                    $short_standard_name_2 = $this->parseRna($short_standard_name_2);
+                    $row[] = $short_standard_name. ' + ' . $short_standard_name_2;
                 }
                 
 
@@ -1250,10 +1266,26 @@ class Motif_model extends CI_Model {
             return '';
         }
     }
+    function parseRNA($inputString) {
+        // Check if input string starts with "5'-R"
+        if (substr($inputString, 0, 5) == "5'-R(" or substr($inputString, 0, 8) == "RNA (5'-") {
+    
+            // Count the number of "*" characters
+            $nCount = substr_count($inputString, "*");
+        
+            // Return the RNA sequence with the N-mer count
+            return "RNA ({$nCount}-mer)";
+        } else {
+            return $inputString;
+        }
+    }
+    
 
     
 
 }
+
+
 
 // 2023-03-23
 /* End of file motif_model.php */
