@@ -214,8 +214,8 @@ class Motif extends MY_Controller {
         $data['table']      = $this->table->generate($table_array);
 
         // checkbox widget
-//         $this->benchmark->mark('b');
-//         $data['checkboxes'] = array(); //$this->Motif_model->get_checkboxes($this->Motif_model->loops);
+        // $this->benchmark->mark('b');
+        // $data['checkboxes'] = array(); //$this->Motif_model->get_checkboxes($this->Motif_model->loops);
 
         //annotations
         $data['annotation'] = $this->Motif_model->get_annotations($motif_id);
@@ -225,7 +225,7 @@ class Motif extends MY_Controller {
         // mutual discrepancy matrix widget
         $this->benchmark->mark('c');
         if ( $this->Motif_model->num_loops > 1 ) {
-            $matrix_linear = $this->Motif_model->get_mutual_discrepancy_matrix();
+            $matrix_linear = $this->Motif_model->get_mutual_discrepancy_matrix_efficient();
             $matrix_column = $this->table->make_columns($matrix_linear, $this->Motif_model->num_loops);
             $tmpl = array( 'table_open'  => '<table class="condensed-table">' ,
                            'class' => 'mdmatrix-table');
