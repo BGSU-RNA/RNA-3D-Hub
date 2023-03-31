@@ -208,6 +208,53 @@ class Nrlist_model extends CI_Model {
         }
     }
 
+    // function get_members($id)
+    // {
+    //     $this->db->select('pi.pdb_id')
+    //              ->select('ch.ife_id')
+    //              ->select('pi.title')
+    //              ->select('pi.experimental_technique')
+    //              ->select('pi.release_date')
+    //              ->select('pi.resolution')
+    //              ->from('pdb_info AS pi')
+    //              ->join('ife_info AS ii','pi.pdb_id = ii.pdb_id')
+    //              ->join('nr_chains AS ch', 'ii.ife_id = ch.ife_id')
+    //              ->join('nr_classes AS cl', 'ch.nr_class_id = cl.nr_class_id AND ch.nr_release_id = cl.nr_release_id')
+    //              ->where('cl.name',$id)
+    //              #->where('nch.nr_release_id',$this->last_seen_in) # what was this doing? still necessary?
+    //              ->group_by('pi.pdb_id')
+    //              ->group_by('ii.ife_id')
+    //              ->order_by('ch.rep','desc');
+    //     $query = $this->db->get();
+
+    //     $i = 0;
+    //     $table = array();
+
+    //     foreach ($query->result() as $row) {
+    //         $link = $this->make_pdb_widget_link(str_replace('+','+ ',$row->ife_id));
+
+    //         if ( $i==0 ) {
+    //             $link = $link . ' <strong>(rep)</strong>';
+    //         }
+
+    //         $i++;
+
+    //         $table[] = array($i,
+    //                          $link,
+    //                          $this->get_compound_single($row->ife_id),
+    //                          #  may add get_compound_list as popover
+    //                          #  to get_compound_single field
+    //                          #$this->get_compound_list($row->pdb_id),
+    //                          $this->get_source_organism($row->ife_id),
+    //                          $row->title,
+    //                          $row->experimental_technique,
+    //                          $row->resolution,
+    //                          $row->release_date);
+    //     }
+
+    //     return $table;
+    // }
+
     function get_members($id)
     {
         # get information about ifes, which have model numbers and might have + symbols
@@ -239,7 +286,8 @@ class Nrlist_model extends CI_Model {
                  ->join('chain_property_value AS cpv', 'cpv.pdb_id = ii.pdb_id')
                  ->where('cl.name',$id);
         $query_cpv = $this->db->get();
-        // Converting experimental technique to lower case equivalent (without changing pdb_info table)
+
+        // converting experimental_technique without changing pdb_info table.
         $experimental_technique = array();
         $experimental_technique['X-RAY DIFFRACTION'] = 'X-ray diffraction';
         $experimental_technique['ELECTRON MICROSCOPY'] = 'Electron microscopy';
@@ -254,7 +302,6 @@ class Nrlist_model extends CI_Model {
         $experimental_technique['ELECTRON MICROSCOPY, SOLUTION NMR'] = 'Electron microscopy, solution NMR';
         $experimental_technique['X-RAY DIFFRACTION, SOLUTION SCATTERING'] = 'X-ray diffraction, solution scattering';
 
-        
         $ife_to_cpv = array();
 
         foreach ($query_cpv->result() as $row) {
@@ -403,6 +450,7 @@ class Nrlist_model extends CI_Model {
             // }
 
             // echo "{$standard_name_str}";
+
 
             ### Standard name edit
             $table[] = array($i,
@@ -1258,7 +1306,7 @@ class Nrlist_model extends CI_Model {
                  ->where_in('pdb_id', $pdbs )
                  ->group_by('pdb_id');
         $query = $this->db->get();
-        // converting experimental_technique without changing pdb_info table.
+        // Converting experimental technique to lower case equivalent (without changing pdb_info table)
         $experimental_technique = array();
         $experimental_technique['X-RAY DIFFRACTION'] = 'X-ray diffraction';
         $experimental_technique['ELECTRON MICROSCOPY'] = 'Electron microscopy';
@@ -1374,7 +1422,6 @@ class Nrlist_model extends CI_Model {
                 $chain_to_rfam["{$row_pdb}_{$row_chain}"] = $row_value;
             }
         }
-
         foreach ($query->result() as $row) {
             $class_id = $row->name;
             #$nums     = $row->num;
@@ -1453,7 +1500,7 @@ class Nrlist_model extends CI_Model {
                 $rfam_representative = substr($rfam_representative, 0, -3);
                 $cpv_html_list_item .= '<li>Rfam: ' . $rfam_representative . '</li>';
             }
-                            
+
 
             // $id refers to the release_id
             $table[] = array($i,

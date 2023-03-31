@@ -171,6 +171,7 @@ if ( typeof Object.create !== 'function' ) {
             return self.modelNumber;
         },
 
+
         // superimpose this model onto the first one using spine atoms in nucleic acids
         superimpose: function() {
             var self = this;
@@ -178,18 +179,22 @@ if ( typeof Object.create !== 'function' ) {
             var m = self.modelNumber;
             if ( m < 2 ) { return; } // m == 1; nothing to superimpose on
 
-                // Not sure why there is a loop over i, commented out 2022-06-19
-                //for (var i = 0; i < 3; i++) {
+            // if the same number of phosphates, try to superimpose,
+            // otherwise take the spine atoms of the first four structures
 
-                // if the same number of phosphates, try to superimpose,
-                // otherwise take the spine atoms of the first four structures
-                var command = 'if ({*.P/' + m + '.1}.length == {*.P/1.1}) ' +
-                              '{x=compare({spine/' + m + '.1},{spine/1.1});}' +
-                              'else {x=compare({(spine/' + m + '.1)[1][4]},{(spine/1.1)[1][4]});};' +
-                              'select ' + m + '.1,' + m + '.2,' + m + '.3; rotate selected @{x};';
-                jmolScript(command);
+            var command = 'if ({*.P/' + m + '.1}.length == {*.P/1.1}) ' +
+                          '{x=compare({spine/' + m + '.1},{spine/1.1});}' +
+                          'else {x=compare({(spine/' + m + '.1)[1][4]},{(spine/1.1)[1][4]});};' +
+                          'select ' + m + '.1,' + m + '.2,' + m + '.3; rotate selected @{x};';
 
-                //}
+            var command = "if ({*.C1'/" + m + ".1}.length == {*.C1'/1.1}.length & {*.C1'/1.1}.length >= 3) " +
+                          "{x=compare({(*.C1'/" + m + ".1)},{(*.C1'/1.1)});}" +
+                          "elseif ({*.C1'/" + m + ".1}.length == {*.C1'/1.1}.length & {*.C1'/1.1}.length == 2) " +
+                          "{x=compare({(*.C1'/" + m + ".1,*.C3'/" + m + ".1)},{(*.C1'/1.1,*.C3'/1.1)});}" +
+                          "else {x=compare({(spine/" + m + ".1)[2][6]},{(spine/1.1)[2][6]});};" +
+                          "select " + m + ".1," + m + ".2," + m + ".3; rotate selected @{x};";
+
+            jmolScript(command);
 
             self.superimposed = true;
         },
