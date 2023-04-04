@@ -1314,6 +1314,7 @@ class Nrlist_model extends CI_Model {
         $experimental_technique['SOLUTION NMR'] = 'Solution NMR';
         $experimental_technique['FIBER DIFFRACTION'] = 'Fiber diffraction';
         $experimental_technique['THEORETICAL MODEL, SOLUTION NMR'] = 'Theoretical model, solution NMR';
+        $experimental_technique['SOLUTION NMR, THEORETICAL MODEL'] = 'Solution NMR, theoretical model';
         $experimental_technique['FLUORESCENCE TRANSFER'] = 'Fluorescence transfer';
         $experimental_technique['NEUTRON DIFFRACTION'] = 'Neutron diffraction';
         $experimental_technique['SOLUTION NMR, SOLUTION SCATTERING'] = 'Solution NMR, solution scattering';
@@ -1488,12 +1489,13 @@ class Nrlist_model extends CI_Model {
                 $cpv_html_list_item .= '<li>Standardized name: ' . $standardized_name_representative . '</li>';
             }
             if (!empty($domain_representative)){
-                $biological_context = "Domain";
-                if ($domain_representative == "Mitochondria" or $domain_representative == "Chloroplast"){
-                    $biological_context = "Organelle";
-                } elseif ($domain_representative == "Synthetic"){
-                    $biological_context = "Source";
-                }
+                $biological_context = "Source";
+                // $biological_context = "Domain";
+                // if ($domain_representative == "Mitochondria" or $domain_representative == "Chloroplast"){
+                //     $biological_context = "Organelle";
+                // } elseif ($domain_representative == "Synthetic"){
+                //     $biological_context = "Source";
+                // }
                 $cpv_html_list_item .= '<li>' . $biological_context . ': ' . $domain_representative . '</li>';
             }
             if (!empty($rfam_representative)){

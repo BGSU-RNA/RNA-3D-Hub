@@ -39,16 +39,18 @@ class Motif_model extends CI_Model {
         }
     }
 
-    function _get_aligned_unit_ids($motif_id)
+    function _get_aligned_unit_ids($motif_id,$release_id)
     {
         $this->db->select()
                  ->from('ml_loop_positions AS ML')
                  #->join('unit_info AS UI',
                  #       'ML.unit_id = UI.unit_id')
                  ->where('motif_id', $motif_id)
-                 ->where('ml_release_id', $this->release_id)
+                 ->where('ml_release_id', $release_id)
                  ->order_by('loop_id, position');
         $query = $this->db->get();
+
+        $temp = array();
 
         // store the data temporarily in random order
         foreach($query->result() as $row) {
@@ -60,9 +62,11 @@ class Motif_model extends CI_Model {
         $this->db->select('loop_id')
                  ->from('ml_loop_order')
                  ->where('motif_id', $motif_id)
-                 ->where('ml_release_id', $this->release_id)
+                 ->where('ml_release_id', $release_id)
                  ->order_by('original_order');
         $query = $this->db->get();
+
+        $data = array();
 
         foreach($query->result() as $row) {
             $data[$row->loop_id] = $temp[$row->loop_id];
@@ -71,9 +75,9 @@ class Motif_model extends CI_Model {
         return $data;
     }
 
-    function get_csv($motif_id)
+    function get_csv($motif_id,$release_id)
     {
-        $data = $this->_get_aligned_unit_ids($motif_id);
+        $data = $this->_get_aligned_unit_ids($motif_id,$release_id);
         $csv = '';
 
         foreach($data as $loop_id) {
@@ -83,9 +87,9 @@ class Motif_model extends CI_Model {
         return $csv;
     }
 
-    function get_json($motif_id)
+    function get_json($motif_id,$release_id)
     {
-        $alignment  = $this->_get_aligned_unit_ids($motif_id);
+        $alignment  = $this->_get_aligned_unit_ids($motif_id,$release_id);
         $array_keys = array_keys($alignment);
         $data['num_instances']   = count($array_keys);
         $data['num_nucleotides'] = count($alignment[array_pop($array_keys)]);

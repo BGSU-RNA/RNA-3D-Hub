@@ -75,8 +75,6 @@ class Motifs extends CI_Controller {
     // It should not make a page for a release that does not exist!
 	public function release($motif_type, $id, $format=NULL)
 	{
-        $this->output->cache(262974); # 6 months
-
 	    $this->load->model('Motifs_model', '', TRUE);
 
         // download requests
@@ -104,11 +102,11 @@ class Motifs extends CI_Controller {
                 if ( $format == 'csv' ) {
                     $this->output->set_header("Content-disposition: attachment; filename={$motif_type}_{$id}.csv")
                                  ->set_content_type('text/csv');
-                    $download[] = ">{$motif_id}\n" . $this->Motif_model->get_csv($motif_id);
+                    $download[] = ">{$motif_id}\n" . $this->Motif_model->get_csv($motif_id,$id);
                 } else {
                     $this->output->set_header("Content-disposition: attachment; filename={$motif_type}_{$id}.json")
                                  ->set_content_type('application/json');
-                    $download[] = $this->Motif_model->get_json($motif_id);
+                    $download[] = $this->Motif_model->get_json($motif_id,$id);
                 }
             }
 
@@ -121,6 +119,8 @@ class Motifs extends CI_Controller {
             $this->load->view('csv_view', $data);
             return;
         }
+
+        $this->output->cache(262974); # 6 months
 
         // not a download request
 	    $motif_type = strtolower($motif_type);
