@@ -294,9 +294,9 @@
                       <span class="muted">
                          #S - ordering by similarity (same as in the heat map).
                       </span>
-                      <!-- <div>
+                      <div>
                         <?=$statistics?>
-                      </div> -->
+                      </div>
                       <script src="//d3js.org/d3.v4.min.js"></script>
                       <script type="text/javascript">
                           var data = <? echo $heatmap_data; ?>;

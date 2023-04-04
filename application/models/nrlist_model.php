@@ -1488,12 +1488,13 @@ class Nrlist_model extends CI_Model {
                 $cpv_html_list_item .= '<li>Standardized name: ' . $standardized_name_representative . '</li>';
             }
             if (!empty($domain_representative)){
-                $biological_context = "Domain";
-                if ($domain_representative == "Mitochondria" or $domain_representative == "Chloroplast"){
-                    $biological_context = "Organelle";
-                } elseif ($domain_representative == "Synthetic"){
-                    $biological_context = "Source";
-                }
+                $biological_context = "Source";
+                // $biological_context = "Domain";
+                // if ($domain_representative == "Mitochondria" or $domain_representative == "Chloroplast"){
+                    // $biological_context = "Organelle";
+                // } elseif ($domain_representative == "Synthetic"){
+                    // $biological_context = "Source";
+                // }
                 $cpv_html_list_item .= '<li>' . $biological_context . ': ' . $domain_representative . '</li>';
             }
             if (!empty($rfam_representative)){
