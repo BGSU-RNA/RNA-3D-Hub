@@ -1272,7 +1272,7 @@ class Motif_model extends CI_Model {
     }
     function parseRNA($inputString) {
         // Check if input string starts with "5'-R"
-        if (substr($inputString, 0, 5) == "5'-R(" or substr($inputString, 0, 8) == "RNA (5'-") {
+        if (substr($inputString, 0, 5) == "5'-R(" or substr($inputString, 0, 8) == "RNA (5'-" or substr($inputString, 0, 5) == "5'-D(") {
     
             // Count the number of "*" characters
             $nCount = substr_count($inputString, "*");
