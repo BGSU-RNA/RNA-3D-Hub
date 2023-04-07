@@ -1408,7 +1408,7 @@ class Nrlist_model extends CI_Model {
         $chain_to_rfam = array();
         // $i = 0;
 
-        //populating dicts with cpv data
+        //populating dicts with cpv data #
         foreach ($query_cpv->result() as $row) {
             $row_pdb = $row->pdb_id;
             $row_chain = $row->chain;

@@ -1235,7 +1235,7 @@ class Motif_model extends CI_Model {
         } 
     }
 
-    function get_standardized_name($pbd, $chain){
+    function get_standardized_name($pbd, $chain){ #
         $this->db->select('value')
                         ->from('chain_property_value')
                         ->where('property', 'standardized_name')

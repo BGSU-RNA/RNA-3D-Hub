@@ -468,7 +468,7 @@ class Loops_model extends CI_Model {
                 }
 
                 
-                // Possibly replace with standardized.
+                // Possibly replace with standardized. #
                 $this->db->select('chain, value')
                             ->from('chain_property_value')
                             ->where('pdb_id', $pdb_id)
