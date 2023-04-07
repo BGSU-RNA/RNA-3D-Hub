@@ -766,28 +766,42 @@ class Motif_model extends CI_Model {
                  ->where_in('loop_id_2', $this->loops);
         $result = $this->db->get()->result_array();
 
-        // $disc = array(); // $disc['IL_1S72_001']['IL_1J5E_023'] = 0.2897
-        // for ($i = 0; $i < count($result); $i++) {
-        //     $disc[$result[$i]['loop_id_1']][$result[$i]['loop_id_2']] = $result[$i]['discrepancy'];
-        // }
-
-        // $matrix = array();
-        // for ($i = 1; $i <= $this->num_loops; $i++) {
-        //     $loop_id_1 = $this->similarity[$i];
-        //     for ($j = 1; $j <= $this->num_loops; $j++) {
-        //         $loop_id_2 = $this->similarity[$j];
-        //         $cell = array('data-disc' => $disc[$loop_id_1][$loop_id_2],
-        //                     //   'data-pair' => "$loop_id_1:$loop_id_2",
-        //                     //   'class'     => $this->get_css_class($disc[$loop_id_1][$loop_id_2]),
-        //                     //   'rel'       => 'twipsy',
-        //                     //   'title'     => "$loop_id_1:$loop_id_2, {$disc[$loop_id_1][$loop_id_2]}"
-        //                     );
-        //         // <td title='IL_3U4M_004:IL_3U4M_004, 0' rel='twipsy' class='md00' data-pair='IL_3U4M_004:IL_3U4M_004' data-disc='0'></td>
-        //         $matrix[] = $cell;
-        //     }
-        // }
+        $dataString = '';
+        $dataString_2 = '';
+        $dataString_3 = '';
+        $dataString_1 = 'var data = ["#heatmap",[';
+        $disc = array(); // $disc['IL_1S72_001']['IL_1J5E_023'] = 0.2897
+        for ($i = 0; $i < count($result); $i++) {
+            $disc[$result[$i]['loop_id_1']][$result[$i]['loop_id_2']] = $result[$i]['discrepancy'];
+        }
+        $dataString_3.= '[';
+        // $matrix = str();
+        for ($i = 1; $i <= $this->num_loops; $i++) {
+            $loop_id_1 = $this->similarity[$i];
+            $dataString_2.= '[';
+            if ($i != $this->num_loops){
+                $dataString_3 .= '"'.$loop_id_1.'"'.',';
+            } else{
+                $dataString_3 .= '"'.$loop_id_1.'"';
+            }
+            
+            for ($j = 1; $j <= $this->num_loops; $j++) {
+                $loop_id_2 = $this->similarity[$j];
+                $cell = $disc[$loop_id_1][$loop_id_2];
+                // <td title='IL_3U4M_004:IL_3U4M_004, 0' rel='twipsy' class='md00' data-pair='IL_3U4M_004:IL_3U4M_004' data-disc='0'></td>
+                if ($j != $this->num_loops){
+                    $dataString_2 .= $cell.",";
+                } else {
+                    $dataString_2 .= $cell;
+                }
+                
+            }
+            $dataString_2.= '],';
+        }
+        $dataString_3 .= ']]';
         // return $matrix;
-        $dataString = 'var data = ["#heatmap",[';
+        $dataString .= $dataString_1 . $dataString_2 ."],". $dataString_3;
+        
         return $dataString;
     }
 
@@ -851,7 +865,8 @@ class Motif_model extends CI_Model {
         #echo "<p>i: $i // loops: " . $this->loops[$i] . "</p>";
         #ksort($this->full_nts[$this->loops[$i]]);
         ksort($this->full_units[$this->similarity[$i]]);
-        return "<label><input type='checkbox' id='{$this->similarity[$i]}' class='jmolInline'
+        $j = $i-1;
+        return "<label><input type='checkbox' id='{$j}' class='jmolInline'
                data-coord_ma='{$this->similarity[$i]}|{$this->motif_id}|{$this->release_id}'" . " " . "data-quality='". "{$this->similarity[$i]}" . "'>{$this->similarity[$i]}</label>"
                . "<span class='loop_link'>" . anchor_popup("loops/view/{$this->similarity[$i]}", '&#10140;') . "</span>";
 
