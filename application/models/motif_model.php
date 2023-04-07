@@ -1017,16 +1017,16 @@ class Motif_model extends CI_Model {
                 //get first nuclotide 
                 $this->db->select('value')
                         ->from('chain_property_value')
-                        ->where('property', 'standard_name')
+                        ->where('property', 'standardized_name')
                         ->where('pdb_id', $parts[0])
                         ->where('chain', $parts[2])
                         ->limit(1);
                 $result = $this->db->get()->result_array();
 
                 if ( count($result) > 0 ){
-                    $standard_name = $result[0]['value'];
-                    $short_standard_name = explode(';', $standard_name);
-                    $short_standard_name  = end($short_standard_name);
+                    $standardized_name = $result[0]['value'];
+                    $short_standardized_name = explode(';', $standardized_name);
+                    $short_standardized_name  = end($short_standardized_name);
                 } else {
                     $this->db->select('compound')
                             ->from('chain_info')
@@ -1035,9 +1035,9 @@ class Motif_model extends CI_Model {
                             ->limit(1);
                     $result = $this->db->get()->result_array();
                     if ( count($result) > 0 ){
-                        $short_standard_name = $result[0]['compound'];
-                        // $short_standard_name = parseRNA($result[0]['compound']);
-                        $short_standard_name = $this->parseRna($short_standard_name);
+                        $short_standardized_name = $result[0]['compound'];
+                        // $short_standardized_name = parseRNA($result[0]['compound']);
+                        $short_standardized_name = $this->parseRna($short_standardized_name);
                     } else{
 
                     }
@@ -1045,29 +1045,29 @@ class Motif_model extends CI_Model {
 
                 //get the last nuclotide
                 if ($parts[2] == $partsend[2]){
-                    if (isset($short_standard_name)) {
-                        // if (strlen($short_standard_name)>=25){
+                    if (isset($short_standardized_name)) {
+                        // if (strlen($short_standardized_name)>=25){
                         //     $row[] = 'RNA (25-MER)';
                         // } else {
-                        //     $row[] = $short_standard_name;
+                        //     $row[] = $short_standardized_name;
                         // }
-                        $row[] = $short_standard_name;
+                        $row[] = $short_standardized_name;
                     } else {
                         $row[] = ' ';
                     }
                 } else {
                     $this->db->select('value')
                         ->from('chain_property_value')
-                        ->where('property', 'standard_name')
+                        ->where('property', 'standardized_name')
                         ->where('pdb_id', $partsend[0])
                         ->where('chain', $partsend[2])
                         ->limit(1);
                     $result = $this->db->get()->result_array();
 
                     if ( count($result) > 0 ){
-                        $standard_name_2 = $result[0]['value'];
-                        $short_standard_name_2 = explode(';', $standard_name_2);
-                        $short_standard_name_2  = end($short_standard_name_2);
+                        $standardized_name_2 = $result[0]['value'];
+                        $short_standardized_name_2 = explode(';', $standardized_name_2);
+                        $short_standardized_name_2  = end($short_standardized_name_2);
                     } else {
                         $this->db->select('compound')
                                 ->from('chain_info')
@@ -1076,14 +1076,14 @@ class Motif_model extends CI_Model {
                                 ->limit(1);
                         $result = $this->db->get()->result_array();
                         if ( count($result) > 0 ){
-                            $short_standard_name_2 = $result[0]['compound'];
+                            $short_standardized_name_2 = $result[0]['compound'];
                         } else{
 
                         }
                     }
 
-                    $short_standard_name_2 = $this->parseRna($short_standard_name_2);
-                    $row[] = $short_standard_name. ' + ' . $short_standard_name_2;
+                    $short_standardized_name_2 = $this->parseRna($short_standardized_name_2);
+                    $row[] = $short_standardized_name. ' + ' . $short_standardized_name_2;
                 }
                 
 

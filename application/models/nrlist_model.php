@@ -368,10 +368,10 @@ class Nrlist_model extends CI_Model {
             
             $rfam_str = "";
             $domain_str = "";
-            $standard_name_str = "";
+            $standardized_name_str = "";
 
             $rfam_list = array();
-            $standard_name_list = array();
+            $standardized_name_list = array();
             $domain_list = array();
 
             $j = 0;
@@ -385,7 +385,7 @@ class Nrlist_model extends CI_Model {
                 $pdb_from_ife = $ife_list[0];
                 $rfam_key = "{$pdb_from_ife}_{$ife_chain}_rfam_family";
                 $domain_key = "{$pdb_from_ife}_{$ife_chain}_domain";
-                $standard_name_key = "{$pdb_from_ife}_{$ife_chain}_standard_name";
+                $standardized_name_key = "{$pdb_from_ife}_{$ife_chain}_standardized_name";
                 
 
                 if (array_key_exists($rfam_key, $ife_to_cpv)){
@@ -394,16 +394,16 @@ class Nrlist_model extends CI_Model {
                 if (empty($domain_str) and array_key_exists($domain_key, $ife_to_cpv)){
                     array_push($domain_list, $ife_to_cpv[$domain_key]);
                 }
-                if (array_key_exists($standard_name_key, $ife_to_cpv)){
-                    $standard_name = explode(';', $ife_to_cpv[$standard_name_key]);
-                    array_push($standard_name_list, $standard_name[0]);
+                if (array_key_exists($standardized_name_key, $ife_to_cpv)){
+                    $standardized_name = explode(';', $ife_to_cpv[$standardized_name_key]);
+                    array_push($standardized_name_list, $standardized_name[0]);
                 }
                 // echo "\n-------";
                 // echo "{$rfam_key} | {$rfam_str}\n";
                 // echo "{$domain_key} | {$domain_str}\n";
-                // echo "{$standard_name_key}| {$standard_name_str}\n";
+                // echo "{$standardized_name_key}| {$standardized_name_str}\n";
                 
-                // echo " {$standard_name_key} : {$standard_name_str} \n";
+                // echo " {$standardized_name_key} : {$standardized_name_str} \n";
             
             }
 
@@ -432,30 +432,30 @@ class Nrlist_model extends CI_Model {
             }
 
             $j = 0;
-            foreach ($standard_name_list as $standard_name_item){
-                $standard_name_str .= $standard_name_item;
-                if ($j < count($standard_name_list) - 1){
-                    $standard_name_str .= " + ";
+            foreach ($standardized_name_list as $standardized_name_item){
+                $standardized_name_str .= $standardized_name_item;
+                if ($j < count($standardized_name_list) - 1){
+                    $standardized_name_str .= " + ";
                 }
                 $j++;
             }
 
-            // if(substr($standard_name_str, -1) == "+") {
-            //     $new_name = substr($standard_name_str, 0, -1);
-            //     $standard_name_str = $new_name[0];
+            // if(substr($standardized_name_str, -1) == "+") {
+            //     $new_name = substr($standardized_name_str, 0, -1);
+            //     $standardized_name_str = $new_name[0];
             // }
             // if(substr($rfam_str, -1) == "+") {
             //     $new_rfam = substr($rfam_str, 0, -1);
             //     $rfam_str =  $new_rfam[0];
             // }
 
-            // echo "{$standard_name_str}";
+            // echo "{$standardized_name_str}";
 
 
             ### Standard name edit
             $table[] = array($i,
                              $link,
-                             $standard_name_str,
+                             $standardized_name_str,
                              $this->get_compound_single($row->ife_id),
                              $this->get_source_organism($row->ife_id),
                              $domain_str,
@@ -1412,7 +1412,7 @@ class Nrlist_model extends CI_Model {
             $row_chain = $row->chain;
             $row_property = $row->property;
             $row_value = $row->value;
-            if ($row_property == "standard_name"){
+            if ($row_property == "standardized_name"){
                 $chain_to_standardized_name["{$row_pdb}_{$row_chain}"] = $row_value;
             }
             elseif ($row_property == "domain") {
