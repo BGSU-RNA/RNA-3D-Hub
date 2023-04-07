@@ -274,7 +274,7 @@ class Nrlist_model extends CI_Model {
                  ->order_by('ch.rep','desc');
         $query = $this->db->get();
 
-        # get chain, domain, rfam, standardized names for pdb ids in this equivalence class
+        # get chain, source, rfam, standardized names for pdb ids in this equivalence class
         $this->db->select('ii.pdb_id')
                  ->select('ch.ife_id')
                  ->select('cpv.chain')
@@ -334,7 +334,7 @@ class Nrlist_model extends CI_Model {
                 // key could be pdb_id + "_" + chain + "_" + property  <-- then you only need one dictionary
                 
             // }
-            // maybe make one dictionary for name, one for domain, one for rfam?
+            // maybe make one dictionary for name, one for source, one for rfam?
             // depending on the property, you fill in a different dictionary
 
         }
@@ -358,21 +358,21 @@ class Nrlist_model extends CI_Model {
             // explode by +: split by +
             // explode by |: for each chain, extract pdb_id and chain
             // make the key you need
-            // plug into a dictionary to map to standardized name, domain, Rfam family?
+            // plug into a dictionary to map to standardized name, source, Rfam family?
             // Use the long version of the standardized name, I guess
             // join those by + sign
 
-            // echo "Name, domain, rfam for ",$row->ife_id," is \n";
+            // echo "Name, source, rfam for ",$row->ife_id," is \n";
             $row_ife = $row->ife_id;
             $ife_chain_list = explode('+', $row_ife);
             
             $rfam_str = "";
-            $domain_str = "";
+            $source_str = "";
             $standardized_name_str = "";
 
             $rfam_list = array();
             $standardized_name_list = array();
-            $domain_list = array();
+            $source_list = array();
 
             $j = 0;
             foreach ($ife_chain_list as $ife_item){
@@ -384,15 +384,15 @@ class Nrlist_model extends CI_Model {
     
                 $pdb_from_ife = $ife_list[0];
                 $rfam_key = "{$pdb_from_ife}_{$ife_chain}_rfam_family";
-                $domain_key = "{$pdb_from_ife}_{$ife_chain}_domain";
+                $source_key = "{$pdb_from_ife}_{$ife_chain}_source";
                 $standardized_name_key = "{$pdb_from_ife}_{$ife_chain}_standardized_name";
                 
 
                 if (array_key_exists($rfam_key, $ife_to_cpv)){
                     array_push($rfam_list, $ife_to_cpv[$rfam_key]);
                 }
-                if (empty($domain_str) and array_key_exists($domain_key, $ife_to_cpv)){
-                    array_push($domain_list, $ife_to_cpv[$domain_key]);
+                if (empty($source_str) and array_key_exists($source_key, $ife_to_cpv)){
+                    array_push($source_list, $ife_to_cpv[$source_key]);
                 }
                 if (array_key_exists($standardized_name_key, $ife_to_cpv)){
                     $standardized_name = explode(';', $ife_to_cpv[$standardized_name_key]);
@@ -400,25 +400,25 @@ class Nrlist_model extends CI_Model {
                 }
                 // echo "\n-------";
                 // echo "{$rfam_key} | {$rfam_str}\n";
-                // echo "{$domain_key} | {$domain_str}\n";
+                // echo "{$source_key} | {$source_str}\n";
                 // echo "{$standardized_name_key}| {$standardized_name_str}\n";
                 
                 // echo " {$standardized_name_key} : {$standardized_name_str} \n";
             
             }
 
-            $domain_list = array_unique($domain_list);
-            if (count($domain_list) > 1){
+            $source_list = array_unique($source_list);
+            if (count($source_list) > 1){
                 $j = 0;
-                foreach ($domain_list as $domain_item){
-                    $domain_str .= $domain_item;
-                    if ($j < count($domain_list) - 1){
-                        $domain_str .= " + ";
+                foreach ($source_list as $source_item){
+                    $source_str .= $source_item;
+                    if ($j < count($source_list) - 1){
+                        $source_str .= " + ";
                     }
                     $j++;
                 }
-            } elseif(!empty($domain_list)){
-                $domain_str .= $domain_list[0];
+            } elseif(!empty($source_list)){
+                $source_str .= $source_list[0];
                 
             }
 
@@ -458,7 +458,7 @@ class Nrlist_model extends CI_Model {
                              $standardized_name_str,
                              $this->get_compound_single($row->ife_id),
                              $this->get_source_organism($row->ife_id),
-                             $domain_str,
+                             $source_str,
                              $rfam_str,
                              #  may add get_compound_list as popover
                              #  to get_compound_single field
@@ -1402,7 +1402,7 @@ class Nrlist_model extends CI_Model {
 
         //Creating dicts to store cpv data
         $chain_to_standardized_name = array();
-        $chain_to_domain = array();
+        $chain_to_source = array();
         $chain_to_rfam = array();
         // $i = 0;
 
@@ -1415,8 +1415,8 @@ class Nrlist_model extends CI_Model {
             if ($row_property == "standardized_name"){
                 $chain_to_standardized_name["{$row_pdb}_{$row_chain}"] = $row_value;
             }
-            elseif ($row_property == "domain") {
-                $chain_to_domain["{$row_pdb}_{$row_chain}"] = $row_value;
+            elseif ($row_property == "source") {
+                $chain_to_source["{$row_pdb}_{$row_chain}"] = $row_value;
             }
             elseif ($row_property == "rfam_family"){
                 $chain_to_rfam["{$row_pdb}_{$row_chain}"] = $row_value;
@@ -1458,10 +1458,10 @@ class Nrlist_model extends CI_Model {
                 $best_models = $ife_split[1];
             }
 
-            // adding cpv data using the representative ife as the key to stdname, domain and rfam dicts.
+            // adding cpv data using the representative ife as the key to stdname, source and rfam dicts.
             $ife_chain_list = explode('+', $ife_id);
             $rfam_representative = "";
-            $domain_representative = "";
+            $source_representative = "";
             $standardized_name_representative = "";
             foreach ($ife_chain_list as $ife_chain){
                 $chain = end(explode('|', $ife_chain));
@@ -1470,8 +1470,8 @@ class Nrlist_model extends CI_Model {
                 if (array_key_exists("{$ife_pdb_id}_{$chain}", $chain_to_rfam)){
                     $rfam_representative .= $chain_to_rfam["{$ife_pdb_id}_{$chain}"] . " + ";
                 }
-                if (array_key_exists("{$ife_pdb_id}_{$chain}", $chain_to_domain)){
-                    $domain_representative = $chain_to_domain["{$ife_pdb_id}_{$chain}"];
+                if (array_key_exists("{$ife_pdb_id}_{$chain}", $chain_to_source)){
+                    $source_representative = $chain_to_source["{$ife_pdb_id}_{$chain}"];
                 }
                 if (array_key_exists("{$ife_pdb_id}_{$chain}", $chain_to_standardized_name)){
                     $stdname = $chain_to_standardized_name["{$ife_pdb_id}_{$chain}"];
@@ -1487,15 +1487,15 @@ class Nrlist_model extends CI_Model {
                 $standardized_name_representative = substr($standardized_name_representative, 0, -3);
                 $cpv_html_list_item .= '<li>Standardized name: ' . $standardized_name_representative . '</li>';
             }
-            if (!empty($domain_representative)){
+            if (!empty($source_representative)){
                 $biological_context = "Source";
-                // $biological_context = "Domain";
-                // if ($domain_representative == "Mitochondria" or $domain_representative == "Chloroplast"){
+                // $biological_context = "source";
+                // if ($source_representative == "Mitochondria" or $source_representative == "Chloroplast"){
                     // $biological_context = "Organelle";
-                // } elseif ($domain_representative == "Synthetic"){
+                // } elseif ($source_representative == "Synthetic"){
                     // $biological_context = "Source";
                 // }
-                $cpv_html_list_item .= '<li>' . $biological_context . ': ' . $domain_representative . '</li>';
+                $cpv_html_list_item .= '<li>' . $biological_context . ': ' . $source_representative . '</li>';
             }
             if (!empty($rfam_representative)){
                 $rfam_representative = substr($rfam_representative, 0, -3);
