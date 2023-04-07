@@ -766,27 +766,29 @@ class Motif_model extends CI_Model {
                  ->where_in('loop_id_2', $this->loops);
         $result = $this->db->get()->result_array();
 
-        $disc = array(); // $disc['IL_1S72_001']['IL_1J5E_023'] = 0.2897
-        for ($i = 0; $i < count($result); $i++) {
-            $disc[$result[$i]['loop_id_1']][$result[$i]['loop_id_2']] = $result[$i]['discrepancy'];
-        }
+        // $disc = array(); // $disc['IL_1S72_001']['IL_1J5E_023'] = 0.2897
+        // for ($i = 0; $i < count($result); $i++) {
+        //     $disc[$result[$i]['loop_id_1']][$result[$i]['loop_id_2']] = $result[$i]['discrepancy'];
+        // }
 
-        $matrix = array();
-        for ($i = 1; $i <= $this->num_loops; $i++) {
-            $loop_id_1 = $this->similarity[$i];
-            for ($j = 1; $j <= $this->num_loops; $j++) {
-                $loop_id_2 = $this->similarity[$j];
-                $cell = array('data-disc' => $disc[$loop_id_1][$loop_id_2],
-                            //   'data-pair' => "$loop_id_1:$loop_id_2",
-                            //   'class'     => $this->get_css_class($disc[$loop_id_1][$loop_id_2]),
-                            //   'rel'       => 'twipsy',
-                            //   'title'     => "$loop_id_1:$loop_id_2, {$disc[$loop_id_1][$loop_id_2]}"
-                            );
-                // <td title='IL_3U4M_004:IL_3U4M_004, 0' rel='twipsy' class='md00' data-pair='IL_3U4M_004:IL_3U4M_004' data-disc='0'></td>
-                $matrix[] = $cell;
-            }
-        }
-        return $matrix;
+        // $matrix = array();
+        // for ($i = 1; $i <= $this->num_loops; $i++) {
+        //     $loop_id_1 = $this->similarity[$i];
+        //     for ($j = 1; $j <= $this->num_loops; $j++) {
+        //         $loop_id_2 = $this->similarity[$j];
+        //         $cell = array('data-disc' => $disc[$loop_id_1][$loop_id_2],
+        //                     //   'data-pair' => "$loop_id_1:$loop_id_2",
+        //                     //   'class'     => $this->get_css_class($disc[$loop_id_1][$loop_id_2]),
+        //                     //   'rel'       => 'twipsy',
+        //                     //   'title'     => "$loop_id_1:$loop_id_2, {$disc[$loop_id_1][$loop_id_2]}"
+        //                     );
+        //         // <td title='IL_3U4M_004:IL_3U4M_004, 0' rel='twipsy' class='md00' data-pair='IL_3U4M_004:IL_3U4M_004' data-disc='0'></td>
+        //         $matrix[] = $cell;
+        //     }
+        // }
+        // return $matrix;
+        $dataString = 'var data = ["#heatmap",[';
+        return $dataString;
     }
 
     function get_css_class($disc)
@@ -1016,21 +1018,21 @@ class Motif_model extends CI_Model {
                 $parts = explode('|', $this->units[$this->similarity[$id]][1]);
                 $partsend = explode('|', end($this->units[$this->similarity[$id]]));
 
-                $short_standard_name = $this->get_standardized_name($parts[0], $parts[2]);
+                $short_standardized_name = $this->get_standardized_name($parts[0], $parts[2]);
 
 
                 if ($parts[2] == $partsend[2]){
-                    if (isset($short_standard_name)) {
-                        $row[] = $short_standard_name;
+                    if (isset($short_standardized_name)) {
+                        $row[] = $short_standardized_name;
                     } else {
                         $row[] = ' ';
                     }   
                 } else {
-                    $short_standard_name_2 = $this->get_standardized_name($partsend[0], $partsend[2]);
-                    if(strlen($short_standard_name)+strlen($short_standard_name_2)>67){
-                        $row[] = $short_standard_name. ' + <br>' . $short_standard_name_2;
+                    $short_standardized_name_2 = $this->get_standardized_name($partsend[0], $partsend[2]);
+                    if(strlen($short_standardized_name)+strlen($short_standardized_name_2)>67){
+                        $row[] = $short_standardized_name. ' + <br>' . $short_standardized_name_2;
                     } else{
-                        $row[] = $short_standard_name. ' + ' . $short_standard_name_2;
+                        $row[] = $short_standardized_name. ' + ' . $short_standardized_name_2;
                     }
                     
                 }
@@ -1236,16 +1238,16 @@ class Motif_model extends CI_Model {
     function get_standardized_name($pbd, $chain){
         $this->db->select('value')
                         ->from('chain_property_value')
-                        ->where('property', 'standard_name')
+                        ->where('property', 'standardized_name')
                         ->where('pdb_id', $pbd)
                         ->where("BINARY chain = '".$chain."'", null, false)
                         ->limit(1);
         $result = $this->db->get()->result_array();
 
         if ( count($result) > 0 ){
-            $standard_name = $result[0]['value'];
-            $short_standard_name = explode(';', $standard_name);
-            $short_standard_name  = end($short_standard_name);
+            $standardized_name = $result[0]['value'];
+            $short_standardized_name = explode(';', $standardized_name);
+            $short_standardized_name  = end($short_standardized_name);
         } else {
             $this->db->select('compound')
                     ->from('chain_info')
@@ -1254,13 +1256,13 @@ class Motif_model extends CI_Model {
                     ->limit(1);
             $result = $this->db->get()->result_array();
             if ( count($result) > 0 ){
-                $short_standard_name = $result[0]['compound'];
-                $short_standard_name = $this->parseRna($short_standard_name);
+                $short_standardized_name = $result[0]['compound'];
+                $short_standardized_name = $this->parseRna($short_standardized_name);
             } else{
 
             }
         }
-        return $short_standard_name;
+        return $short_standardized_name;
     }
     
 

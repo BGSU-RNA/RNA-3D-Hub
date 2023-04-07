@@ -472,7 +472,7 @@ class Loops_model extends CI_Model {
                 $this->db->select('chain, value')
                             ->from('chain_property_value')
                             ->where('pdb_id', $pdb_id)
-                            ->where('property', 'standard_name')
+                            ->where('property', 'standardized_name')
                             ->where_in('chain', $new_chains);
                 $query = $this->db->get();
 

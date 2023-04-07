@@ -226,13 +226,14 @@ class Motif extends MY_Controller {
         $this->benchmark->mark('c');
         if ( $this->Motif_model->num_loops > 1 ) {
             $matrix_linear = $this->Motif_model->get_mutual_discrepancy_matrix_efficient();
-            $matrix_column = $this->table->make_columns($matrix_linear, $this->Motif_model->num_loops);
-            $tmpl = array( 'table_open'  => '<table class="condensed-table">' ,
-                           'class' => 'mdmatrix-table');
-            $this->table->set_template($tmpl);
-            $data['matrix'] = $this->table->generate($matrix_column);
+            // $matrix_column = $this->table->make_columns($matrix_linear, $this->Motif_model->num_loops);
+            // $tmpl = array( 'table_open'  => '<table class="condensed-table">' ,
+            //                'class' => 'mdmatrix-table');
+            // $this->table->set_template($tmpl);
+            // $data['matrix'] = $this->table->generate($matrix_column);
+            $data['datastring'] = $matrix_linear;
         } else {
-            $data['matrix'] = '';
+            $data['datastring'] = '';
         }
 
         // sequence variability
