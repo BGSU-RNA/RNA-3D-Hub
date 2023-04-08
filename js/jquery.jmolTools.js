@@ -1,6 +1,6 @@
 /*
  *
- *
+ *  This file is deprecated as of 2023-04-07.  Please use jquery.jmolTools.WebFR3D.js instead.
  *
  */
 
