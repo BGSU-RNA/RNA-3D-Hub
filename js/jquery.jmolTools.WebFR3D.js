@@ -67,45 +67,75 @@ if ( typeof Object.create !== 'function' ) {
             if ( self.loaded ) { return; }
 
             // This AJAX call gets the RSRZ data, which is only available for x-ray structures
-            $.ajax({
-                url: $.fn.jmolTools.options.serverUrlRSRZ,
-                type: 'GET',
-                dataType: 'json',
-                //contentType: 'application/json',
-                data: {'quality' : self.$elem.data($.fn.jmolTools.options.dataAttributeRSRZ)}
-                }).done(function(data) {
-                    RSRZ_JSON = data;      
-                    RSRZ_data[$.jmolTools.numModels+1] = data;
-            });
+            if (self.$elem.data($.fn.jmolTools.options.dataAttributeRSRZ)) {
+                $.ajax({
+                    url: $.fn.jmolTools.options.serverUrlRSRZ,
+                    type: 'GET',
+                    dataType: 'json',
+                    //contentType: 'application/json',
+                    data: {'quality' : self.$elem.data($.fn.jmolTools.options.dataAttributeRSRZ)}
+                    }).done(function(data) {
+                        RSRZ_JSON = data;
+                        RSRZ_data[$.jmolTools.numModels+1] = data;
+                });
+            }
 
             // This AJAX call gets the RSR data, which is only available for x-ray structures
-            $.ajax({
-                url: $.fn.jmolTools.options.serverUrlRSR,
-                type: 'GET',
-                dataType: 'json',
-                //contentType: 'application/json',
-                data: {'quality' : self.$elem.data($.fn.jmolTools.options.dataAttributeRSR)}
-                }).done(function(data) {
-                    RSR_JSON = data;
-                    RSR_data[$.jmolTools.numModels+1] = data;
-            });
+            if (self.$elem.data($.fn.jmolTools.options.dataAttributeRSR)) {
+                $.ajax({
+                    url: $.fn.jmolTools.options.serverUrlRSR,
+                    type: 'GET',
+                    dataType: 'json',
+                    //contentType: 'application/json',
+                    data: {'quality' : self.$elem.data($.fn.jmolTools.options.dataAttributeRSR)}
+                    }).done(function(data) {
+                        RSR_JSON = data;
+                        RSR_data[$.jmolTools.numModels+1] = data;
+                });
+            }
 
             // This AJAX call gets the coordinate data
-            $.ajax({
-                url: $.fn.jmolTools.options.serverUrlCoord,
-                type: 'POST',
-                data: {'coord' : self.$elem.data($.fn.jmolTools.options.dataAttributeCoord)}
-            }).done(function(data) {
-                self.appendData(data);
-                if ( self.loaded ) {
-                    self.updateModelCounts();
-                    modelNum = self.instanceNumber;
-                    self.superimpose();
-                    self.labelnucleotides();
-                    self.colorOneModel();
-                    self.show();
-                }
-            });
+            if (self.$elem.data($.fn.jmolTools.options.dataAttributeCoord)) {
+                $.ajax({
+                    url: $.fn.jmolTools.options.serverUrlCoord,
+                    type: 'POST',
+                    data: {'coord' : self.$elem.data($.fn.jmolTools.options.dataAttributeCoord)}
+                }).done(function(data) {
+                    self.appendData(data);
+                    if ( self.loaded ) {
+                        self.updateModelCounts();
+                        modelNum = self.instanceNumber;
+                        self.superimpose();
+                        self.labelnucleotides();
+                        self.colorOneModel();
+                        self.show();
+                    }
+                });
+            }
+
+
+            // If needed, this AJAX call gets the coordinate data for Motif Atlas pages
+
+            if (self.$elem.data($.fn.jmolTools.options.dataAttributeCoordMotifAtlas)) {
+
+                $.ajax({
+                    url: $.fn.jmolTools.options.serverUrlCoordMotifAtlas,
+                    type: 'POST',
+                    data: {'coord_ma' : self.$elem.data($.fn.jmolTools.options.dataAttributeCoordMotifAtlas)}
+                }).done(function(data) {
+                    self.appendData(data);
+                    if ( self.loaded ) {
+                        self.updateModelCounts();
+                        modelNum = self.modelNumber;
+                        self.superimpose();
+                        self.labelnucleotides();
+                        self.colorOneModel();
+                        self.show();
+                    }
+                });
+            }
+
+
         },
 
         appendData: function(data) {
@@ -156,7 +186,8 @@ if ( typeof Object.create !== 'function' ) {
                           "elseif ({*.C1'/" + m + ".1}.length == {*.C1'/1.1}.length & {*.C1'/1.1}.length == 2) " +
                           "{x=compare({(*.C1'/" + m + ".1,*.C3'/" + m + ".1)},{(*.C1'/1.1,*.C3'/1.1)});}" +
                           "else {x=compare({(spine/" + m + ".1)[2][6]},{(spine/1.1)[2][6]});};" +
-                          "select " + m + ".1," + m + ".2; rotate selected @{x};";
+                          "select " + m + ".1," + m + ".2," + m + ".3; rotate selected @{x};";
+
             jmolScript(command);
             self.superimposed = true;
         },
@@ -221,7 +252,7 @@ if ( typeof Object.create !== 'function' ) {
                         'select protein and ' + k + '.2; color purple;' +
                         'select hetero  and ' + k + '.2; color pink;' +
                         'select ' + k + '.2; color translucent 0.8;' +
-                        'select ' + k + '.3; color translucent 0.99;' +
+                        'select ' + k + '.3; color translucent 0.6;' +
                         'select ' + k + '.1,' + k + '.2,' + k + '.3;' +
                         'spacefill off;' +
                         'center ' + k + '.1;' +
@@ -235,18 +266,20 @@ if ( typeof Object.create !== 'function' ) {
         styleModelCPK: function(a,b) {
             
             for (var k=a; k <= b; k++) {
-            
+
                 command = 'select nucleic and ' + k + '.1; color CPK;' +
                         'select protein and ' + k + '.1; color CPK;' +
                         'select nucleic and ' + k + '.2; color grey;' +
                         'select protein and ' + k + '.2; color purple;' +
                         'select hetero  and ' + k + '.2; color pink;' +
+                        'select nucleic and ' + k + '.3; color CPK;' +
                         'select ' + k + '.2; color translucent 0.8;' +
-                        'select ' + k + '.1,' + k + '.2;' +
+                        'select ' + k + '.3; color translucent 0.6;' +
+                        'select ' + k + '.1,' + k + '.2,' + k + '.3;' +
                         'spacefill off;' +
                         'center ' + k + '.1;' +
                         'zoom {'  + k + '.1} 0;';
-         
+
                 jmolScript(command);
 
             }
@@ -257,8 +290,8 @@ if ( typeof Object.create !== 'function' ) {
             var mod_num1 = a;
             var mod_num2 = b;
 
-            console.log("RSRZ mod_num1: " + mod_num1);
-            console.log("RSRZ mod_num2: " + mod_num2);
+            // console.log("RSRZ mod_num1: " + mod_num1);
+            // console.log("RSRZ mod_num2: " + mod_num2);
 
             command = "";
 
@@ -293,17 +326,18 @@ if ( typeof Object.create !== 'function' ) {
 
             }
 
-                command += "select " + i + ".1, " + i + ".2;" +
-                       "select nucleic and " + i + ".2; color grey;" +
+                command += "select nucleic and " + i + ".2; color grey;" +
                        "select protein and " + i + ".2; color purple;" +
                        "select hetero  and " + i + ".2; color pink;" +
-                       " select " + i + ".2; color translucent 0.8;" + 
-                       "select " + i + ".1," + i + ".2;" +
-                       " spacefill off; " + "center " + i + ".1;" +
+                       "select nucleic and " + i + ".3; color grey;" +
+                       "select " + i + ".2; color translucent 0.8;" +
+                       "select " + i + ".3; color translucent 0.6;" +
+                       "select " + i + ".1," + i + ".2," + i + ".3;" +
+                       "spacefill off; " + "center " + i + ".1;" +
                        "zoom {"  + i + ".1} 0;"; 
             }
 
-            console.log(command);
+            //console.log(command);
             jmolScript(command);
         },
 
@@ -312,8 +346,8 @@ if ( typeof Object.create !== 'function' ) {
             var mod_num1 = a;
             var mod_num2 = b;
 
-            console.log("RSR mod_num1: " + mod_num1);
-            console.log("RSR mod_num2: " + mod_num2);
+            //console.log("RSR mod_num1: " + mod_num1);
+            //console.log("RSR mod_num2: " + mod_num2);
             
             command = "";
 
@@ -354,12 +388,14 @@ if ( typeof Object.create !== 'function' ) {
                     }
                 }
 
-                 command += "select nucleic and " + i + ".2; color grey;" +
+                command += "select nucleic and " + i + ".2; color grey;" +
                        "select protein and " + i + ".2; color purple;" +
                        "select hetero  and " + i + ".2; color pink;" +
-                       " select " + i + ".2; color translucent 0.8;" + 
-                       "select " + i + ".1," + i + ".2;" +
-                       " spacefill off; " + "center " + i + ".1;" +
+                       "select nucleic and " + i + ".3; color grey;" +
+                       "select " + i + ".2; color translucent 0.8;" +
+                       "select " + i + ".3; color translucent 0.6;" +
+                       "select " + i + ".1," + i + ".2," + i + ".3;" +
+                       "spacefill off; " + "center " + i + ".1;" +
                        "zoom {"  + i + ".1} 0;";
                 
             }
@@ -381,7 +417,7 @@ if ( typeof Object.create !== 'function' ) {
             if (self.neighborhood) {
                 command = 'frame *;display displayed or ' + m + '.1,' + m + '.2; center ' + m + '.1;';
             } else {
-                command = 'frame *;display displayed or '      + m + '.1;' +
+                command = 'frame *;display displayed or '      + m + '.1,' + m + '.3;' +
                           'frame *;display displayed and not ' + m + '.2;' +
                           'center ' + m + '.1;';
             }
@@ -396,7 +432,8 @@ if ( typeof Object.create !== 'function' ) {
 
             if ( self.loaded ) {
                 command = 'frame *;display displayed and not ' + m + '.1;' +
-                                  'display displayed and not ' + m + '.2;'
+                                  'display displayed and not ' + m + '.2;' +
+                                  'display displayed and not ' + m + '.3;';
                 jmolScript(command);
                 self.hidden  = true;
                 self.toggleCheckbox();
@@ -620,7 +657,7 @@ if ( typeof Object.create !== 'function' ) {
             // analyze the last one
             if ( elems[last].checked ) {
 
-                console.log("Last checked ",last,elems[last].id)
+                //console.log("Last checked ",last,elems[last].id)
 
                 $.jmolTools.models[elems[last].id].jmolToggle.apply(elems[last]);
             }
@@ -631,7 +668,7 @@ if ( typeof Object.create !== 'function' ) {
             // check only the right ones
             $.each(indToCheck, function(ind, id) {
 
-                console.log("Checking right ones ",id)
+                //console.log("Checking right ones ",id)
 
                 elems[id].checked = true;
                 $.jmolTools.models[elems[id].id].jmolToggle.apply(elems[id]);
@@ -640,7 +677,7 @@ if ( typeof Object.create !== 'function' ) {
             // keep the first one checked if all are unchecked
             if ( elems.filter(':checked').length == 0 ) {
 
-                console.log("Checking first one",elems[0].id)
+                //console.log("Checking first one",elems[0].id)
 
                 elems[0].checked = true;
                 $.jmolTools.models[elems[0].id].jmolToggle.apply(elems[0]);
@@ -785,6 +822,9 @@ if ( typeof Object.create !== 'function' ) {
     $.fn.jmolTools.options = {
         serverUrlCoord   :  'http://rna.bgsu.edu/rna3dhub/rest/getCoordinates',
         dataAttributeCoord: 'coord',
+
+        serverUrlCoordMotifAtlas   : loc + '/rna3dhub/rest/getCoordinatesMotifAtlas',
+        dataAttributeCoordMotifAtlas: 'coord_ma',
 
         serverUrlRSR   : 'http://rna.bgsu.edu/rna3dhub/rest/getRSR',
         dataAttributeRSR: 'quality',
