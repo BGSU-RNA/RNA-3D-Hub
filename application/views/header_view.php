@@ -29,6 +29,7 @@
     <script src="<?=$baseurl?>js/jquery.tablesorter.min.js" type="text/javascript"></script>
 
     <script src="<?=$baseurl?>js/MotifAtlas.js" type="text/javascript"></script>
+    <script src="//d3js.org/d3.v4.min.js"></script>
 
     <!--
     https://www.rcsb.org/pdb/widgets/rcsbPdbWidgets.css was failing to load.
