@@ -909,7 +909,7 @@ class Motif_model extends CI_Model {
 
     function get_header()
     {
-        $header = array('#D', '#S', 'Loop id', 'PDB', 'Disc', '#Non-core', 'Annotation', 'Chain(s)', 'Standardized name');
+        $header = array('#S', 'Loop id', 'PDB', 'Disc', '#Non-core', 'Annotation', 'Chain(s)', 'Standardized name');
 
         // 1, 2, ..., N
         for ($i = 1; $i <= $this->motiflen; $i++) {
@@ -982,9 +982,11 @@ class Motif_model extends CI_Model {
         for ($i = 0; $i < count($this->header); $i++) {
             $key = $this->header[$i];
 
-            if ( $key == '#D' ) {
-                $row[] = array_search($this->similarity[$id], $this->loops);
-            } elseif ( $key == '#S') {
+            // if ( $key == '#D' ) {
+            //     // $row[] = array_search($this->similarity[$id], $this->loops);
+            //     $row[] = '';
+            // } elseif ( $key == '#S') {
+            if ( $key == '#S' ) {
                 $row[] = $id;
             } elseif ( $key == 'Loop id' ) {
                 $row[] = array('class'=>'loop','data'=>$this->get_checkbox($id)); //$this->loops[$id];
@@ -1023,7 +1025,7 @@ class Motif_model extends CI_Model {
                 $partsend = explode('|', end($this->units[$this->similarity[$id]]));
                 
                 if ($parts[2] != $partsend[2]){
-                    $row[] = $parts[2] .'*'. $partsend[2];
+                    $row[] = $parts[2] .'+'. $partsend[2];
                 } else {
                     $row[] = $parts[2];
                 }

@@ -37,12 +37,19 @@
                     <div class="tab-content">
 
                         <div class="tab-pane active" id='int'>
-                          <span class="muted">
+                          <!-- <span class="muted">
                               #D - ordering by discrepancy relative to the exemplar,
                               #S - ordering by similarity (same as in the heat map).
                               <a href="<?=$this->config->item('home_url')?>/main/rna-3d-hub-help/" target="_blank">More</a>
-                          </span>
-
+                          </span> -->
+                            <style>
+                                #int th:nth-child(6), #int td:nth-child(6),
+                                #int th:nth-child(7), #int td:nth-child(7),
+                                #int th:nth-child(8), #int td:nth-child(8){
+                                    text-align: left;
+                                }
+                            </style>                            
+                            
                             <?php echo $table;?>
                         </div>
 
@@ -117,7 +124,7 @@
                             		  <#?php else: ?>
                             		  <dd id="annotation" class="edit_area">No annotation provided yet.</dd>
                             		  <#?php endif; ?>-->
-                            		  <dt>Intraclusteral linkage</dt>
+                            		  <dt>Heat map statistics</dt>
                             		  <dd>
                                 		<strong>Min</strong> <?php echo number_format($linkage['intra_min_disc'], 2); ?> |
                                 		<strong>Avg</strong> <?php echo number_format($linkage['intra_avg_disc'], 2); ?> |
@@ -275,6 +282,13 @@
                             
                     </div> -->
             <div id ='heatmap' style="text-align: left;">
+                <!-- <style>
+
+                    #heatmap svg {
+                        width: auto; /* Adjust this value to your preferred size */
+                        height: auto; /* Maintain aspect ratio */
+                    }
+                </style> -->
                 <script src="//d3js.org/d3.v4.min.js"></script>
 
 <script type="text/javascript">
