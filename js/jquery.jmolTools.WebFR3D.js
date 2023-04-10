@@ -411,7 +411,7 @@ if ( typeof Object.create !== 'function' ) {
 
             // not sure what this does
             if ( $.fn.jmolTools.options.mutuallyExclusive ) {
-                self.hideAll();
+                // self.hideAll();
             }
 
             if (self.neighborhood) {
@@ -452,7 +452,7 @@ if ( typeof Object.create !== 'function' ) {
                 //orig_color = d3.select("#r"+this.id+"c"+this.id).attr("orig_color");
                 //d3.select("#r"+this.id+"c"+this.id).style("fill", orig_color);
 
-                if (d3.select("#r"+i+"c"+i).size() > 0) {
+                if (d3.select("#r"+i+"c"+i).length > 0) {
                     orig_color = d3.select("#r"+i+"c"+i).attr("orig_color");
                     d3.select("#r"+i+"c"+i).style("fill", orig_color);
                 }
