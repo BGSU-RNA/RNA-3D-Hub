@@ -409,9 +409,9 @@ if ( typeof Object.create !== 'function' ) {
             var self = this;
             var m = self.instanceNumber;
 
-            // not sure what this does
+            // when using radio buttons and you show one, hide all the rest
             if ( $.fn.jmolTools.options.mutuallyExclusive ) {
-                // self.hideAll();
+                self.hideAll();
             }
 
             if (self.neighborhood) {
@@ -442,6 +442,11 @@ if ( typeof Object.create !== 'function' ) {
 
         hideAll: function() {
             jmolScript('hide *');
+        },
+
+        uncolorAll: function() {
+            // uncolor the cells on the diagonal, when using a heat map
+            console.log('Line 446 uncolorAll')
 
             var i = 0;  // row number for diagonal
             $.each($.jmolTools.models, function() {
@@ -452,7 +457,7 @@ if ( typeof Object.create !== 'function' ) {
                 //orig_color = d3.select("#r"+this.id+"c"+this.id).attr("orig_color");
                 //d3.select("#r"+this.id+"c"+this.id).style("fill", orig_color);
 
-                if (d3.select("#r"+i+"c"+i).length > 0) {
+                if (d3.select("#r"+i+"c"+i).attr("orig_color")) {
                     orig_color = d3.select("#r"+i+"c"+i).attr("orig_color");
                     d3.select("#r"+i+"c"+i).style("fill", orig_color);
                 }
@@ -635,6 +640,7 @@ if ( typeof Object.create !== 'function' ) {
         },
 
         hideAll: function() {
+            console.log("Line 641 hideAll")
             $.jmolTools.models[$.fn.jmolTools.elems[0].id].hideAll();
         },
 
