@@ -979,6 +979,7 @@ class Motif_model extends CI_Model {
     function generate_row($id)
     {
         ###echo "<p>id: $id</p>";
+        
         for ($i = 0; $i < count($this->header); $i++) {
             $key = $this->header[$i];
 
@@ -1003,6 +1004,11 @@ class Motif_model extends CI_Model {
                 $row[] = $parts[3];  # base sequence
                 $row[] = implode('|',array_slice($parts,4)); # number and all remaining fields in the unit id
 
+                #Add unique chain into chain_set
+                // if (!in_array($parts[2], $chain_set)) {
+                //     $chain_set[] = $parts[2];
+                // }
+
             } elseif ( $key == ' ' ) {
                 // do nothing
             } elseif ( $key == 'Disc' ) {
@@ -1016,45 +1022,32 @@ class Motif_model extends CI_Model {
                     $row[] = ' ';
                  }
             } elseif( $key == 'Chain(s)' ) {
-
-
-
-                $parts = explode('|', $this->units[$this->similarity[$id]][1]);
-
-
-                $partsend = explode('|', end($this->units[$this->similarity[$id]]));
-                
-                if ($parts[2] != $partsend[2]){
-                    $row[] = $parts[2] .'+'. $partsend[2];
-                } else {
-                    $row[] = $parts[2];
+                $chain_set = array();
+                for ($j = 1; $j <= $this->motiflen; $j++) {
+                    $parts = explode('|', $this->units[$this->similarity[$id]][$j]);
+                    $chain_id = $parts[2];
+                    if (!in_array($chain_id, $chain_set)) {
+                        $chain_set[] = $chain_id;
+                    }
                 }
+
+                $row[] = implode(' + ', $chain_set);
+                
                     
             } elseif( $key == 'Standardized name'){
 
                 $parts = explode('|', $this->units[$this->similarity[$id]][1]);
-                $partsend = explode('|', end($this->units[$this->similarity[$id]]));
 
-                $short_standardized_name = $this->get_standardized_name($parts[0], $parts[2]);
+                $standardized_name_set = array();
 
-
-                if ($parts[2] == $partsend[2]){
-                    if (isset($short_standardized_name)) {
-                        $row[] = $short_standardized_name;
-                    } else {
-                        $row[] = ' ';
-                    }   
-                } else {
-                    $short_standardized_name_2 = $this->get_standardized_name($partsend[0], $partsend[2]);
-                    if(strlen($short_standardized_name)+strlen($short_standardized_name_2)>67){
-                        $row[] = $short_standardized_name. ' + <br>' . $short_standardized_name_2;
-                    } else{
-                        $row[] = $short_standardized_name. ' + ' . $short_standardized_name_2;
+                for ($k = 0; $k < count($chain_set); $k++){
+                    $standardized_name = $this->get_standardized_name($parts[0], $chain_set[$k]);
+                    if (!in_array($standardized_name, $standardized_name_set)){
+                        $standardized_name_set[] = $standardized_name;
                     }
-                    
                 }
+                $row[] = implode(' + ', $standardized_name_set);
 
-                
             } else {
                 $parts = explode('-', $key);
 

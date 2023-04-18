@@ -37,18 +37,20 @@
                     <div class="tab-content">
 
                         <div class="tab-pane active" id='int'>
-                          <!-- <span class="muted">
-                              #D - ordering by discrepancy relative to the exemplar,
-                              #S - ordering by similarity (same as in the heat map).
-                              <a href="<?=$this->config->item('home_url')?>/main/rna-3d-hub-help/" target="_blank">More</a>
-                          </span> -->
                             <style>
                                 #int th:nth-child(6), #int td:nth-child(6),
                                 #int th:nth-child(7), #int td:nth-child(7),
                                 #int th:nth-child(8), #int td:nth-child(8){
                                     text-align: left;
                                 }
-                            </style>                            
+                                .tab-pane.active th{
+                                    background-color: rgba(255, 255, 255, 1);
+                                    position: sticky; /* make the header sticky */
+                                    top: 0; /* position the header at the top of the container */
+                                    z-index: 1; /*set the z-index to ensure the header appears on top of other elements*/
+                                }
+                                
+                            </style>
                             
                             <?php echo $table;?>
                         </div>
@@ -281,14 +283,8 @@
                             
                             
                     </div> -->
-            <div id ='heatmap' style="text-align: left;">
-                <!-- <style>
-
-                    #heatmap svg {
-                        width: auto; /* Adjust this value to your preferred size */
-                        height: auto; /* Maintain aspect ratio */
-                    }
-                </style> -->
+            <!-- <div id ='heatmap' style="text-align: left;"> -->
+                <div id = 'heatmap' style="width: 110%;">
                 <script src="//d3js.org/d3.v4.min.js"></script>
 
 <script type="text/javascript">
@@ -297,6 +293,15 @@
 </script>
 <script type="text/javascript" src="http://rna.bgsu.edu/webfr3d/js/heatmap.js"></script>
 </div>
+<!-- <div id='mdmatrix-help' rel='twipsy' style = "text-align:left; " title='
+                                    Clicking
+                                    <ul>
+                                    <li>on the diagonal toggles a motif instance</li>
+                                    <li>above the diagonal displays a pair of instances</li>
+                                    <li>below the diagonal selects multiple instances on the diagonal</li>
+                                    </ul>'>
+                                    
+</div> -->
                 </div>
             </div>
         </div>

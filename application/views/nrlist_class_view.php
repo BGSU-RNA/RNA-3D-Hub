@@ -39,6 +39,14 @@
 
            <div class="tab-content">
               <div class="tab-pane active" id="members">
+              <style>
+                .tab-pane.active th{
+                  background-color: rgba(255, 255, 255, 1);
+                  position: sticky;
+                  top: 40px;
+                  z-index: 1;
+                }
+              </style>
                   <div class="span100p">
                       <div>
                         <?=$members?>
