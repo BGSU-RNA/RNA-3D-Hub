@@ -341,16 +341,19 @@ class Pdb_model extends CI_Model {
     {
         //  QUERY NEEDS TO BE REWRITTEN
         //  NEEDS DATA FROM BOTH pdb_info and chain_info
+
+        // get a list of all chains in the pdb_id
         $this->db->select()
                  ->from('pdb_info AS pi')
                  ->join('chain_info AS ci', 'pi.pdb_id = ci.pdb_id', 'left')
                  ->where('pi.pdb_id', $pdb_id);
         $query = $this->db->get();
+
         $data['rna_chains'] = 0;
         foreach ($query->result() as $row) {
             $ndb_id = ( $row->ndb_id ) ? $row->ndb_id : $pdb_id;
-            // get this info only once because it applies to all chains
             if ( $data['rna_chains'] == 0 ) {
+                // get this info only once because it applies to all chains
                 $data['title'] = $row->title;
                 $data['experimental_technique'] = $row->experimental_technique;
                 $data['resolution'] = $row->resolution;
@@ -360,15 +363,19 @@ class Pdb_model extends CI_Model {
                 $data['ndb_url'] = "http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget={$ndb_id}";
             }
             // only for RNA chains
+            // Todo: add a section for DNA chains as well
             if ( $row->entity_macromolecule_type == 'Polyribonucleotide (RNA)' or
-                 $row->entity_macromolecule_type == 'DNA/RNA Hybrid' ) {
+                 $row->entity_macromolecule_type == 'polyribonucleotide' or
+                 $row->entity_macromolecule_type == 'DNA/RNA Hybrid' or
+                 $row->entity_macromolecule_type == 'polydeoxyribonucleotide/polyribonucleotide hybrid'
+            ) {
                 $data['rna_chains']++;
                 $organisms[] = $row->source;
-                $data['rna_compounds'][] = array("chain"    => $row->chain_id,
+                $data['rna_compounds'][] = array("chain"      => $row->chain_id,
                                                  "chain_name" => $row->chain_name,
-                                                 "compound" => $row->compound,
-                                                 "length"   => $row->chain_length,
-                                                 "organism" => $row->source);
+                                                 "compound"   => $row->compound,
+                                                 "length"     => $row->chain_length,
+                                                 "organism"   => $row->source);
             }
             // for all chains
             $compounds[] = $row->compound;
