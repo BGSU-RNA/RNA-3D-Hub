@@ -13,6 +13,8 @@
         <div class="page-header">
           <h1><?=strtoupper($pdb_id)?>
           <small>Internal, Hairpin and 3-way Junction Loop Motifs</small>
+
+          <!--
           <small class="pull-right">
             <select data-placeholder="Choose a structure" id="chosen">
              <option value=""></option>
@@ -21,6 +23,8 @@
             <?php endforeach; ?>
             </select>
           </small>
+          -->
+
           </h1>
         </div>
 
