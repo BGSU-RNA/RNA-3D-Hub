@@ -280,24 +280,24 @@ if ( typeof Object.create !== 'function' ) {
             for (var k=a; k <= b; k++) {
             
                 command = 'select nucleic and ' + k + '.1; color CPK;' +
-                		'select nucleic and ' + k + '.3; color CPK;' +
+                        'select nucleic and ' + k + '.3; color CPK;' +
                         'select protein and ' + k + '.1; color CPK;' +
                         'select nucleic and ' + k + '.2; color grey;' +
                         'select protein and ' + k + '.2; color purple;' +
                         'select hetero  and ' + k + '.2; color pink;' +
                         'select ' + k + '.2; color translucent 0.8;' +
                         'select ' + k + '.3; color translucent 0.99;' +
-                        'select ' + k + '.1,' + k + '.2,' + k + '.3;' + 
+                        'select ' + k + '.1,' + k + '.2,' + k + '.3;' +
                         'spacefill off;' +
                         'center ' + k + '.1;' +
                         'zoom {'  + k + '.1} 0;';
-         
+
                 console.log(command);
                 jmolScript(command);
 
             }
 
-            
+
         },
 
         styleModelRSRZ: function(a,b) {
@@ -313,10 +313,10 @@ if ( typeof Object.create !== 'function' ) {
             command = "";
 
             for (var i = mod_num1; i <= mod_num2; i++) {
-                
+
                 console.log(RSRZ_data[i]);
                 //var RSRZ_array_size = RSRZ_data[i].length
-                
+
                 if (RSRZ_data[i] === undefined) {
                     command += "select " + i + ".1; "  + "color grey; ";
                 } else {
@@ -330,13 +330,13 @@ if ( typeof Object.create !== 'function' ) {
                         } else {
                             var RSRZ = (parseFloat(RSRZ_data[i][k].real_space_r_z_score)*100)/100;
                             if (RSRZ < 1.00) {
-                                command += "select " + split_unitid[4] + "/" + i + ".1;" + " color green; "; 
+                                command += "select " + split_unitid[4] + "/" + i + ".1;" + " color green; ";
                             } else if (RSRZ < 2.00) {
-                                command += "select " + split_unitid[4] + "/" + i + ".1;" + " color yellow; ";  
+                                command += "select " + split_unitid[4] + "/" + i + ".1;" + " color yellow; ";
                             } else if (RSRZ < 3.00) {
-                                command += "select " + split_unitid[4] + "/" + i + ".1;" + " color orange; ";  
+                                command += "select " + split_unitid[4] + "/" + i + ".1;" + " color orange; ";
                             } else {
-                                command += "select " + split_unitid[4] + "/" + i + ".1;" + " color red; ";  
+                                command += "select " + split_unitid[4] + "/" + i + ".1;" + " color red; ";
                             }
                         }
                     }
@@ -345,10 +345,10 @@ if ( typeof Object.create !== 'function' ) {
 
                 /*
                 if (bulge_data[i] == "{}") {
-                	console.log('Object is empty');
+                    console.log('Object is empty');
                 } else {
-                	console.log(bulge_data[i])
-                	for (var k = 0; k < Object.keys(bulge_data[i]).length; k++){
+                    console.log(bulge_data[i])
+                    for (var k = 0; k < Object.keys(bulge_data[i]).length; k++){
 
                         var RSRZ = bulge_data[i][k].real_space_r_z_score;
                         var split_unitid = bulge_data[i][k].unit_id.split("|");
