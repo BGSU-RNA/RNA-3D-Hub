@@ -17,7 +17,10 @@
     <script src="<?=$baseurl?>js/jmol/Jmol.js"></script>
     <script src="<?=$baseurl?>js/jsmol/JSmol.min.nojq.js"></script>
     <script src="<?=$baseurl?>js/jquery.jmolTools.WebFR3D.js"></script>
+
+    <!-- Wondering if this actually does anything anymore
     <script src="<?=$baseurl?>js/jmolInlineLoader.js"></script>
+    -->
 
     <script src="<?=$baseurl?>js/bootstrap-twipsy.js" type="text/javascript"></script>
     <script src="<?=$baseurl?>js/bootstrap-popover.js" type="text/javascript"></script>
