@@ -451,10 +451,22 @@ if ( typeof Object.create !== 'function' ) {
                 // restore the original color of each diagonal cell
                 //orig_color = d3.select("#r"+this.id+"c"+this.id).attr("orig_color");
                 //d3.select("#r"+this.id+"c"+this.id).style("fill", orig_color);
-                if (d3.select("#r"+i+"c"+i).hasOwnProperty('attr')) {
-                    if (d3.select("#r"+i+"c"+i).attr("orig_color")) {
-                        orig_color = d3.select("#r"+i+"c"+i).attr("orig_color");
-                        d3.select("#r"+i+"c"+i).style("fill", orig_color);
+
+                var row_column = "#r"+i+"c"+i;
+
+                // pages with a heatmap have orig_color set
+                // pages without a heatmap don't have this attribute,
+                // so we have to avoid trying to access it, but it's
+                // hard to know if it is there or not!
+                // This seems to work in both settings.
+
+                if (d3.select(row_column)._groups[0][0]) {
+                    if (d3.select(row_column).attr("orig_color")) {
+
+                        //console.log('Restoring original color to '+row_column)
+
+                        orig_color = d3.select(row_column).attr("orig_color");
+                        d3.select(row_column).style("fill", orig_color);
                     }
                 }
                 i++;
@@ -485,13 +497,16 @@ if ( typeof Object.create !== 'function' ) {
                 } else {
                     self.hide();
 
-                    console.log('jmolToggle hide ' + this.id);
                     // restore the original color
 
-                    if (d3.select("#r"+i+"c"+i).hasOwnProperty('attr')) {
-                        if (d3.select("#r"+i+"c"+i).attr("orig_color")) {
-                            orig_color = d3.select("#r"+this.id+"c"+this.id).attr("orig_color");
-                            d3.select("#r"+this.id+"c"+this.id).style("fill", orig_color);
+                    var row_column = "#r"+this.id+"c"+this.id;
+
+                    //console.log('jmolToggle hide ' + this.id);
+
+                    if (d3.select(row_column)._groups[0][0]) {
+                        if (d3.select(row_column).attr("orig_color")) {
+                            orig_color = d3.select(row_column).attr("orig_color");
+                            d3.select(row_column).style("fill", orig_color);
                         }
                     }
                 }
@@ -651,7 +666,7 @@ if ( typeof Object.create !== 'function' ) {
                 if ( elems[i].checked ) {
                     indToCheck.push(i+1); // the next one should be checked
 
-                    console.log("Toggling number ",i+1,elems[i].id)
+                    console.log("Toggling number ",i,elems[i].id)
 
                     $.jmolTools.models[elems[i].id].jmolToggle.apply(elems[i]); // toggle this model
                 }
@@ -696,6 +711,9 @@ if ( typeof Object.create !== 'function' ) {
             for (var i = elems.length-1; i >= 1; i--) {
                 if ( elems[i].checked ) {
                     indToCheck.push(i-1);
+
+                    console.log("Toggling number ",i,elems[i].id)
+
                     $.jmolTools.models[elems[i].id].jmolToggle.apply(elems[i]); // toggle this model
                 }
             }
@@ -779,7 +797,17 @@ if ( typeof Object.create !== 'function' ) {
     // plugin initialization
     $.fn.jmolTools = function ( options ) {
 
+        console.log("options: ")
+        console.log(options)
+
         $.jmolTools.selector = $(this).selector;
+
+        // it is possible to select only instances from a specific div
+        //$.jmolTools.selector = '#jls .jmolInline';
+
+
+        console.log("this: " + $(this))
+        console.log("selector: " + $(this).selector);
 
         $.fn.jmolTools.options = $.extend( {}, $.fn.jmolTools.options, options );
 
@@ -815,6 +843,9 @@ if ( typeof Object.create !== 'function' ) {
         //
         Helpers.setMutuallyExclusiveProperty();
 
+        //console.log("Mutually exclusive: " + $.fn.jmolTools.options.mutuallyExclusive);
+
+
         // return elements for chaining
         return $.fn.jmolTools.elems;
     }
@@ -836,7 +867,7 @@ if ( typeof Object.create !== 'function' ) {
         dataAttributeRSRZ: 'quality',
 
         toggleCheckbox:     true,  // by default each model will monitor the checked state of its corresponding checkbox
-        mutuallyExclusive:  false, // by default will set to false for checkboxes and false for radiobuttons
+        mutuallyExclusive:  false, // by default will set to false for checkboxes and true for radiobuttons
         showNeighborhoodId: false,
         showNextId:         false,
         showPrevId:         false,
