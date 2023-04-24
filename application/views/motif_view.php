@@ -210,7 +210,7 @@
                             <input type='button' id='prev' class='btn' value='Previous'>
                             <input type='button' id='next' class='btn' value="Next">
                             <input type='button' id='stereo' class='btn' value="Stereo">
-                            <input type='button' id='all' class='btn' value="Show all">
+                            <!-- <input type='button' id='all' class='btn' value="Show all"> -->
                             <input type='button' id='clear' class='btn' value="Clear all">
                             <br>
                             Coloring options: <select id="colorOPT">
