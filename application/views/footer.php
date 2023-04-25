@@ -1,10 +1,5 @@
-      <footer>
-        <p>
-          <a href="http://rna.bgsu.edu">BGSU RNA group</a>, <?php echo date("Y"); ?>
-          <br>
+          Copyright <?php echo date("Y"); ?> <a href="http://rna.bgsu.edu">BGSU RNA group</a>.
           <em>Page generated in {elapsed_time} s</em>
-        </p>
-      </footer>
 
     </div> <!-- /container -->
 
