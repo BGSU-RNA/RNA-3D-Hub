@@ -39,11 +39,11 @@ class Motif extends MY_Controller {
             if ( $format == 'csv' ) {
                 $this->output->set_header("Content-disposition: attachment; filename={$motif_id}.csv")
                              ->set_content_type('text/csv');
-                $data['csv'] = $this->Motif_model->get_csv($motif_id);
+                $data['csv'] = $this->Motif_model->get_csv($motif_id,$last_release_id);
             } elseif ( $format == 'json' ) {
                 $this->output->set_header("Content-disposition: attachment; filename={$motif_id}.json")
                              ->set_content_type('application/json');
-                $data['csv'] = $this->Motif_model->get_json($motif_id);
+                $data['csv'] = $this->Motif_model->get_json($motif_id,$last_release_id);
             } else {
                 show_404();
             }
@@ -205,11 +205,11 @@ class Motif extends MY_Controller {
             if ( $format == 'csv' ) {
                 $this->output->set_header("Content-disposition: attachment; filename={$motif_id}.csv")
                              ->set_content_type('text/csv');
-                $data['csv'] = $this->Motif_model->get_csv($motif_id);
+                $data['csv'] = $this->Motif_model->get_csv($motif_id,$last_release_id);
             } elseif ( $format == 'json' ) {
                 $this->output->set_header("Content-disposition: attachment; filename={$motif_id}.json")
                              ->set_content_type('application/json');
-                $data['csv'] = $this->Motif_model->get_json($motif_id);
+                $data['csv'] = $this->Motif_model->get_json($motif_id,$last_release_id);
             } else {
                 show_404();
             }
