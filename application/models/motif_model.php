@@ -1031,7 +1031,7 @@ class Motif_model extends CI_Model {
                     }
                 }
 
-                $row[] = implode(' + ', $chain_set);
+                $row[] = implode('+', $chain_set);
                 
                     
             } elseif( $key == 'Standardized name'){
