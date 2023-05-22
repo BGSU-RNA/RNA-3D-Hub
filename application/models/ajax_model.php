@@ -182,7 +182,7 @@ class Ajax_model extends CI_Model {
                          ',  ' .
                          anchor_popup("https://www.nakb.org/atlas=$pdb", 'NAKB') .
                          ', or ' .
-                         anchor_popup("pdb/$pdb", 'BGSU RNA Site');
+                         anchor_popup("pdb/$pdb", 'RNA 3D Hub');
         } else {
             // check obsolete files
             $this->db->select('replaced_by')
