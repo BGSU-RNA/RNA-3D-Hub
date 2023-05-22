@@ -460,13 +460,15 @@ if ( typeof Object.create !== 'function' ) {
                 // hard to know if it is there or not!
                 // This seems to work in both settings.
 
-                if (d3.select(row_column)._groups[0][0]) {
-                    if (d3.select(row_column).attr("orig_color")) {
+                if (d3.select(row_column)._groups) {
+                    if (d3.select(row_column)._groups[0][0]) {
+                        if (d3.select(row_column).attr("orig_color")) {
 
-                        //console.log('Restoring original color to '+row_column)
+                            //console.log('Restoring original color to '+row_column)
 
-                        orig_color = d3.select(row_column).attr("orig_color");
-                        d3.select(row_column).style("fill", orig_color);
+                            orig_color = d3.select(row_column).attr("orig_color");
+                            d3.select(row_column).style("fill", orig_color);
+                        }
                     }
                 }
                 i++;
