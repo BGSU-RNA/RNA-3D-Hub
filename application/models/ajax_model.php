@@ -180,7 +180,7 @@ class Ajax_model extends CI_Model {
                          'Explore in ' .
                          anchor_popup("$pdb_url$pdb", 'PDB') .
                          ',  ' .
-                         anchor_popup("http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget=$pdb", 'NDB') .
+                         anchor_popup("https://www.nakb.org/atlas=$pdb", 'NAKB') .
                          ', or ' .
                          anchor_popup("pdb/$pdb", 'BGSU RNA Site');
         } else {
