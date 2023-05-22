@@ -483,6 +483,7 @@ class Ajax_model extends CI_Model {
             # Add 1 because sequence index begins from 0 in the database
             $index=$row['index'] + 1;
             $unit=$row['unit'];
+
             if (is_null($unit_id)) {
                 $relation = $pdb . "|sequence|" . $chain . "|" . $unit . "|" . $index . " observed_as NULL";
                 $data .= $relation . "</br>";
