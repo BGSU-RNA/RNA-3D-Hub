@@ -361,6 +361,8 @@ class Pdb_model extends CI_Model {
                 $data['authors'] = $row->authors;
                 $data['pdb_url'] = "https://www.rcsb.org/structure/{$pdb_id}";
                 $data['ndb_url'] = "http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget={$ndb_id}";
+                $data['NAKB_url'] = "https://www.nakb.org/atlas={$pdb_id}";
+
             }
             // only for RNA chains
             // Todo: add a section for DNA chains as well

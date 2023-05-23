@@ -57,7 +57,7 @@
                     </a>
                   </li>
                 </ul>
-                View in <a href="<?=$pdb_url?>" target="_blank">PDB</a> or <a href="<?=$ndb_url?>" target="_blank">NDB</a>
+                View in <a href="<?=$pdb_url?>" target="_blank">PDB</a> or <a href="<?=$NAKB_url?>" target="_blank">NAKB</a>
               </div>
 
               <!-- section1 -->
