@@ -115,7 +115,7 @@
               <!-- pairwise interactions -->
               <div class="span20p well">
                 <h4>Pairwise Interactions</h4>
-                Interactions annotated by <a href="<?=$this->config->item('fr3d_url')?>/FR3D">FR3D</a>:
+                Interactions annotated by <a href="<?=$this->config->item('fr3d_url')?>">FR3D</a>:
                 <ul>
                   <li><?=$bp_counts?> <a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/basepairs">base-pairs</a></li>
                   <li><?=$bst_counts?> <a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/stacking">base-stacking</a></li>
