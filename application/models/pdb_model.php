@@ -118,7 +118,7 @@ class Pdb_model extends CI_Model {
                                                     array( 'class' => 'loop',
                                                            'data'  => $this->get_checkbox($row->loop_id, $row->unit_ids)
                                                           ), //loop_id
-                                                    $row->loop_name, //location
+                                                    str_replace(",", ",<br>", $row->loop_name), //location
                                                     // $motif_id, //motif 
                                                     $annotation_1,
                                                     $motif_id
