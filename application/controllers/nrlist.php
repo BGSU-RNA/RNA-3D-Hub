@@ -29,7 +29,7 @@ class Nrlist extends CI_Controller {
 
     public function release($id, $res='4.0A')
     {
-        $this->output->cache(262974); # 6 months
+        // $this->output->cache(262974); # 6 months
 
         $this->load->model('Nrlist_model', '', TRUE);
         if ($id == 'current') {
@@ -88,7 +88,7 @@ class Nrlist extends CI_Controller {
     #public function view($id, $nr_release_id)
     {
 
-        $this->output->cache(262974); # 6 months
+        // $this->output->cache(262974); # 6 months
 
         $this->load->model('Nrlist_model', '', TRUE);
 
@@ -111,8 +111,8 @@ class Nrlist extends CI_Controller {
         $members = $this->Nrlist_model->get_members($id);
         $tmpl = array( 'table_open'  => "<table class='zebra-striped bordered-table' id='members_table'>" );
         $this->table->set_template($tmpl);
-        // $this->table->set_heading('#','IFE','Compound(s)','RNA source organism','Title','Method','Resolution','Date');
-        $this->table->set_heading('#','IFE','Standardized name', 'Molecule', 'Organism', 'Source', 'Rfam', 'Title','Method','&Aring','Date');        
+        // $this->table->set_heading('#','IFE', 'Compound(s)','RNA source organism','Title','Method','Resolution','Date');
+        $this->table->set_heading('#','IFE','Standardized name', 'Molecule', 'Organism', 'Source', 'Rfam', 'Title','Method','Res. &Aring','Date');
         $data['members'] = $this->table->generate($members);
         $data['num_members'] = count($members);
 

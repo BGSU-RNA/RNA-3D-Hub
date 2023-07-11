@@ -98,6 +98,7 @@ class Pdb_model extends CI_Model {
             $valid_tables[$loop_type] = array();
             $invalid_tables[$loop_type] = array();
         }
+        //$motifs is an array of [loop id] to return motif group id
         $motifs = $this->get_latest_motif_assignments($pdb_id, 'IL');
         $motifs = array_merge($motifs, $this->get_latest_motif_assignments($pdb_id, 'HL'));
         foreach ($query->result() as $row) {
@@ -118,7 +119,7 @@ class Pdb_model extends CI_Model {
                                                     array( 'class' => 'loop',
                                                            'data'  => $this->get_checkbox($row->loop_id, $row->unit_ids)
                                                           ), //loop_id
-                                                    $row->loop_name, //location
+                                                    str_replace(",", ",<br>", $row->loop_name), //location
                                                     // $motif_id, //motif 
                                                     $annotation_1,
                                                     $motif_id

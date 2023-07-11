@@ -302,7 +302,6 @@ class Nrlist_model extends CI_Model {
         $experimental_technique['ELECTRON MICROSCOPY, SOLUTION NMR'] = 'Electron microscopy, solution NMR';
         $experimental_technique['X-RAY DIFFRACTION, SOLUTION SCATTERING'] = 'X-ray diffraction, solution scattering';
 
-
         $ife_to_cpv = array();
 
         foreach ($query_cpv->result() as $row) {
@@ -1268,7 +1267,7 @@ class Nrlist_model extends CI_Model {
     }
 */
 
-    function get_release($id, $resolution)
+    function get_release($id, $resolution) // This function populates the Representative set pages
     {
         $resolution = str_replace('A', '', $resolution);
 
@@ -1427,13 +1426,14 @@ class Nrlist_model extends CI_Model {
         foreach ($query->result() as $row) {
             $class_id = $row->name;
             #$nums     = $row->num;
-            $ife_id   = $reps[$class_id];
+            $ife_id   = $reps[$class_id]; //Representative IFE
             $pdb_id   = $row->pdb_id;
             $tax_link = $this->tax_url . $row->species_id;
 
             $source   = ( is_null($row->species_name) ) ? "" : anchor_popup("$tax_link", "$row->species_name");
             $compound = (strlen($row->compound) > 40 ) ? substr($row->compound, 0, 40) . "[...]" : $row->compound;
 
+            // this if else block could be reduced to a single explode function / made more efficient
             if (preg_match('/\+/',$ife_id)){
                 $best_chains = "";
                 $best_models = "";
@@ -1492,9 +1492,9 @@ class Nrlist_model extends CI_Model {
                 $biological_context = "Source";
                 // $biological_context = "source";
                 // if ($source_representative == "Mitochondria" or $source_representative == "Chloroplast"){
-                //     $biological_context = "Organelle";
+                    // $biological_context = "Organelle";
                 // } elseif ($source_representative == "Synthetic"){
-                //     $biological_context = "Source";
+                    // $biological_context = "Source";
                 // }
                 $cpv_html_list_item .= '<li>' . $biological_context . ': ' . $source_representative . '</li>';
             }
@@ -1502,6 +1502,7 @@ class Nrlist_model extends CI_Model {
                 $rfam_representative = substr($rfam_representative, 0, -3);
                 $cpv_html_list_item .= '<li>Rfam: ' . $rfam_representative . '</li>';
             }
+
 
             // $id refers to the release_id
             $table[] = array($i,
@@ -1515,8 +1516,8 @@ class Nrlist_model extends CI_Model {
                              '<li>' . $pdb[$pdb_id]['experimental_technique'] . '</li>' .
                             //  '<li>Chain(s): ' . $best_chains . '; model(s): ' . $best_models . '</li>' .
                              '<li>Release Date: ' . $pdb[$pdb_id]['release_date'] . '</li>' .
-                             //'<li>' . $pdb[$pdb_id]['release_date'] '</li>' .//
                              $cpv_html_list_item.
+                             //'<li>' . $pdb[$pdb_id]['release_date'] '</li>' .//
                              '</ul>',
                              $pdb[$pdb_id]['resolution'],
                              $row->analyzed_length,

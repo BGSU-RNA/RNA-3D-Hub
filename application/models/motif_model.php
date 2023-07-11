@@ -1037,15 +1037,88 @@ class Motif_model extends CI_Model {
             } elseif( $key == 'Standardized name'){
 
                 $parts = explode('|', $this->units[$this->similarity[$id]][1]);
+                $partsend = explode('|', end($this->units[$this->similarity[$id]]));
 
                 $standardized_name_set = array();
 
-                for ($k = 0; $k < count($chain_set); $k++){
-                    $standardized_name = $this->get_standardized_name($parts[0], $chain_set[$k]);
-                    if (!in_array($standardized_name, $standardized_name_set)){
-                        $standardized_name_set[] = $standardized_name;
+                //get standardized name of chain of first nuclotide
+                $this->db->select('value')
+                        ->from('chain_property_value')
+                        ->where('property', 'standardized_name')
+                        ->where('pdb_id', $parts[0])
+                        ->where('chain', $parts[2])
+                        ->limit(1);
+                $result = $this->db->get()->result_array();
+
+                if ( count($result) > 0 ){
+                    $standardized_name = $result[0]['value'];
+                    $short_standardized_name = explode(';', $standardized_name);
+                    $short_standardized_name = end($short_standardized_name);
+                } else {
+                    // get the PDB description of the chain
+                    $this->db->select('compound')
+                            ->from('chain_info')
+                            ->where('pdb_id', $parts[0])
+                            ->where('chain_name', $parts[2])
+                            ->limit(1);
+                    $result = $this->db->get()->result_array();
+                    if ( count($result) > 0 ){
+                        $short_standardized_name = $result[0]['compound'];
+                        // fix some special cases (but there could be many special cases!)
+                        $short_standardized_name = $this->parseRna($short_standardized_name);
                     }
                 }
+
+                if (isset($short_standardized_name)) {
+                    $standardized_name_set[] = $short_standardized_name;
+                }
+
+                //get the last nucleotide? in case of IL or J3 with multiple strands
+                if ($parts[2] == $partsend[2]){
+                    if (isset($short_standardized_name)) {
+                        // if (strlen($short_standardized_name)>=25){
+                        //     $row[] = 'RNA (25-MER)';
+                        // } else {
+                        //     $row[] = $short_standardized_name;
+                        // }
+                        //$row[] = $short_standardized_name;
+                    } else {
+                        //$row[] = ' ';
+                    }
+                } else {
+                    $this->db->select('value')
+                        ->from('chain_property_value')
+                        ->where('property', 'standardized_name')
+                        ->where('pdb_id', $partsend[0])
+                        ->where('chain', $partsend[2])
+                        ->limit(1);
+                    $result = $this->db->get()->result_array();
+
+                    if ( count($result) > 0 ){
+                        $standardized_name_2 = $result[0]['value'];
+                        $short_standardized_name_2 = explode(';', $standardized_name_2);
+                        $short_standardized_name_2  = end($short_standardized_name_2);
+                    } else {
+                        $this->db->select('compound')
+                                ->from('chain_info')
+                                ->where('pdb_id', $partsend[0])
+                                ->where('chain_name', $partsend[2])
+                                ->limit(1);
+                        $result = $this->db->get()->result_array();
+                        if ( count($result) > 0 ){
+                            $short_standardized_name_2 = $result[0]['compound'];
+                            $short_standardized_name_2 = $this->parseRna($short_standardized_name_2);
+                        }
+                    }
+
+                    // $row[] = $short_standardized_name. ' + ' . $short_standardized_name_2;
+
+                    // if new, add to the array
+                    if (isset($short_standardized_name_2) & ($short_standardized_name != $short_standardized_name_2)){
+                        $standardized_name_set[] = $short_standardized_name_2;
+                    }
+                }
+
                 $row[] = implode(' + ', $standardized_name_set);
 
             } else {
@@ -1226,6 +1299,7 @@ class Motif_model extends CI_Model {
             return '';
         }
     }
+
     function parseRNA($inputString) {
         // Check if input string starts with "5'-R"   RNA(5'-R
         if (substr($inputString, 0, 5) == "5'-R(" or substr($inputString, 0, 8) == "RNA (5'-" or substr($inputString, 0, 5) == "5'-D(" or substr($inputString, 0, 6) == "(5'-R(" or substr($inputString, 0, 8) == "RNA(5'-R") {
@@ -1274,10 +1348,6 @@ class Motif_model extends CI_Model {
         }
         return $short_standardized_name;
     }
-    
-
-    
-
 }
 
 
