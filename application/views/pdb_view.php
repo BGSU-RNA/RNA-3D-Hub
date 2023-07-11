@@ -40,21 +40,33 @@
               <h4>Featured Structures</h4>
               <ul class="media-grid">
                 <li>
-                  <a href="<?=$baseurl?>pdb/6ZMI">6ZMI
-                    <img src="https://cdn.rcsb.org/images/structures/zm/6zmi/6zmi_assembly-1.jpeg" class="thumbnail span3" alt="6ZMI assembly">
-                    Human ribosome
+                  <a href="<?=$baseurl?>pdb/8GLP">8GLP
+                    <img src="https://cdn.rcsb.org/images/structures/gl/8glp/8glp_assembly-1.jpeg" class="thumbnail span3" alt="8GLP assembly">
+                    Human ribosome at 1.67A
                   </a>
                 </li>
                 <li>
-                  <a href="<?=$baseurl?>pdb/7RQB">7RQB
-                    <img src="https://cdn.rcsb.org/images/structures/rq/7rqb/7rqb_assembly-1.jpeg" class="thumbnail span3" alt="7RQB assembly">
-                    T. th. ribosome
+                  <a href="<?=$baseurl?>pdb/4V9F">4V9F
+                    <img src="https://cdn.rcsb.org/images/structures/v9/4v9f/4v9f_assembly-1.jpeg" class="thumbnail span3" alt="4V9F assembly">
+                    H. m. LSU rRNA at 2.4A
+                  </a>
+                </li>
+                <li>
+                  <a href="<?=$baseurl?>pdb/8B0X">8B0X
+                    <img src="https://cdn.rcsb.org/images/structures/b0/8b0x/8b0x_assembly-1.jpeg" class="thumbnail span3" alt="8B0X assembly">
+                    E. coli ribosome at 1.55A
                   </a>
                 </li>
                 <li>
                   <a href="<?=$baseurl?>pdb/7K00">7K00
                     <img src="https://cdn.rcsb.org/images/structures/k0/7k00/7k00_assembly-1.jpeg" class="thumbnail span3" alt="7K00 assembly">
-                    E. coli ribosome
+                    E. coli ribosome at 1.98A
+                  </a>
+                </li>
+                <li>
+                  <a href="<?=$baseurl?>pdb/7RQB">7RQB
+                    <img src="https://cdn.rcsb.org/images/structures/rq/7rqb/7rqb_assembly-1.jpeg" class="thumbnail span3" alt="7RQB assembly">
+                    T. th. ribosome at 2.5A
                   </a>
                 </li>
 
