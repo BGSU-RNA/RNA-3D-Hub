@@ -4,6 +4,8 @@
           <h1>
             <?=strtoupper($pdb_id)?>
             <small>Summary</small>
+
+            <!--
             <small class="pull-right">
               <select data-placeholder="Choose a structure" id="chosen">
                 <option value=""></option>
@@ -12,6 +14,8 @@
               <?php endforeach; ?>
               </select>
             </small>
+            -->
+
           </h1>
         </div>
 
@@ -53,7 +57,7 @@
                     </a>
                   </li>
                 </ul>
-                View in <a href="<?=$pdb_url?>" target="_blank">PDB</a> or <a href="<?=$ndb_url?>" target="_blank">NDB</a>
+                View in <a href="<?=$pdb_url?>" target="_blank">PDB</a> or <a href="<?=$NAKB_url?>" target="_blank">NAKB</a>
               </div>
 
               <!-- section1 -->
@@ -111,7 +115,7 @@
               <!-- pairwise interactions -->
               <div class="span20p well">
                 <h4>Pairwise Interactions</h4>
-                Interactions annotated by <a href="<?=$this->config->item('fr3d_url')?>/FR3D">FR3D</a>:
+                Interactions annotated by <a href="<?=$this->config->item('fr3d_url')?>">FR3D</a>:
                 <ul>
                   <li><?=$bp_counts?> <a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/basepairs">base-pairs</a></li>
                   <li><?=$bst_counts?> <a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/stacking">base-stacking</a></li>

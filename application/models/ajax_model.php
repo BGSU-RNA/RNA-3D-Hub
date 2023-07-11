@@ -180,9 +180,9 @@ class Ajax_model extends CI_Model {
                          'Explore in ' .
                          anchor_popup("$pdb_url$pdb", 'PDB') .
                          ',  ' .
-                         anchor_popup("http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget=$pdb", 'NDB') .
+                         anchor_popup("https://www.nakb.org/atlas=$pdb", 'NAKB') .
                          ', or ' .
-                         anchor_popup("pdb/$pdb", 'BGSU RNA Site');
+                         anchor_popup("pdb/$pdb", 'RNA 3D Hub');
         } else {
             // check obsolete files
             $this->db->select('replaced_by')
@@ -462,34 +462,100 @@ class Ajax_model extends CI_Model {
 
     function get_seq_unit_mapping($ife) 
     {
-        list($pdb, $model, $chain) = explode('|', $ife);
-        
+        // Tests:
+        // http://rna.bgsu.edu/rna3dhub/rest/SeqtoUnitMapping?ife=1S72|1|0  NULL values at start, middle, end
+        // http://rna.bgsu.edu/rna3dhub/rest/SeqtoUnitMapping?ife=2N1Q|5|A  Many models
+        // http://rna.bgsu.edu/rna3dhub/rest/SeqtoUnitMapping?ife=6E7L|1|A  Symmetry operators
+        // http://rna.bgsu.edu/rna3dhub/rest/SeqtoUnitMapping?ife=1FJG|1|A  Alternate ids
+
+        $fields = explode('|', $ife);
+
+        if (count($fields) < 3) {
+            return "Please specify PDB, model, and chain like 1S72|1|0.  One chain at a time.";
+        }
+
+        $pdb = $fields[0];
+        $chain = $fields[2];
+
+        $this->db->select('e2.exp_seq_chain_mapping_id')
+                 ->select('e2.exp_seq_id')
+                 ->from('exp_seq_chain_mapping as e2')
+                 ->join('chain_info as c1','e2.chain_id = c1.chain_id')
+                 ->where('c1.pdb_id',$pdb)
+                 ->where('c1.chain_name',$chain)
+                 ->limit(1);
+        $query = $this->db->get();
+
+        if ($query->num_rows() == 0) { return "No matching PDB id and chain for " . $ife; }
+
+        $escmi = $query->row()->exp_seq_chain_mapping_id;
+        $esi = $query->row()->exp_seq_id;
+
+        $data = "";
+
+        // query to get all of the sequence positions
+        $this->db->select('e3.index')
+                 ->select('e3.unit')
+                 ->from('exp_seq_position as e3')
+                 ->where('e3.exp_seq_id',$esi)
+                 ->order_by('e3.index');
+        $query = $this->db->get();
+
+        if ($query->num_rows() == 0) { return "No matching PDB id and chain for " . $ife; }
+
+        // map indices to units to be able to fill in the unresolved ones when needed
+        $max_unresolved_index = $query->num_rows();
+        $index_to_unit = array();
+
+        foreach ($query->result_array() as $row) {
+            $index_to_unit[$row['index']] = $row['unit'];
+        }
+
+        // query to map all sequence positions that are resolved
+        // I tried and tried to get this query to also get the unresolved nucleotides, but it doesn't work.
+        // The where clauses just negate the effect of the left join.
+        // It was easier when the exp_seq_unit_mapping table had NULL values in it, but those were error prone
+        // and were removed in February 2023.
         $this->db->select('e1.unit_id')
                  ->select('e3.index')
                  ->select('e3.unit')
-                 ->from('exp_seq_unit_mapping as e1')
-                 ->join('exp_seq_chain_mapping as e2','e1.exp_seq_chain_mapping_id = e2.exp_seq_chain_mapping_id')
-                 ->join('chain_info as c1','e2.chain_id = c1.chain_id')
-                 ->join('exp_seq_position as e3','e1.exp_seq_position_id = e3.exp_seq_position_id')
-                 ->join('unit_info as ui','ui.unit_id = e1.unit_id','left outer')
-                 ->where('c1.pdb_id ',$pdb)
-                 ->where('c1.chain_name',$chain)
-                 ->order_by('e3.index, ui.alt_id, ui.sym_op');
+                 ->from('exp_seq_position as e3')
+                 ->join('exp_seq_unit_mapping as e1','e3.exp_seq_position_id = e1.exp_seq_position_id')
+                 ->join('unit_info as ui','ui.unit_id = e1.unit_id')
+                 ->where('e3.exp_seq_id',$esi)
+                 ->where('e1.exp_seq_chain_mapping_id',$escmi)
+                 ->order_by('e3.index, ui.model, ui.alt_id, ui.sym_op');
         $query = $this->db->get();
         
-        $data = "";  // was a space, but that caused trouble; empty may cause trouble?
+        $unresolved_index = 0;
+
         foreach ($query->result_array() as $row) {
-            $unit_id=$row['unit_id']; 
-            # Add 1 because sequence index begins from 0 in the database
-            $index=$row['index'] + 1;
-            $unit=$row['unit'];
-            if (is_null($unit_id)) {
-                $relation = $pdb . "|sequence|" . $chain . "|" . $unit . "|" . $index . " observed_as NULL";
+            $index=$row['index'];
+
+            // fill in unresolved nucleotides
+            while ($unresolved_index < $index) {
+                $relation = $pdb . "|sequence|" . $chain . "|" . $index_to_unit[$unresolved_index] . "|" . ($unresolved_index+1) . " observed_as NULL";
                 $data .= $relation . "</br>";
-            } else {
-                $relation = $pdb . "|sequence|" . $chain . "|" . $unit . "|" . $index . " observed_as " . $unit_id;
-                $data .= $relation . "</br>";
+                $unresolved_index = $unresolved_index + 1;
             }
+
+            $unresolved_index = $unresolved_index + 1;
+
+            // Add 1 to $index because sequence index begins from 0 in the database
+            //$data .= $index . " " . $unit_id . " testing</br>";
+
+            $unit_id=$row['unit_id'];
+            $unit=$row['unit'];
+
+            $relation = $pdb . "|sequence|" . $chain . "|" . $unit . "|" . ($index+1) . " observed_as " . $unit_id;
+            $data .= $relation . "</br>";
+        }
+
+        // fill in unresolved nucleotides at the end of the chain
+        while ($unresolved_index < $max_unresolved_index) {
+            $relation = $pdb . "|sequence|" . $chain . "|" . $index_to_unit[$unresolved_index] . "|" . ($unresolved_index+1) . " observed_as NULL";
+            $data .= $relation . "</br>";
+            $unresolved_index = $unresolved_index + 1;
         }
     
         return $data;
@@ -583,20 +649,19 @@ class Ajax_model extends CI_Model {
     function get_unit_coordinates($nt_ids)
     {
         // get the coordinates of the listed units
-        // Seems to be just as fast without joining to get $model_num
 
         $this->db->select('coordinates')->from('unit_coordinates');
-        //$this->db->join('unit_info', 'unit_coordinates.unit_id = unit_info.unit_id');
-        //$this->db->where('unit_info.model', $model_num);
         $this->db->where_in('unit_coordinates.unit_id', $nt_ids);
-        $this->db->_protect_identifiers = FALSE; // stop CI adding backticks
 
-        // make SQL to return the correct order of results based on the where_in clause
+        // make SQL return the results in the same order as $nt_ids
         // example of query: SELECT coordinates FROM unit_coordinates WHERE unit_id IN ('2ZM5|1|C|A|31', '2ZM5|1|C|U|32')
         //                   ORDER BY FIELD (unit_id, '2ZM5|1|C|A|31', '2ZM5|1|C|U|32');
+
+        $this->db->_protect_identifiers = FALSE; // stop CI adding backticks
         $order = sprintf('FIELD(unit_coordinates.unit_id, %s)', "'" . implode("','", $nt_ids) . "'");
         $this->db->order_by($order);
         $this->db->_protect_identifiers = TRUE; // switch on again for security reasons
+
         $query = $this->db->get();
 
         if ($query->num_rows() == 0) { return False; }
@@ -795,6 +860,10 @@ class Ajax_model extends CI_Model {
 
     function get_complete_units($unit_ids)
     // Get the complete unit ids including the ones with alternative ids
+
+    // Problem:  this is slow and it fails when someone puts in a unit id
+    // that does not exist, like 7JIL|1|2|A|1061 where A should be G
+
     {
         $complete_units = array();
         foreach ($unit_ids as $unit_id) {
@@ -830,7 +899,9 @@ class Ajax_model extends CI_Model {
             $nts = $unit_ids;
         }
 
-        $nts = $this->get_complete_units($nts);
+        // The following line crashes on missing unit ids
+        // It's slow, and maybe it does not add much, it's commented out on 2023-05-22
+        //$nts = $this->get_complete_units($nts);
 
         // get coordinates of the given units
         $core_coord_query = $this->get_unit_coordinates($nts);

@@ -1313,6 +1313,7 @@ class Nrlist_model extends CI_Model {
         $experimental_technique['SOLUTION NMR'] = 'Solution NMR';
         $experimental_technique['FIBER DIFFRACTION'] = 'Fiber diffraction';
         $experimental_technique['THEORETICAL MODEL, SOLUTION NMR'] = 'Theoretical model, solution NMR';
+        $experimental_technique['SOLUTION NMR, THEORETICAL MODEL'] = 'Solution NMR, theoretical model';
         $experimental_technique['FLUORESCENCE TRANSFER'] = 'Fluorescence transfer';
         $experimental_technique['NEUTRON DIFFRACTION'] = 'Neutron diffraction';
         $experimental_technique['SOLUTION NMR, SOLUTION SCATTERING'] = 'Solution NMR, solution scattering';
@@ -1406,7 +1407,7 @@ class Nrlist_model extends CI_Model {
         $chain_to_rfam = array();
         // $i = 0;
 
-        //populating dicts with cpv data
+        //populating dicts with cpv data #
         foreach ($query_cpv->result() as $row) {
             $row_pdb = $row->pdb_id;
             $row_chain = $row->chain;
@@ -1509,7 +1510,7 @@ class Nrlist_model extends CI_Model {
                              #anchor(base_url("nrlist/view/".$class_id."/".$id),$class_id,$id)
                              . '<br>' . $this->add_annotation_label($row->nr_class_id, $reason)
                              . '<br>' . $source,
-                             $this->add_space_to_long_IFE($ife_id) . ' (<strong class="pdb">' . $pdb_id . '</strong>)' .
+                             $this->add_space_to_long_IFE($ife_id) . ' (<a class="pdb">' . $pdb_id . '</a>)' .
                              '<ul>' .
                              '<li>' . $compound . '</li>' .
                              '<li>' . $pdb[$pdb_id]['experimental_technique'] . '</li>' .

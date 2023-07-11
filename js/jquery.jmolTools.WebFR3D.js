@@ -8,7 +8,7 @@
  var RSR_data = {};
  var plasmaColors = ["#0d0887","#110889","#17078b","#1b078d","#20068f","#240691","#2a0693","#300596","#340597","#3a049a","#3d049b","#43049e","#4903a0","#4b03a1","#5003a2","#5303a2","#5803a3","#5c03a3","#6103a4","#6603a5","#6903a5","#6e03a6","#7103a6","#7603a7","#7b03a8","#7d03a8","#8106a6","#8408a5","#880ba4","#8a0da2","#8e10a1","#93139f","#95149e","#99179c","#9c199b","#a01c99","#a41f98","#a72197","#a92395","#ac2693","#af2990","#b32d8d","#b52f8b","#b83388","#bb3587","#be3984","#c13b82","#c43f7f","#c8427c","#ca457a","#cc4778","#cd4976","#d04d74","#d25071","#d4536f","#d6566d","#d8596b","#da5c68","#dc5e67","#df6264","#e16561","#e36860","#e56b5d","#e66c5c","#e87059","#e97556","#eb7755","#ed7b52","#ee7e50","#f0824d","#f2864a","#f38948","#f58d46","#f69044","#f89441","#f89540","#f99a3e","#f99e3c","#f9a13a","#faa638","#faa936","#fbad34","#fbb131","#fbb430","#fcb92d","#fcbc2c","#fdc02a","#fdc328","#fcc728","#fbcc27","#fad026","#f9d526","#f8d925","#f7de25","#f5e324","#f4e723","#f3ec23","#f2f022","#f1f521","#f0f921"];
  var RSR_pair = [];
- 
+
  for (i=0; i < plasmaColors.length; i++) {
     RSR_pair.push({
     interval: (100/plasmaColors.length)*(i+1),
@@ -67,45 +67,75 @@ if ( typeof Object.create !== 'function' ) {
             if ( self.loaded ) { return; }
 
             // This AJAX call gets the RSRZ data, which is only available for x-ray structures
-            $.ajax({
-                url: $.fn.jmolTools.options.serverUrlRSRZ,
-                type: 'GET',
-                dataType: 'json',
-                //contentType: 'application/json',
-                data: {'quality' : self.$elem.data($.fn.jmolTools.options.dataAttributeRSRZ)}
-                }).done(function(data) {
-                    RSRZ_JSON = data;      
-                    RSRZ_data[$.jmolTools.numModels+1] = data;
-            });
+            if (self.$elem.data($.fn.jmolTools.options.dataAttributeRSRZ)) {
+                $.ajax({
+                    url: $.fn.jmolTools.options.serverUrlRSRZ,
+                    type: 'GET',
+                    dataType: 'json',
+                    //contentType: 'application/json',
+                    data: {'quality' : self.$elem.data($.fn.jmolTools.options.dataAttributeRSRZ)}
+                    }).done(function(data) {
+                        RSRZ_JSON = data;
+                        RSRZ_data[$.jmolTools.numModels+1] = data;
+                });
+            }
 
             // This AJAX call gets the RSR data, which is only available for x-ray structures
-            $.ajax({
-                url: $.fn.jmolTools.options.serverUrlRSR,
-                type: 'GET',
-                dataType: 'json',
-                //contentType: 'application/json',
-                data: {'quality' : self.$elem.data($.fn.jmolTools.options.dataAttributeRSR)}
-                }).done(function(data) {
-                    RSR_JSON = data;
-                    RSR_data[$.jmolTools.numModels+1] = data;
-            });
+            if (self.$elem.data($.fn.jmolTools.options.dataAttributeRSR)) {
+                $.ajax({
+                    url: $.fn.jmolTools.options.serverUrlRSR,
+                    type: 'GET',
+                    dataType: 'json',
+                    //contentType: 'application/json',
+                    data: {'quality' : self.$elem.data($.fn.jmolTools.options.dataAttributeRSR)}
+                    }).done(function(data) {
+                        RSR_JSON = data;
+                        RSR_data[$.jmolTools.numModels+1] = data;
+                });
+            }
 
             // This AJAX call gets the coordinate data
-            $.ajax({
-                url: $.fn.jmolTools.options.serverUrlCoord,
-                type: 'POST',
-                data: {'coord' : self.$elem.data($.fn.jmolTools.options.dataAttributeCoord)}
-            }).done(function(data) {
-                self.appendData(data);
-                if ( self.loaded ) {
-                    self.updateModelCounts();
-                    modelNum = self.instanceNumber;
-                    self.superimpose();
-                    self.labelnucleotides();
-                    self.colorOneModel();
-                    self.show();
-                }
-            });
+            if (self.$elem.data($.fn.jmolTools.options.dataAttributeCoord)) {
+                $.ajax({
+                    url: $.fn.jmolTools.options.serverUrlCoord,
+                    type: 'POST',
+                    data: {'coord' : self.$elem.data($.fn.jmolTools.options.dataAttributeCoord)}
+                }).done(function(data) {
+                    self.appendData(data);
+                    if ( self.loaded ) {
+                        self.updateModelCounts();
+                        modelNum = self.instanceNumber;
+                        self.superimpose();
+                        self.labelnucleotides();
+                        self.colorOneModel();
+                        self.show();
+                    }
+                });
+            }
+
+
+            // If needed, this AJAX call gets the coordinate data for Motif Atlas pages
+
+            if (self.$elem.data($.fn.jmolTools.options.dataAttributeCoordMotifAtlas)) {
+
+                $.ajax({
+                    url: $.fn.jmolTools.options.serverUrlCoordMotifAtlas,
+                    type: 'POST',
+                    data: {'coord_ma' : self.$elem.data($.fn.jmolTools.options.dataAttributeCoordMotifAtlas)}
+                }).done(function(data) {
+                    self.appendData(data);
+                    if ( self.loaded ) {
+                        self.updateModelCounts();
+                        modelNum = self.modelNumber;
+                        self.superimpose();
+                        self.labelnucleotides();
+                        self.colorOneModel();
+                        self.show();
+                    }
+                });
+            }
+
+
         },
 
         appendData: function(data) {
@@ -156,7 +186,8 @@ if ( typeof Object.create !== 'function' ) {
                           "elseif ({*.C1'/" + m + ".1}.length == {*.C1'/1.1}.length & {*.C1'/1.1}.length == 2) " +
                           "{x=compare({(*.C1'/" + m + ".1,*.C3'/" + m + ".1)},{(*.C1'/1.1,*.C3'/1.1)});}" +
                           "else {x=compare({(spine/" + m + ".1)[2][6]},{(spine/1.1)[2][6]});};" +
-                          "select " + m + ".1," + m + ".2; rotate selected @{x};";
+                          "select " + m + ".1," + m + ".2," + m + ".3; rotate selected @{x};";
+
             jmolScript(command);
             self.superimposed = true;
         },
@@ -176,30 +207,30 @@ if ( typeof Object.create !== 'function' ) {
             k = $.jmolTools.numModels;
 
             // console.log("Color one model: " + k)
-            
+
             if ($('#colorOPT :selected').val() === 'RSRZ') {
                 jmolModel.styleModelRSRZ(k, k);
-                $("div.showRSRZ").show(); 
-                $("div.showRSR").hide(); 
+                $("div.showRSRZ").show();
+                $("div.showRSR").hide();
             } else if ($('#colorOPT :selected').val() === 'RSR') {
                 jmolModel.styleModelRSR(k, k);
                 $("div.showRSR").show();
-                $("div.showRSRZ").hide(); 
+                $("div.showRSRZ").hide();
             } else if ($('#colorOPT :selected').val() === 'CPK') {
                 jmolModel.styleModelCPK(k, k);
                 $("div.showRSR").hide();
-                $("div.showRSRZ").hide(); 
+                $("div.showRSRZ").hide();
             } else if ($('#colorOPT :selected').val() === 'Default') {
                 jmolModel.styleModel(k, k);
-                $("div.showRSR").hide(); 
-                $("div.showRSRZ").hide();  
+                $("div.showRSR").hide();
+                $("div.showRSRZ").hide();
             };
         },
 
         styleModel: function(a,b) {
-            
+
             for (var k=a; k <= b; k++) {
-            
+
                 command = 'select [U]/' + k + '.1; color cyan;' +
                         'select [G]/' + k + '.1; color chartreuse;' +
                         'select [C]/' + k + '.1; color gold;' +
@@ -221,32 +252,34 @@ if ( typeof Object.create !== 'function' ) {
                         'select protein and ' + k + '.2; color purple;' +
                         'select hetero  and ' + k + '.2; color pink;' +
                         'select ' + k + '.2; color translucent 0.8;' +
-                        'select ' + k + '.3; color translucent 0.99;' +
+                        'select ' + k + '.3; color translucent 0.6;' +
                         'select ' + k + '.1,' + k + '.2,' + k + '.3;' +
                         'spacefill off;' +
                         'center ' + k + '.1;' +
                         'zoom {'  + k + '.1} 0;' +
                         'set measurement angstroms;';
-         
+
                 jmolScript(command);
             }
         },
 
         styleModelCPK: function(a,b) {
-            
+
             for (var k=a; k <= b; k++) {
-            
+
                 command = 'select nucleic and ' + k + '.1; color CPK;' +
                         'select protein and ' + k + '.1; color CPK;' +
                         'select nucleic and ' + k + '.2; color grey;' +
                         'select protein and ' + k + '.2; color purple;' +
                         'select hetero  and ' + k + '.2; color pink;' +
+                        'select nucleic and ' + k + '.3; color CPK;' +
                         'select ' + k + '.2; color translucent 0.8;' +
-                        'select ' + k + '.1,' + k + '.2;' +
+                        'select ' + k + '.3; color translucent 0.6;' +
+                        'select ' + k + '.1,' + k + '.2,' + k + '.3;' +
                         'spacefill off;' +
                         'center ' + k + '.1;' +
                         'zoom {'  + k + '.1} 0;';
-         
+
                 jmolScript(command);
 
             }
@@ -257,16 +290,16 @@ if ( typeof Object.create !== 'function' ) {
             var mod_num1 = a;
             var mod_num2 = b;
 
-            console.log("RSRZ mod_num1: " + mod_num1);
-            console.log("RSRZ mod_num2: " + mod_num2);
+            // console.log("RSRZ mod_num1: " + mod_num1);
+            // console.log("RSRZ mod_num2: " + mod_num2);
 
             command = "";
 
             for (var i = mod_num1; i <= mod_num2; i++) {
-                
+
                 console.log(RSRZ_data[i]);
                 //var RSRZ_array_size = RSRZ_data[i].length
-                
+
                 if (RSRZ_data[i] === undefined) {
                     command += "select " + i + ".1; "  + "color grey; ";
                 } else {
@@ -280,30 +313,31 @@ if ( typeof Object.create !== 'function' ) {
                         } else {
                             var RSRZ = (parseFloat(RSRZ_data[i][k].real_space_r_z_score)*100)/100;
                             if (RSRZ < 1.00) {
-                                command += "select " + split_unitid[4] + "/" + i + ".1;" + " color green; ";   
+                                command += "select " + split_unitid[4] + "/" + i + ".1;" + " color green; ";
                             } else if (RSRZ < 2.00) {
-                                command += "select " + split_unitid[4] + "/" + i + ".1;" + " color yellow; ";  
+                                command += "select " + split_unitid[4] + "/" + i + ".1;" + " color yellow; ";
                             } else if (RSRZ < 3.00) {
-                                command += "select " + split_unitid[4] + "/" + i + ".1;" + " color orange; ";  
+                                command += "select " + split_unitid[4] + "/" + i + ".1;" + " color orange; ";
                             } else {
-                                command += "select " + split_unitid[4] + "/" + i + ".1;" + " color red; ";  
+                                command += "select " + split_unitid[4] + "/" + i + ".1;" + " color red; ";
                             }
                         }
                     }
 
             }
 
-                command += "select " + i + ".1, " + i + ".2;" +
-                       "select nucleic and " + i + ".2; color grey;" +
+                command += "select nucleic and " + i + ".2; color grey;" +
                        "select protein and " + i + ".2; color purple;" +
                        "select hetero  and " + i + ".2; color pink;" +
-                       " select " + i + ".2; color translucent 0.8;" + 
-                       "select " + i + ".1," + i + ".2;" +
-                       " spacefill off; " + "center " + i + ".1;" +
-                       "zoom {"  + i + ".1} 0;"; 
+                       "select nucleic and " + i + ".3; color grey;" +
+                       "select " + i + ".2; color translucent 0.8;" +
+                       "select " + i + ".3; color translucent 0.6;" +
+                       "select " + i + ".1," + i + ".2," + i + ".3;" +
+                       "spacefill off; " + "center " + i + ".1;" +
+                       "zoom {"  + i + ".1} 0;";
             }
 
-            console.log(command);
+            //console.log(command);
             jmolScript(command);
         },
 
@@ -312,9 +346,9 @@ if ( typeof Object.create !== 'function' ) {
             var mod_num1 = a;
             var mod_num2 = b;
 
-            console.log("RSR mod_num1: " + mod_num1);
-            console.log("RSR mod_num2: " + mod_num2);
-            
+            //console.log("RSR mod_num1: " + mod_num1);
+            //console.log("RSR mod_num2: " + mod_num2);
+
             command = "";
 
             for (var i = mod_num1; i <= mod_num2; i++) {
@@ -322,9 +356,9 @@ if ( typeof Object.create !== 'function' ) {
                 if (RSR_data[i] === undefined) {
                     command += "select " + i + ".1; "  + "color grey; ";
                 } else {
-                
+
                     for (var k = 0; k < Object.keys(RSR_data[i]).length; k++) {
-                    
+
                         var RSR = RSR_data[i][k].real_space_r;
                         var split_unitid = RSR_data[i][k].unit_id.split("|");
 
@@ -333,17 +367,17 @@ if ( typeof Object.create !== 'function' ) {
                         } else {
 
                             var RSR = parseFloat(RSR_data[i][k].real_space_r);
-                        
+
                             //Set the min and max values of RSR
                             if (RSR < 0.0) {
                                 RSR = 0.0;
                             } else if (RSR > 0.5) {
                                 RSR = 0.5;
                             }
-                        
+
                             //map the RSR values between 0 and 100
                             var pert = Math.round(((RSR-0.0)/0.5)*100);
-                        
+
                             for (var a=0; a<Object.keys(RSR_pair).length; a++) {
                                 if (pert == (RSR_pair[a].interval)-1){
                                     colorchoice = RSR_pair[a].colorchoice;
@@ -354,14 +388,16 @@ if ( typeof Object.create !== 'function' ) {
                     }
                 }
 
-                 command += "select nucleic and " + i + ".2; color grey;" +
+                command += "select nucleic and " + i + ".2; color grey;" +
                        "select protein and " + i + ".2; color purple;" +
                        "select hetero  and " + i + ".2; color pink;" +
-                       " select " + i + ".2; color translucent 0.8;" + 
-                       "select " + i + ".1," + i + ".2;" +
-                       " spacefill off; " + "center " + i + ".1;" +
+                       "select nucleic and " + i + ".3; color grey;" +
+                       "select " + i + ".2; color translucent 0.8;" +
+                       "select " + i + ".3; color translucent 0.6;" +
+                       "select " + i + ".1," + i + ".2," + i + ".3;" +
+                       "spacefill off; " + "center " + i + ".1;" +
                        "zoom {"  + i + ".1} 0;";
-                
+
             }
 
             console.log(command);
@@ -373,7 +409,7 @@ if ( typeof Object.create !== 'function' ) {
             var self = this;
             var m = self.instanceNumber;
 
-            // not sure what this does
+            // seems to run every time, which is helpful
             if ( $.fn.jmolTools.options.mutuallyExclusive ) {
                 self.hideAll();
             }
@@ -381,7 +417,7 @@ if ( typeof Object.create !== 'function' ) {
             if (self.neighborhood) {
                 command = 'frame *;display displayed or ' + m + '.1,' + m + '.2; center ' + m + '.1;';
             } else {
-                command = 'frame *;display displayed or '      + m + '.1;' +
+                command = 'frame *;display displayed or '      + m + '.1,' + m + '.3;' +
                           'frame *;display displayed and not ' + m + '.2;' +
                           'center ' + m + '.1;';
             }
@@ -396,7 +432,8 @@ if ( typeof Object.create !== 'function' ) {
 
             if ( self.loaded ) {
                 command = 'frame *;display displayed and not ' + m + '.1;' +
-                                  'display displayed and not ' + m + '.2;'
+                                  'display displayed and not ' + m + '.2;' +
+                                  'display displayed and not ' + m + '.3;';
                 jmolScript(command);
                 self.hidden  = true;
                 self.toggleCheckbox();
@@ -415,9 +452,24 @@ if ( typeof Object.create !== 'function' ) {
                 //orig_color = d3.select("#r"+this.id+"c"+this.id).attr("orig_color");
                 //d3.select("#r"+this.id+"c"+this.id).style("fill", orig_color);
 
-                if (d3.select("#r"+i+"c"+i).size() > 0) {
-                    orig_color = d3.select("#r"+i+"c"+i).attr("orig_color");
-                    d3.select("#r"+i+"c"+i).style("fill", orig_color);
+                var row_column = "#r"+i+"c"+i;
+
+                // pages with a heatmap have orig_color set
+                // pages without a heatmap don't have this attribute,
+                // so we have to avoid trying to access it, but it's
+                // hard to know if it is there or not!
+                // This seems to work in both settings.
+
+                if (d3.select(row_column)._groups) {
+                    if (d3.select(row_column)._groups[0][0]) {
+                        if (d3.select(row_column).attr("orig_color")) {
+
+                            //console.log('Restoring original color to '+row_column)
+
+                            orig_color = d3.select(row_column).attr("orig_color");
+                            d3.select(row_column).style("fill", orig_color);
+                        }
+                    }
                 }
                 i++;
             });
@@ -447,12 +499,17 @@ if ( typeof Object.create !== 'function' ) {
                 } else {
                     self.hide();
 
-                    console.log('jmolToggle hide ' + this.id);
                     // restore the original color
 
-                    if (this.id < 300) {
-                        orig_color = d3.select("#r"+this.id+"c"+this.id).attr("orig_color");
-                        d3.select("#r"+this.id+"c"+this.id).style("fill", orig_color);
+                    var row_column = "#r"+this.id+"c"+this.id;
+
+                    //console.log('jmolToggle hide ' + this.id);
+
+                    if (d3.select(row_column)._groups[0][0]) {
+                        if (d3.select(row_column).attr("orig_color")) {
+                            orig_color = d3.select(row_column).attr("orig_color");
+                            d3.select(row_column).style("fill", orig_color);
+                        }
                     }
                 }
             }
@@ -511,7 +568,7 @@ if ( typeof Object.create !== 'function' ) {
             $.jmolTools.stereo = !$.jmolTools.stereo;
         },
 
-        toggleNumbers: function() { 
+        toggleNumbers: function() {
             if ( $(this).is(':checked') ) {
                 $.jmolTools.showNumbers = true;
                 jmolScript("select {*.C1'},{*.CA};label %[sequence]%[resno];color labels black;");
@@ -528,7 +585,7 @@ if ( typeof Object.create !== 'function' ) {
             if ( $('#colorRSRZ').is(':checked') ) {
                 $('#colorRSR').prop('checked', false);
                 //$.jmolTools.showRSRZ = true;
-                jmolModel.styleModelRSRZ(1, n);                
+                jmolModel.styleModelRSRZ(1, n);
             } else {
                 jmolModel.styleModel(1, n);
             }
@@ -538,40 +595,40 @@ if ( typeof Object.create !== 'function' ) {
 
             n = $.jmolTools.numModels;
 
-            $('#colorOPT').change(function() { 
+            $('#colorOPT').change(function() {
                 if ($(this).val() === 'RSRZ') {
                     jmolModel.styleModelRSRZ(1, n);
-                    $("div.showRSRZ").show(); 
+                    $("div.showRSRZ").show();
                     $("div.showRSR").hide();
                 } else if ($(this).val() === 'RSR') {
                     $("div.showRSR").show();
                     $("div.showRSRZ").hide();
-                    jmolModel.styleModelRSR(1, n); 
+                    jmolModel.styleModelRSR(1, n);
                 } else if ($(this).val() === 'CPK') {
                     jmolModel.styleModelCPK(1, n);
-                    $("div.showRSR").hide(); 
-                    $("div.showRSRZ").hide(); 
+                    $("div.showRSR").hide();
+                    $("div.showRSRZ").hide();
                 } else if ($(this).val() === 'Default') {
                     jmolModel.styleModel(1, n);
-                    $("div.showRSR").hide(); 
-                    $("div.showRSRZ").hide(); 
-                } 
+                    $("div.showRSR").hide();
+                    $("div.showRSRZ").hide();
+                }
             });
 
         },
 
-        toggleRSR: function() { 
+        toggleRSR: function() {
 
             n = $.jmolTools.numModels;
-            
+
             if ( $('#colorRSR').is(':checked') ) {
-                $('#colorRSRZ').prop('checked', false); 
+                $('#colorRSRZ').prop('checked', false);
                 jmolModel.styleModelRSR(1, n);
             } else {
                 jmolModel.styleModel(1, n);
             }
         },
-        
+
         toggleNeighborhood: function() {
             // update button text
             if ($.jmolTools.neighborhood) {
@@ -611,7 +668,7 @@ if ( typeof Object.create !== 'function' ) {
                 if ( elems[i].checked ) {
                     indToCheck.push(i+1); // the next one should be checked
 
-                    console.log("Toggling number ",i+1,elems[i].id)
+                    console.log("Toggling number ",i,elems[i].id)
 
                     $.jmolTools.models[elems[i].id].jmolToggle.apply(elems[i]); // toggle this model
                 }
@@ -620,7 +677,7 @@ if ( typeof Object.create !== 'function' ) {
             // analyze the last one
             if ( elems[last].checked ) {
 
-                console.log("Last checked ",last,elems[last].id)
+                //console.log("Last checked ",last,elems[last].id)
 
                 $.jmolTools.models[elems[last].id].jmolToggle.apply(elems[last]);
             }
@@ -631,7 +688,7 @@ if ( typeof Object.create !== 'function' ) {
             // check only the right ones
             $.each(indToCheck, function(ind, id) {
 
-                console.log("Checking right ones ",id)
+                //console.log("Checking right ones ",id)
 
                 elems[id].checked = true;
                 $.jmolTools.models[elems[id].id].jmolToggle.apply(elems[id]);
@@ -640,7 +697,7 @@ if ( typeof Object.create !== 'function' ) {
             // keep the first one checked if all are unchecked
             if ( elems.filter(':checked').length == 0 ) {
 
-                console.log("Checking first one",elems[0].id)
+                //console.log("Checking first one",elems[0].id)
 
                 elems[0].checked = true;
                 $.jmolTools.models[elems[0].id].jmolToggle.apply(elems[0]);
@@ -656,6 +713,9 @@ if ( typeof Object.create !== 'function' ) {
             for (var i = elems.length-1; i >= 1; i--) {
                 if ( elems[i].checked ) {
                     indToCheck.push(i-1);
+
+                    console.log("Toggling number ",i,elems[i].id)
+
                     $.jmolTools.models[elems[i].id].jmolToggle.apply(elems[i]); // toggle this model
                 }
             }
@@ -739,7 +799,17 @@ if ( typeof Object.create !== 'function' ) {
     // plugin initialization
     $.fn.jmolTools = function ( options ) {
 
+        console.log("options: ")
+        console.log(options)
+
         $.jmolTools.selector = $(this).selector;
+
+        // it is possible to select only instances from a specific div
+        //$.jmolTools.selector = '#jls .jmolInline';
+
+
+        console.log("this: " + $(this))
+        console.log("selector: " + $(this).selector);
 
         $.fn.jmolTools.options = $.extend( {}, $.fn.jmolTools.options, options );
 
@@ -775,6 +845,9 @@ if ( typeof Object.create !== 'function' ) {
         //
         Helpers.setMutuallyExclusiveProperty();
 
+        //console.log("Mutually exclusive: " + $.fn.jmolTools.options.mutuallyExclusive);
+
+
         // return elements for chaining
         return $.fn.jmolTools.elems;
     }
@@ -786,6 +859,9 @@ if ( typeof Object.create !== 'function' ) {
         serverUrlCoord   :  'http://rna.bgsu.edu/rna3dhub/rest/getCoordinates',
         dataAttributeCoord: 'coord',
 
+        serverUrlCoordMotifAtlas   : loc + '/rna3dhub/rest/getCoordinatesMotifAtlas',
+        dataAttributeCoordMotifAtlas: 'coord_ma',
+
         serverUrlRSR   : 'http://rna.bgsu.edu/rna3dhub/rest/getRSR',
         dataAttributeRSR: 'quality',
 
@@ -793,7 +869,7 @@ if ( typeof Object.create !== 'function' ) {
         dataAttributeRSRZ: 'quality',
 
         toggleCheckbox:     true,  // by default each model will monitor the checked state of its corresponding checkbox
-        mutuallyExclusive:  false, // by default will set to false for checkboxes and false for radiobuttons
+        mutuallyExclusive:  false, // by default will set to false for checkboxes and true for radiobuttons
         showNeighborhoodId: false,
         showNextId:         false,
         showPrevId:         false,

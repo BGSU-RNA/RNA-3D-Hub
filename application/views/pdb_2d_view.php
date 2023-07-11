@@ -13,6 +13,8 @@
           <h1>
             <?=strtoupper($pdb_id)?>
             <small>2D representation</small>
+
+            <!--
             <small class="pull-right">
             <select data-placeholder="Choose a structure" id="chosen">
               <option value=""></option>
@@ -21,6 +23,9 @@
                 <?php endforeach; ?>
             </select>
           </small>
+          -->
+
+
           </h1>
         </div>
 

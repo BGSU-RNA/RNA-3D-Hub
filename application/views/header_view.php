@@ -16,8 +16,11 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript"></script>
     <script src="<?=$baseurl?>js/jmol/Jmol.js"></script>
     <script src="<?=$baseurl?>js/jsmol/JSmol.min.nojq.js"></script>
-    <script src="<?=$baseurl?>js/jquery.jmolTools.js"></script>
+    <script src="<?=$baseurl?>js/jquery.jmolTools.WebFR3D.js"></script>
+
+    <!-- Wondering if this actually does anything anymore
     <script src="<?=$baseurl?>js/jmolInlineLoader.js"></script>
+    -->
 
     <script src="<?=$baseurl?>js/bootstrap-twipsy.js" type="text/javascript"></script>
     <script src="<?=$baseurl?>js/bootstrap-popover.js" type="text/javascript"></script>
@@ -29,6 +32,7 @@
     <script src="<?=$baseurl?>js/jquery.tablesorter.min.js" type="text/javascript"></script>
 
     <script src="<?=$baseurl?>js/MotifAtlas.js" type="text/javascript"></script>
+    <script src="http://d3js.org/d3.v4.min.js"></script>
 
     <!--
     https://www.rcsb.org/pdb/widgets/rcsbPdbWidgets.css was failing to load.

@@ -13,6 +13,8 @@
         <div class="page-header">
           <h1><?=strtoupper($pdb_id)?>
           <small>Internal, Hairpin and 3-way Junction Loop Motifs</small>
+
+          <!--
           <small class="pull-right">
             <select data-placeholder="Choose a structure" id="chosen">
              <option value=""></option>
@@ -21,6 +23,8 @@
             <?php endforeach; ?>
             </select>
           </small>
+          -->
+
           </h1>
         </div>
 
@@ -57,23 +61,12 @@
           <div class="span8 well">
 
             <ul class="pills" data-tabs="tabs">
-                <li class="active"><a href="#ils"><?=$counts['IL']?> Internal loops</a></li>
                 <li><a href="#hls"><?=$counts['HL']?> Hairpin loops</a></li>
+                <li class="active"><a href="#ils"><?=$counts['IL']?> Internal loops</a></li>
                 <li><a href="#jls"><?=$counts['J3']?> Junction loops</a></li>
             </ul>
 
             <div class="tab-content" id="my-tab-content">
-                <div class="tab-pane active" id="ils">
-                    <h3>Valid loops</h3>
-                    <div class="valid block">
-                        <?=$loops['IL']['valid']?>
-                    </div>
-                    <h3>Problematic loops</h3>
-                    <div class="modified block">
-                        <?=$loops['IL']['invalid']?>
-                    </div>
-                </div>
-
                 <div class="tab-pane" id="hls">
                     <h3>Valid loops</h3>
                     <div class="valid block">
@@ -82,6 +75,17 @@
                     <h3>Problematic loops</h3>
                     <div class="modified block">
                         <?=$loops['HL']['invalid']?>
+                    </div>
+                </div>
+
+                <div class="tab-pane active" id="ils">
+                    <h3>Valid loops</h3>
+                    <div class="valid block">
+                        <?=$loops['IL']['valid']?>
+                    </div>
+                    <h3>Problematic loops</h3>
+                    <div class="modified block">
+                        <?=$loops['IL']['invalid']?>
                     </div>
                 </div>
 
@@ -104,6 +108,7 @@
           <?php if ($counts['IL'] != 0 or $counts['HL'] != 0 or $counts['J3'] != 0): ?>
 
           <div class="spanjmol well" id="jmol" >
+
 <script>
     jmol_isReady = function(applet) {
         // initialize the plugin
@@ -115,8 +120,15 @@
             showNextId: 'next',
             showPrevId: 'prev'
         });
-        // run the plugin
-        $('.jmolInline').first().jmolToggle();
+
+        console.log('Running jmol_isReady')
+
+        //$('.jmolInline').first().jmolToggle();
+
+        // select all instances of jmolInline in the #ils tab
+        // show the first IL since that is the active tab
+        // but if there are no IL like in 4TNA, this is not the best entry point
+        $('#ils .jmolInline').first().jmolShow();
     };
 
     var Info = {
@@ -142,6 +154,8 @@
     function jmolScript(cmd) {Jmol.script(jmolApplet0, cmd)};
     function jmolScriptWait(cmd) {Jmol.scriptWait(jmolApplet0, cmd)};
 </script>
+
+
                 <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
                 <input type='button' id='prev' class='btn' value='Previous'>
                 <input type='button' id='next' class='btn' value="Next">
@@ -231,6 +245,32 @@
 
         $('#chosen').chosen().change(function(){
             window.location.href = "<?=$baseurl?>pdb/" + $(this).val() + '/motifs';
+        });
+
+        $(document).ready(function() {
+          // Listen for click events on the anchor elements inside the unordered list
+          $('.pills li a').click(function(event) {
+            console.log('There are ',$('.jmolInline').length,' motifs here');
+            //console.log(event.target.innerHTML)
+
+            var activeTab = $(event.target).attr('href'); // Get the active tab pane ID
+            //var inactiveTab = $(event.relatedTarget).attr('href'); // Get the inactive tab pane ID
+
+            // Hide the table rows in the inactive tab pane
+            //$(inactiveTab + ' table .jmolinline').hide();
+
+            // Show the table rows in the active tab pane
+            //$(activeTab + ' table .jmolinline').show();
+
+            console.log('Active tab   ', $(event.target).attr('href'));
+
+            //console.log('Now there are ',$('.jmolInline').length,' motifs here');
+
+            // select all jmolInline instances in the active tab
+            // show the first instance of the active tab
+            $(activeTab + ' .jmolInline').first().jmolShow();
+
+          });
         });
 
     </script>

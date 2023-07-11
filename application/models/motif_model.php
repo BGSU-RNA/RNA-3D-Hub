@@ -39,16 +39,18 @@ class Motif_model extends CI_Model {
         }
     }
 
-    function _get_aligned_unit_ids($motif_id)
+    function _get_aligned_unit_ids($motif_id,$release_id)
     {
         $this->db->select()
                  ->from('ml_loop_positions AS ML')
                  #->join('unit_info AS UI',
                  #       'ML.unit_id = UI.unit_id')
                  ->where('motif_id', $motif_id)
-                 ->where('ml_release_id', $this->release_id)
+                 ->where('ml_release_id', $release_id)
                  ->order_by('loop_id, position');
         $query = $this->db->get();
+
+        $temp = array();
 
         // store the data temporarily in random order
         foreach($query->result() as $row) {
@@ -60,9 +62,11 @@ class Motif_model extends CI_Model {
         $this->db->select('loop_id')
                  ->from('ml_loop_order')
                  ->where('motif_id', $motif_id)
-                 ->where('ml_release_id', $this->release_id)
+                 ->where('ml_release_id', $release_id)
                  ->order_by('original_order');
         $query = $this->db->get();
+
+        $data = array();
 
         foreach($query->result() as $row) {
             $data[$row->loop_id] = $temp[$row->loop_id];
@@ -71,9 +75,9 @@ class Motif_model extends CI_Model {
         return $data;
     }
 
-    function get_csv($motif_id)
+    function get_csv($motif_id,$release_id)
     {
-        $data = $this->_get_aligned_unit_ids($motif_id);
+        $data = $this->_get_aligned_unit_ids($motif_id,$release_id);
         $csv = '';
 
         foreach($data as $loop_id) {
@@ -83,9 +87,9 @@ class Motif_model extends CI_Model {
         return $csv;
     }
 
-    function get_json($motif_id)
+    function get_json($motif_id,$release_id)
     {
-        $alignment  = $this->_get_aligned_unit_ids($motif_id);
+        $alignment  = $this->_get_aligned_unit_ids($motif_id,$release_id);
         $array_keys = array_keys($alignment);
         $data['num_instances']   = count($array_keys);
         $data['num_nucleotides'] = count($alignment[array_pop($array_keys)]);
@@ -762,27 +766,43 @@ class Motif_model extends CI_Model {
                  ->where_in('loop_id_2', $this->loops);
         $result = $this->db->get()->result_array();
 
+        $dataString = '';
+        $dataString_2 = '';
+        $dataString_3 = '';
+        $dataString_1 = 'var data = ["#heatmap",[';
         $disc = array(); // $disc['IL_1S72_001']['IL_1J5E_023'] = 0.2897
         for ($i = 0; $i < count($result); $i++) {
             $disc[$result[$i]['loop_id_1']][$result[$i]['loop_id_2']] = $result[$i]['discrepancy'];
         }
-
-        $matrix = array();
+        $dataString_3.= '[';
+        // $matrix = str();
         for ($i = 1; $i <= $this->num_loops; $i++) {
             $loop_id_1 = $this->similarity[$i];
+            $dataString_2.= '[';
+            if ($i != $this->num_loops){
+                $dataString_3 .= '"'.$loop_id_1.'"'.',';
+            } else{
+                $dataString_3 .= '"'.$loop_id_1.'"';
+            }
+            
             for ($j = 1; $j <= $this->num_loops; $j++) {
                 $loop_id_2 = $this->similarity[$j];
-                $cell = array('data-disc' => $disc[$loop_id_1][$loop_id_2],
-                            //   'data-pair' => "$loop_id_1:$loop_id_2",
-                            //   'class'     => $this->get_css_class($disc[$loop_id_1][$loop_id_2]),
-                            //   'rel'       => 'twipsy',
-                            //   'title'     => "$loop_id_1:$loop_id_2, {$disc[$loop_id_1][$loop_id_2]}"
-                            );
+                $cell = $disc[$loop_id_1][$loop_id_2];
                 // <td title='IL_3U4M_004:IL_3U4M_004, 0' rel='twipsy' class='md00' data-pair='IL_3U4M_004:IL_3U4M_004' data-disc='0'></td>
-                $matrix[] = $cell;
+                if ($j != $this->num_loops){
+                    $dataString_2 .= $cell.",";
+                } else {
+                    $dataString_2 .= $cell;
+                }
+                
             }
+            $dataString_2.= '],';
         }
-        return $matrix;
+        $dataString_3 .= ']]';
+        // return $matrix;
+        $dataString .= $dataString_1 . $dataString_2 ."],". $dataString_3;
+        
+        return $dataString;
     }
 
     function get_css_class($disc)
@@ -845,7 +865,8 @@ class Motif_model extends CI_Model {
         #echo "<p>i: $i // loops: " . $this->loops[$i] . "</p>";
         #ksort($this->full_nts[$this->loops[$i]]);
         ksort($this->full_units[$this->similarity[$i]]);
-        return "<label><input type='checkbox' id='{$this->similarity[$i]}' class='jmolInline'
+        $j = $i-1;
+        return "<label><input type='checkbox' id='{$j}' class='jmolInline'
                data-coord_ma='{$this->similarity[$i]}|{$this->motif_id}|{$this->release_id}'" . " " . "data-quality='". "{$this->similarity[$i]}" . "'>{$this->similarity[$i]}</label>"
                . "<span class='loop_link'>" . anchor_popup("loops/view/{$this->similarity[$i]}", '&#10140;') . "</span>";
 
@@ -888,7 +909,7 @@ class Motif_model extends CI_Model {
 
     function get_header()
     {
-        $header = array('#D', '#S', 'Loop id', 'PDB', 'Disc', '#Non-core', 'Annotation', 'Chain(s)', 'Standardized name');
+        $header = array('#S', 'Loop id', 'PDB', 'Disc', '#Non-core', 'Annotation', 'Chain(s)', 'Standardized name');
 
         // 1, 2, ..., N
         for ($i = 1; $i <= $this->motiflen; $i++) {
@@ -958,12 +979,15 @@ class Motif_model extends CI_Model {
     function generate_row($id)
     {
         ###echo "<p>id: $id</p>";
+        
         for ($i = 0; $i < count($this->header); $i++) {
             $key = $this->header[$i];
 
-            if ( $key == '#D' ) {
-                $row[] = array_search($this->similarity[$id], $this->loops);
-            } elseif ( $key == '#S') {
+            // if ( $key == '#D' ) {
+            //     // $row[] = array_search($this->similarity[$id], $this->loops);
+            //     $row[] = '';
+            // } elseif ( $key == '#S') {
+            if ( $key == '#S' ) {
                 $row[] = $id;
             } elseif ( $key == 'Loop id' ) {
                 $row[] = array('class'=>'loop','data'=>$this->get_checkbox($id)); //$this->loops[$id];
@@ -980,6 +1004,11 @@ class Motif_model extends CI_Model {
                 $row[] = $parts[3];  # base sequence
                 $row[] = implode('|',array_slice($parts,4)); # number and all remaining fields in the unit id
 
+                #Add unique chain into chain_set
+                // if (!in_array($parts[2], $chain_set)) {
+                //     $chain_set[] = $parts[2];
+                // }
+
             } elseif ( $key == ' ' ) {
                 // do nothing
             } elseif ( $key == 'Disc' ) {
@@ -993,28 +1022,26 @@ class Motif_model extends CI_Model {
                     $row[] = ' ';
                  }
             } elseif( $key == 'Chain(s)' ) {
-
-
-
-                $parts = explode('|', $this->units[$this->similarity[$id]][1]);
-
-
-                $partsend = explode('|', end($this->units[$this->similarity[$id]]));
-                
-                if ($parts[2] != $partsend[2]){
-                    $row[] = $parts[2] .'*'. $partsend[2];
-                } else {
-                    $row[] = $parts[2];
+                $chain_set = array();
+                for ($j = 1; $j <= $this->motiflen; $j++) {
+                    $parts = explode('|', $this->units[$this->similarity[$id]][$j]);
+                    $chain_id = $parts[2];
+                    if (!in_array($chain_id, $chain_set)) {
+                        $chain_set[] = $chain_id;
+                    }
                 }
+
+                $row[] = implode('+', $chain_set);
+                
                     
             } elseif( $key == 'Standardized name'){
 
-
-                  
                 $parts = explode('|', $this->units[$this->similarity[$id]][1]);
                 $partsend = explode('|', end($this->units[$this->similarity[$id]]));
-                
-                //get first nuclotide 
+
+                $standardized_name_set = array();
+
+                //get standardized name of chain of first nuclotide
                 $this->db->select('value')
                         ->from('chain_property_value')
                         ->where('property', 'standardized_name')
@@ -1026,8 +1053,9 @@ class Motif_model extends CI_Model {
                 if ( count($result) > 0 ){
                     $standardized_name = $result[0]['value'];
                     $short_standardized_name = explode(';', $standardized_name);
-                    $short_standardized_name  = end($short_standardized_name);
+                    $short_standardized_name = end($short_standardized_name);
                 } else {
+                    // get the PDB description of the chain
                     $this->db->select('compound')
                             ->from('chain_info')
                             ->where('pdb_id', $parts[0])
@@ -1036,14 +1064,16 @@ class Motif_model extends CI_Model {
                     $result = $this->db->get()->result_array();
                     if ( count($result) > 0 ){
                         $short_standardized_name = $result[0]['compound'];
-                        // $short_standardized_name = parseRNA($result[0]['compound']);
+                        // fix some special cases (but there could be many special cases!)
                         $short_standardized_name = $this->parseRna($short_standardized_name);
-                    } else{
-
                     }
                 }
 
-                //get the last nuclotide
+                if (isset($short_standardized_name)) {
+                    $standardized_name_set[] = $short_standardized_name;
+                }
+
+                //get the last nucleotide? in case of IL or J3 with multiple strands
                 if ($parts[2] == $partsend[2]){
                     if (isset($short_standardized_name)) {
                         // if (strlen($short_standardized_name)>=25){
@@ -1051,9 +1081,9 @@ class Motif_model extends CI_Model {
                         // } else {
                         //     $row[] = $short_standardized_name;
                         // }
-                        $row[] = $short_standardized_name;
+                        //$row[] = $short_standardized_name;
                     } else {
-                        $row[] = ' ';
+                        //$row[] = ' ';
                     }
                 } else {
                     $this->db->select('value')
@@ -1077,17 +1107,20 @@ class Motif_model extends CI_Model {
                         $result = $this->db->get()->result_array();
                         if ( count($result) > 0 ){
                             $short_standardized_name_2 = $result[0]['compound'];
-                        } else{
-
+                            $short_standardized_name_2 = $this->parseRna($short_standardized_name_2);
                         }
                     }
 
-                    $short_standardized_name_2 = $this->parseRna($short_standardized_name_2);
-                    $row[] = $short_standardized_name. ' + ' . $short_standardized_name_2;
-                }
-                
+                    // $row[] = $short_standardized_name. ' + ' . $short_standardized_name_2;
 
-                
+                    // if new, add to the array
+                    if (isset($short_standardized_name_2) & ($short_standardized_name != $short_standardized_name_2)){
+                        $standardized_name_set[] = $short_standardized_name_2;
+                    }
+                }
+
+                $row[] = implode(' + ', $standardized_name_set);
+
             } else {
                 $parts = explode('-', $key);
 
@@ -1266,23 +1299,55 @@ class Motif_model extends CI_Model {
             return '';
         }
     }
+
     function parseRNA($inputString) {
-        // Check if input string starts with "5'-R"
-        if (substr($inputString, 0, 5) == "5'-R(" or substr($inputString, 0, 8) == "RNA (5'-") {
-    
+        // Check if input string starts with "5'-R"   RNA(5'-R
+        if (substr($inputString, 0, 5) == "5'-R(" or substr($inputString, 0, 8) == "RNA (5'-" or substr($inputString, 0, 5) == "5'-D(" or substr($inputString, 0, 6) == "(5'-R(" or substr($inputString, 0, 8) == "RNA(5'-R") {
+            
             // Count the number of "*" characters
             $nCount = substr_count($inputString, "*");
         
             // Return the RNA sequence with the N-mer count
             return "RNA ({$nCount}-mer)";
+        } elseif (substr($inputString, 0, 14) == "U4 snRNA (5'-R") {
+
+            $nCount = substr_count($inputString, "*");
+        
+            return "U4 snRNA ({$nCount}-mer)";
         } else {
             return $inputString;
-        }
+        } 
     }
-    
 
-    
+    function get_standardized_name($pbd, $chain){ #
+        $this->db->select('value')
+                        ->from('chain_property_value')
+                        ->where('property', 'standardized_name')
+                        ->where('pdb_id', $pbd)
+                        ->where("BINARY chain = '".$chain."'", null, false)
+                        ->limit(1);
+        $result = $this->db->get()->result_array();
 
+        if ( count($result) > 0 ){
+            $standardized_name = $result[0]['value'];
+            $short_standardized_name = explode(';', $standardized_name);
+            $short_standardized_name  = end($short_standardized_name);
+        } else {
+            $this->db->select('compound')
+                    ->from('chain_info')
+                    ->where('pdb_id', $pbd)
+                    ->where("BINARY chain_name = '".$chain."'", null, false)
+                    ->limit(1);
+            $result = $this->db->get()->result_array();
+            if ( count($result) > 0 ){
+                $short_standardized_name = $result[0]['compound'];
+                $short_standardized_name = $this->parseRna($short_standardized_name);
+            } else{
+
+            }
+        }
+        return $short_standardized_name;
+    }
 }
 
 

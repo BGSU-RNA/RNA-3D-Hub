@@ -47,10 +47,10 @@
           <div class="span500px well" id="jmol">
             <script>
               var Info = {
-                width: 416,
-                height: 250,
+                width: 565,
+                height: 340,
                 debug: false,
-                color: '#f5f5f5',
+                color: 'white',
                 addSelectionOptions: false,
                 use: 'HTML5',
                 j2sPath: '<?=$baseurl?>/js/jsmol/j2s/',

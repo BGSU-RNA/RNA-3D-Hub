@@ -39,11 +39,11 @@ class Motif extends MY_Controller {
             if ( $format == 'csv' ) {
                 $this->output->set_header("Content-disposition: attachment; filename={$motif_id}.csv")
                              ->set_content_type('text/csv');
-                $data['csv'] = $this->Motif_model->get_csv($motif_id);
+                $data['csv'] = $this->Motif_model->get_csv($motif_id,$last_release_id);
             } elseif ( $format == 'json' ) {
                 $this->output->set_header("Content-disposition: attachment; filename={$motif_id}.json")
                              ->set_content_type('application/json');
-                $data['csv'] = $this->Motif_model->get_json($motif_id);
+                $data['csv'] = $this->Motif_model->get_json($motif_id,$last_release_id);
             } else {
                 show_404();
             }
@@ -71,16 +71,30 @@ class Motif extends MY_Controller {
         $data['annotation_test'] = $this->Motif_model->get_annotations_count();
 
         // mutual discrepancy matrix widget
+        // $this->benchmark->mark('c');
+        // if ( $this->Motif_model->num_loops > 1 ) {
+        //     $matrix_linear = $this->Motif_model->get_mutual_discrepancy_matrix();
+        //     $matrix_column = $this->table->make_columns($matrix_linear, $this->Motif_model->num_loops);
+        //     $tmpl = array( 'table_open'  => '<table class="condensed-table">' ,
+        //                    'class' => 'mdmatrix-table');
+        //     $this->table->set_template($tmpl);
+        //     $data['matrix'] = $this->table->generate($matrix_column);
+        // } else {
+        //     $data['matrix'] = '';
+        // }
+
+        // NEW mutual discrepancy matrix widget
         $this->benchmark->mark('c');
         if ( $this->Motif_model->num_loops > 1 ) {
-            $matrix_linear = $this->Motif_model->get_mutual_discrepancy_matrix();
-            $matrix_column = $this->table->make_columns($matrix_linear, $this->Motif_model->num_loops);
-            $tmpl = array( 'table_open'  => '<table class="condensed-table">' ,
-                           'class' => 'mdmatrix-table');
-            $this->table->set_template($tmpl);
-            $data['matrix'] = $this->table->generate($matrix_column);
+            // $matrix_linear = $this->Motif_model->get_mutual_discrepancy_matrix_efficient();
+            // $matrix_column = $this->table->make_columns($matrix_linear, $this->Motif_model->num_loops);
+            // $tmpl = array( 'table_open'  => '<table class="condensed-table">' ,
+            //                'class' => 'mdmatrix-table');
+            // $this->table->set_template($tmpl);
+            // $data['matrix'] = $this->table->generate($matrix_column);
+            $data['discrepancy_matrix'] = $this->Motif_model->get_mutual_discrepancy_matrix_efficient();
         } else {
-            $data['matrix'] = '';
+            $data['discrepancy_matrix'] = '';
         }
 
         // sequence variability
@@ -191,11 +205,11 @@ class Motif extends MY_Controller {
             if ( $format == 'csv' ) {
                 $this->output->set_header("Content-disposition: attachment; filename={$motif_id}.csv")
                              ->set_content_type('text/csv');
-                $data['csv'] = $this->Motif_model->get_csv($motif_id);
+                $data['csv'] = $this->Motif_model->get_csv($motif_id,$last_release_id);
             } elseif ( $format == 'json' ) {
                 $this->output->set_header("Content-disposition: attachment; filename={$motif_id}.json")
                              ->set_content_type('application/json');
-                $data['csv'] = $this->Motif_model->get_json($motif_id);
+                $data['csv'] = $this->Motif_model->get_json($motif_id,$last_release_id);
             } else {
                 show_404();
             }
@@ -225,14 +239,15 @@ class Motif extends MY_Controller {
         // mutual discrepancy matrix widget
         $this->benchmark->mark('c');
         if ( $this->Motif_model->num_loops > 1 ) {
-            $matrix_linear = $this->Motif_model->get_mutual_discrepancy_matrix_efficient();
-            $matrix_column = $this->table->make_columns($matrix_linear, $this->Motif_model->num_loops);
-            $tmpl = array( 'table_open'  => '<table class="condensed-table">' ,
-                           'class' => 'mdmatrix-table');
-            $this->table->set_template($tmpl);
-            $data['matrix'] = $this->table->generate($matrix_column);
+            // $matrix_linear = $this->Motif_model->get_mutual_discrepancy_matrix_efficient();
+            // $matrix_column = $this->table->make_columns($matrix_linear, $this->Motif_model->num_loops);
+            // $tmpl = array( 'table_open'  => '<table class="condensed-table">' ,
+            //                'class' => 'mdmatrix-table');
+            // $this->table->set_template($tmpl);
+            // $data['matrix'] = $this->table->generate($matrix_column);
+            $data['discrepancy_matrix'] = $this->Motif_model->get_mutual_discrepancy_matrix_efficient();
         } else {
-            $data['matrix'] = '';
+            $data['discrepancy_matrix'] = '';
         }
 
         // sequence variability
