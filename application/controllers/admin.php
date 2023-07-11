@@ -38,7 +38,7 @@ class Admin extends MY_Controller {
       }
 
       $data['baseurl'] = base_url();
-      $data['title'] = 'BGSU RNA Site Login';
+      $data['title'] = 'RNA 3D Hub Login';
       $this->load->view('header_view', $data);
       $this->load->view('menu_view', $data);
       $this->load->view('login_view');
@@ -50,7 +50,7 @@ class Admin extends MY_Controller {
 //       session_destroy();
       $this->session->sess_destroy();
       $data['baseurl'] = base_url();
-      $data['title'] = 'BGSU RNA Site Login';
+      $data['title'] = 'RNA 3D Hub Login';
       $this->load->view('header_view', $data);
       $this->load->view('menu_view', $data);
       $this->load->view('login_view');

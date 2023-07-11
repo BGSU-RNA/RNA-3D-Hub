@@ -9,7 +9,7 @@ class Search extends MY_Controller {
 
     public function index()
     {
-        $data['title']  = "Search BGSU RNA Site";
+        $data['title']  = "Search RNA 3D Hub";
         $data['pageicon'] = base_url() . 'icons/S_icon.png';
         $data['baseurl'] = base_url();
         $this->load->view('header_view', $data);

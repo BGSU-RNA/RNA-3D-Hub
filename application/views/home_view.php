@@ -5,7 +5,7 @@
 
       <!-- Main hero unit for a primary marketing message or call to action -->
       <div class="hero-unit">
-        <h1>BGSU RNA Site</h1>
+        <h1>RNA 3D Hub</h1>
         <p>
         <a href="<?=$this->config->item('home_url')?>/main/introduction-to-rna-3d-hub/" class="btn success large">Introduction</a>
         Follow us on <a href="https://twitter.com/rna3dhub">Twitter</a>.

@@ -3,7 +3,7 @@ class Home extends CI_Controller {
 
 	public function index()
 	{
-        $data['title'] = 'BGSU RNA Site';
+        $data['title'] = 'RNA 3D Hub';
         $data['pageicon'] = base_url() . 'icons/R_icon.png';
         $data['baseurl'] = base_url();
 

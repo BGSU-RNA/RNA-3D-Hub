@@ -29,7 +29,7 @@
                   <span class="label notice">Help</span>
                   Internal loops are shown in green, hairpin loops are blue, 
                   and three-way junctions are yellow. Loops not present in the 
-                  BGSU RNA Site are red.
+                  RNA 3D Hub are red.
 
                   Clicking on the colored boxes takes to the page for the 
                   respective loop. If you experience problems with the embedded 

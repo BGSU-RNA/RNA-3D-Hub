@@ -22,7 +22,7 @@
                   View in
                   <?=anchor_popup("https://www.rcsb.org/structure/{$unit_id['pdb_id']}", 'PDB')?>
                   or
-                  <?=anchor("pdb/{$unit_id['pdb_id']}", 'BGSU RNA Site')?>
+                  <?=anchor("pdb/{$unit_id['pdb_id']}", 'RNA 3D Hub')?>
                 </dd>
                 <dt>Model</dt>
                 <dd><?=$unit_id['model']?></dd>

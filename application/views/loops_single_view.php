@@ -37,7 +37,7 @@
                             <h4>3D structure</h4>
                             <dl>
                                 <dt>PDB id</dt>
-                                <dd><?=$pdb?> (<i>explore in</i> <?=$rna3dhub_link?> <i>or</i> <?=$pdb_link?> <i>or</i> <?=$NAKB_link?>)</dd>
+                                <dd><?=$pdb?> (explore in <?=$pdb_link?>, <?=$NAKB_link?>, or <?=$rna3dhub_link?>)</dd>
                                 <dt>Description</dt>
                                 <dd><?=$pdb_desc?></dd>
                                 <dt>Experimental method</dt>

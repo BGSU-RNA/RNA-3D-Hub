@@ -6,7 +6,7 @@
     <div class="topbar" data-dropdown="dropdown">
       <div class="fill">
         <div class="container">
-          <a class="brand" href="<?php echo $baseurl;?>">BGSU RNA Site</a>
+          <a class="brand" href="<?php echo $baseurl;?>">RNA 3D Hub</a>
           <ul class="nav">
 
             <li><a href="<?php echo $baseurl;?>pdb">RNA Structure Atlas</a></li>
@@ -79,7 +79,7 @@
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle">Links</a>
                 <ul class="dropdown-menu">
-                    <li><a href="<?=$this->config->item('home_url')?>">RNA BGSU Home</a></li>
+                    <li><a href="<?=$this->config->item('home_url')?>">RNA 3D Hub Home</a></li>
                     <li><a href="<?=$this->config->item('home_url')?>/main/rna-3d-hub-help/">Help</a></li>
 <!--
                     <?php

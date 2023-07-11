@@ -265,7 +265,7 @@ class Loops_model extends CI_Model {
         $result = array();
         //general pdb info
         $result['pdb'] = substr($id,3,4);
-        $result['rna3dhub_link'] = anchor_popup('pdb/' . $result['pdb'] . '/motifs', 'BGSU RNA Site');
+        $result['rna3dhub_link'] = anchor_popup('pdb/' . $result['pdb'] . '/motifs', 'RNA 3D Hub');
         $result['pdb_link'] = anchor_popup('https://www.rcsb.org/structure/' . $result['pdb'], 'PDB');
         $result['NAKB_link'] = anchor_popup('https://www.nakb.org/atlas=' . $result['pdb'], 'NAKB');
 

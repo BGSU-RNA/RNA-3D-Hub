@@ -53,7 +53,7 @@
                   IFEs are made up of individual chains linked with + signs.
                 </p>
                 <p>
-                  With Release 2.0, we upgraded the BGSU RNA Site
+                  With Release 2.0, we upgraded the BGSU RNA 3D Hub Site
                   to include new RNA 3D structures distributed in
                   <a href="http://wwpdb.org/news/news.php?year=2014#10-December-2014">mmCIF format</a>.
                   Some RNA-containing mmCIF structures are very large, containing multiple full ribosomes.
