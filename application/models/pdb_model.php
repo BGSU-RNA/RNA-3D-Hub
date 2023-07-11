@@ -98,6 +98,7 @@ class Pdb_model extends CI_Model {
             $valid_tables[$loop_type] = array();
             $invalid_tables[$loop_type] = array();
         }
+        //$motifs is an array of [loop id] to return motif group id
         $motifs = $this->get_latest_motif_assignments($pdb_id, 'IL');
         $motifs = array_merge($motifs, $this->get_latest_motif_assignments($pdb_id, 'HL'));
         foreach ($query->result() as $row) {
