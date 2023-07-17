@@ -56,6 +56,29 @@ class Pdb_model extends CI_Model {
         }
         return $data;
     }
+    function get_all_latest_motif_assignments($loop_type) // new
+    {
+        // This does not actually get all the most recent assignments
+        // It only searches the most recent motif atlas release
+        // If the structure has loops in that release, they are shown
+        // If it does not, then no motif assignments are shown
+        // That may be safer for structures that used to be in the Motif Atlas
+
+        // $loop_type = IL or HL
+
+        $latest_release = $this->get_latest_motif_release($loop_type);
+
+        $this->db->select()
+                 ->from('ml_loops')
+                 ->where('ml_release_id', $latest_release)
+                 ->like('loop_id', strtoupper($loop_type) . '_', 'right');
+        $query = $this->db->get();
+        $data = array();
+        foreach ($query->result() as $row) {
+            $data[$row->loop_id] = $row->motif_id;
+        }
+        return $data;
+    }
     function get_latest_loop_release()
     {
         $this->db->select('loop_release_id')
@@ -79,6 +102,21 @@ class Pdb_model extends CI_Model {
     }
     function get_loops($pdb_id)
     {
+    	// # original
+        // $this->db->select('lq.loop_id')
+        //          ->select('lq.status')
+        //          ->select('lq.modifications')
+        //          ->select('lq.nt_signature')
+        //          ->select('lq.complementary')
+        //          ->select('li.unit_ids')
+        //          ->select('li.loop_name')
+        //          ->select('la.annotation_1')
+        //          ->from('loop_qa AS lq')
+        //          ->join('loop_info AS li', 'li.loop_id = lq.loop_id')
+        //          ->join('loop_annotations AS la', 'lq.loop_id = la.loop_id', 'left')
+        //          ->where('pdb_id', $pdb_id);
+    	// # test
+        // $this->db->select('lq.pdb_id')
         $this->db->select('lq.loop_id')
                  ->select('lq.status')
                  ->select('lq.modifications')
@@ -87,10 +125,16 @@ class Pdb_model extends CI_Model {
                  ->select('li.unit_ids')
                  ->select('li.loop_name')
                  ->select('la.annotation_1')
+                 ->select('la2.annotation_1 AS similar_annotation') // new
+                 ->select('lm.match_type') // new
+                 ->select('lm.query_loop_id AS similar_loop') // new
+                 // ->select('lm.query_annotation AS annotation_2') // doesnt exist, need 2nd annotation table join
                  ->from('loop_qa AS lq')
                  ->join('loop_info AS li', 'li.loop_id = lq.loop_id')
                  ->join('loop_annotations AS la', 'lq.loop_id = la.loop_id', 'left')
-                 ->where('pdb_id', $pdb_id);
+                 ->join('loop_mapping AS lm', 'lq.loop_id = lm.loop_id', 'left') // new
+                 ->join('loop_annotations AS la2', 'lm.query_loop_id = la2.loop_id', 'left') // new
+                 ->where('li.pdb_id', $pdb_id);
         $query = $this->db->get();
 
         $loop_types = array('IL','HL','J3');
@@ -98,21 +142,39 @@ class Pdb_model extends CI_Model {
             $valid_tables[$loop_type] = array();
             $invalid_tables[$loop_type] = array();
         }
-        //$motifs is an array of [loop id] to return motif group id
-        $motifs = $this->get_latest_motif_assignments($pdb_id, 'IL');
-        $motifs = array_merge($motifs, $this->get_latest_motif_assignments($pdb_id, 'HL'));
+
+        // $motifs = $this->get_latest_motif_assignments($pdb_id, 'IL');
+        // $motifs = array_merge($motifs, $this->get_latest_motif_assignments($pdb_id, 'HL'));
+        $motifs = $this->get_all_latest_motif_assignments('IL');
+        $motifs = array_merge($motifs, $this->get_all_latest_motif_assignments('HL'));
+
         foreach ($query->result() as $row) {
             $loop_type = substr($row->loop_id, 0, 2);
+            // get annotation column entry
             if (!is_null($row->annotation_1)){
                 $annotation_1 = $row->annotation_1;
+            // } else {
+            //     $annotation_1 = 'NA';
+            // }
             } else {
-                $annotation_1 = 'NA';
+            	if (!is_null($row->match_type)){
+            		$annotation_1 = "{$row->similar_annotation}<br>{$row->match_type}<br>{$row->similar_loop}";
+            	} else {
+		            $annotation_1 = 'NA';
+		        }
             }
+            // get motif column entry
             if ($row->status == 1 or $row->status == 3) {
                 if ( array_key_exists($row->loop_id, $motifs) ) {
                     $motif_id = anchor_popup("motif/view/{$motifs[$row->loop_id]}", $motifs[$row->loop_id]);
                 } else {
-                    $motif_id = 'NA';
+                	// if (!is.null($row->match_type))
+                	if ( array_key_exists($row->similar_loop, $motifs) ) {
+	                    $motif_id = anchor_popup("motif/view/{$motifs[$row->similar_loop]}",
+                            "NA<br><br>{$motifs[$row->similar_loop]}");
+	                } else {
+	                    $motif_id = 'NA';                	
+	                }
                 }
 
                 $valid_tables[$loop_type][] = array(count($valid_tables[$loop_type]) + 1, //index
