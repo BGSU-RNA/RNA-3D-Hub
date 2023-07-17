@@ -155,7 +155,11 @@ class Pdb extends CI_Controller {
             $loop_types = array('IL', 'HL', 'J3');
             foreach ($loop_types as $loop_type) {
                 // valid loops
-                $tmpl = array( 'table_open'  => '<table class="condensed-table bordered-table">' );
+                $tmpl = array(
+                    'table_open'  => '<table class="condensed-table bordered-table">',
+                    'cell_start' => '<td style ="white-space: nowrap">',
+                    'cell_end' => '</td>'
+                );
                 $this->table->set_template($tmpl);
                 $this->table->set_heading('#', 'loop id', 'location', 'annotation', 'motif');
                 if (count($results['valid'][$loop_type]) > 0) {

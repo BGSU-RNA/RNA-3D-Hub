@@ -121,6 +121,7 @@ class Pdb_model extends CI_Model {
         $motifs = array_merge($motifs, $this->get_latest_motif_assignments($pdb_id, 'HL'));
         foreach ($query->result() as $row) {
             $loop_type = substr($row->loop_id, 0, 2);
+            // get annotation column entry
             if (!is_null($row->annotation_1)){
                 $annotation_1 = $row->annotation_1;
             // } else {
@@ -129,16 +130,21 @@ class Pdb_model extends CI_Model {
             } else {
             	if (!is_null($row->match_type)){
             		$annotation_1 = "extended from: {$row->similar_loop}<br>by: {$row->match_type} search";
-            		// $annotation_1 = "similar to:"
             	} else {
 		            $annotation_1 = 'NA';
 		        }
             }
+            // get motif column entry
             if ($row->status == 1 or $row->status == 3) {
                 if ( array_key_exists($row->loop_id, $motifs) ) {
                     $motif_id = anchor_popup("motif/view/{$motifs[$row->loop_id]}", $motifs[$row->loop_id]);
                 } else {
-                    $motif_id = 'NA';
+                	// if (!is.null($row->match_type))
+                	if ( array_key_exists($row->similar_loop, $motifs) ) {
+	                    $motif_id = anchor_popup("motif/view/{$motifs[$row->similar_loop]}", $motifs[$row->similar_loop]);
+	                } else {
+	                    $motif_id = 'NA';                	
+	                }
                 }
 
                 $valid_tables[$loop_type][] = array(count($valid_tables[$loop_type]) + 1, //index
