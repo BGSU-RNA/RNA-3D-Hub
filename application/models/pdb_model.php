@@ -79,6 +79,21 @@ class Pdb_model extends CI_Model {
     }
     function get_loops($pdb_id)
     {
+    	// # original
+        // $this->db->select('lq.loop_id')
+        //          ->select('lq.status')
+        //          ->select('lq.modifications')
+        //          ->select('lq.nt_signature')
+        //          ->select('lq.complementary')
+        //          ->select('li.unit_ids')
+        //          ->select('li.loop_name')
+        //          ->select('la.annotation_1')
+        //          ->from('loop_qa AS lq')
+        //          ->join('loop_info AS li', 'li.loop_id = lq.loop_id')
+        //          ->join('loop_annotations AS la', 'lq.loop_id = la.loop_id', 'left')
+        //          ->where('pdb_id', $pdb_id);
+    	// # test
+        // $this->db->select('lq.pdb_id')
         $this->db->select('lq.loop_id')
                  ->select('lq.status')
                  ->select('lq.modifications')
@@ -87,10 +102,14 @@ class Pdb_model extends CI_Model {
                  ->select('li.unit_ids')
                  ->select('li.loop_name')
                  ->select('la.annotation_1')
+                 ->select('lm.match_type') // new
+                 ->select('lm.query_loop_id AS similar_loop') // new
+                 // ->select('lm.query_annotation AS annotation_2') // doesnt exist, need 2nd annotation table join
                  ->from('loop_qa AS lq')
                  ->join('loop_info AS li', 'li.loop_id = lq.loop_id')
                  ->join('loop_annotations AS la', 'lq.loop_id = la.loop_id', 'left')
-                 ->where('pdb_id', $pdb_id);
+                 ->join('loop_mapping AS lm', 'lq.loop_id = lm.loop_id', 'left') // new
+                 ->where('li.pdb_id', $pdb_id);
         $query = $this->db->get();
 
         $loop_types = array('IL','HL','J3');
@@ -104,8 +123,16 @@ class Pdb_model extends CI_Model {
             $loop_type = substr($row->loop_id, 0, 2);
             if (!is_null($row->annotation_1)){
                 $annotation_1 = $row->annotation_1;
+            // } else {
+            //     $annotation_1 = 'NA';
+            // }
             } else {
-                $annotation_1 = 'NA';
+            	if (!is_null($row->match_type)){
+            		$annotation_1 = "extended from: {$row->similar_loop}<br>by: {$row->match_type} search";
+            		// $annotation_1 = "similar to:"
+            	} else {
+		            $annotation_1 = 'NA';
+		        }
             }
             if ($row->status == 1 or $row->status == 3) {
                 if ( array_key_exists($row->loop_id, $motifs) ) {
