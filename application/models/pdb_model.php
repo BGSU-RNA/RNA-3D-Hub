@@ -102,6 +102,7 @@ class Pdb_model extends CI_Model {
                  ->select('li.unit_ids')
                  ->select('li.loop_name')
                  ->select('la.annotation_1')
+                 ->select('la2.annotation_1 AS similar_annotation') // new
                  ->select('lm.match_type') // new
                  ->select('lm.query_loop_id AS similar_loop') // new
                  // ->select('lm.query_annotation AS annotation_2') // doesnt exist, need 2nd annotation table join
@@ -109,6 +110,7 @@ class Pdb_model extends CI_Model {
                  ->join('loop_info AS li', 'li.loop_id = lq.loop_id')
                  ->join('loop_annotations AS la', 'lq.loop_id = la.loop_id', 'left')
                  ->join('loop_mapping AS lm', 'lq.loop_id = lm.loop_id', 'left') // new
+                 ->join('loop_annotations AS la2', 'lm.query_loop_id = la2.loop_id', 'left') // new
                  ->where('li.pdb_id', $pdb_id);
         $query = $this->db->get();
 
@@ -129,7 +131,7 @@ class Pdb_model extends CI_Model {
             // }
             } else {
             	if (!is_null($row->match_type)){
-            		$annotation_1 = "extended from: {$row->similar_loop}<br>by: {$row->match_type} search";
+            		$annotation_1 = "{$row->similar_annotation}<br>extended from: {$row->similar_loop}<br>by: {$row->match_type} search";
             	} else {
 		            $annotation_1 = 'NA';
 		        }
