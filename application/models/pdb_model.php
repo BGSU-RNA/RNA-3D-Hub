@@ -56,6 +56,29 @@ class Pdb_model extends CI_Model {
         }
         return $data;
     }
+    function get_all_latest_motif_assignments($loop_type) // new
+    {
+        // This does not actually get all the most recent assignments
+        // It only searches the most recent motif atlas release
+        // If the structure has loops in that release, they are shown
+        // If it does not, then no motif assignments are shown
+        // That may be safer for structures that used to be in the Motif Atlas
+
+        // $loop_type = IL or HL
+
+        $latest_release = $this->get_latest_motif_release($loop_type);
+
+        $this->db->select()
+                 ->from('ml_loops')
+                 ->where('ml_release_id', $latest_release)
+                 ->like('loop_id', strtoupper($loop_type) . '_', 'right');
+        $query = $this->db->get();
+        $data = array();
+        foreach ($query->result() as $row) {
+            $data[$row->loop_id] = $row->motif_id;
+        }
+        return $data;
+    }
     function get_latest_loop_release()
     {
         $this->db->select('loop_release_id')
@@ -119,8 +142,11 @@ class Pdb_model extends CI_Model {
             $valid_tables[$loop_type] = array();
             $invalid_tables[$loop_type] = array();
         }
-        $motifs = $this->get_latest_motif_assignments($pdb_id, 'IL');
-        $motifs = array_merge($motifs, $this->get_latest_motif_assignments($pdb_id, 'HL'));
+        // $motifs = $this->get_latest_motif_assignments($pdb_id, 'IL');
+        // $motifs = array_merge($motifs, $this->get_latest_motif_assignments($pdb_id, 'HL'));
+        $motifs = $this->get_all_latest_motif_assignments('IL');
+        $motifs = array_merge($motifs, $this->get_all_latest_motif_assignments('HL'));
+
         foreach ($query->result() as $row) {
             $loop_type = substr($row->loop_id, 0, 2);
             // get annotation column entry
@@ -131,7 +157,7 @@ class Pdb_model extends CI_Model {
             // }
             } else {
             	if (!is_null($row->match_type)){
-            		$annotation_1 = "{$row->similar_annotation}<br>extended from: {$row->similar_loop}<br>by: {$row->match_type} search";
+            		$annotation_1 = "{$row->similar_annotation}<br>{$row->match_type}<br>{$row->similar_loop}";
             	} else {
 		            $annotation_1 = 'NA';
 		        }
@@ -143,7 +169,8 @@ class Pdb_model extends CI_Model {
                 } else {
                 	// if (!is.null($row->match_type))
                 	if ( array_key_exists($row->similar_loop, $motifs) ) {
-	                    $motif_id = anchor_popup("motif/view/{$motifs[$row->similar_loop]}", $motifs[$row->similar_loop]);
+	                    $motif_id = anchor_popup("motif/view/{$motifs[$row->similar_loop]}",
+                            "NA<br><br>{$motifs[$row->similar_loop]}");
 	                } else {
 	                    $motif_id = 'NA';                	
 	                }
