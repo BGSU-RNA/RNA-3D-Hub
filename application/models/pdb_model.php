@@ -176,10 +176,14 @@ class Pdb_model extends CI_Model {
 	                }
                 }
 
-                $valid_tables[$loop_type][] = array(count($valid_tables[$loop_type]) + 1, //index
-                                                    array( 'class' => 'loop',
-                                                           'data'  => $this->get_checkbox($row->loop_id, $row->unit_ids)
-                                                          ), //loop_id
+                // $valid_tables[$loop_type][] = array(count($valid_tables[$loop_type]) + 1, //index OLD
+                $valid_tables[$loop_type][] = array(array( 'class' => 'loop',
+                                                            'data' => $this->new_get_checkbox($row->loop_id, $row->unit_ids, count($valid_tables[$loop_type]) + 1)
+                                                        ), //index NEW moves radio button here
+                                                    // array( 'class' => 'loop',
+                                                    //        'data'  => $this->get_checkbox($row->loop_id, $row->unit_ids)
+                                                    //     ), //loop_id OLD
+                                                    $row->loop_id, //loop_id NEW moves radio button to index
                                                     str_replace(",", ",<br>", $row->loop_name), //location
                                                     // $motif_id, //motif 
                                                     $annotation_1,
@@ -210,6 +214,12 @@ class Pdb_model extends CI_Model {
     function get_checkbox($id, $nt_ids)
     {
         return "<label><input type='radio' id='{$id}' class='jmolInline' data-coord='{$id}' data-quality='{$id}'> {$id} </label>" .
+        "<span class='loop_link'>" . anchor_popup("loops/view/{$id}", '&#10140;') . "</span>";
+
+    } // count($valid_tables[$loop_type]) + 1
+    function new_get_checkbox($id, $nt_ids, $index)
+    {
+        return "<label> <input type='radio' id='{$id}' class='jmolInline' data-coord='{$id}' data-quality='{$id}'> {$index} </label>" .
         "<span class='loop_link'>" . anchor_popup("loops/view/{$id}", '&#10140;') . "</span>";
 
     }
