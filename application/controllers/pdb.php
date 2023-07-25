@@ -161,7 +161,7 @@ class Pdb extends CI_Controller {
                     'cell_end' => '</td>'
                 );
                 $this->table->set_template($tmpl);
-                $this->table->set_heading('#', 'loop id', 'location', 'annotation <br>(mapped to, source)', 'motif group<br>()');
+                $this->table->set_heading('#', 'loop id', 'location', 'annotation <br>(mapped to, source)', 'motif group<br>(similar to)');
                 if (count($results['valid'][$loop_type]) > 0) {
                     $data['loops'][$loop_type]['valid'] = $this->table->generate($results['valid'][$loop_type]);
                 } else {
