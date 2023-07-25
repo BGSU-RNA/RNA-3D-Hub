@@ -153,8 +153,8 @@ class Pdb_model extends CI_Model {
                 } else {
                 	// if (!is.null($row->match_type))
                 	if ( array_key_exists($row->similar_loop, $motifs) ) {
-	                    $motif_id = anchor_popup("motif/view/{$motifs[$row->similar_loop]}",
-                            "NA<br><br>{$motifs[$row->similar_loop]}");
+	                    $motif_id = 'NA<br><br>' . anchor_popup("motif/view/{$motifs[$row->similar_loop]}",
+                            "{$motifs[$row->similar_loop]}");
 	                } else {
 	                    $motif_id = 'NA';                	
 	                }
@@ -167,7 +167,7 @@ class Pdb_model extends CI_Model {
                                                     // array( 'class' => 'loop',
                                                     //        'data'  => $this->get_checkbox($row->loop_id, $row->unit_ids)
                                                     //     ), //loop_id OLD
-                                                    $row->loop_id, //loop_id NEW moves radio button to index
+                                                    "<label>{$row->loop_id}</label>", //loop_id NEW moves radio button to index
                                                     str_replace(",", ",<br>", $row->loop_name), //location
                                                     // $motif_id, //motif 
                                                     $annotation_1,
