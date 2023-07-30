@@ -102,21 +102,6 @@ class Pdb_model extends CI_Model {
     }
     function get_loops($pdb_id)
     {
-    	// # original
-        // $this->db->select('lq.loop_id')
-        //          ->select('lq.status')
-        //          ->select('lq.modifications')
-        //          ->select('lq.nt_signature')
-        //          ->select('lq.complementary')
-        //          ->select('li.unit_ids')
-        //          ->select('li.loop_name')
-        //          ->select('la.annotation_1')
-        //          ->from('loop_qa AS lq')
-        //          ->join('loop_info AS li', 'li.loop_id = lq.loop_id')
-        //          ->join('loop_annotations AS la', 'lq.loop_id = la.loop_id', 'left')
-        //          ->where('pdb_id', $pdb_id);
-    	// # test
-        // $this->db->select('lq.pdb_id')
         $this->db->select('lq.loop_id')
                  ->select('lq.status')
                  ->select('lq.modifications')
@@ -128,7 +113,6 @@ class Pdb_model extends CI_Model {
                  ->select('la2.annotation_1 AS similar_annotation') // new
                  ->select('lm.match_type') // new
                  ->select('lm.query_loop_id AS similar_loop') // new
-                 // ->select('lm.query_annotation AS annotation_2') // doesnt exist, need 2nd annotation table join
                  ->from('loop_qa AS lq')
                  ->join('loop_info AS li', 'li.loop_id = lq.loop_id')
                  ->join('loop_annotations AS la', 'lq.loop_id = la.loop_id', 'left')
@@ -170,17 +154,18 @@ class Pdb_model extends CI_Model {
                 } else {
                 	// if (!is.null($row->match_type))
                 	if ( array_key_exists($row->similar_loop, $motifs) ) {
-	                    $motif_id = anchor_popup("motif/view/{$motifs[$row->similar_loop]}",
-                            "NA<br><br>{$motifs[$row->similar_loop]}");
+	                    $motif_id = 'NA<br><br>' . anchor_popup("motif/view/{$motifs[$row->similar_loop]}",
+                            "{$motifs[$row->similar_loop]}");
 	                } else {
 	                    $motif_id = 'NA';                	
 	                }
                 }
 
-                $valid_tables[$loop_type][] = array(count($valid_tables[$loop_type]) + 1, //index
-                                                    array( 'class' => 'loop',
-                                                           'data'  => $this->get_checkbox($row->loop_id, $row->unit_ids)
-                                                          ), //loop_id
+                $valid_tables[$loop_type][] = array(array( 'class' => 'loop',
+                                                            'data' => $this->get_checkbox($row->loop_id, $row->unit_ids,
+                                                                count($valid_tables[$loop_type]))
+                                                        ),
+                                                    "<label>{$row->loop_id}</label>",
                                                     str_replace(",", ",<br>", $row->loop_name), //location
                                                     // $motif_id, //motif 
                                                     $annotation_1,
@@ -194,10 +179,11 @@ class Pdb_model extends CI_Model {
                 // } else {
                 //     $annotation = $row->nt_signature;
                 // }
-                $invalid_tables[$loop_type][] = array(count($invalid_tables[$loop_type])+1,
-                                                      array( 'class' => 'loop',
-                                                             'data'  => $this->get_checkbox($row->loop_id, $row->unit_ids)
-                                                            ),
+                $invalid_tables[$loop_type][] = array(array( 'class' => 'loop',
+                                                             'data' => $this->get_checkbox($row->loop_id, $row->unit_ids,
+                                                                count($invalid_tables[$loop_type])+1)
+                                                         ),
+                                                      $row->loop_id,
                                                       $this->make_reason_label($row->status),
                                                       $annotation_1);
             }
@@ -208,9 +194,9 @@ class Pdb_model extends CI_Model {
     {
         return '<label class="label important">' . $this->qa_status[$status] . '</label>';
     }
-    function get_checkbox($id, $nt_ids)
+    function get_checkbox($id, $nt_ids, $index)
     {
-        return "<label><input type='radio' id='{$id}' class='jmolInline' data-coord='{$id}' data-quality='{$id}'> {$id} </label>" .
+        return "<label> <input type='radio' id='{$id}' class='jmolInline' data-coord='{$id}' data-quality='{$id}'> {$index} </label>" .
         "<span class='loop_link'>" . anchor_popup("loops/view/{$id}", '&#10140;') . "</span>";
 
     }
