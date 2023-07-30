@@ -1115,7 +1115,9 @@ class Nrlist_model extends CI_Model {
 
             if (array_key_exists($row->nr_release_id,$changes)) {
                 $label = $this->get_label_type($changes[$row->nr_release_id]);
-                $compare_url = base_url(array('nrlist','compare',$row->nr_release_id,$releases[$row->nr_release_id]));
+                // Remove old URL because not all comparisons are actually being produced, to avoid robots wasting time
+                // $compare_url = base_url(array('nrlist','compare',$row->nr_release_id,$releases[$row->nr_release_id]));
+                $compare_url = base_url(array('nrlist','compare_releases'));
                 $status = "<a href='$compare_url' class='nodec'><span class='label {$label}'>{$changes[$row->nr_release_id]} changes</span></a>";
             } else {
                 $status = '';
