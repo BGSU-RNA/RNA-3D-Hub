@@ -94,14 +94,36 @@ class Pdb_model extends CI_Model {
                  ->from('loop_releases AS lr')
                  ->join('loop_qa AS lq', 'lq.loop_release_id = lr.loop_release_id')
                  ->join('loop_info AS li', 'li.loop_id = lq.loop_id')
-                 ->where('pdb_id',$pdb_id)
+                 ->where('pdb_id', $pdb_id)
                  ->order_by('date','desc')
                  ->limit(1);
         $result = $this->db->get()->result_array();
         return $result[0]['loop_release_id'];
     }
+    function get_loop_mappings($pdb_id)
+    {
+    	$this->db->select('lm.loop_id')
+    			->select('lm.query_loop_id AS similar_loop')
+    			->select('la.annotation_1 AS similar_annotation')
+    			->select('lm.match_type')
+    			->from('loop_mapping AS lm')
+    			->join('loop_annotations AS la', 'lm.query_loop_id = la.loop_id', 'left')
+    			->where('lm.pdb_id', $pdb_id)
+    			->order_by('loop_mapping_id'); // use (...,'desc') if opposite order
+    	$query = $this->db->get();
+    	$loop_mapping_table = array();
+		foreach ($query->result() as $row) {
+            $loop_mapping_table[$row->loop_id] = $row;
+        }
+        // need to add loop annotations
+    	return $loop_mapping_table;
+    }
     function get_loops($pdb_id)
     {
+        // sub query for only most recent loop_mapping per loop id
+    	$loop_mapping_table = $this->get_loop_mappings($pdb_id);
+
+        // big query for output table
         $this->db->select('lq.loop_id')
                  ->select('lq.status')
                  ->select('lq.modifications')
@@ -110,14 +132,14 @@ class Pdb_model extends CI_Model {
                  ->select('li.unit_ids')
                  ->select('li.loop_name')
                  ->select('la.annotation_1')
-                 ->select('la2.annotation_1 AS similar_annotation') // new
-                 ->select('lm.match_type') // new
-                 ->select('lm.query_loop_id AS similar_loop') // new
+                 // ->select('la2.annotation_1 AS similar_annotation') // delete
+                 // ->select('lm.match_type') // delete
+                 // ->select('lm.query_loop_id AS similar_loop') // delete
                  ->from('loop_qa AS lq')
                  ->join('loop_info AS li', 'li.loop_id = lq.loop_id')
                  ->join('loop_annotations AS la', 'lq.loop_id = la.loop_id', 'left')
-                 ->join('loop_mapping AS lm', 'lq.loop_id = lm.loop_id', 'left') // new
-                 ->join('loop_annotations AS la2', 'lm.query_loop_id = la2.loop_id', 'left') // new
+                 // ->join('loop_mapping AS lm', 'lq.loop_id = lm.loop_id', 'left') // delete
+                 // ->join('loop_annotations AS la2', 'lm.query_loop_id = la2.loop_id', 'left') // delete
                  ->where('li.pdb_id', $pdb_id);
         $query = $this->db->get();
 
@@ -137,12 +159,11 @@ class Pdb_model extends CI_Model {
             // get annotation column entry
             if (!is_null($row->annotation_1)){
                 $annotation_1 = $row->annotation_1;
-            // } else {
-            //     $annotation_1 = 'NA';
-            // }
             } else {
-            	if (!is_null($row->match_type)){
-            		$annotation_1 = "{$row->similar_annotation}<br>{$row->match_type}<br>{$row->similar_loop}";
+            	// if (!is_null($row->match_type)){ // old
+            	if ( array_key_exists($row->loop_id, $loop_mapping_table) ){ // new            		
+            		// $annotation_1 = "{$row->similar_annotation}<br>{$row->match_type}<br>{$row->similar_loop}";//old
+            		$annotation_1 = "{$loop_mapping_table[$row->loop_id]->similar_annotation}<br>{$loop_mapping_table[$row->loop_id]->match_type}<br>{$loop_mapping_table[$row->loop_id]->similar_loop}";
             	} else {
 		            $annotation_1 = 'NA';
 		        }
@@ -153,17 +174,24 @@ class Pdb_model extends CI_Model {
                     $motif_id = anchor_popup("motif/view/{$motifs[$row->loop_id]}", $motifs[$row->loop_id]);
                 } else {
                 	// if (!is.null($row->match_type))
-                	if ( array_key_exists($row->similar_loop, $motifs) ) {
-	                    $motif_id = 'NA<br><br>' . anchor_popup("motif/view/{$motifs[$row->similar_loop]}",
-                            "{$motifs[$row->similar_loop]}");
-	                } else {
-	                    $motif_id = 'NA';                	
-	                }
-                }
+                	if ( array_key_exists($row->loop_id, $loop_mapping_table) ){ // new
+	                	// if ( array_key_exists($row->similar_loop, $motifs) ) { //old
+	                	if ( array_key_exists($loop_mapping_table[$row->loop_id]->similar_loop, $motifs) ) { //new
+		                    // $motif_id = 'NA<br><br>' . anchor_popup("motif/view/{$motifs[$row->similar_loop]}",
+	                     //        "{$motifs[$row->similar_loop]}"); // old
+		                    $motif_id = 'NA<br><br>' . anchor_popup("motif/view/{$motifs[$loop_mapping_table[$row->loop_id]->similar_loop]}",
+	                            "{$motifs[$loop_mapping_table[$row->loop_id]->similar_loop]}"); // new
+		                } else {
+		                    $motif_id = 'NA';                	
+		                }
+		            } else {
+		            	$motif_id = 'NA';
+		            }
+		        }
 
                 $valid_tables[$loop_type][] = array(array( 'class' => 'loop',
                                                             'data' => $this->get_checkbox($row->loop_id, $row->unit_ids,
-                                                                count($valid_tables[$loop_type]))
+                                                                count($valid_tables[$loop_type])+1)
                                                         ),
                                                     "<label>{$row->loop_id}</label>",
                                                     str_replace(",", ",<br>", $row->loop_name), //location
