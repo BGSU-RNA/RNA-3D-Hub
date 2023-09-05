@@ -80,6 +80,11 @@ class Motifs extends CI_Controller {
         // download requests
         if ( !is_null($format) ) {
 
+            $motif_type = strtolower($motif_type);
+            if ($id == 'current') {
+                $id = $this->Motifs_model->get_latest_release($motif_type);
+            }
+
             if ( $format != 'csv' and $format != 'json' ) {
                 show_404();
             }
