@@ -65,7 +65,7 @@ class Ajax_model extends CI_Model {
         //  Assess and set the variables accordingly.
         $pdb = substr($inp,0,4);
         $ife = ( strlen($inp) > 4) ? $inp : "foo";
-
+        $ife = str_replace('+ ','+',$ife);
         $this->db->select('pi.title')
                  ->select('pi.experimental_technique')
                  ->select('pi.resolution')
@@ -141,7 +141,7 @@ class Ajax_model extends CI_Model {
                          ->from('ife_cqs AS ic')
                          ->join('nr_cqs AS nc','ic.ife_id = nc.ife_id')
                          ->where('ic.ife_id', $ife)
-                         ->where('nc.nr_name', $rsc)
+                        //  ->where('nc.nr_name', $rsc)
                          ->limit(1);
                 $ifequery = $this->db->get();
 

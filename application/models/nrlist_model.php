@@ -271,7 +271,7 @@ class Nrlist_model extends CI_Model {
                  ->where('cl.name',$id)
                  ->group_by('pi.pdb_id')
                  ->group_by('ii.ife_id')
-                 ->order_by('ch.rep','desc');
+                 ->order_by('ch.rank','asc');
         $query = $this->db->get();
 
         # get chain, source, rfam, standardized names for pdb ids in this equivalence class
