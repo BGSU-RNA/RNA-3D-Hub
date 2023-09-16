@@ -61,6 +61,13 @@
                                 <dd><?=$qa?></dd>
                             </dl>
                         </div>
+                        <div class="span4 well">
+                            <h4>Sequence variability</h4>
+                            <dl>
+                            If this chain is mapped to an Rfam alignment, the link below will give its sequence variability.
+                            <dt><a href="http://rna.bgsu.edu/correspondence/SVS?id=<?=$id?>&format=unique&count=none&extension=0&input_form=True" target="_blank" rel="noopener noreferrer">R3DSVS</a></dt>
+                            </dl>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="span3 well">
@@ -84,7 +91,7 @@
                     </div>
                     <div class="row">
                         <div class="span4 well">
-                            <h4>Nearby chains</h4> 
+                            <h4>Nearby chains</h4>
                             <?php
                                 if (count($proteins) > 0) {
                                     echo '<dl>';
@@ -111,7 +118,7 @@
                                 // } else {
                                 //     echo "No other RNA chains within 10&Aring;";
                                 // }
-                                
+
                             ?>
                         </div>
                     </div>
@@ -138,7 +145,7 @@
                 <div class="tab-pane" id='rnastar'>
                     Coming soon
                 </div> <!--HERE-->
- 
+
 
             </div>
 
@@ -182,9 +189,9 @@
                 <input type='button' id='neighborhood' class='btn' value="Show neighborhood">
                 <button type="button" id="stereo" class="btn">Stereo</button>
                 <br>
-                Coloring options: <select id="colorOPT"> 
+                Coloring options: <select id="colorOPT">
                     <option value="Default" selected>Default</option>
-                    <option value="CPK" >CPK</option> 
+                    <option value="CPK" >CPK</option>
                     <option value="RSR" >Real Space R (RSR)</option>
                     <option value="RSRZ">RSR Z-Score (RSRZ)</option>
                 </select>
