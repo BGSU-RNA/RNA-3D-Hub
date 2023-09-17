@@ -156,10 +156,12 @@ class Pdb_model extends CI_Model {
                 $annotation_1 = $row->annotation_1;
             } else {
             	if ( array_key_exists($row->loop_id, $loop_mapping_table) ){            		
-            		$annotation_1 = "{$loop_mapping_table[$row->loop_id]->similar_annotation}<br>{$loop_mapping_table[$row->loop_id]->match_type}<br>{$loop_mapping_table[$row->loop_id]->similar_loop}";
+            		$annotation_1 = "{$loop_mapping_table[$row->loop_id]->similar_annotation}<br>{$loop_mapping_table[$row->loop_id]->match_type}<br>" .
+                anchor_popup("loops/view/{$loop_mapping_table[$row->loop_id]->similar_loop}",
+                  $loop_mapping_table[$row->loop_id]->similar_loop);
             	} else {
 		            $annotation_1 = 'NA';
-		        }
+  		        }
             }
             // get motif column entry
             if ($row->status == 1 or $row->status == 3) {
@@ -182,7 +184,7 @@ class Pdb_model extends CI_Model {
                                                             'data' => $this->get_checkbox($row->loop_id, $row->unit_ids,
                                                                 count($valid_tables[$loop_type])+1)
                                                         ),
-                                                    "<label>{$row->loop_id}</label>",
+                                                    "<label>" . anchor_popup("loops/view/{$row->loop_id}", $row->loop_id) . "<label>", // turning loop id into link
                                                     str_replace(",", ",<br>", $row->loop_name), //location
                                                     // $motif_id, //motif 
                                                     $annotation_1,
@@ -213,9 +215,7 @@ class Pdb_model extends CI_Model {
     }
     function get_checkbox($id, $nt_ids, $index)
     {
-        return "<label> <input type='radio' id='{$id}' class='jmolInline' data-coord='{$id}' data-quality='{$id}'> {$index} </label>" .
-        "<span class='loop_link'>" . anchor_popup("loops/view/{$id}", '&#10140;') . "</span>";
-
+        return "<label> {$index} &nbsp <input type='radio' id='{$id}' class='jmolInline' data-coord='{$id}' data-quality='{$id}'> </label>";
     }
     function pdb_exists($pdb_id)
     {
