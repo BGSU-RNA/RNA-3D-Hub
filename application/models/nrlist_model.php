@@ -269,6 +269,7 @@ class Nrlist_model extends CI_Model {
                  ->join('nr_chains AS ch', 'ii.ife_id = ch.ife_id')
                  ->join('nr_classes AS cl', 'ch.nr_class_id = cl.nr_class_id AND ch.nr_release_id = cl.nr_release_id')
                  ->where('cl.name',$id)
+                 ->where('cl.nr_release_id = (SELECT MAX(nr_release_id) FROM nr_classes)', NULL, FALSE)
                  ->group_by('pi.pdb_id')
                  ->group_by('ii.ife_id')
                  ->order_by('ch.rank','asc');
