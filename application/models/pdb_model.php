@@ -166,12 +166,13 @@ class Pdb_model extends CI_Model {
             // get motif column entry
             if ($row->status == 1 or $row->status == 3) {
                 if ( array_key_exists($row->loop_id, $motifs) ) {
-                    $motif_id = anchor_popup("motif/view/{$motifs[$row->loop_id]}", $motifs[$row->loop_id]);
+                    $motif_id = anchor_popup("motif/view/{$motifs[$row->loop_id]}",
+                      $motifs[$row->loop_id]);
                 } else {
                 	if ( array_key_exists($row->loop_id, $loop_mapping_table) ){
 	                	if ( array_key_exists($loop_mapping_table[$row->loop_id]->similar_loop, $motifs) ) {
 		                    $motif_id = 'NA<br><br>' . anchor_popup("motif/view/{$motifs[$loop_mapping_table[$row->loop_id]->similar_loop]}",
-	                            "{$motifs[$loop_mapping_table[$row->loop_id]->similar_loop]}");
+	                            "{$motifs[$loop_mapping_table[$row->loop_id]->similar_loop]}*");
 		                } else {
 		                    $motif_id = 'NA';                	
 		                }
@@ -202,7 +203,8 @@ class Pdb_model extends CI_Model {
                                                              'data' => $this->get_checkbox($row->loop_id, $row->unit_ids,
                                                                 count($invalid_tables[$loop_type])+1)
                                                          ),
-                                                      $row->loop_id,
+                                                      anchor_popup("loops/view/{$row->loop_id}",
+                                                        $row->loop_id),
                                                       $this->make_reason_label($row->status),
                                                       $annotation_1);
             }
