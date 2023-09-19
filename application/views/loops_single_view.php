@@ -25,15 +25,17 @@
 
             <div class="tab-content span50p" id='left_content'>
 
-                <?php if ($show_similar): ?>
+                <!-- <?php if ($show_similar): ?>
 
                 <div class="tab-pane" id='general'>
                 </div>
 
-                <?php else: ?>
+                <?php else: ?> -->
+
+
                 <div class="tab-pane active" id='general'>
                     <div class="row">
-                        <div class="span3 well">
+                        <div class="span4 well">
                             <h4>3D structure</h4>
                             <dl>
                                 <dt>PDB id</dt>
@@ -68,6 +70,10 @@
                             <dt><a href="http://rna.bgsu.edu/correspondence/SVS?id=<?=$id?>&format=unique&count=none&extension=0&input_form=True" target="_blank" rel="noopener noreferrer">R3DSVS</a></dt>
                             </dl>
                         </div>
+
+                    </div>
+                    <div class="row">
+
                         <!-- EC Corespondence -->
                         <div class="span4 well">
                             <h4>Structural variability across Equivalence Class (EC)</h4>
@@ -86,7 +92,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="span3 well">
+                        <div class="span4 well">
                             <dl>
                                 <dt>Detailed Annotation</dt>
                                 <dd><?=$annotation_1?></dd>
@@ -153,14 +159,13 @@
                 <?php endif; ?>
 
 
-		<!--HERE-->
-                <div class="tab-pane" id='history'>
+                <!-- <div class="tab-pane" id='history'>
                     Coming soon
                 </div>
 
                 <div class="tab-pane" id='rnastar'>
                     Coming soon
-                </div> <!--HERE-->
+                </div> -->
 
 
             </div>
