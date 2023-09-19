@@ -68,6 +68,22 @@
                             <dt><a href="http://rna.bgsu.edu/correspondence/SVS?id=<?=$id?>&format=unique&count=none&extension=0&input_form=True" target="_blank" rel="noopener noreferrer">R3DSVS</a></dt>
                             </dl>
                         </div>
+                        <!-- EC Corespondence -->
+                        <div class="span4 well">
+                            <h4>Structural variability across Equivalence Class (EC)</h4>
+                            <dl>
+                            If this chain is part of an existing EC, the link below will give the loop's structural variability across EC.
+                            <dt><a href="http://rna.bgsu.edu/correspondence/comparison?selection=<?=$id?>&exp_method=all&resolution=3.0&scope=EC&input_form=True" target="_blank" rel="noopener noreferrer">R3DMCS</a></dt>
+                            </dl>
+                        </div>
+                        <!-- Rfam Correspondence -->
+                        <div class="span4 well">
+                            <h4>Structural variability across Rfam</h4>
+                            <dl>
+                            If this chain is mapped to an Rfam alignment, the link below will give the loop's structural variability between chains mapped to the same Rfam family.
+                            <dt><a href="http://rna.bgsu.edu/correspondence/comparison?selection=<?=$id?>&exp_method=all&resolution=3.0&scope=Rfam&depth=1&input_form=True" target="_blank" rel="noopener noreferrer">R3DMCS</a></dt>
+                            </dl>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="span3 well">
