@@ -257,15 +257,6 @@ class Nrlist_model extends CI_Model {
 
     function get_members($id)
     {
-        # get information about ifes, which have model numbers and might have + symbols
-        // Fetch the maximum nr_release_id based on the custom ordering
-        $subquery = $this->db->select('nr_release_id')
-                            ->from('nr_classes')
-                            ->order_by('CAST(SUBSTRING_INDEX(nr_release_id, \'.\', 1) AS UNSIGNED)', 'DESC')
-                            ->order_by('CAST(SUBSTRING_INDEX(nr_release_id, \'.\', -1) AS UNSIGNED)', 'DESC')
-                            ->limit(1)
-                            ->get_compiled_select();
-
         $this->db->select('pi.pdb_id')
                  ->select('ch.ife_id')
                  ->select('pi.title')
@@ -277,7 +268,7 @@ class Nrlist_model extends CI_Model {
                  ->join('nr_chains AS ch', 'ii.ife_id = ch.ife_id')
                  ->join('nr_classes AS cl', 'ch.nr_class_id = cl.nr_class_id AND ch.nr_release_id = cl.nr_release_id')
                  ->where('cl.name',$id)
-                 ->where("cl.nr_release_id = ($subquery)", NULL, FALSE)
+                 ->where('cl.nr_release_id',$this->last_seen_in) # copy from the comment function above 
                  ->group_by('pi.pdb_id')
                  ->group_by('ii.ife_id')
                  ->order_by('ch.rank','asc');
