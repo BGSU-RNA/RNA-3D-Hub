@@ -65,7 +65,7 @@
                             <h4>Sequence variability</h4>
                             <dl>
                             If this chain is mapped to an Rfam alignment, the link below will give its sequence variability.
-                            <dt><a href="http://rna.bgsu.edu/correspondence/SVS?id=<?=$id?>&format=unique&count=none&extension=0&input_form=True" target="_blank" rel="noopener noreferrer">R3DSVS</a></dt>
+                            <dt><a href="http://rna.bgsu.edu/correspondence/SVS?id=<?=$id?>&format=unique&input_form=True" target="_blank" rel="noopener noreferrer">R3DSVS</a></dt>
                             </dl>
                         </div>
 
