@@ -39,7 +39,7 @@
         <div class="row">
 
           <!-- annotations -->
-          <div class="span8" id="left_content">
+          <div class="span8" id="left_content" style="width:30%;">
             <pre><?=$table?></pre>
           </div>
           <!-- end annotations -->
