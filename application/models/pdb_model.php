@@ -121,7 +121,7 @@ class Pdb_model extends CI_Model {
     function get_loops($pdb_id)
     {
         // sub query for only most recent loop_mapping per loop id
-    	$loop_mapping_table = $this->get_loop_mappings($pdb_id);
+      $loop_mapping_table = $this->get_loop_mappings($pdb_id);
 
         // big query for output table
         $this->db->select('lq.loop_id')
@@ -155,13 +155,18 @@ class Pdb_model extends CI_Model {
             if (!is_null($row->annotation_1)){
                 $annotation_1 = $row->annotation_1;
             } else {
-            	if ( array_key_exists($row->loop_id, $loop_mapping_table) ){            		
-            		$annotation_1 = "{$loop_mapping_table[$row->loop_id]->similar_annotation}<br>{$loop_mapping_table[$row->loop_id]->match_type}<br>" .
-                anchor_popup("loops/view/{$loop_mapping_table[$row->loop_id]->similar_loop}",
-                  $loop_mapping_table[$row->loop_id]->similar_loop);
-            	} else {
-		            $annotation_1 = 'NA';
-  		        }
+              if ( array_key_exists($row->loop_id, $loop_mapping_table) ){
+                // safety line below
+                if ( $row->loop_id != $loop_mapping_table[$row->loop_id]->similar_loop ){
+                  $annotation_1 = "{$loop_mapping_table[$row->loop_id]->similar_annotation}<br>{$loop_mapping_table[$row->loop_id]->match_type}<br>" .
+                  anchor_popup("loops/view/{$loop_mapping_table[$row->loop_id]->similar_loop}",
+                    $loop_mapping_table[$row->loop_id]->similar_loop);
+                } else {
+                  $annotation_1 = 'NA';
+                }
+              } else {
+                $annotation_1 = 'NA';
+              }
             }
             // get motif column entry
             if ($row->status == 1 or $row->status == 3) {
@@ -169,17 +174,23 @@ class Pdb_model extends CI_Model {
                     $motif_id = anchor_popup("motif/view/{$motifs[$row->loop_id]}",
                       $motifs[$row->loop_id]);
                 } else {
-                	if ( array_key_exists($row->loop_id, $loop_mapping_table) ){
-	                	if ( array_key_exists($loop_mapping_table[$row->loop_id]->similar_loop, $motifs) ) {
-		                    $motif_id = 'NA<br><br>' . anchor_popup("motif/view/{$motifs[$loop_mapping_table[$row->loop_id]->similar_loop]}",
-	                            "{$motifs[$loop_mapping_table[$row->loop_id]->similar_loop]}*");
-		                } else {
-		                    $motif_id = 'NA';                	
-		                }
-		            } else {
-		            	$motif_id = 'NA';
-		            }
-		        }
+                  if ( array_key_exists($row->loop_id, $loop_mapping_table) ){
+                    if ( array_key_exists($loop_mapping_table[$row->loop_id]->similar_loop, $motifs) ) {
+                        $motif_id = 'NA<br><br>' . anchor_popup("motif/view/{$motifs[$loop_mapping_table[$row->loop_id]->similar_loop]}",
+                              "{$motifs[$loop_mapping_table[$row->loop_id]->similar_loop]}*");
+                    } else {
+                        $motif_id = 'NA';
+                    }
+                } else {
+                  $motif_id = 'NA';
+                }
+            }
+
+            // place to start building native atlas data (column 4)
+            // annotation_and_motif_group
+
+            // place to start building loop mapping info (column 5)
+            // loop_mapping_info
 
                 $valid_tables[$loop_type][] = array(array( 'class' => 'loop',
                                                             'data' => $this->get_checkbox($row->loop_id, $row->unit_ids,
@@ -187,9 +198,9 @@ class Pdb_model extends CI_Model {
                                                         ),
                                                     "<label>" . anchor_popup("loops/view/{$row->loop_id}", $row->loop_id) . "<label>", // turning loop id into link
                                                     str_replace(",", ",<br>", $row->loop_name), //location
-                                                    // $motif_id, //motif 
-                                                    $annotation_1,
-                                                    $motif_id
+                                                    // $motif_id, //motif
+                                                    $annotation_1, // column 4
+                                                    $motif_id // column 5
                                                     );
             } else {
                 // if (!is_null($row->complementary)) {
@@ -389,11 +400,13 @@ class Pdb_model extends CI_Model {
                 }
             }
             $csv_fields[] = $unit_ids[$row->unit_id_2];
-            $html .= str_pad('<span>' . $unit_ids[$row->unit_id_1] . '</span>', 38, ' ') .
+            $ids = $unit_ids[$row->unit_id_1] .','. $unit_ids[$row->unit_id_2];
+            $html .= str_pad('<span>' . $unit_ids[$row->unit_id_1] . '</span>', 32, ' ') .
                     "<a class='jmolInline' id='s{$i}'>" .
-                      str_pad(implode(', ', $output_fields), 10, ' ', STR_PAD_BOTH) .
+                      str_pad(implode(', ', $output_fields), 8, ' ', STR_PAD_BOTH) .
                     "</a>" .
-                    str_pad('<span>' . $unit_ids[$row->unit_id_2] . '</span>', 38, ' ', STR_PAD_LEFT) .
+             //       '<span style="text-align: right;">' . str_pad($unit_ids[$row->unit_id_2], 22, ' ', STR_PAD_LEFT) . ' <a href="http://rna.bgsu.edu/correspondence/SVS?id=' . $ids . '&format=unique&input_form=True" target="_blank" rel="noopener noreferrer">R3DSVS</a>' . '</span>' .
+                    str_pad('<span>' . $unit_ids[$row->unit_id_2]. '</span>', 32, ' ', STR_PAD_LEFT) . ' <a href="http://rna.bgsu.edu/correspondence/SVS?id=' . $ids . '&format=unique&input_form=True" target="_blank" rel="noopener noreferrer">R3DSVS</a>' .
                     "\n";
             $csv .= '"' . implode('","', $csv_fields) . '"' . "\n";
             $i++;
