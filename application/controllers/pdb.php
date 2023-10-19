@@ -157,7 +157,7 @@ class Pdb extends CI_Controller {
                 // valid loops
                 $tmpl = array(
                     'table_open'  => '<table class="condensed-table bordered-table">',
-                    'cell_start' => '<td style ="white-space: nowrap">',
+                    'cell_start' => '<td style ="overflow-wrap: normal">',
                     'cell_end' => '</td>'
                 );
                 $this->table->set_template($tmpl);
