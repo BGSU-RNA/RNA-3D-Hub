@@ -153,16 +153,7 @@ class Pdb_model extends CI_Model {
             $loop_type = substr($row->loop_id, 0, 2);
 
             // building direct annotation + motif group (column 4)
-            if ($row->status == 1 or $row->status == 3) { // this goes all the way down to valid tables???
-                
-                if ( array_key_exists($row->loop_id, $motifs) ) {
-                    $motif_id = anchor_popup("motif/view/{$motifs[$row->loop_id]}",
-                      $motifs[$row->loop_id]);
-                } else {
-                  $motif_id = 'NA';
-                }
-
-                if(!is_null($row->annotation_1)){
+            if(!is_null($row->annotation_1)){
                   $annotation = $row->annotation_1;
                 } else {
                   if( array_key_exists($row->loop_id, $loop_mapping_table) ){
@@ -175,6 +166,17 @@ class Pdb_model extends CI_Model {
                     $annotation = "NA";
                   }
                 }
+            
+            if ($row->status == 1 or $row->status == 3) { // this goes all the way down to valid tables???
+                
+                if ( array_key_exists($row->loop_id, $motifs) ) {
+                    $motif_id = anchor_popup("motif/view/{$motifs[$row->loop_id]}",
+                      $motifs[$row->loop_id]);
+                } else {
+                  $motif_id = 'NA';
+                }
+
+                
 
               $annotation_and_motif_group = "{$annotation}<br>{$motif_id}";
 
