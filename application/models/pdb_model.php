@@ -151,46 +151,52 @@ class Pdb_model extends CI_Model {
 
         foreach ($query->result() as $row) {
             $loop_type = substr($row->loop_id, 0, 2);
-            // get annotation column entry
-            if (!is_null($row->annotation_1)){
-                $annotation_1 = $row->annotation_1;
-            } else {
-              if ( array_key_exists($row->loop_id, $loop_mapping_table) ){
-                // safety line below
-                if ( $row->loop_id != $loop_mapping_table[$row->loop_id]->similar_loop ){
-                  $annotation_1 = "{$loop_mapping_table[$row->loop_id]->similar_annotation}<br>{$loop_mapping_table[$row->loop_id]->match_type}<br>" .
-                  anchor_popup("loops/view/{$loop_mapping_table[$row->loop_id]->similar_loop}",
-                    $loop_mapping_table[$row->loop_id]->similar_loop);
-                } else {
-                  $annotation_1 = 'NA';
-                }
-              } else {
-                $annotation_1 = 'NA';
-              }
-            }
-            // get motif column entry
-            if ($row->status == 1 or $row->status == 3) {
+
+            // building direct annotation + motif group (column 4)
+            if ($row->status == 1 or $row->status == 3) { // this goes all the way down to valid tables???
+                
                 if ( array_key_exists($row->loop_id, $motifs) ) {
                     $motif_id = anchor_popup("motif/view/{$motifs[$row->loop_id]}",
                       $motifs[$row->loop_id]);
                 } else {
-                  if ( array_key_exists($row->loop_id, $loop_mapping_table) ){
-                    if ( array_key_exists($loop_mapping_table[$row->loop_id]->similar_loop, $motifs) ) {
-                        $motif_id = 'NA<br><br>' . anchor_popup("motif/view/{$motifs[$loop_mapping_table[$row->loop_id]->similar_loop]}",
-                              "{$motifs[$loop_mapping_table[$row->loop_id]->similar_loop]}*");
-                    } else {
-                        $motif_id = 'NA';
-                    }
-                } else {
                   $motif_id = 'NA';
                 }
-            }
 
-            // place to start building native atlas data (column 4)
-            // annotation_and_motif_group
+                if(!is_null($row->annotation_1)){
+                  $annotation = $row->annotation_1;
+                } else {
+                  if( array_key_exists($row->loop_id, $loop_mapping_table) ){
+                    if(!is_null($loop_mapping_table[$row->loop_id]->similar_annotation)) {
+                      $annotation = $loop_mapping_table[$row->loop_id]->similar_annotation;
+                    } else {
+                      $annotation = "NA";
+                    }
+                  } else {
+                    $annotation = "NA";
+                  }
+                }
 
-            // place to start building loop mapping info (column 5)
-            // loop_mapping_info
+              $annotation_and_motif_group = "{$annotation}<br>{$motif_id}";
+
+
+              // building loop mapping info (column 5)
+              if( array_key_exists($row->loop_id, $loop_mapping_table) ){
+                $match_type = $loop_mapping_table[$row->loop_id]->match_type;
+
+                $similar_loop = anchor_popup("loops/view/{$loop_mapping_table[$row->loop_id]->similar_loop}",
+                    $loop_mapping_table[$row->loop_id]->similar_loop);
+
+                if ( array_key_exists($loop_mapping_table[$row->loop_id]->similar_loop, $motifs) ) {
+                  $similar_motif = anchor_popup("motif/view/{$motifs[$loop_mapping_table[$row->loop_id]->similar_loop]}", $motifs[$loop_mapping_table[$row->loop_id]->similar_loop]);
+                } else {
+                    $similar_motif = 'NA';
+                }
+                $loop_mapping_info = "{$match_type}<br>{$similar_loop}<br>{$similar_motif}";
+
+              } else {
+                $loop_mapping_info = "";
+              }
+
 
                 $valid_tables[$loop_type][] = array(array( 'class' => 'loop',
                                                             'data' => $this->get_checkbox($row->loop_id, $row->unit_ids,
@@ -199,8 +205,8 @@ class Pdb_model extends CI_Model {
                                                     "<label>" . anchor_popup("loops/view/{$row->loop_id}", $row->loop_id) . "<label>", // turning loop id into link
                                                     str_replace(",", ",<br>", $row->loop_name), //location
                                                     // $motif_id, //motif
-                                                    $annotation_1, // column 4
-                                                    $motif_id // column 5
+                                                    $annotation_and_motif_group, // column 4
+                                                    $loop_mapping_info // column 5
                                                     );
             } else {
                 // if (!is_null($row->complementary)) {
@@ -217,7 +223,7 @@ class Pdb_model extends CI_Model {
                                                       anchor_popup("loops/view/{$row->loop_id}",
                                                         $row->loop_id),
                                                       $this->make_reason_label($row->status),
-                                                      $annotation_1);
+                                                      $annotation);
             }
         }
         return array('valid' => $valid_tables, 'invalid' => $invalid_tables);
