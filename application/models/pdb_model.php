@@ -183,18 +183,21 @@ class Pdb_model extends CI_Model {
 
               // building loop mapping info (column 5)
               if( array_key_exists($row->loop_id, $loop_mapping_table) ){
-                $match_type = $loop_mapping_table[$row->loop_id]->match_type;
+                if($row->loop_id != $loop_mapping_table[$row->loop_id]->similar_loop){
+                  $match_type = $loop_mapping_table[$row->loop_id]->match_type;
 
-                $similar_loop = anchor_popup("loops/view/{$loop_mapping_table[$row->loop_id]->similar_loop}",
-                    $loop_mapping_table[$row->loop_id]->similar_loop);
+                  $similar_loop = anchor_popup("loops/view/{$loop_mapping_table[$row->loop_id]->similar_loop}",
+                      $loop_mapping_table[$row->loop_id]->similar_loop);
 
-                if ( array_key_exists($loop_mapping_table[$row->loop_id]->similar_loop, $motifs) ) {
-                  $similar_motif = anchor_popup("motif/view/{$motifs[$loop_mapping_table[$row->loop_id]->similar_loop]}", $motifs[$loop_mapping_table[$row->loop_id]->similar_loop]);
+                  if ( array_key_exists($loop_mapping_table[$row->loop_id]->similar_loop, $motifs) ) {
+                    $similar_motif = anchor_popup("motif/view/{$motifs[$loop_mapping_table[$row->loop_id]->similar_loop]}", $motifs[$loop_mapping_table[$row->loop_id]->similar_loop]);
+                  } else {
+                      $similar_motif = 'NA';
+                  }
+                  $loop_mapping_info = "{$match_type}<br>{$similar_loop}<br>{$similar_motif}";
                 } else {
-                    $similar_motif = 'NA';
+                  $loop_mapping_info = "";
                 }
-                $loop_mapping_info = "{$match_type}<br>{$similar_loop}<br>{$similar_motif}";
-
               } else {
                 $loop_mapping_info = "";
               }
