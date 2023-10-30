@@ -183,7 +183,8 @@ class Pdb_model extends CI_Model {
 
               // building loop mapping info (column 5)
               if( array_key_exists($row->loop_id, $loop_mapping_table) ){
-                if($row->loop_id != $loop_mapping_table[$row->loop_id]->similar_loop){
+                // if($row->loop_id != $loop_mapping_table[$row->loop_id]->similar_loop){
+                if(is_null($row->annotation_1) && !array_key_exists($row->loop_id, $motifs)){
                   $match_type = $loop_mapping_table[$row->loop_id]->match_type;
 
                   $similar_loop = anchor_popup("loops/view/{$loop_mapping_table[$row->loop_id]->similar_loop}",
