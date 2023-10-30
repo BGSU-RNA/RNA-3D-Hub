@@ -195,6 +195,26 @@ class Loops extends CI_Controller {
             $data = array_merge($data, $this->Loops_model->get_pdb_info($id));
             $data = array_merge($data, $this->Loops_model->get_motif_info($id));
             $data = array_merge($data, $this->Loops_model->get_nearby_chains($id));
+  
+            // below is WEAKKKKK with this string matching
+            if($data['motif_id'] == "This loop hasn't been annotated with motifs yet"){
+                if($data['annotation_1'] == 'Not assigned yet'){
+                    $mapping_data = $this->Loops_model->get_mapped_loop($id);
+                    if(!is_null($mapping_data) && $id != $mapping_data->mapped_loop){
+                        $data = array_merge($data, $this->Loops_model->get_motif_info($mapping_data->mapped_loop));
+                        // $data['is_mapped_to'] = $mapping_data->mapped_loop;
+
+                        $data['is_mapped_to'] = anchor_popup("loops/view/$mapping_data->mapped_loop", $mapping_data->mapped_loop);
+
+                        if($mapping_data->match_type == "geometric"){
+                            $data['match_type'] = "geometric match";
+                        }
+                        if($mapping_data->match_type == "homologous"){
+                            $data['match_type'] = "homologous match";
+                        }
+                    }
+                } 
+            }
             $data['show_similar'] = FALSE;
         }
 

@@ -89,6 +89,11 @@
                     <div class="row"> -->
                         <div class="span4 well">
                             <dl>
+                                <?php if(isset($is_mapped_to)) {
+                                    echo "<dt>This loop has been found to be a $match_type to $is_mapped_to</dt>";
+                                    echo "<dd>The below information is about $is_mapped_to</dd>";
+                                }
+                                ?>
                                 <dt>Detailed Annotation</dt>
                                 <dd><?=$annotation_1?></dd>
                                 <dt>Broad Annotation</dt>

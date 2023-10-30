@@ -588,6 +588,25 @@ class Loops_model extends CI_Model {
         return $table;
     }
 
+    function get_mapped_loop($id){
+        $this->db->select('lm.loop_id')
+                ->select('lm.query_loop_id AS mapped_loop')
+                // ->select('la.annotation_1 AS mapped_annotation')
+                ->select('lm.match_type')
+                ->from('loop_mapping AS lm')
+                // ->join('loop_annotations AS la', 'lm.query_loop_id = la.loop_id', 'right')
+                ->where('lm.loop_id', $id)
+                ->order_by('lm.loop_mapping_id', 'desc') // use (...,'desc') if opposite order
+                ->limit(1);
+        $query = $this->db->get();
+
+        foreach ($query->result() as $row){
+            $loop_mapping = $row;
+        }
+        
+        return $loop_mapping;
+    }
+
     function get_loop_stats()
     {
         // get loop counts group by loop type
