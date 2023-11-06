@@ -380,8 +380,8 @@ class Loops_model extends CI_Model {
         ->from('loop_annotations')
         ->where('loop_id', $id);
         $query = $this->db->get();
-        $result['annotation_1'] = 'Not assigned yet';
-        $result['annotation_2'] = 'Not assigned yet';
+        $result['annotation_1'] = 'No text annotation';
+        $result['annotation_2'] = 'No text annotation';
         if ($query->num_rows >0) {
             $annotation_1 = $query->row()->annotation_1;
             if ($annotation_1 != Null and $annotation_1 != 'NULL') {
@@ -418,8 +418,8 @@ class Loops_model extends CI_Model {
             $query = $this->db->get();
             $result['motif_instances'] = $query->num_rows();
         } else {
-            $result['motif_id'] = "This loop hasn't been annotated with motifs yet";
-            $result['motif_url'] = "This loop hasn't been annotated with motifs yet";
+            $result['motif_id'] = "Not in a motif group";
+            $result['motif_url'] = "Not in a motif group";
             $result['bp_signature'] = 'Not available';
             $result['motif_instances'] = 0;
         }
@@ -591,7 +591,7 @@ class Loops_model extends CI_Model {
     function get_mapped_loop($id){
         $this->db->select('lm.loop_id')
                 ->select('lm.query_loop_id AS mapped_loop')
-                // ->select('la.annotation_1 AS mapped_annotation')
+                ->select('lm.discrepancy')
                 ->select('lm.match_type')
                 ->from('loop_mapping AS lm')
                 // ->join('loop_annotations AS la', 'lm.query_loop_id = la.loop_id', 'right')
@@ -601,10 +601,11 @@ class Loops_model extends CI_Model {
         $query = $this->db->get();
 
         foreach ($query->result() as $row){
-            $loop_mapping = $row;
+            // $loop_mapping = $row;
+            return($row);
         }
         
-        return $loop_mapping;
+        // return $loop_mapping;
     }
 
     function get_loop_stats()

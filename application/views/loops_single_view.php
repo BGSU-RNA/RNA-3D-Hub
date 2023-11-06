@@ -90,10 +90,18 @@
                         <div class="span4 well">
                             <dl>
                                 <?php if(isset($is_mapped_to)) {
-                                    echo "<dt>This loop has been found to be a $match_type to $is_mapped_to</dt>";
-                                    echo "<dd>The below information is about $is_mapped_to</dd>";
+                                    $mapped_to_link = anchor_popup("loops/view/$is_mapped_to", $is_mapped_to);
+                                    // echo "<dt>This loop has been found to be a $match_type to $is_mapped_to</dt>";
+                                    // echo "<dd>The below information is about $is_mapped_to</dd>";
+                                    // below round to four decimal places
+                                    // echo "<dt>This loop has been found to be a $match_type to $mapped_to_link</dt>";
+                                    echo "<dt>$id not in the Motif Atlas</dt>";
+                                    echo "<dt>$match_type to $mapped_to_link</dt>";
+                                    echo "<dd>Geometric discrepancy: $mapping_discrepancy</dd>";
+                                    echo "<dd>The information below is about $mapped_to_link</dd>";
                                 }
                                 ?>
+                                <!-- add an "else" to say <dt>$id is in the Motif Atlas -->
                                 <dt>Detailed Annotation</dt>
                                 <dd><?=$annotation_1?></dd>
                                 <dt>Broad Annotation</dt>
@@ -264,7 +272,19 @@
                     </svg>
                 </div>
                 <div id='checkboxes'>
-                    <label><input type='checkbox' class='jmolInline' data-coord='<?=$id?>' data-quality='<?=$id?>'><?=$id?></label>
+                    <label><input type='checkbox' id='0' class='jmolInline' data-coord='<?=$id?>' data-quality='<?=$id?>'><?=$id?></label>
+                    <?php
+                         if(isset($is_mapped_to)) {
+                            echo "<br><label><input type='checkbox' id='1' class='jmolInline' data-coord=$is_mapped_to data-quality=$is_mapped_to>$is_mapped_to (superposition may be poor)</label>";
+                        }
+                    ?>
+
+                    <!-- <label><input type='checkbox' class='jmolInline' data-coord='<?=$id?>' data-quality='<?=$id?>'><?=$id?></label>
+                    <?php
+                         if(isset($is_mapped_to)) {
+                            echo "<label><input type='checkbox' class='jmolInline' data-coord=$is_mapped_to data-quality=$is_mapped_to>$is_mapped_to</label>";
+                        }
+                    ?> -->
                 </div>
            </div>
 

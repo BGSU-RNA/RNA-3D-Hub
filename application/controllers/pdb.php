@@ -162,11 +162,11 @@ class Pdb extends CI_Controller {
                 );
                 $this->table->set_template($tmpl);
                 $this->table->set_heading(
-                    array('data' => '#', 'style' => 'width: 8%'),
-                    array('data' => 'loop id', 'style' => 'width: 24%'),
-                    array('data' => 'location', 'style' => 'width: 20%'),
-                    array('data' => 'direct info', 'style' => 'width: 24%'),
-                    array('data' => 'mapped info', 'style' => 'width: 24%')); // test
+                    array('data' => '3D', 'style' => 'width: 8%'),
+                    array('data' => 'Loop id', 'style' => 'width: 24%'),
+                    array('data' => 'Location', 'style' => 'width: 20%'),
+                    array('data' => 'Annotation; motif group', 'style' => 'width: 24%'),
+                    array('data' => 'Mapped info', 'style' => 'width: 24%')); // test
                 if (count($results['valid'][$loop_type]) > 0) {
                     $data['loops'][$loop_type]['valid'] = $this->table->generate($results['valid'][$loop_type]);
                 } else {
