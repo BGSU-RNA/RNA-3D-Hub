@@ -488,6 +488,49 @@ class Loops_model extends CI_Model {
     }
 
 
+    function get_current_chains($loop_id)
+    {
+        $result = array();
+        $result['current_chains'] = array();
+        // $result['rna_chains'] = array(); # standard name array edit
+        $this->load->model('Ajax_model', '', TRUE);
+
+        $unit_ids = $this->Ajax_model->get_loop_units($loop_id);
+
+        $current_chains = array();
+        foreach ($unit_ids as $ui) {
+            $fields = explode('|',$ui);
+            $pdb_id = $fields[0];
+            $current_chains[] = $fields[2];
+        }
+
+        $this->db->select('chain_name, compound')
+                 ->from('chain_info')
+                 ->where('pdb_id', $pdb_id)
+                 ->where_in('chain_name', $current_chains);
+        $query = $this->db->get();
+
+        foreach ($query->result() as $row) {
+            $result['current_chains'][$row->chain_name]['description'] = $row->compound;
+        }
+
+            
+        // Possibly replace with standardized. #
+        $this->db->select('chain, value')
+                    ->from('chain_property_value')
+                    ->where('pdb_id', $pdb_id)
+                    ->where('property', 'standardized_name')
+                    ->where_in('chain', $current_chains);
+        $query = $this->db->get();
+
+        foreach ($query->result() as $row) {
+            $result['proteins'][$row->chain]['description'] = $row->value;
+        }
+
+        return $result;
+    }
+
+
     function get_current_motif_release($motif_type)
     {
         $this->db->select()

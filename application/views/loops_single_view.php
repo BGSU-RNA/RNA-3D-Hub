@@ -121,6 +121,15 @@
                     <!-- </div>
                     <div class="row"> -->
                         <div class="span4 well">
+                            <h4>Current chains</h4>
+                            <?php
+                                echo '<dl>';
+                                foreach($current_chains as $chain => $desc) {
+                                    echo "<dt>Chain $chain</dt>";
+                                    echo "<dd>{$desc['description']}</dd>";
+                                }
+                                echo '</dl>';
+                            ?>
                             <h4>Nearby chains</h4>
                             <?php
                                 if (count($proteins) > 0) {
