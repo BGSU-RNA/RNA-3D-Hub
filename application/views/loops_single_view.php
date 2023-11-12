@@ -97,7 +97,7 @@
                                     // echo "<dt>This loop has been found to be a $match_type to $mapped_to_link</dt>";
                                     echo "<dt>$id not in the Motif Atlas</dt>";
                                     echo "<dt>$match_type to $mapped_to_link</dt>";
-                                    echo "<dd>Geometric discrepancy: $mapping_discrepancy</dd>";
+                                    echo "<dd>Geometric discrepancy: " . round($mapping_discrepancy, 4) . "</dd>";
                                     echo "<dd>The information below is about $mapped_to_link</dd>";
                                 }
                                 ?>
