@@ -1457,10 +1457,15 @@ class Nrlist_model extends CI_Model {
                 sort($sort_models);
                 $best_chains = implode(', ', $sort_chains);
                 $best_models = implode(', ', $sort_models);
-            } else {
+            } elseif (count(explode('|', $ife_id)) == 3){
                 $ife_split   = explode('|', $ife_id);
                 $best_chains = $ife_split[2];
                 $best_models = $ife_split[1];
+            } else {
+                ## old ifes have no model numbers, we set them as 1
+                $ife_split   = explode('|', $ife_id);
+                $best_chains = $ife_split[1];
+                $best_models = "1";
             }
 
             // adding cpv data using the representative ife as the key to stdname, source and rfam dicts.
