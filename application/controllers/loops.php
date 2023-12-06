@@ -190,14 +190,14 @@ class Loops extends CI_Controller {
             $data['table'] = $this->table->generate($table);
             $data['show_similar'] = TRUE;
         } else {
- 
+
             $data = array_merge($data, $this->Loops_model->get_loop_info($id));
             // $data = array_merge($data, $this->Loops_model->get_unit_id($id));
             $data = array_merge($data, $this->Loops_model->get_pdb_info($id));
             $data = array_merge($data, $this->Loops_model->get_motif_info($id));
-            $data = array_merge($data, $this->Loops_model->get_current_chains($id));            
+            $data = array_merge($data, $this->Loops_model->get_current_chains($id));
             $data = array_merge($data, $this->Loops_model->get_nearby_chains($id));
-  
+
             // below is WEAKKKKK with this string matching
             if($data['motif_id'] == "Not in a motif group"){
                 if($data['annotation_1'] == 'No text annotation'){
@@ -216,7 +216,7 @@ class Loops extends CI_Controller {
                             $data['match_type'] = "Homologous match";
                         }
                     }
-                } 
+                }
             }
             $data['show_similar'] = FALSE;
         }
