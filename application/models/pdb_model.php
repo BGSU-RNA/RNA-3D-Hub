@@ -160,10 +160,10 @@ class Pdb_model extends CI_Model {
                     if(!is_null($loop_mapping_table[$row->loop_id]->similar_annotation)) {
                       $annotation = $loop_mapping_table[$row->loop_id]->similar_annotation;
                     } else {
-                      $annotation = "NA";
+                      $annotation = "No text annotation";
                     }
                   } else {
-                    $annotation = "NA";
+                    $annotation = "No text annotation";
                   }
                 }
             
@@ -173,7 +173,7 @@ class Pdb_model extends CI_Model {
                     $motif_id = anchor_popup("motif/view/{$motifs[$row->loop_id]}",
                       $motifs[$row->loop_id]);
                 } else {
-                  $motif_id = 'NA';
+                  $motif_id = 'Not in a motif group';
                 }
 
                 
@@ -183,7 +183,8 @@ class Pdb_model extends CI_Model {
 
               // building loop mapping info (column 5)
               if( array_key_exists($row->loop_id, $loop_mapping_table) ){
-                if($row->loop_id != $loop_mapping_table[$row->loop_id]->similar_loop){
+                // if($row->loop_id != $loop_mapping_table[$row->loop_id]->similar_loop){
+                if(is_null($row->annotation_1) && !array_key_exists($row->loop_id, $motifs)){
                   $match_type = $loop_mapping_table[$row->loop_id]->match_type;
 
                   $similar_loop = anchor_popup("loops/view/{$loop_mapping_table[$row->loop_id]->similar_loop}",
@@ -204,10 +205,9 @@ class Pdb_model extends CI_Model {
 
 
                 $valid_tables[$loop_type][] = array(array( 'class' => 'loop',
-                                                            'data' => $this->get_checkbox($row->loop_id, $row->unit_ids,
-                                                                count($valid_tables[$loop_type])+1)
+                                                            'data' => $this->get_checkbox($row->loop_id, $row->unit_ids)
                                                         ),
-                                                    "<label>" . anchor_popup("loops/view/{$row->loop_id}", $row->loop_id) . "<label>", // turning loop id into link
+                                                    anchor_popup("loops/view/{$row->loop_id}", $row->loop_id), // turning loop id into link
                                                     str_replace(",", ",<br>", $row->loop_name), //location
                                                     // $motif_id, //motif
                                                     $annotation_and_motif_group, // column 4
@@ -222,8 +222,7 @@ class Pdb_model extends CI_Model {
                 //     $annotation = $row->nt_signature;
                 // }
                 $invalid_tables[$loop_type][] = array(array( 'class' => 'loop',
-                                                             'data' => $this->get_checkbox($row->loop_id, $row->unit_ids,
-                                                                count($invalid_tables[$loop_type])+1)
+                                                             'data' => $this->get_checkbox($row->loop_id, $row->unit_ids)
                                                          ),
                                                       anchor_popup("loops/view/{$row->loop_id}",
                                                         $row->loop_id),
@@ -237,9 +236,9 @@ class Pdb_model extends CI_Model {
     {
         return '<label class="label important">' . $this->qa_status[$status] . '</label>';
     }
-    function get_checkbox($id, $nt_ids, $index)
+    function get_checkbox($id, $nt_ids)
     {
-        return "<label> {$index} &nbsp <input type='radio' id='{$id}' class='jmolInline' data-coord='{$id}' data-quality='{$id}'> </label>";
+        return "<input type='radio' id='{$id}' class='jmolInline' data-coord='{$id}' data-quality='{$id}'>";
     }
     function pdb_exists($pdb_id)
     {

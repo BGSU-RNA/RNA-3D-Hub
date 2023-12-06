@@ -380,8 +380,8 @@ class Loops_model extends CI_Model {
         ->from('loop_annotations')
         ->where('loop_id', $id);
         $query = $this->db->get();
-        $result['annotation_1'] = 'Not assigned yet';
-        $result['annotation_2'] = 'Not assigned yet';
+        $result['annotation_1'] = 'No text annotation';
+        $result['annotation_2'] = 'No text annotation';
         if ($query->num_rows >0) {
             $annotation_1 = $query->row()->annotation_1;
             if ($annotation_1 != Null and $annotation_1 != 'NULL') {
@@ -418,8 +418,8 @@ class Loops_model extends CI_Model {
             $query = $this->db->get();
             $result['motif_instances'] = $query->num_rows();
         } else {
-            $result['motif_id'] = "This loop hasn't been annotated with motifs yet";
-            $result['motif_url'] = "This loop hasn't been annotated with motifs yet";
+            $result['motif_id'] = "Not in a motif group";
+            $result['motif_url'] = "Not in a motif group";
             $result['bp_signature'] = 'Not available';
             $result['motif_instances'] = 0;
         }
@@ -482,6 +482,49 @@ class Loops_model extends CI_Model {
                     $result['proteins'][$row->chain]['description'] = $row->value;
                 }
             }
+        }
+
+        return $result;
+    }
+
+
+    function get_current_chains($loop_id)
+    {
+        $result = array();
+        $result['current_chains'] = array();
+        // $result['rna_chains'] = array(); # standard name array edit
+        $this->load->model('Ajax_model', '', TRUE);
+
+        $unit_ids = $this->Ajax_model->get_loop_units($loop_id);
+
+        $current_chains = array();
+        foreach ($unit_ids as $ui) {
+            $fields = explode('|',$ui);
+            $pdb_id = $fields[0];
+            $current_chains[] = $fields[2];
+        }
+
+        $this->db->select('chain_name, compound')
+                 ->from('chain_info')
+                 ->where('pdb_id', $pdb_id)
+                 ->where_in('chain_name', $current_chains);
+        $query = $this->db->get();
+
+        foreach ($query->result() as $row) {
+            $result['current_chains'][$row->chain_name]['description'] = $row->compound;
+        }
+
+            
+        // Possibly replace with standardized. #
+        $this->db->select('chain, value')
+                    ->from('chain_property_value')
+                    ->where('pdb_id', $pdb_id)
+                    ->where('property', 'standardized_name')
+                    ->where_in('chain', $current_chains);
+        $query = $this->db->get();
+
+        foreach ($query->result() as $row) {
+            $result['proteins'][$row->chain]['description'] = $row->value;
         }
 
         return $result;
@@ -586,6 +629,26 @@ class Loops_model extends CI_Model {
         }
 
         return $table;
+    }
+
+    function get_mapped_loop($id){
+        $this->db->select('lm.loop_id')
+                ->select('lm.query_loop_id AS mapped_loop')
+                ->select('lm.discrepancy')
+                ->select('lm.match_type')
+                ->from('loop_mapping AS lm')
+                // ->join('loop_annotations AS la', 'lm.query_loop_id = la.loop_id', 'right')
+                ->where('lm.loop_id', $id)
+                ->order_by('lm.loop_mapping_id', 'desc') // use (...,'desc') if opposite order
+                ->limit(1);
+        $query = $this->db->get();
+
+        foreach ($query->result() as $row){
+            // $loop_mapping = $row;
+            return($row);
+        }
+        
+        // return $loop_mapping;
     }
 
     function get_loop_stats()
