@@ -497,21 +497,25 @@ class Pdb_model extends CI_Model {
         $data['latest_nr_release'] = $this->get_latest_nr_release($pdb_id);
         // get nr equivalence classes
         $this->db->select('nl.name')
-                 ->select_max('nc.rep')
+                 ->select_min('nc.rank')
                  ->select('COUNT(nl.name) AS count')
-                 ->from('nr_chains AS nc')
-                 ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
+                 ->from('nr_class_rank AS nc')
+                 ->join('nr_classes AS nl', 'nc.nr_class_name = nl.name')
                  ->join('ife_info AS ii', 'nc.ife_id = ii.ife_id')
                  ->where('ii.pdb_id', $pdb_id)
-                 ->where('nc.nr_release_id', $data['latest_nr_release'])
-                 ->group_by('nc.nr_class_id')
+                 ->where('nl.nr_release_id', $data['latest_nr_release'])
+                 ->group_by('nl.nr_class_id')
                  ->group_by('nl.name');
         $query = $this->db->get();
         $data = array();
         foreach ($query->result() as $row) {
             $data['nr_classes'][] = $row->name;
             $data['nr_urls'][$row->name] = anchor('nrlist/view/' . $row->name, $row->name);
-            $data['representatives'][$row->name] = $row->rep;
+            # $data['representatives'][$row->name] = $row->rep;
+            if ($row->rank == 0){
+                $data['representatives'][$row->name] = 1;
+            }
+            else {$data['representatives'][$row->name] = 0;}
             $data['count'][$row->name] = $row->count;
         }
         return $data;
@@ -590,13 +594,13 @@ class Pdb_model extends CI_Model {
         $pdb_id = strtoupper($pdb_id);
         $latest_nr_release = $this->get_latest_nr_release($pdb_id);
         // choose the equivalence class
-        $this->db->select('ch.nr_class_id')
+        $this->db->select('cl.nr_class_id')
                  ->select('cl.name')
-                 ->from('nr_chains AS ch')
-                 ->join('nr_classes AS cl', 'ch.nr_class_id = cl.nr_class_id AND ch.nr_release_id = cl.nr_release_id')
+                 ->from('nr_class_rank AS ch')
+                 ->join('nr_classes AS cl', 'ch.nr_class_name = cl.name')
                  ->join('ife_info AS ii', 'ch.ife_id = ii.ife_id')
                  ->where('ii.pdb_id', $pdb_id)
-                 ->where('ch.nr_release_id', $latest_nr_release)
+                 ->where('cl.nr_release_id', $latest_nr_release)
                  ->where('cl.resolution', 'all');
         $result = $this->db->get();
         if ( $result->num_rows() == 0 ) {
@@ -613,11 +617,12 @@ class Pdb_model extends CI_Model {
         if ( $equivalence_class_found ) {
             // choose all structures from the selected equivalence class
             $this->db->select('ii.pdb_id')
-                     ->from('nr_chains AS np')
+                     ->from('nr_class_rank AS np')
                      ->join('ife_info AS ii', 'np.ife_id = ii.ife_id')
-                     ->where('nr_release_id', $latest_nr_release)
+                     # no need for this limitation
+                     # ->where('nr_release_id', $latest_nr_release)
                      ->where('nr_class_id', $equivalence_class)
-                     ->order_by('rep', 'desc');
+                     ->order_by('rank', 'asc');
             $query = $this->db->get();
             $isFirst = True;
             foreach($query->result() as $row) {

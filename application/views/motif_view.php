@@ -162,7 +162,7 @@
                                     	    U: only U<br>
                                     	    N: any nucleotide'>
                                 <img class="span3 thumbnail"
-                                    src="<?=$this->config->item('home_url')?>/img/MotifAtlas/<?php echo substr($title,0,2) . $release_id;?>/<?=$title?>.png"
+                                    src="<?=$this->config->item('home_url')?>/rna3dhub/img/MotifAtlas/<?php echo substr($title,0,2) . $release_id;?>/<?=$title?>.png"
                                     alt='2D diagram'>
                             </a>
                         </ul>

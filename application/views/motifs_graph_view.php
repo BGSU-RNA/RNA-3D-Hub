@@ -251,8 +251,8 @@
                  text +=  ' <a href="<?=$this->config->item('home_url')?>/' + env + '/motif/compare/'+ target.data.source + '/' + target.data.target + '" target="_blank">Compare motifs</a>';
                  $('#signature').html(text);
 
-                 text =  '<img class="thumbnail" src="<?=$this->config->item('home_url')?>/img/MotifAtlas/<?=$img_loc?>/'+target.data.source+'.png"/>';
-                 text += '<img class="thumbnail" src="<?=$this->config->item('home_url')?>/img/MotifAtlas/<?=$img_loc?>/'+target.data.target+'.png"/>'
+                 text =  '<img class="thumbnail" src="<?=$this->config->item('home_url')?>/rna3dhub/img/MotifAtlas/<?=$img_loc?>/'+target.data.source+'.png"/>';
+                 text += '<img class="thumbnail" src="<?=$this->config->item('home_url')?>/rna3dhub/img/MotifAtlas/<?=$img_loc?>/'+target.data.target+'.png"/>'
                  $('#varna').html(text).show();
             }
 
@@ -266,7 +266,7 @@
                  $('#signature').html(text);
                  show_motif_exemplar_in_jmol( target.data.id );
                  $('#neighborhood').attr('value','Show neighborhood');
-                 $('#varna').html('<img class="thumbnail" src="<?=$this->config->item('home_url')?>/img/MotifAtlas/<?=$img_loc?>/'+target.data.id+'.png"/>').show();
+                 $('#varna').html('<img class="thumbnail" src="<?=$this->config->item('home_url')?>/rna3dhub/img/MotifAtlas/<?=$img_loc?>/'+target.data.id+'.png"/>').show();
             }
 
             vis.visualStyle(visual_style);

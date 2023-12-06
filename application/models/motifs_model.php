@@ -379,8 +379,11 @@ class Motifs_model extends CI_Model {
 
     function make_fancybox_link($id, $motif_type, $release_id)
     {
-         $image = $this->config->item('img_url') . strtoupper($motif_type) . $release_id . '/' . $id . '.png';
-         return "<ul class='media-grid'><li><a href='#$id'><img class='thumbnail' src='$image' alt='$id' class='varna' /></a></li></ul>";
+        //  $image = $this->config->item('img_url')  . strtoupper($motif_type) . $release_id . '/' . $id . '.png';
+        //  $image = 'http://rnatest.bgsu.edu/rna3dhub/img/MotifAtlas/' . strtoupper($motif_type) . $release_id . '/' . $id . '.png';
+         $image =$this->config->item('home_url') . '/rna3dhub/img/MotifAtlas/' . strtoupper($motif_type) . $release_id . '/' . $id . '.svg';
+        //  return "<ul class='media-grid'><li><a href='#$id'><img class='thumbnail' src='$image' alt='$id' class='varna' /></a></li></ul>";
+         return "<ul class='media-grid'><li><a href='#$id'><img class='thumbnail varna' src='$image' alt='$id' /></a></li></ul>";
     }
 
     function get_loop_annotations($motif_id, $id)

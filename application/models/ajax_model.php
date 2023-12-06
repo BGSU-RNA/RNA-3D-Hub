@@ -84,14 +84,22 @@ class Ajax_model extends CI_Model {
                     $tmp = preg_replace('/^NR_[1-4]\.[05]_/','NR_all_',$cla);
                     $rsc = preg_replace('/^NR_20.0_/','NR_all_',$tmp);
                 } else {
+                    // $this->db->select('cl.name')
+                    //          ->from('nr_releases AS nr')
+                    //          ->join('nr_chains AS ch','nr.nr_release_id = ch.nr_release_id')
+                    //          ->join('nr_classes AS cl','ch.nr_class_id = cl.nr_class_id')
+                    //          ->where('ch.ife_id', $ife)
+                    //          ->where('cl.resolution', "all")
+                    //          ->order_by('nr.index DESC')
+                    //          ->limit(1);
                     $this->db->select('cl.name')
-                             ->from('nr_releases AS nr')
-                             ->join('nr_chains AS ch','nr.nr_release_id = ch.nr_release_id')
-                             ->join('nr_classes AS cl','ch.nr_class_id = cl.nr_class_id')
-                             ->where('ch.ife_id', $ife)
-                             ->where('cl.resolution', "all")
-                             ->order_by('nr.index DESC')
-                             ->limit(1);
+                                ->from('nr_classes AS cl')
+                                ->join('nr_releases AS nr','nr.nr_release_id = cl.nr_release_id')
+                                ->join('nr_class_rank AS ch','ch.nr_class_name = cl.name')
+                                ->where('ch.ife_id', $ife)
+                                ->where('cl.resolution', "all")
+                                ->order_by('nr.index DESC')
+                                ->limit(1);
 
                      $clquery = $this->db->get();
                      $clrow = $clquery->row();

@@ -265,8 +265,8 @@ class Nrlist_model extends CI_Model {
                  ->select('pi.resolution')
                  ->from('pdb_info AS pi')
                  ->join('ife_info AS ii','pi.pdb_id = ii.pdb_id')
-                 ->join('nr_chains AS ch', 'ii.ife_id = ch.ife_id')
-                 ->join('nr_classes AS cl', 'ch.nr_class_id = cl.nr_class_id AND ch.nr_release_id = cl.nr_release_id')
+                 ->join('nr_class_rank AS ch', 'ii.ife_id = ch.ife_id')
+                 ->join('nr_classes AS cl', 'ch.nr_class_name = cl.name')
                  ->where('cl.name',$id)
                  ->where('cl.nr_release_id',$this->last_seen_in) # copy from the comment function above 
                  ->group_by('pi.pdb_id')
@@ -281,8 +281,8 @@ class Nrlist_model extends CI_Model {
                  ->select('cpv.property')
                  ->select('cpv.value')
                  ->from('ife_info AS ii')
-                 ->join('nr_chains AS ch', 'ii.ife_id = ch.ife_id')
-                 ->join('nr_classes AS cl', 'ch.nr_class_id = cl.nr_class_id AND ch.nr_release_id = cl.nr_release_id')
+                 ->join('nr_class_rank AS ch', 'ii.ife_id = ch.ife_id')
+                 ->join('nr_classes AS cl', 'ch.nr_class_name = cl.name')
                  ->join('chain_property_value AS cpv', 'cpv.pdb_id = ii.pdb_id')
                  ->where('cl.name',$id);
         $query_cpv = $this->db->get();
@@ -805,14 +805,14 @@ class Nrlist_model extends CI_Model {
                  ->select('NO2.index AS ife2_index')
                  ->select('CSS.discrepancy')
                  ->from('nr_classes AS NCL')
-                 ->join('nr_chains as NC1', 'NC1.nr_class_id = NCL.nr_class_id and NC1.nr_release_id = NCL.nr_release_id', 'inner')
-                 ->join('nr_ordering as NO1', 'NO1.nr_chain_id = NC1.nr_chain_id and NO1.nr_class_id = NC1.nr_class_id', 'inner')
-                 ->join('nr_chains as NC2', 'NC2.nr_class_id = NCL.nr_class_id and NC2.nr_release_id = NCL.nr_release_id', 'inner')
-                 ->join('nr_ordering as NO2', 'NO2.nr_chain_id = NC2.nr_chain_id and NO2.nr_class_id = NC2.nr_class_id', 'inner')
+                 ->join('nr_class_rank as NC1', 'NC1.nr_class_name = NCL.name', 'inner')
+                 ->join('nr_ordering as NO1', 'NO1.nr_class_id = NC1.nr_class_id', 'inner')
+                 ->join('nr_class_rank as NC2', 'NC2.nr_class_name = NCL.name', 'inner')
+                 ->join('nr_ordering as NO2', 'NO2.nr_class_id = NC2.nr_class_id', 'inner')
                  ->join('ife_chains as IC1', 'IC1.ife_id = NC1.ife_id and IC1.index = 0', 'inner')
                  ->join('ife_chains as IC2', 'IC2.ife_id = NC2.ife_id and IC2.index = 0', 'inner')
                  ->join('chain_chain_similarity as CSS', 'CSS.chain_id_1 = IC1.chain_id and CSS.chain_id_2 = IC2.chain_id', 'left outer')
-                 ->where('NC1.nr_chain_id !=', 'NC2.nr_chain_id')
+                 ->where('NC1.nr_class_rank_id !=', 'NC2.nr_class_rank_id')
                  ->where('NCL.name', $id)
                  ->where('NCL.nr_release_id', $release_id);
 
@@ -1000,12 +1000,12 @@ class Nrlist_model extends CI_Model {
 
     function get_pdb_files_counts()
     {
-        $this->db->select('nch.nr_release_id, count(ii.pdb_id) as num')
+        $this->db->select('ncl.nr_release_id, count(ii.pdb_id) as num')
                  ->from('ife_info AS ii')
-                 ->join('nr_chains AS nch', 'ii.ife_id = nch.ife_id')
-                 ->join('nr_classes AS ncl', 'nch.nr_class_id = ncl.nr_class_id AND nch.nr_release_id = ncl.nr_release_id')
+                 ->join('nr_class_rank AS nch', 'ii.ife_id = nch.ife_id')
+                 ->join('nr_classes AS ncl', 'nch.nr_class_name = ncl.name')
                  ->where('ncl.resolution', 'all')
-                 ->group_by('nch.nr_release_id');
+                 ->group_by('ncl.nr_release_id');
         $query = $this->db->get();
 
         foreach ($query->result() as $row) {
@@ -1274,12 +1274,13 @@ class Nrlist_model extends CI_Model {
         $resolution = str_replace('A', '', $resolution);
 
         // get raw release data
-        $this->db->select('ii.ife_id, ii.pdb_id, nl.name, nc.rep')
+        $this->db->select('ii.ife_id, ii.pdb_id, nl.name, nc.rank')
                  ->from('ife_info AS ii')
-                 ->join('nr_chains AS nc', 'ii.ife_id = nc.ife_id')
-                 ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
-                 ->where('nc.nr_release_id', $id)
-                 ->like('nl.name', "NR_{$resolution}", 'after');
+                 ->join('nr_class_rank AS nc', 'ii.ife_id = nc.ife_id')
+                 ->join('nr_classes AS nl', 'nc.nr_class_name = nl.name')
+                 ->where('nl.nr_release_id', $id)
+                 ->like('nl.name', "NR_{$resolution}", 'after')
+                 ->order_by('nc.rank','asc');
         $query = $this->db->get();
 
         // reorganize by class and rep and pdb
@@ -1288,8 +1289,9 @@ class Nrlist_model extends CI_Model {
             $ifes[] = $row->ife_id;
             $pdbs[] = $row->pdb_id;
 
-            if ($row->rep == 1) {
+            if ($row->rank == 0) {
                 $reps[$row->name] = $row->ife_id;
+                $pdbs_rep[$row->name] = $row->pdb_id;
             }
 
             if (!array_key_exists($row->name, $class) ) {
@@ -1380,9 +1382,9 @@ class Nrlist_model extends CI_Model {
                  ->select('ci.taxonomy_id AS species_id')  # changed 2022-06-29
                  ->select('nl.nr_class_id')
                  #->select('COUNT(DISTINCT ii.ife_id) AS num')
-                 ->from('nr_chains AS nc')
+                 ->from('nr_class_rank AS nc')
                  ->join('ife_info AS ii', 'nc.ife_id = ii.ife_id')
-                 ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
+                 ->join('nr_classes AS nl', 'nc.nr_class_name = nl.name')
                  ->join('ife_chains AS ic', 'ii.ife_id = ic.ife_id')
                  ->join('chain_info AS ci', 'ic.chain_id = ci.chain_id')
                  #->join('species_mapping AS sm', 'ci.taxonomy_id = sm.species_mapping_id', 'left')
@@ -1429,7 +1431,7 @@ class Nrlist_model extends CI_Model {
             $class_id = $row->name;
             #$nums     = $row->num;
             $ife_id   = $reps[$class_id]; //Representative IFE
-            $pdb_id   = $row->pdb_id;
+            $pdb_id   = $pdbs_rep[$class_id];   //representative pdb
             $tax_link = $this->tax_url . $row->species_id;
 
             $source   = ( is_null($row->species_name) ) ? "" : anchor_popup("$tax_link", "$row->species_name");
@@ -1551,16 +1553,16 @@ class Nrlist_model extends CI_Model {
     function get_csv($release, $resolution)
     {
         $resolution = str_replace('A', '', $resolution);
-        $this->db->select('ii.ife_id as id, nl.name as class_id, nc.rep')
-                 ->from('nr_chains AS nc')
-                 ->join('nr_classes AS nl', 'nc.nr_class_id = nl.nr_class_id AND nc.nr_release_id = nl.nr_release_id')
+        $this->db->select('ii.ife_id as id, nl.name as class_id, nc.rank')
+                 ->from('nr_class_rank AS nc')
+                 ->join('nr_classes AS nl', 'nc.nr_class_name = nl.name')
                  ->join('ife_info AS ii', 'nc.ife_id = ii.ife_id')
-                 ->where('nc.nr_release_id', $release)
+                 ->where('nl.nr_release_id', $release)
                  ->where('resolution', $resolution);
         $query = $this->db->get();
 
         foreach($query->result() as $row) {
-            if ( $row->rep == 1 ) {
+            if ( $row->rank == 0 ) {
                 $reps[$row->class_id] = $row->id;
             }
             $members[$row->class_id][] = $row->id;
