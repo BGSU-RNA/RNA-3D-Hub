@@ -381,7 +381,7 @@ class Motifs_model extends CI_Model {
     {
         //  $image = $this->config->item('img_url')  . strtoupper($motif_type) . $release_id . '/' . $id . '.png';
         //  $image = 'http://rnatest.bgsu.edu/rna3dhub/img/MotifAtlas/' . strtoupper($motif_type) . $release_id . '/' . $id . '.png';
-         $image =$this->config->item('home_url') . '/rna3dhub/img/MotifAtlas/' . strtoupper($motif_type) . $release_id . '/' . $id . '.svg';
+         $image =$this->config->item('home_url') . '/rna3dhub/img/MotifAtlas/' . strtoupper($motif_type) . $release_id . '/' . $id . '.png';
         //  return "<ul class='media-grid'><li><a href='#$id'><img class='thumbnail' src='$image' alt='$id' class='varna' /></a></li></ul>";
          return "<ul class='media-grid'><li><a href='#$id'><img class='thumbnail varna' src='$image' alt='$id' /></a></li></ul>";
     }
