@@ -110,7 +110,7 @@ class Nrlist_model extends CI_Model {
                  #->select('nrc.version')
                  #->select('nrc.comment')
                  /*->select('nrr.nr_release_id')*/
-                 #->select('nrr.date') 
+                 #->select('nrr.date')
                  ->select('nrr.description')
                  ->from('nr_classes AS nrc')
                  ->join('nr_releases AS nrr','nrc.nr_release_id = nrr.nr_release_id')
@@ -268,7 +268,7 @@ class Nrlist_model extends CI_Model {
                  ->join('nr_class_rank AS ch', 'ii.ife_id = ch.ife_id')
                  ->join('nr_classes AS cl', 'ch.nr_class_name = cl.name')
                  ->where('cl.name',$id)
-                 ->where('cl.nr_release_id',$this->last_seen_in) # copy from the comment function above 
+                 ->where('cl.nr_release_id',$this->last_seen_in) # copy from the comment function above
                  ->group_by('pi.pdb_id')
                  ->group_by('ii.ife_id')
                  ->order_by('ch.rank','asc');
@@ -319,7 +319,7 @@ class Nrlist_model extends CI_Model {
             $row_value = $row->value;
 
             // echo "{$row_chain}:{$row_value}\n";
-            
+
             $ife_chain_list = explode('+', $row_ife);
             foreach ($ife_chain_list as $ife_chain){
                 $chain = end(explode('|', $ife_chain));
@@ -327,12 +327,12 @@ class Nrlist_model extends CI_Model {
                     $ife_to_cpv["{$row_pdb}_{$row_chain}_{$row_property}"] = $row_value;
                 }
             }
-            
+
             // if chain matches the third field of the ife_id (those are the only ones we actually need)
                 // put data from this query into a dictionary
                 // key could be pdb_id + "_" + chain
                 // key could be pdb_id + "_" + chain + "_" + property  <-- then you only need one dictionary
-                
+
             // }
             // maybe make one dictionary for name, one for source, one for rfam?
             // depending on the property, you fill in a different dictionary
@@ -342,7 +342,7 @@ class Nrlist_model extends CI_Model {
         // foreach ($ife_to_cpv as $key=>$value){
         //     echo "{$key} : {$value}\n";
         // }
-            
+
         $i = 0;
         $table = array();
 
@@ -354,7 +354,7 @@ class Nrlist_model extends CI_Model {
             }
 
             $i++;
-            
+
             // explode by +: split by +
             // explode by |: for each chain, extract pdb_id and chain
             // make the key you need
@@ -365,7 +365,7 @@ class Nrlist_model extends CI_Model {
             // echo "Name, source, rfam for ",$row->ife_id," is \n";
             $row_ife = $row->ife_id;
             $ife_chain_list = explode('+', $row_ife);
-            
+
             $rfam_str = "";
             $source_str = "";
             $standardized_name_str = "";
@@ -379,14 +379,14 @@ class Nrlist_model extends CI_Model {
                 // echo "{$ife_item}\n";
                 $ife_chain = end(explode('|', $ife_item));
                 $ife_list = explode('|', $ife_item);
-                
+
                 // echo "{$ife_chain}\n";
-    
+
                 $pdb_from_ife = $ife_list[0];
                 $rfam_key = "{$pdb_from_ife}_{$ife_chain}_rfam_family";
                 $source_key = "{$pdb_from_ife}_{$ife_chain}_source";
                 $standardized_name_key = "{$pdb_from_ife}_{$ife_chain}_standardized_name";
-                
+
 
                 if (array_key_exists($rfam_key, $ife_to_cpv)){
                     array_push($rfam_list, $ife_to_cpv[$rfam_key]);
@@ -402,9 +402,9 @@ class Nrlist_model extends CI_Model {
                 // echo "{$rfam_key} | {$rfam_str}\n";
                 // echo "{$source_key} | {$source_str}\n";
                 // echo "{$standardized_name_key}| {$standardized_name_str}\n";
-                
+
                 // echo " {$standardized_name_key} : {$standardized_name_str} \n";
-            
+
             }
 
             $source_list = array_unique($source_list);
@@ -419,7 +419,7 @@ class Nrlist_model extends CI_Model {
                 }
             } elseif(!empty($source_list)){
                 $source_str .= $source_list[0];
-                
+
             }
 
             $j = 0;
@@ -537,7 +537,7 @@ class Nrlist_model extends CI_Model {
             //if ( $i==0 ) {
                 //$link = $link . ' <strong>(rep)</strong>';
             //}
-            
+
             $ife_components = explode("|", $row->ife_id);
             $pdb_id = $ife_components[0];
 
@@ -600,13 +600,13 @@ class Nrlist_model extends CI_Model {
 
     function get_trna_sequence($chain)
     {
-        
+
         if (!empty($chain)) {
             $chain_components = explode("|", $chain);
             $pdb = $chain_components[0];
             $chain_id = $chain_components[2];
 
-            
+
             $anticodon_positions = array(36, 35, 34);
 
             $this->db->select('unit');
@@ -627,7 +627,7 @@ class Nrlist_model extends CI_Model {
             }
 
             $trna_sequence = implode("", $trna_sequence);
-            
+
             return $trna_sequence;
         }
     }
@@ -762,7 +762,33 @@ class Nrlist_model extends CI_Model {
                     array_push($result,$newrow);
                 }
             }
+            // // making efficient format here.
+            // $ife2_indices = array_map(function ($d) {
+            //     return $d['ife2_index'];
+            // }, $result);
 
+            // //
+            // $max_ife2_index = max($ife2_indices);
+
+            // //
+            // $ife1 = array_column(array_slice($result, 0, $max_ife2_index + 1), 'ife2');
+            // $ife2 = array_column(array_slice($result, 0, $max_ife2_index + 1), 'ife2');
+
+            // //
+            // $num_rows = count($ife1);
+            // $num_cols = count($ife2);
+            // $table_array = array_fill(0, $num_rows, array_fill(0, $num_cols, 0));
+
+            // //
+            // foreach ($result as $d) {
+            //     $row_index = array_search($d['ife1'], $ife1);
+            //     $col_index = array_search($d['ife2'], $ife2);
+
+            //     if ($row_index !== false && $col_index !== false) {
+            //         $table_array[$row_index][$col_index] = $d['discrepancy'];
+            //     }
+            // }
+            // // ending here
             $heatmap_data = json_encode($result);
 
         } else {
@@ -838,14 +864,14 @@ class Nrlist_model extends CI_Model {
                  ->where('pdb_id', $pdb)
                  ->where('assembly', $assembly)
                  ->like('value', $value);
-                 
+
         $query = $this->db->get();
 
         $result = "";
         foreach ($query->result() as $row) {
             $result = $row->chain;
         }
-         
+
         return $result;
     }
 
@@ -856,14 +882,14 @@ class Nrlist_model extends CI_Model {
                  ->where('chain', $chain)
                  ->where('feature', 'tRNA_occupancy');
                  //->like('value', $value);
-                 
+
         $query = $this->db->get();
 
         $result = "";
         foreach ($query->result() as $row) {
             $result = $row->value;
         }
-         
+
         return $result;
     }
 
@@ -1488,7 +1514,7 @@ class Nrlist_model extends CI_Model {
                     $short_name = end(explode(';', $stdname));
                     $standardized_name_representative .= $short_name . " + ";
                 }
-                
+
             }
             //creating a single string with <li> tags corresponding to the cpv data.
             // If a cpv datum is none for the ife, that datum will not be listed.
@@ -1563,7 +1589,8 @@ class Nrlist_model extends CI_Model {
                  ->join('nr_classes AS nl', 'nc.nr_class_name = nl.name')
                  ->join('ife_info AS ii', 'nc.ife_id = ii.ife_id')
                  ->where('nl.nr_release_id', $release)
-                 ->where('resolution', $resolution);
+                 ->where('resolution', $resolution)
+                 ->order_by('nc.rank','asc');
         $query = $this->db->get();
 
         foreach($query->result() as $row) {
