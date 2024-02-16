@@ -165,6 +165,19 @@ class Nrlist_model extends CI_Model {
         if ($query->num_rows() > 0) {
             return 'Current';
         } else {
+            $this->db->select('nr_class_id')
+                    ->select('name')
+                    ->select('nr_release_id')
+                    ->select('resolution')
+                    ->select('handle')
+                    ->select('version')
+                    ->select('comment')
+                    ->from('nr_classes')
+                    ->where('name',$id);
+            $query = $this->db->get();
+            if (substr($query->row()->name,0,3)=='DNA'){
+                return 'Current';
+            }
             return 'Obsolete';
         }
     }
@@ -784,6 +797,41 @@ class Nrlist_model extends CI_Model {
 
         }
 
+        $eff_data = json_decode($heatmap_data,true);
+        $eff_ifes = array();
+        $eff_discrepancy = array();
+        foreach ($eff_data as $row) {
+            $tem_row = array();
+            foreach ($row as $key => $value) {
+                if ($key == 'ife1'){
+                    if (!in_array($value, $eff_ifes)){
+                        $eff_ifes[] = $value;
+                    }
+                }
+                if ($key == 'discrepancy'){
+                    $tem_row[] = $value;
+                }
+            }
+            $eff_discrepancy[] = $tem_row;
+        }
+        $eff_data_cleaned = array();
+        $eff_data_cleaned[] = '#heatmap'; 
+        $eff_data_cleaned[] = $eff_discrepancy; 
+        $eff_data_cleaned[] = $eff_ifes; 
+        // echo 'eff_data_cleaned';
+        // print_r($eff_ifes);
+        // echo '*****';
+        // echo json_encode($eff_data_cleaned);
+        // echo '!!!!!';
+        // echo $heatmap_data;
+        // print_r(implode(", ", $eff_data_cleaned));
+        // echo 'eff_ifes';
+        // echo $eff_ifes;
+        // echo 'eff_discrepancy';
+        // echo $eff_discrepancy;
+        
+        // return json_encode($eff_data_cleaned);
+
         return $heatmap_data;
     }
 
@@ -1279,7 +1327,10 @@ class Nrlist_model extends CI_Model {
                  ->join('nr_class_rank AS nc', 'ii.ife_id = nc.ife_id')
                  ->join('nr_classes AS nl', 'nc.nr_class_name = nl.name')
                  ->where('nl.nr_release_id', $id)
-                 ->like('nl.name', "NR_{$resolution}", 'after')
+                //  ->group_start()
+                    ->like('nl.name', "NR_{$resolution}", 'after')
+                    ->or_like('nl.name', "DNA_{$resolution}", 'after')
+                //  ->group_end()
                  ->order_by('nc.rank','asc');
         $query = $this->db->get();
 
