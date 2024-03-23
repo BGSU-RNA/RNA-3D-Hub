@@ -26,6 +26,11 @@
             <a class="btn primary large" href="<?=$baseurl?>motifs/release/hl/<?=$release_info['hl_release']?>">Hairpin loops</a>
             <em>Current version: <?=$release_info['hl_release']?></em>
 
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+            <a class="btn primary large" href="<?=$baseurl?>motifs/release/J3/<?=$release_info['j3_release']?>">3-way Junction</a>
+            <em>Current version: <?=$release_info['j3_release']?></em>
+
             <br>
             <br>
 
