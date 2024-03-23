@@ -145,8 +145,10 @@ class Motifs extends CI_Controller {
         $data['pageicon'] = base_url() . 'icons/M_icon.png';
         if ( $motif_type == 'il' ) {
             $data['title']    = 'Internal Loop Motif Atlas Release ' . $id;
-        } else {
+        } else if ( $motif_type == 'hl' ) {
             $data['title']    = 'Hairpin Loop Motif Atlas Release ' . $id;
+        } else if ( $motif_type == 'j3' ) {
+            $data['title']    = '3-way Junction Loop Motif Atlas Release ' . $id;
         }
         $data['baseurl']  = base_url();
         $data['alt_view'] = base_url(array('motifs','graph',$motif_type,$id));
