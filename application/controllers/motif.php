@@ -26,6 +26,7 @@ class Motif extends MY_Controller {
 	    $this->load->model('Motif_model', '', TRUE);
 
 	    if ( !$this->Motif_model->is_valid_motif_id($motif_id) ) {
+            echo "This motif id is invalid! (view tells)";
 	        show_404();
 	        return;
 	    }
@@ -45,6 +46,7 @@ class Motif extends MY_Controller {
                              ->set_content_type('application/json');
                 $data['csv'] = $this->Motif_model->get_json($motif_id,$last_release_id);
             } else {
+                echo "download request failed! Try different motifs (view tells)";
                 show_404();
             }
             $this->load->view('csv_view', $data);
@@ -192,6 +194,7 @@ class Motif extends MY_Controller {
 	    $this->load->model('Motif_model', '', TRUE);
 
 	    if ( !$this->Motif_model->is_valid_motif_id($motif_id) ) {
+            echo "This motif id is invalid! (view2023 tells)";
 	        show_404();
 	        return;
 	    }
@@ -211,6 +214,7 @@ class Motif extends MY_Controller {
                              ->set_content_type('application/json');
                 $data['csv'] = $this->Motif_model->get_json($motif_id,$last_release_id);
             } else {
+                echo "download request failed! Try different motifs (view2023 tells)";
                 show_404();
             }
             $this->load->view('csv_view', $data);
