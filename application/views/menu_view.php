@@ -31,6 +31,7 @@
                     <li class="divider"></li>
                     <li><a href="<?php echo $baseurl;?>motifs/release/il/current">View current ILs</a></li>
                     <li><a href="<?php echo $baseurl;?>motifs/release/hl/current">View current HLs</a></li>
+                    <li><a href="<?php echo $baseurl;?>motifs/release/j3/current">View current J3s</a></li>
                 </ul>
             </li>
 
