@@ -580,6 +580,16 @@ class Motif_model extends CI_Model {
                         $seq_nwc[] = $row->r_nwc_seq;
                     }
                 }
+           } elseif ( $loop_type == 'J3' ) {
+                $this->db->select('LI.seq, LI.nwc_seq')
+                         ->from('loop_info AS LI')
+                         ->where('LI.loop_id', $loop_id);
+                $query = $this->db->get();
+
+                foreach ( $query->result() as $row ){
+                    $seq_com[] = $row->seq;
+                    $seq_nwc[] = $row->nwc_seq;
+                }
            }
         }
 
@@ -913,10 +923,17 @@ class Motif_model extends CI_Model {
 
         // 1, 2, ..., N
         for ($i = 1; $i <= $this->motiflen; $i++) {
-			if ($i == $this->chainbreak + 1) { // insert a column after chainbreak
-				$header[] = 'break';
-			}
-
+            if (is_string($this->chainbreak)) {
+                if ($i == $this->chainbreak + 1) { // insert a column after chainbreak
+                    $header[] = 'break';
+                }
+            } elseif (is_array($this->chainbreak)) {
+                foreach ($this->chainbreak as $value){
+                    if ($i == $value +1){
+                        $header[] = 'break';
+                    }
+                }
+            }
 			$header[] = ' ';
 			$header[] = $i;
 		}
@@ -939,22 +956,52 @@ class Motif_model extends CI_Model {
 		}
 
         // REVISION
-        $this->db->select('ML.position')
-                 ->distinct()
-                 ->from('loop_positions AS LP')
-                 ->join('ml_loop_positions AS ML', 'LP.loop_id = ML.loop_id AND ' .
-                                                   'LP.unit_id = ML.unit_id')
-                 ->where('LP.border', 1)
-                 ->where('ML.motif_id', $this->motif_id)
-                 ->where('ML.ml_release_id', $this->release_id)
-                 ->order_by('ML.position', 'ASC')
-                 ->limit(1,1);
-        $query = $this->db->get();
-        $result = $query->row();
+        if ( substr($this->motif_id, 0, 2) == 'IL' ) {
+            $this->db->select('ML.position')
+                    ->distinct()
+                    ->from('loop_positions AS LP')
+                    ->join('ml_loop_positions AS ML', 'LP.loop_id = ML.loop_id AND ' .
+                                                    'LP.unit_id = ML.unit_id')
+                    ->where('LP.border', 1)
+                    ->where('ML.motif_id', $this->motif_id)
+                    ->where('ML.ml_release_id', $this->release_id)
+                    ->order_by('ML.position', 'ASC')
+                    ->limit(1,1);
+            $query = $this->db->get();
+            $result = $query->row();
 
-        if ( $result <> FALSE ){
-            $this->chainbreak = $result->position;
-        }
+            // <> is not equal, same as != 
+            if ( $result <> FALSE ){
+                $this->chainbreak = $result->position;
+            }
+        } elseif ( substr($this->motif_id, 0, 2) == 'J3' ) {
+            $this->db->select('ML.position')
+                    ->distinct()
+                    ->from('loop_positions AS LP')
+                    ->join('ml_loop_positions AS ML', 'LP.loop_id = ML.loop_id AND ' .
+                                                    'LP.unit_id = ML.unit_id')
+                    ->where('LP.border', 1)
+                    ->where('ML.motif_id', $this->motif_id)
+                    ->where('ML.ml_release_id', $this->release_id)
+                    ->order_by('ML.position', 'ASC');
+            $query = $this->db->get();
+
+            // Initialize chainbreak as an empty array
+            $this->chainbreak = array();
+            $count = 1;
+            foreach ($query ->result() as $row) {
+                if ($count % 2 == 0) {
+                    $this->chainbreak[] = $row->position;
+                }
+                $count +=1;
+            }
+            // Remove the last element from the chainbreak array if it is not empty
+            if (!empty($this->chainbreak)) {
+                array_pop($this->chainbreak);
+            }
+		}
+
+
 #
 #       #echo "<p>TC: " . $this->chainbreak . "</p>";
 	}
@@ -1302,7 +1349,7 @@ class Motif_model extends CI_Model {
 
     function parseRNA($inputString) {
         // Check if input string starts with "5'-R"   RNA(5'-R
-        if (substr($inputString, 0, 5) == "5'-R(" or substr($inputString, 0, 8) == "RNA (5'-" or substr($inputString, 0, 5) == "5'-D(" or substr($inputString, 0, 6) == "(5'-R(" or substr($inputString, 0, 8) == "RNA(5'-R") {
+        if (substr($inputString, 0, 5) == "5'-R(" or substr($inputString, 0, 8) == "RNA (5'-" or substr($inputString, 0, 5) == "5'-D(" or substr($inputString, 0, 6) == "(5'-R(" or substr($inputString, 0, 8) == "RNA(5'-R" or substr($inputString, 0, 8) == "RNA (5-R") {
             
             // Count the number of "*" characters
             $nCount = substr_count($inputString, "*");
