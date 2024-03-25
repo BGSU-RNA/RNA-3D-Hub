@@ -14,10 +14,10 @@
                     <li class="active"><a href="#">Similar loops</a></li>
                 <?php else: ?>
                     <li class="active"><a href="#general">General information</a></li>
-		    <!--
+            <!--
                     <li><a href="#history">Motif history</a></li>
                     <li><a href="#rnastar">RNASTAR</a></li>
-		    -->
+            -->
                 <?php endif; ?>
 
                 </ul>

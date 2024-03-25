@@ -72,18 +72,24 @@ class Loops_model extends CI_Model {
             $table = 'No loops found';
         }
 
-        return $table;        
+        return $table;
 
     }
 
 
     function get_loop_list_with_breaks($pdb_id)
     {
+        // Query for all loops in this pdb file
+        // Concatenate unit_ids and borders into a single string
+        // Note that if that string is too long, it will be truncated
+        // The default length is 1024, but we set it to a higher number below
+        // A loop with 64 nucleotides has length around 1030; 5000 should cover every conceivable loop, right?
         $this->db->select('group_concat(unit_id order by position_2023) AS unit_ids, group_concat(border order by position_2023) AS borders, LI.loop_id', FALSE)
                  ->from('loop_info AS LI')
                  ->join('loop_positions AS LP', 'LI.loop_id = LP.loop_id')
                  ->where('LI.pdb_id', $pdb_id)
                  ->group_by('LI.loop_id');
+        $query = $this->db->query("SET SESSION group_concat_max_len = 5000");
         $query = $this->db->get();
 
         if ( $query->num_rows() > 0 ) {
@@ -120,7 +126,7 @@ class Loops_model extends CI_Model {
 
             /*
             Having a new method to get length of sequence,
-            This method is not using any more    
+            This method is not using any more
             */
         // info from loops_all
     //     $this->db->select('length')
@@ -135,7 +141,7 @@ class Loops_model extends CI_Model {
     //        $result['length'] = '';
     //    }
 
-        // get Unit ID section 
+        // get Unit ID section
         $this->db->select('unit_id, border')
                  ->from('loop_positions')
                  ->order_by('position_2023','asc')
@@ -167,7 +173,7 @@ class Loops_model extends CI_Model {
             }
             $length_sequence += 1;
         }
-        
+
         $result['length'] = $length_sequence;
         $result['sequence'] = implode('', $sequence);
 
@@ -212,7 +218,7 @@ class Loops_model extends CI_Model {
             $result['qa'] = 'QA data not found';
         }
 
-        // get Unit ID section 
+        // get Unit ID section
         $this->db->select('unit_id, border')
                  ->from('loop_positions')
                  ->order_by('position_2023','asc')
@@ -386,12 +392,12 @@ class Loops_model extends CI_Model {
             $annotation_1 = $query->row()->annotation_1;
             if ($annotation_1 != Null and $annotation_1 != 'NULL') {
                 $result['annotation_1'] = $annotation_1;
-            } 
-            // get annotation 2 
+            }
+            // get annotation 2
             $annotation_2 = $query->row()->annotation_2;
             if ($annotation_2 != Null and $annotation_2 != 'NULL') {
                 $result['annotation_2'] = $annotation_2;
-            } 
+            }
         }
         if ($motif != NULL) {
             $result['motif_id'] = $motif['motif_id'];
@@ -469,7 +475,7 @@ class Loops_model extends CI_Model {
                     $result['proteins'][$row->chain_name]['description'] = $row->compound;
                 }
 
-                
+
                 // Possibly replace with standardized. #
                 $this->db->select('chain, value')
                             ->from('chain_property_value')
@@ -514,7 +520,7 @@ class Loops_model extends CI_Model {
             $result['current_chains'][$row->chain_name]['description'] = $row->compound;
         }
 
-            
+
         // Possibly replace with standardized. #
         $this->db->select('chain, value')
                     ->from('chain_property_value')
@@ -647,7 +653,7 @@ class Loops_model extends CI_Model {
             // $loop_mapping = $row;
             return($row);
         }
-        
+
         // return $loop_mapping;
     }
 
