@@ -508,6 +508,10 @@ input[type=radio], input[type=checkbox] {
     width:80px;
     height:80px;
 }
+.svg_varna {
+    background-size: 160px;
+    width: 150px;
+}
 .motifs_view .content {
     min-height: 500px;
 }
