@@ -86,7 +86,7 @@ class Motifs_model extends CI_Model {
 
     function db_get_all_releases($motif_type)
     {
-        $this->db->select('STRAIGHT_JOIN MR.*, count(ML.loop_id) AS loops, count(DISTINCT(motif_id)) AS motifs', FALSE)
+        $this->db->select('STRAIGHT_JOIN MR.ml_release_id, MR.type, MR.date, MR.description, MR.annotation, MR.index, MR.nr_release_id, MR.parent_ml_release_id, count(ML.loop_id) AS loops, count(DISTINCT(motif_id)) AS motifs', FALSE)
                  ->from('ml_releases AS MR')
                  ->join('ml_loops AS ML','MR.ml_release_id = ML.ml_release_id')
                  ->where('MR.type',$motif_type)
@@ -185,7 +185,7 @@ class Motifs_model extends CI_Model {
         for ($i=0; $i<count($ids)-1; $i++) {
             $releases[$ids[$i]] = $ids[$i+1];
         }
-
+        
         return $releases;
     }
 
@@ -307,36 +307,62 @@ class Motifs_model extends CI_Model {
                      ->order_by('MR.index','desc');
             $query = $this->db->get();
 
-            foreach ($query->result() as $row) {
-                if ($row->release_id2 == $releases[$row->ml_release_id]) {
+            foreach ($releases as $release) {
+
+                // echo "debug info check the order of releases$release\n"; correct order 
+
+                $found = FALSE;
+
+                foreach ($query->result() as $row) {
+                    if ($row->ml_release_id == $release) {
+                        // echo "debuging info building table now in if, diff found and release id is (string)$row->ml_release_id , (string)$release\n";
+                        $found = true;
+                        $table[$motif_type][] = array(
+                            anchor(base_url(array('motifs','release',$motif_type,$release)), $release),
+                            $this->make_release_label($row->num_added_groups, $release, $row->release_id2, $motif_type),
+                            $this->make_release_label($row->num_removed_groups, $release, $row->release_id2, $motif_type),
+                            $this->make_release_label($row->num_updated_groups, $release, $row->release_id2, $motif_type),
+                            $this->make_release_label($row->num_added_loops, $release, $row->release_id2, $motif_type),
+                            $this->make_release_label($row->num_removed_loops, $release, $row->release_id2, $motif_type),
+                            $data[$release]['loops'],
+                            $data[$release]['motifs'],
+                            date('m-d-Y', strtotime($data[$release]['date'])),
+                            $data[$release]['annotation']
+                        );
+                        break;
+                    } 
+                }
+
+                if (!$found and $release != "3.0" and $release != "3.1"){
+                    // echo "debuging info building table now in no, diff found and release id is (string)$row->ml_release_id , (string)$release\n";
                     $table[$motif_type][] = array(
-                        anchor(base_url(array('motifs','release',$motif_type,$row->ml_release_id)), $row->ml_release_id),
-                        $this->make_release_label($row->num_added_groups, $row->ml_release_id, $releases[$row->ml_release_id], $motif_type),
-                        $this->make_release_label($row->num_removed_groups, $row->ml_release_id, $releases[$row->ml_release_id], $motif_type),
-                        $this->make_release_label($row->num_updated_groups, $row->ml_release_id, $releases[$row->ml_release_id], $motif_type),
-                        $this->make_release_label($row->num_added_loops, $row->ml_release_id, $releases[$row->ml_release_id], $motif_type),
-                        $this->make_release_label($row->num_removed_loops, $row->ml_release_id, $releases[$row->ml_release_id], $motif_type),
-                        $data[$row->ml_release_id]['loops'],
-                        $data[$row->ml_release_id]['motifs'],
-                        date('m-d-Y', strtotime($data[$row->ml_release_id]['date'])),
-                        $data[$row->ml_release_id]['annotation']
+                        anchor(base_url(array('motifs','release',$motif_type,$release)), $release),
+                        "<span>pending</span>",
+                        "<span>pending</span>",
+                        "<span>pending</span>",
+                        "<span>pending</span>",
+                        "<span>pending</span>",
+                        $data[$release]['loops'],
+                        $data[$release]['motifs'],
+                        date('m-d-Y', strtotime($data[$release]['date'])),
+                        $data[$release]['annotation']
                     );
                 }
             }
 
-            // show the first release that has nothing to compare it with
-            $table[$motif_type][] = array(
-                anchor(base_url(array('motifs','release',$motif_type,'0.1')), '0.1'),
-                0,
-                0,
-                0,
-                0,
-                0,
-                $data['0.1']['loops'],
-                $data['0.1']['motifs'],
-                date('m-d-Y', strtotime($data['0.1']['date'])),
-                $data['0.1']['annotation']
-            );
+            // // show the first release that has nothing to compare it with
+            // $table[$motif_type][] = array(
+            //     anchor(base_url(array('motifs','release',$motif_type,'0.1')), '0.1'),
+            //     0,
+            //     0,
+            //     0,
+            //     0,
+            //     0,
+            //     $data['0.1']['loops'],
+            //     $data['0.1']['motifs'],
+            //     date('m-d-Y', strtotime($data['0.1']['date'])),
+            //     $data['0.1']['annotation']
+            // );
         }
 
         return $table;
@@ -522,7 +548,7 @@ class Motifs_model extends CI_Model {
                                 #. "<li>Annotations</li>"
                                 . '</ul>'
                                 ."$annotation_new",
-                             $length_distribution['min'],
+                             $length_distribution['unit_count']/$row->instances,
                              $row->instances);
                 $i++;
             }
@@ -571,6 +597,14 @@ class Motifs_model extends CI_Model {
         $distribution['max'] = max($length);
         $distribution['min'] = min($length);
         $distribution['diff'] = $distribution['max'] - $distribution['min'];
+
+        $this->db->select('COUNT(MLP.unit_id) AS unit_count')
+                 ->from('ml_loop_positions AS MLP')
+                 ->where('MLP.ml_release_id', $release_id)
+                 ->where('MLP.motif_id', $motif_id);
+        $query = $this->db->get();
+        $row = $query->row();
+        $distribution['unit_count'] = $row->unit_count;
 
         return $distribution;
     }
