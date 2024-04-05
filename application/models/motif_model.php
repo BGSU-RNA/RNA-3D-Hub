@@ -581,15 +581,53 @@ class Motif_model extends CI_Model {
                     }
                 }
            } elseif ( $loop_type == 'J3' ) {
-                $this->db->select('LI.seq, LI.nwc_seq')
-                         ->from('loop_info AS LI')
-                         ->where('LI.loop_id', $loop_id);
+                // $this->db->select('LI.seq, LI.nwc_seq')
+                //          ->from('loop_info AS LI')
+                //          ->where('LI.loop_id', $loop_id);
+                // $query = $this->db->get();
+
+                // foreach ( $query->result() as $row ){
+                //     $seq_com[] = $row->seq;
+                //     $seq_nwc[] = $row->nwc_seq;
+                // }
+                $this->db->select('unit_id, border')
+                ->from('loop_positions')
+                ->order_by('position_2023','asc')
+                ->where('loop_id',$loop_id);
                 $query = $this->db->get();
 
-                foreach ( $query->result() as $row ){
-                    $seq_com[] = $row->seq;
-                    $seq_nwc[] = $row->nwc_seq;
+                $sequence = array();
+                $nwc_sequence = array();
+                $count_border = 0;
+                $modified_nucleotides = array();
+
+                foreach ($query->result() as $row) {
+                    $parts = explode('|', $row->unit_id);
+                    // $sequence[] = $parts[3];
+                    if($row->border==1){
+                        $count_border++;
+                        if($count_border != 3 and $count_border != 5){
+                            $sequence[] = $parts[3];
+                        }else{
+                            $sequence[] = '*' . $parts[3];
+                            $nwc_sequence[] = '*';
+                        }
+                    }else{
+                        if (strlen($parts[3]) == 1){
+                            $sequence[] = $parts[3];
+                            $nwc_sequence[] = $parts[3];
+                        }else{
+                            $sequence[] = '(' . $parts[3] . ')';
+                            $modified_nucleotides[] = $parts[3];
+                            $nwc_sequence[] = '(' . $parts[3] . ')';
+                        }
+                    }
                 }
+        
+                $seq_com[] = implode('', $sequence);
+                $seq_nwc[] = implode('', $nwc_sequence);
+        
+
            }
         }
 
