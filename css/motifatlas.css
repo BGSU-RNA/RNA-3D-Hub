@@ -504,8 +504,8 @@ input[type=radio], input[type=checkbox] {
 .motifs_view img.thumbnail {
     width:90px;
 }
-.motifs_view .varna {
-    width:80px;
+.motifs_view img.varna {
+    width:150px;
 }
 .svg_varna {
     background-size: 160px;
