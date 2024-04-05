@@ -905,6 +905,86 @@ class Nrlist_model extends CI_Model {
         return $heatmap_data;
     }
 
+    function get_ribosome_annotation_new($id)
+    {
+        $this->db->select('ch.ife_id')
+                    ->select('pi.pdb_id')
+                    ->select('ca.assembly_id')
+                    ->select('ca.ssu_chain')
+                    ->select('ca.lsu_large_chain')
+                    ->select('ca.lsu_medium_chain')
+                    ->select('ca.lsu_small_chain')
+                    ->select('ca.mrna')
+                    ->select('ca.aminoacyl_trna')
+                    ->select('ca.aminoacyl_trna_state')
+                    ->select('ca.peptidyl_trna')
+                    ->select('ca.peptidyl_trna_state')
+                    ->select('ca.exit_trna')
+                    ->select('ca.exit_trna_state')
+                    ->from('pdb_info AS pi')
+                    ->join('ife_info AS ii','pi.pdb_id = ii.pdb_id')
+                    ->join('nr_class_rank AS ch', 'ii.ife_id = ch.ife_id')
+                    ->join('nr_classes AS cl', 'ch.nr_class_name = cl.name')
+                    ->join('ribosome_chain_annotation AS ca', 'ch.ife_id = ca.ssu_chain')
+                    ->where('cl.name',$id)
+                    ->where('cl.nr_release_id', $this->last_seen_in) # copy from the comment function above
+                    ->group_by('pi.pdb_id')
+                    ->group_by('ii.ife_id')
+                    ->order_by('ch.rank','asc');
+
+        $query = $this->db->get();
+
+        $i = 0;
+        $table = array();
+
+        foreach ($query -> result() as $row) {
+            $link = $this->make_pdb_widget_link($row->ife_id);
+            $assembly = $row->assembly_id;
+            
+            $ife_components = explode("|", $row->ife_id);
+            $pdb_id = $ife_components[0];
+
+
+            $lsu_large_chain = $row->lsu_large_chain;
+            $lsu_medium_chain = $row->lsu_medium_chain;
+            $lsu_small_chain = $row->lsu_small_chain;
+            $mrna = $row->mrna;
+
+            $aminoacyl_trna_occupancy = "";
+            if (!empty($row->aminoacyl_trna)) {
+                $aminoacyl_trna_occupancy = $row->aminoacyl_trna . " (" . $row->aminoacyl_trna_state . ")";
+            }
+
+            $peptidyl_trna_occupancy = "";
+            if (!empty($row->peptidyl_trna)) {
+                $peptidyl_trna_occupancy = $row->peptidyl_trna . " (" . $row->peptidyl_trna_state . ")";
+            }
+
+            $exit_trna_occupancy = "";
+            if (!empty($row->exit_trna)) {
+                $exit_trna_occupancy = $row->exit_trna . " (" . $row->exit_trna_state . ")";
+            }
+
+
+            $i++;
+            $table[] = array($i,
+                             $link,
+                             $row->pdb_id,
+                             $assembly,
+                             $lsu_large_chain,
+                             $lsu_medium_chain,
+                             $lsu_small_chain,
+                             $mrna,
+                             $aminoacyl_trna_occupancy,
+                             $peptidyl_trna_occupancy,
+                             $exit_trna_occupancy
+                            );
+
+        }
+
+        return $table; 
+    }
+
     function get_ribosome_chain($pdb, $assembly, $value)
     {
         $this->db->select('chain')

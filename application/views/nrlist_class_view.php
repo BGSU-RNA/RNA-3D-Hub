@@ -35,6 +35,7 @@
           <li class="active"><a href="#members">Members (<?=$num_members?>)</a></li>
           <li><a href="#history">History</a></li>
           <li><a href="#heatmap">Heat map</a></li>
+          <li><a href="#annotation">Annotation</a></li>
         </ul>
 
            <div class="tab-content">
@@ -94,10 +95,19 @@
                       <script type="text/javascript">
                           var data = <? echo $heatmap_data; ?>;
                       </script>
-                      <script type="text/javascript" src="<?=$baseurl?>js/heatmap.js"></script>
+                      <!-- <script type="text/javascript" src="<?=$baseurl?>js/heatmap.js"></script> -->
+                      <script type="text/javascript" src="http://rna.bgsu.edu/webfr3d/js/heatmap_ekko.js"></script>
                     </div>
                 </div>
             </div> <!-- heatmap -->
+
+            <div class="tab-pane" id="annotation">
+                  <div class="span100p">
+                      <div>
+                        <?=$annotation?>
+                      </div>
+                  </div>
+            </div> 
 
       </div> <!-- content -->
     </div> <!-- container -->
@@ -105,6 +115,7 @@
       <script>
         $(function () {
           $("#members_table").tablesorter();
+          $("#sort").tablesorter();
           $(".pdb").click(LookUpPDBInfo);
         })
       </script>

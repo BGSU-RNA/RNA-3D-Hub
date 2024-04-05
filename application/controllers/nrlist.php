@@ -96,6 +96,8 @@ class Nrlist extends CI_Controller {
             show_404();
         }
 
+        $this->output->enable_profiler(TRUE);
+
         $releases = $this->Nrlist_model->get_releases_by_class($id);
         $tmpl = array( 'table_open'  => "<table class='bordered-table'>" );
         $this->table->set_template($tmpl);
@@ -127,13 +129,19 @@ class Nrlist extends CI_Controller {
         $statistics = $this->Nrlist_model->get_statistics($id);
         $tmpl = array( 'table_open'  => "<table class='condensed-table bordered-table zebra-striped pairwise-interactions' id='sort'>" );
         $this->table->set_template($tmpl);
-        $this->table->set_heading('#S','PDB','Title','Method','Resolution','Length');
+        $this->table->set_heading('#S','PDB','Title','Method','Resolution','Length','NAKB_NA_annotation','NAKB_protein_annotation');
         $data['statistics'] = $this->table->generate($statistics);
 
         $heatmap = $this->Nrlist_model->get_heatmap_data_revised($id);
         #$heatmap = $this->Nrlist_model->get_heatmap_data($id, $nr_release_id);
 	#$heatmap = $this->Nrlist_model->get_heatmap_data_revised_original($id);
         $data['heatmap_data'] = $heatmap;
+
+        $annotation = $this->Nrlist_model->get_ribosome_annotation_new($id);
+        $tmpl = array( 'table_open'  => "<table class='condensed-table bordered-table zebra-striped pairwise-interactions' id='sort'>" );
+        $this->table->set_template($tmpl);
+        $this->table->set_heading('#S', 'SSU_Chain', 'PDB', 'Assembly', 'LSU_Large_Chain', 'LSU_Medium_Chain', 'LSU_Small_Chain', 'mRNA_Chain', 'Aminoacyl_tRNA_Occupancy', 'Peptidyl_tRNA_Occupancy', 'Exit_tRNA_Occupancy');
+        $data['annotation'] = $this->table->generate($annotation);
 
         $data['title'] = $id;
         $data['baseurl'] = base_url();
