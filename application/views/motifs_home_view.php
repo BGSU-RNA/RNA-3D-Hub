@@ -18,13 +18,13 @@
               Follow us on <a href="https://twitter.com/rna3dhub">Twitter</a>.
             </p>
 
-            <a class="btn primary large" href="<?=$baseurl?>motifs/release/il/<?=$release_info['il_release']?>">Internal loops</a>
-            <em>Current version: <?=$release_info['il_release']?></em>
+            <a class="btn primary large" href="<?=$baseurl?>motifs/release/hl/<?=$release_info['hl_release']?>">Hairpin loops</a>
+            <em>Current version: <?=$release_info['hl_release']?></em>
 
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-            <a class="btn primary large" href="<?=$baseurl?>motifs/release/hl/<?=$release_info['hl_release']?>">Hairpin loops</a>
-            <em>Current version: <?=$release_info['hl_release']?></em>
+            <a class="btn primary large" href="<?=$baseurl?>motifs/release/il/<?=$release_info['il_release']?>">Internal loops</a>
+            <em>Current version: <?=$release_info['il_release']?></em>
 
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
