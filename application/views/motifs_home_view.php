@@ -13,7 +13,8 @@
             </p>
 
             <p>
-              In Summer 2021 we made small adjustments to the clustering methodology.
+              With release 3.77 we implemented a new clustering strategy.
+              In April 2024, we released J3 motif groups, filling in all the way back to 2018-02-09.
               See the <a href="https://docs.google.com/document/d/1OpeT3w00PsFly5eVMLXxyTgxrf9odadse1m6Slpqhkc/edit?usp=sharing">release notes for each release</a>.
               Follow us on <a href="https://twitter.com/rna3dhub">Twitter</a>.
             </p>
