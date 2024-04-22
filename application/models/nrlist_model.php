@@ -481,48 +481,158 @@ class Nrlist_model extends CI_Model {
                              $row->resolution,
                              $row->release_date);
                              #$row->value;
+            // $this->db->select('ppv.pdb_id')
+            //                 ->select('ppv.property')
+            //                 ->select('ppv.value')
+            //                  ->from('pdb_property_value AS ppv')
+            //                  ->where('ppv.pdb_id',$row->pdb_id);
+            //         $query_property = $this->db->get();
+            //         foreach ($query_property->result as $row){
+            //             $property_name = $row->property;
+            //             $value = $row->value;
+            //         }
+
+
         }
+        // pdb_property_value
+
 
         return $table;
     }
 
     function get_statistics($id)
-    {
-        $this->db->select('pi.pdb_id')
-                 ->select('ii.ife_id')
-                 ->select('pi.title')
-                 ->select('pi.experimental_technique')
-                 ->select('pi.release_date')
-                 ->select('pi.resolution')
-                 ->select('ii.length')
-                 ->select('ii.bp_count')
-                 ->select('ot.class_order')
-                 ->from('pdb_info AS pi')
-                 ->join('ife_info AS ii','pi.pdb_id = ii.pdb_id')
-                 ->join('nr_ordering_test AS ot', 'ii.ife_id = ot.ife_id')
-                 ->where('ot.nr_class_name',$id)
-                 ->order_by('ot.class_order','asc');
-        $query = $this->db->get();
-        $i = 0;
-        $table = array();
-        foreach ($query -> result() as $row) {
-            $link = $this->make_pdb_widget_link($row->ife_id);
-            //if ( $i==0 ) {
-                //$link = $link . ' <strong>(rep)</strong>';
-            //}
+    {   if(substr($id, 0, 3) === "DNA"){
+            $this->db->select('pi.pdb_id')
+                    ->select('ii.ife_id')
+                    ->select('pi.title')
+                    ->select('pi.experimental_technique')
+                    ->select('pi.release_date')
+                    ->select('pi.resolution')
+                    ->select('ii.length')
+                    ->select('ii.bp_count')
+                    ->select('ot.class_order')
+                    // ->select('ppv.property')
+                    // ->select('ppv.value')
+                    ->from('pdb_info AS pi')
+                    ->join('ife_info AS ii','pi.pdb_id = ii.pdb_id')
+                    ->join('nr_ordering_test AS ot', 'ii.ife_id = ot.ife_id')
+                    // ->join('pdb_property_value AS ppv', 'pi.pdb_id = ppv.pdb_id')
+                    ->where('ot.nr_class_name',$id)
+                    ->order_by('ot.class_order','asc');
+            $query = $this->db->get();
+            $i = 0;
+            $table = array();
+            foreach ($query -> result() as $row) {
+                $link = $this->make_pdb_widget_link($row->ife_id);
+                //if ( $i==0 ) {
+                    //$link = $link . ' <strong>(rep)</strong>';
+                //}
 
-            $i++;
-            $table[] = array($i,
-                             $link,
-                             $row->title,
-                             //$this->get_source_organism($row->ife_id),
-                             //$this->get_compound_list($row->pdb_id),
-                             $row->experimental_technique,
-                             $row->resolution,
-                             $row->length);
-                             //$row->bp_count);
-        }
-        return $table;
+                $i++;
+                $table[] = array($i,
+                                $link,
+                                $row->title,
+                                // "<br><strong>Property:</strong> " . $row->property .
+                                // "; <br><strong>Value:</strong> " . $row->value,
+                                //$this->get_source_organism($row->ife_id),
+                                //$this->get_compound_list($row->pdb_id),
+                                $row->experimental_technique,
+                                $row->resolution,
+                                $row->length,
+                                // $row->property,
+                                // $row->value
+                                'NAKB_NA_annotation',
+                                'NAKB_protein_annotation',
+                                );
+                                //$row->bp_count);
+            }
+            $annotations = array();
+            $this->db->select('pi.pdb_id')
+                    ->select('ii.ife_id')
+                    ->select('pi.title')
+                    ->select('pi.experimental_technique')
+                    ->select('pi.release_date')
+                    ->select('pi.resolution')
+                    ->select('ii.length')
+                    ->select('ii.bp_count')
+                    ->select('ot.class_order')
+                    ->select('ppv.property')
+                    ->select('ppv.value')
+                    ->from('pdb_info AS pi')
+                    ->join('ife_info AS ii','pi.pdb_id = ii.pdb_id')
+                    ->join('nr_ordering_test AS ot', 'ii.ife_id = ot.ife_id')
+                    ->join('pdb_property_value AS ppv', 'pi.pdb_id = ppv.pdb_id')
+                    ->where('ot.nr_class_name',$id)
+                    ->order_by('ot.class_order','asc');
+            $query = $this->db->get();
+            foreach ($query -> result() as $row) {
+                $link = $this->make_pdb_widget_link($row->ife_id);
+                $annotations[] = array(
+                                $link,
+                                $row->property,
+                                $row->value
+                                );
+            }
+            
+            $return_table = array();
+            foreach ($table as $r){
+                $tem_r = $r;
+                foreach($annotations as $l){
+                    if ($tem_r[1] == $l[0]){
+                        // $tem_r[2] .= "<br><strong>" . ($l[1] ?: "NULL") . ": </strong>"  . ($l[2] ?: "NULL");
+                        // $tem_r[] = ($l[1] ?: "NULL");
+                        // $tem_r[] = ($l[2] ?: "NULL");
+                        // $tem_r[2] .= "; <br><strong>Value:</strong> " . $l[2];
+                        if ($tem_r[6] == $l[1]){
+                            $tem_r[6] = ($l[2] ?: "NULL");
+                        }
+                        if ($tem_r[7] == $l[1]){
+                            $tem_r[7] = ($l[2] ?: "NULL");
+                        }
+                    }
+                }
+                $return_table[] = $tem_r;
+
+            }
+            return $return_table;
+    }else{
+            $this->db->select('pi.pdb_id')
+                    ->select('ii.ife_id')
+                    ->select('pi.title')
+                    ->select('pi.experimental_technique')
+                    ->select('pi.release_date')
+                    ->select('pi.resolution')
+                    ->select('ii.length')
+                    ->select('ii.bp_count')
+                    ->select('ot.class_order')
+                    ->from('pdb_info AS pi')
+                    ->join('ife_info AS ii','pi.pdb_id = ii.pdb_id')
+                    ->join('nr_ordering_test AS ot', 'ii.ife_id = ot.ife_id')
+                    ->where('ot.nr_class_name',$id)
+                    ->order_by('ot.class_order','asc');
+            $query = $this->db->get();
+            $i = 0;
+            $table = array();
+            foreach ($query -> result() as $row) {
+                $link = $this->make_pdb_widget_link($row->ife_id);
+                //if ( $i==0 ) {
+                    //$link = $link . ' <strong>(rep)</strong>';
+                //}
+
+                $i++;
+                $table[] = array($i,
+                                $link,
+                                "<strong>Title:</strong> " .$row->title,
+                                //$this->get_source_organism($row->ife_id),
+                                //$this->get_compound_list($row->pdb_id),
+                                $row->experimental_technique,
+                                $row->resolution,
+                                $row->length);
+                                //$row->bp_count);
+            }
+            return $table;
+    }
+        
     }
 
     /*
@@ -822,10 +932,11 @@ class Nrlist_model extends CI_Model {
             $heatmap_data = json_encode($query->result());
 
         }
-
         $eff_data = json_decode($heatmap_data,true);
+        // echo json_encode($eff_data);
         $eff_ifes = array();
         $eff_discrepancy = array();
+        $eff_discrepancy_one_row = array();
         foreach ($eff_data as $row) {
             $tem_row = array();
             foreach ($row as $key => $value) {
@@ -836,13 +947,36 @@ class Nrlist_model extends CI_Model {
                 }
                 if ($key == 'discrepancy'){
                     $tem_row[] = $value;
+                    $eff_discrepancy_one_row[] = floatval($value);
+                    // $eff_discrepancy[] = $value
                 }
             }
             $eff_discrepancy[] = $tem_row;
         }
         $eff_data_cleaned = array();
         $eff_data_cleaned[] = '#heatmap'; 
-        $eff_data_cleaned[] = $eff_discrepancy; 
+        // $eff_data_cleaned[] = $eff_discrepancy; 
+        // echo json_encode($eff_discrepancy_one_row);
+
+        $two_d_array = array();
+        $size = count($eff_ifes); 
+        // echo $size;
+        for ($i = 0; $i < count($eff_discrepancy_one_row); $i += $size) {
+            // $array_with_null = array_slice($eff_discrepancy_one_row, $i, $size);
+            // $array_with_null[$i] = 0;
+            // $two_d_array[] = $array_with_null;
+            $two_d_array[] = array_slice($eff_discrepancy_one_row, $i, $size);
+        }
+        for ($i = 0; $i < $size; $i++) {
+            $two_d_array[$i][$i] = 0; 
+        }
+        // $tem_change_array = json_encode($two_d_array) + ',';
+        // echo json_encode($tem_change_array);
+        // $two_d_array = json_decode($tem_change_array);
+        $eff_data_cleaned[] = $two_d_array; 
+
+
+
         $eff_data_cleaned[] = $eff_ifes; 
         // echo 'eff_data_cleaned';
         // print_r($eff_ifes);
@@ -855,11 +989,12 @@ class Nrlist_model extends CI_Model {
         // echo $eff_ifes;
         // echo 'eff_discrepancy';
         // echo $eff_discrepancy;
-        
-        // return json_encode($eff_data_cleaned);
-
+        // return $heatmap_data;
+        return json_encode($eff_data_cleaned);
+        // return json_encode(["#heatmap",[[0,0.1247],[0.1247,0],],["1EGW|1|E+1EGW|1|F","1EGW|1|G+1EGW|1|H"]]);
         return $heatmap_data;
     }
+      
 
     function get_heatmap_data($id)
     {
@@ -904,6 +1039,86 @@ class Nrlist_model extends CI_Model {
 
         return $heatmap_data;
     }
+
+    function get_ribosome_annotation_new($id)
+    {
+        $this->db->select('ch.ife_id')
+                    ->select('pi.pdb_id')
+                    ->select('ca.assembly_id')
+                    ->select('ca.ssu_chain')
+                    ->select('ca.lsu_large_chain')
+                    ->select('ca.lsu_medium_chain')
+                    ->select('ca.lsu_small_chain')
+                    ->select('ca.mrna')
+                    ->select('ca.aminoacyl_trna')
+                    ->select('ca.aminoacyl_trna_state')
+                    ->select('ca.peptidyl_trna')
+                    ->select('ca.peptidyl_trna_state')
+                    ->select('ca.exit_trna')
+                    ->select('ca.exit_trna_state')
+                    ->from('pdb_info AS pi')
+                    ->join('ife_info AS ii','pi.pdb_id = ii.pdb_id')
+                    ->join('nr_class_rank AS ch', 'ii.ife_id = ch.ife_id')
+                    ->join('nr_classes AS cl', 'ch.nr_class_name = cl.name')
+                    ->join('ribosome_chain_annotation AS ca', 'ch.ife_id = ca.ssu_chain')
+                    ->where('cl.name',$id)
+                    ->where('cl.nr_release_id', $this->last_seen_in) # copy from the comment function above
+                    ->group_by('pi.pdb_id')
+                    ->group_by('ii.ife_id')
+                    ->order_by('ch.rank','asc');
+
+        $query = $this->db->get();
+
+        $i = 0;
+        $table = array();
+
+        foreach ($query -> result() as $row) {
+            $link = $this->make_pdb_widget_link($row->ife_id);
+            $assembly = $row->assembly_id;
+            
+            $ife_components = explode("|", $row->ife_id);
+            $pdb_id = $ife_components[0];
+
+
+            $lsu_large_chain = $row->lsu_large_chain;
+            $lsu_medium_chain = $row->lsu_medium_chain;
+            $lsu_small_chain = $row->lsu_small_chain;
+            $mrna = $row->mrna;
+
+            $aminoacyl_trna_occupancy = "";
+            if (!empty($row->aminoacyl_trna)) {
+                $aminoacyl_trna_occupancy = $row->aminoacyl_trna . " (" . $row->aminoacyl_trna_state . ")";
+            }
+
+            $peptidyl_trna_occupancy = "";
+            if (!empty($row->peptidyl_trna)) {
+                $peptidyl_trna_occupancy = $row->peptidyl_trna . " (" . $row->peptidyl_trna_state . ")";
+            }
+
+            $exit_trna_occupancy = "";
+            if (!empty($row->exit_trna)) {
+                $exit_trna_occupancy = $row->exit_trna . " (" . $row->exit_trna_state . ")";
+            }
+
+
+            $i++;
+            $table[] = array($i,
+                             $link,
+                             $row->pdb_id,
+                             $assembly,
+                             $lsu_large_chain,
+                             $lsu_medium_chain,
+                             $lsu_small_chain,
+                             $mrna,
+                             $aminoacyl_trna_occupancy,
+                             $peptidyl_trna_occupancy,
+                             $exit_trna_occupancy
+                            );
+
+        }
+
+        return $table; 
+    }    
 
     function get_ribosome_chain($pdb, $assembly, $value)
     {
@@ -1353,10 +1568,11 @@ class Nrlist_model extends CI_Model {
                  ->join('nr_class_rank AS nc', 'ii.ife_id = nc.ife_id')
                  ->join('nr_classes AS nl', 'nc.nr_class_name = nl.name')
                  ->where('nl.nr_release_id', $id)
-                //  ->group_start()
-                    ->like('nl.name', "NR_{$resolution}", 'after')
-                    ->or_like('nl.name', "DNA_{$resolution}", 'after')
-                //  ->group_end()
+                //  // ->group_start()
+                //     ->like('nl.name', "NR_{$resolution}", 'after')
+                //     ->or_like('nl.name', "DNA_{$resolution}", 'after')
+                //  // ->group_end()
+                ->where("(nl.name LIKE 'NR_{$resolution}%' OR nl.name LIKE 'DNA_{$resolution}%')")
                  ->order_by('nc.rank','asc');
         $query = $this->db->get();
 
@@ -1589,6 +1805,25 @@ class Nrlist_model extends CI_Model {
                 $cpv_html_list_item .= '<li>Rfam: ' . $rfam_representative . '</li>';
             }
 
+            $this->db->select('ppv.pdb_id')
+                    ->select('ppv.property')
+                    ->select('ppv.value')
+                    ->from('pdb_property_value AS ppv')
+                    ->where('ppv.pdb_id',$row->pdb_id);
+            $query_property = $this->db->get();
+            // $property_value = array();
+            // foreach ($query_property->result as $row){
+            //     $property_value[$row->property] = ($row->value ?: "NULL");
+            // }     
+            if ($query_property->num_rows() > 0) {
+                $property_value = array();
+                foreach ($query_property->result() as $row1) {
+                    $property_value[$row1->property] = ($row1->value ?: "NULL");
+                }
+            } else {
+                $property_value['NAKB_NA_annotation'] = 'NULL';
+                $property_value['NAKB_protein_annotation'] = 'NULL';
+            }       
 
             // $id refers to the release_id
             $table[] = array($i,
@@ -1609,8 +1844,11 @@ class Nrlist_model extends CI_Model {
                              $row->analyzed_length,
                              #$row->analyzed_length . '&nbsp;(analyzed)<br>' .
                              #$row->experimental_length . '&nbsp;(experimental)',
-                             "(" . $this->count_pdb_class($class[$class_id]) . ") " . $this->add_pdb_class($class[$class_id])
+                             "(" . $this->count_pdb_class($class[$class_id]) . ") " . $this->add_pdb_class($class[$class_id]),
                              #"(" . $nums . "," . $this->count_pdb_class($class[$class_id]) . ") " . $this->add_pdb_class($class[$class_id])
+                             ($property_value['NAKB_NA_annotation'] ?: 'NULL'),
+                             ($property_value['NAKB_protein_annotation'] ?: 'NULL')
+                            // '1','1'
                             );
             $i++;
         }
@@ -1734,3 +1972,4 @@ class Nrlist_model extends CI_Model {
 
 /* End of file nrlist_model.php */
 /* Location: ./application/model/nrlist_model.php */
+/* before delete */

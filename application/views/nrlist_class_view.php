@@ -92,9 +92,10 @@
                       </div>
                       <script src="//d3js.org/d3.v4.min.js"></script>
                       <script type="text/javascript">
-                          var data = <? echo $heatmap_data; ?>;
+                          var data = <? echo $heatmap_data ?>;
                       </script>
-                      <script type="text/javascript" src="<?=$baseurl?>js/heatmap.js"></script>
+                      <!-- <script type="text/javascript" src="<?=$baseurl?>js/heatmap.js"></script> -->
+                      <script type="text/javascript" src="http://rna.bgsu.edu/webfr3d/js/heatmap_ekko.js"></script>
                     </div>
                 </div>
             </div> <!-- heatmap -->

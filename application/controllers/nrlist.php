@@ -49,7 +49,7 @@ class Nrlist extends CI_Controller {
         $data['counts'] = $temp['counts'];
         $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table' id='sort'>" );
         $this->table->set_template($tmpl);
-        $this->table->set_heading('#', 'Equivalence class', 'Representative', 'Resolution', 'Nts', 'Class members');
+        $this->table->set_heading('#', 'Equivalence class', 'Representative', 'Resolution', 'Nts', 'Class members','NAKB_NA_annotation','NAKB_protein_annotation');
         $data['class'] = $this->table->generate($temp['table']);
 
         $data['baseurl'] = base_url();
@@ -127,12 +127,12 @@ class Nrlist extends CI_Controller {
         $statistics = $this->Nrlist_model->get_statistics($id);
         $tmpl = array( 'table_open'  => "<table class='condensed-table bordered-table zebra-striped pairwise-interactions' id='sort'>" );
         $this->table->set_template($tmpl);
-        $this->table->set_heading('#S','PDB','Title','Method','Resolution','Length');
+        $this->table->set_heading('#S','PDB','Title','Method','Resolution','Length','NAKB_NA_annotation','NAKB_protein_annotation');
         $data['statistics'] = $this->table->generate($statistics);
 
         $heatmap = $this->Nrlist_model->get_heatmap_data_revised($id);
         #$heatmap = $this->Nrlist_model->get_heatmap_data($id, $nr_release_id);
-	#$heatmap = $this->Nrlist_model->get_heatmap_data_revised_original($id);
+	    #$heatmap = $this->Nrlist_model->get_heatmap_data_revised_original($id);
         $data['heatmap_data'] = $heatmap;
 
         $data['title'] = $id;
