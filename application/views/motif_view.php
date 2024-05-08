@@ -86,7 +86,7 @@
 
                         <!-- <div class="tab-pane" id='similar'>
                             <div>
-                                <?=$similar_motifs?>
+                                <?php //=$similar_motifs?>
                             </div>
                         </div> -->
 
@@ -323,11 +323,11 @@
                          #S - ordering by similarity (same as in the heat map).
                       </span>
                       <div>
-                        <?=$statistics?>
+                        <?php //=$statistics?>
                       </div>
                       <script src="//d3js.org/d3.v4.min.js"></script>
                       <script type="text/javascript">
-                          var data = <? echo $heatmap_data; ?>;
+                          var data = <?php // echo $heatmap_data; ?>;
                       </script>
                       <script type="text/javascript" src="http://rna.bgsu.edu/webfr3d/js/heatmap.js"></script>
                     </div>
