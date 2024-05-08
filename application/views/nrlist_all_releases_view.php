@@ -38,6 +38,11 @@
                   within large equivalences classes such as Thermus thermophilus small ribosomal subunit.
                 </p>
                 <p>
+                  With release 3.333, we improved the treatment of taxonimic ids, mapping the taxid
+                  associated with the PDB chain to a single taxid for the species, so that different
+                  strains of the same organism will be grouped together into a single equivalence class.
+                  This resulted in unusually many changes to equivalence classes.
+                <p>
                   With Release 3.0, we modified the procedure for choosing the representative
                   of each equivalence class.
                   The representative is now chosen as the IFE (Integrated Functional Element)
