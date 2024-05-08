@@ -288,6 +288,19 @@ class Nrlist_model extends CI_Model {
         $query = $this->db->get();
 
         # get chain, source, rfam, standardized names for pdb ids in this equivalence class
+        # query on 2024-03-30 gets multiple lines from nr_classes whose name matches $id
+        #
+        // $this->db->select('ii.pdb_id')
+        //          ->select('ch.ife_id')
+        //          ->select('cpv.chain')
+        //          ->select('cpv.property')
+        //          ->select('cpv.value')
+        //          ->from('ife_info AS ii')
+        //          ->join('nr_class_rank AS ch', 'ii.ife_id = ch.ife_id')
+        //          ->join('nr_classes AS cl', 'ch.nr_class_name = cl.name')
+        //          ->join('chain_property_value AS cpv', 'cpv.pdb_id = ii.pdb_id')
+        //          ->where('cl.name',$id);
+        # new version, skip the join between nr_classes and nr_class_rank
         $this->db->select('ii.pdb_id')
                  ->select('ch.ife_id')
                  ->select('cpv.chain')
@@ -295,9 +308,8 @@ class Nrlist_model extends CI_Model {
                  ->select('cpv.value')
                  ->from('ife_info AS ii')
                  ->join('nr_class_rank AS ch', 'ii.ife_id = ch.ife_id')
-                 ->join('nr_classes AS cl', 'ch.nr_class_name = cl.name')
                  ->join('chain_property_value AS cpv', 'cpv.pdb_id = ii.pdb_id')
-                 ->where('cl.name',$id);
+                 ->where('ch.nr_class_name',$id);
         $query_cpv = $this->db->get();
 
         // converting experimental_technique without changing pdb_info table.
@@ -841,9 +853,9 @@ class Nrlist_model extends CI_Model {
             $eff_discrepancy[] = $tem_row;
         }
         $eff_data_cleaned = array();
-        $eff_data_cleaned[] = '#heatmap'; 
-        $eff_data_cleaned[] = $eff_discrepancy; 
-        $eff_data_cleaned[] = $eff_ifes; 
+        $eff_data_cleaned[] = '#heatmap';
+        $eff_data_cleaned[] = $eff_discrepancy;
+        $eff_data_cleaned[] = $eff_ifes;
         // echo 'eff_data_cleaned';
         // print_r($eff_ifes);
         // echo '*****';
@@ -855,7 +867,7 @@ class Nrlist_model extends CI_Model {
         // echo $eff_ifes;
         // echo 'eff_discrepancy';
         // echo $eff_discrepancy;
-        
+
         // return json_encode($eff_data_cleaned);
 
         return $heatmap_data;
@@ -1353,10 +1365,11 @@ class Nrlist_model extends CI_Model {
                  ->join('nr_class_rank AS nc', 'ii.ife_id = nc.ife_id')
                  ->join('nr_classes AS nl', 'nc.nr_class_name = nl.name')
                  ->where('nl.nr_release_id', $id)
-                //  ->group_start()
-                    ->like('nl.name', "NR_{$resolution}", 'after')
-                    ->or_like('nl.name', "DNA_{$resolution}", 'after')
-                //  ->group_end()
+                //  // ->group_start()
+                //     ->like('nl.name', "NR_{$resolution}", 'after')
+                //     ->or_like('nl.name', "DNA_{$resolution}", 'after')
+                //  // ->group_end()
+                ->where("(nl.name LIKE 'NR_{$resolution}%' OR nl.name LIKE 'DNA_{$resolution}%')")
                  ->order_by('nc.rank','asc');
         $query = $this->db->get();
 
