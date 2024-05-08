@@ -125,14 +125,14 @@ class Ajax_model extends CI_Model {
                         "<u>Organism</u>: <i>{$source}</i><br/>";
 
             //  Debugging info
-            //$pdb_info .= "<hr/>" . 
+            //$pdb_info .= "<hr/>" .
             //             "<u>PDB</u>: [ $pdb ]<br/>" .
             //             "<u>IFE</u>: [ $ife ]<br/>";
             //$pdb_info .= "<hr/>" .
             //             "<u>class</u>: [ $rsc ]<br/>";
 
             //  Isolate nt/bp in preparation for removal.
-            $pdb_info .= "<hr/>" . 
+            $pdb_info .= "<hr/>" .
                          "<i>$nucleotides nucleotides, $basepairs basepairs, $bpnt basepairs/nucleotide</i><br/>";
 
             //  Separate the CQS logic, and conditionally display these values
@@ -173,18 +173,18 @@ class Ajax_model extends CI_Model {
                     $frobs  = "not available";
                 }
 
-                $pdb_info .= "<hr/>" . 
+                $pdb_info .= "<hr/>" .
                              "<u>Composite Quality Score (CQS)</u>: $cqs<br/>" .
                              $resolution .
-                             "<u>Percent Clash</u>: $pclash %<br/>" .  
-                             "<u>Fraction Observed</u>: $frobs<br/>" . 
-                             "<u>Average RSR</u>: $arsr<br/>" .  
-                             "<u>Average RSCC</u>: $arscc<br/>" .  
+                             "<u>Percent Clash</u>: $pclash %<br/>" .
+                             "<u>Fraction Observed</u>: $frobs<br/>" .
+                             "<u>Average RSR</u>: $arsr<br/>" .
+                             "<u>Average RSCC</u>: $arscc<br/>" .
                              "<u>Rfree</u>: $rfree<br/>";
             }
 
             //  Add the structure website links.
-            $pdb_info .= "<hr/>" . 
+            $pdb_info .= "<hr/>" .
                          'Explore in ' .
                          anchor_popup("$pdb_url$pdb", 'PDB') .
                          ',  ' .
@@ -212,7 +212,7 @@ class Ajax_model extends CI_Model {
                     foreach ($replaced_by as $new_file) {
                         $new_urls .= anchor_popup("$pdb_url$new_file", $new_file) . ' ';
                     }
-                    
+
                     $pdb_info = "PDB file {$pdb} was replaced by {$new_urls}";
                 }
             } else {
@@ -269,8 +269,8 @@ class Ajax_model extends CI_Model {
         (
             select t3.index + 1 as `index`, t3.`normalized_unit` as `nucleotide`, t2.unit_id, t1.number, t1.ins_code
             from unit_info t1, exp_seq_unit_mapping t2, exp_seq_position t3
-            where t1.pdb_id = " . $this->db->escape($pdb) . " 
-            and t1.chain = " . $this->db->escape($chain) . " 
+            where t1.pdb_id = " . $this->db->escape($pdb) . "
+            and t1.chain = " . $this->db->escape($chain) . "
             and t1.model = 1
             and t1.unit_id = t2.unit_id
             and t2.exp_seq_position_id = t3.exp_seq_position_id
@@ -281,12 +281,12 @@ class Ajax_model extends CI_Model {
             select unit_id_1, unit_id_2, f_lwbp, t10.pdb_id, f_crossing
             from unit_pairs_interactions t10, unit_info t11, unit_info t12
             where
-            t10.pdb_id =" . $this->db->escape($pdb) . " 
+            t10.pdb_id =" . $this->db->escape($pdb) . "
             and f_lwbp is not null
             and t10.unit_id_1 = t11.unit_id
             and t10.unit_id_2 = t12.unit_id
             and t11.number < t12.number
-            and t11.chain = " . $this->db->escape($chain) . " 
+            and t11.chain = " . $this->db->escape($chain) . "
             and t12.chain = " . $this->db->escape($chain) . "
         ) as B
         JOIN
@@ -306,7 +306,7 @@ class Ajax_model extends CI_Model {
         order by B.pdb_id, A.index";
 
         $query = $this->db->query($query_str);
-        $nested_bps = array(); 
+        $nested_bps = array();
 
         foreach ($query->result_array() as $row)
         {
@@ -327,7 +327,7 @@ class Ajax_model extends CI_Model {
         $myJSON = json_encode($data);
 
         return $myJSON;
-           
+
     }
 
     function get_chain_sequence_basepairs($pdb, $chain, $nested)
@@ -447,7 +447,7 @@ class Ajax_model extends CI_Model {
         foreach ($query->result() as $row) {
             $complete_units[] = $row->unit_id;
         }
-        
+
         $bulged_units = array_diff($complete_units, $core_units);
         $bulged_units = array_values($bulged_units);
 
@@ -456,7 +456,7 @@ class Ajax_model extends CI_Model {
                  ->from('unit_quality')
                  ->where_in('unit_id',$bulged_units);
             $query = $this->db->get();
-        
+
             if ($query->num_rows() == 0) {
                 return json_encode(json_decode ("{}"));
             } else {
@@ -468,13 +468,14 @@ class Ajax_model extends CI_Model {
         }
     }
 
-    function get_seq_unit_mapping($ife) 
+    function get_seq_unit_mapping($ife)
     {
         // Tests:
         // http://rna.bgsu.edu/rna3dhub/rest/SeqtoUnitMapping?ife=1S72|1|0  NULL values at start, middle, end
         // http://rna.bgsu.edu/rna3dhub/rest/SeqtoUnitMapping?ife=2N1Q|5|A  Many models
         // http://rna.bgsu.edu/rna3dhub/rest/SeqtoUnitMapping?ife=6E7L|1|A  Symmetry operators
-        // http://rna.bgsu.edu/rna3dhub/rest/SeqtoUnitMapping?ife=1FJG|1|A  Alternate ids
+        // http://rna.bgsu.edu/rna3dhub/rest/SeqtoUnitMapping?ife=1FJG|1|A  Insertion codes
+        // http://rna.bgsu.edu/rna3dhub/rest/SeqtoUnitMapping?ife=5J7L|1|DA Alternate ids like 5J7L|1|DA|A|404||A
 
         $fields = explode('|', $ife);
 
@@ -534,7 +535,7 @@ class Ajax_model extends CI_Model {
                  ->where('e1.exp_seq_chain_mapping_id',$escmi)
                  ->order_by('e3.index, ui.model, ui.alt_id, ui.sym_op');
         $query = $this->db->get();
-        
+
         $unresolved_index = 0;
 
         foreach ($query->result_array() as $row) {
@@ -565,7 +566,7 @@ class Ajax_model extends CI_Model {
             $data .= $relation . "</br>";
             $unresolved_index = $unresolved_index + 1;
         }
-    
+
         return $data;
 
     }
@@ -581,7 +582,7 @@ class Ajax_model extends CI_Model {
                             'sfcheck_shift, sfcheck_shift_side_chain, sfcheck_density_index_main_chain, ' .
                             'sfcheck_density_index_side_chain, sfcheck_B_iso_main_chain, ' .
                             'sfcheck_B_iso_side_chain, mapman_correlation, mapman_real_space_R, ' .
-                            'mapman_Biso_mean, mapman_occupancy_mean FROM __dcc_residues where dcc_residues_id IN (' . 
+                            'mapman_Biso_mean, mapman_occupancy_mean FROM __dcc_residues where dcc_residues_id IN (' .
                             $list_ids . ') order by(FIELD(dcc_residues_id,' . $list_ids . '));';
         $this->db->select($sql_command, FALSE);
         $query = $this->db->get();
@@ -753,7 +754,7 @@ class Ajax_model extends CI_Model {
                  ->where('z <=', $coord_limits[5]);
 
 //                 ->where_in('name', $center_type);
-    
+
         $query = $this->db->get();
         //if ($query->num_rows() == 0) { return False; }
 
@@ -771,7 +772,7 @@ class Ajax_model extends CI_Model {
                 $unit_coord_arr[] = $unit_coord;
             }
         }
-                 
+
         return $unit_coord_arr;
     }
 
@@ -884,7 +885,7 @@ class Ajax_model extends CI_Model {
                  ->order_by('alt_id')
                  ->limit(1);
             $query = $this->db->get();
-            
+
             if ($query->num_rows() == 0) { return False; }
 
             foreach ($query->result() as $row) {
@@ -893,7 +894,7 @@ class Ajax_model extends CI_Model {
         }
         return $complete_units;
     }
-    
+
 
     function get_unit_and_neighbor_coordinates($unit_ids, $distance=10)
     {
@@ -1048,9 +1049,9 @@ class Ajax_model extends CI_Model {
         if ($core_motif_units == False) { return "The core units for {$loop_data} and {$loop_id} is not available"; }
 
         $fields = explode('|', $core_motif_units[0]);
-        $pdb_id = $fields[0]; 
+        $pdb_id = $fields[0];
         $model_num = $fields[1];
-        
+
         // get coordinates of the core nucleotides
         $core_coord_query = $this->get_unit_coordinates($core_motif_units);
         if ($core_coord_query == False) { return "No coordinate data available for for {$loop_data} and {$loop_id}"; }
@@ -1307,7 +1308,7 @@ class Ajax_model extends CI_Model {
                  ->from('unit_quality')
                  ->where_in('unit_id',$total_unit_ids);
         $query = $this->db->get();
-        
+
         if ($query->num_rows() == 0) {
             return 'No RSR correspondence found';
         } else {
@@ -1368,7 +1369,7 @@ class Ajax_model extends CI_Model {
                  ->from('unit_quality')
                  ->where_in('unit_id',$total_unit_ids);
         $query = $this->db->get();
-        
+
         if ($query->num_rows() == 0) {
             return 'No RSRZ correspondence is found';
         } else {
@@ -1420,12 +1421,12 @@ class Ajax_model extends CI_Model {
                  ->from('unit_quality')
                  ->where_in('unit_id',$exploded);
         $query = $this->db->get();
-        
+
         if ($query->num_rows() == 0) {
             return 'No RSR correspondence found';
         } else {
             $RSR = $query->result();
- 
+
         }
 
         return json_encode($RSR);
@@ -1440,7 +1441,7 @@ class Ajax_model extends CI_Model {
                  ->from('unit_quality')
                  ->where_in('unit_id',$exploded);
         $query = $this->db->get();
-        
+
         if ($query->num_rows() == 0) {
             return 'No RSRZ correspondence is found';
         } else {
@@ -1452,7 +1453,7 @@ class Ajax_model extends CI_Model {
 
     // function get_bulge_RSRZ($loop_id)
     // {
-        
+
     //     $this->db->select('unit_id')
     //              ->from('ml_loop_positions')
     //              ->where('loop_id',$loop_id)
@@ -1476,7 +1477,7 @@ class Ajax_model extends CI_Model {
     //     foreach ($query->result() as $row) {
     //         $complete_units[] = $row->unit_id;
     //     }
-        
+
     //     $bulged_units = array_diff($complete_units, $core_units);
     //     $bulged_units = array_values($bulged_units);
 
@@ -1485,7 +1486,7 @@ class Ajax_model extends CI_Model {
     //              ->from('unit_quality')
     //              ->where_in('unit_id',$bulged_units);
     //         $query = $this->db->get();
-        
+
     //         if ($query->num_rows() == 0) {
     //             return json_encode(json_decode ("{}"));
     //         } else {
@@ -1496,7 +1497,7 @@ class Ajax_model extends CI_Model {
     //         return json_encode(json_decode ("{}"));
     //     }
 
-        
+
     // }
 
 }
