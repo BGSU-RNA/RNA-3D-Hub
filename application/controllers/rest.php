@@ -31,15 +31,24 @@ class Rest extends MY_Controller {
         echo $this->Ajax_model->get_pdb_info($pdb,$cla,$res);
     }
 
+    public function getChainInfo()
+    {
+        $pdb = $this->input->get_post('pdb');
+        $this->load->model('Ajax_model', '', TRUE);
+        $this->output->set_header("Access-Control-Allow-Origin: *");
+        $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
+        echo $this->Ajax_model->get_chain_info($pdb);
+    }
+
     // public function getBulge()
     // {
     //     // should be able to accept loop_id and unit_id
 
     //     // search POST, then GET
     //     $query = $this->input->get_post('quality_ma');
-        
+
     //     // $this->output->enable_profiler(TRUE);
-        
+
     //     $query_type = $this->_parseInput($query);
 
     //     if ( $query_type ) {
@@ -60,9 +69,9 @@ class Rest extends MY_Controller {
 
         // search POST, then GET
         $query = $this->input->get_post('coord');
-        
+
         //$this->output->enable_profiler(TRUE);
-        
+
         $query_type = $this->_parseInput($query);
 
         if ( $query_type ) {
@@ -123,7 +132,7 @@ class Rest extends MY_Controller {
         $query = $this->input->get_post('coord_ma');
 
         //$this->output->enable_profiler(TRUE);
-        
+
         $this->load->model('Ajax_model', '', TRUE);
         $this->output->set_header("Access-Control-Allow-Origin: *");
         $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
@@ -139,9 +148,9 @@ class Rest extends MY_Controller {
 
         // search POST, then GET
         $query = $this->input->get_post('core');
-        
+
         // $this->output->enable_profiler(TRUE);
-        
+
         $query_type = $this->_parseInput($query);
 
         if ( $query_type ) {
@@ -160,9 +169,9 @@ class Rest extends MY_Controller {
 
         // search POST, then GET
         $query = $this->input->get_post('ife');
-        
+
         // $this->output->enable_profiler(TRUE);
-        
+
         if ( $query ) {
             $this->load->model('Ajax_model', '', TRUE);
 
@@ -183,9 +192,9 @@ class Rest extends MY_Controller {
 
         // search POST, then GET
         $query = $this->input->get_post('quality');
-        
+
         //$this->output->enable_profiler(TRUE);
-        
+
         $query_type = $this->_parseInput($query);
 
         if ( $query_type ) {
@@ -205,9 +214,9 @@ class Rest extends MY_Controller {
 
         // search POST, then GET
         $query = $this->input->get_post('quality');
-        
+
         // $this->output->enable_profiler(TRUE);
-        
+
         $query_type = $this->_parseInput($query);
 
         if ( $query_type ) {
@@ -231,7 +240,7 @@ class Rest extends MY_Controller {
         $this->load->model('Ajax_model', '', TRUE);
 
 		// $this->output->enable_profiler(TRUE);
-		
+
         // don't load the database until the input was validated
         switch ($query_type) :
             case 'loop_id':
@@ -261,7 +270,7 @@ class Rest extends MY_Controller {
         $this->load->model('Ajax_model', '', TRUE);
 
         // $this->output->enable_profiler(TRUE);
-        
+
         switch ($query_type) :
             case 'unit_id':
                 return $this->Ajax_model->get_coord_relative($query);
@@ -276,7 +285,7 @@ class Rest extends MY_Controller {
         $this->load->model('Ajax_model', '', TRUE);
 
         // $this->output->enable_profiler(TRUE);
-        
+
         switch ($query_type) :
             case 'loop_id':
                 return $this->Ajax_model->get_loop_RSR($query);
@@ -297,7 +306,7 @@ class Rest extends MY_Controller {
         $this->load->model('Ajax_model', '', TRUE);
 
         // $this->output->enable_profiler(TRUE);
-        
+
         switch ($query_type) :
             case 'loop_id':
                 return $this->Ajax_model->get_loop_RSRZ($query);
@@ -318,7 +327,7 @@ class Rest extends MY_Controller {
     //     $this->load->model('Ajax_model', '', TRUE);
 
     //     // $this->output->enable_profiler(TRUE);
-        
+
     //     switch ($query_type) :
     //         case 'loop_id':
     //             return $this->Ajax_model->get_bulge_RSRZ($query);
