@@ -223,6 +223,62 @@ class Ajax_model extends CI_Model {
         return $pdb_info;
     }
 
+
+    function get_chain_info($inp)
+    {
+        // Given a pdb id, look up information about all of its chains
+        // Return the information as a JSON object
+
+        $chain_info = $inp;
+
+        //  Is the input $pdb a pdb_id or an ife_id?
+        //  Assess and set the variables accordingly.
+        $pdb = substr($inp,0,4);
+        $ife = ( strlen($inp) > 4) ? $inp : "foo";
+        $ife = str_replace('+ ','+',$ife);
+
+        // query pdb_info table for information
+        $this->db->select('chain_info.chain_name')
+                 ->select('chain_info.chain_length')
+                 ->select('chain_info.taxonomy_id')
+                 ->select('chain_info.entity_macromolecule_type')
+                 ->select('chain_info.source')
+                 ->from('chain_info')
+                 ->where('chain_info.pdb_id', $pdb);
+        $query = $this->db->get();
+
+        $chain_info = array();
+        foreach ($query->result() as $row) {
+            // store by chain_name
+            // convert $row to an array
+            $chain_info[$row->chain_name] = (array) $row; // key-value pair
+        }
+
+//        return json_encode($chain_info);
+
+        // query chain_property_value table for information on this pdb id
+        $this->db->select('chain_property_value.property')
+                 ->select('chain_property_value.value')
+                 ->select('chain_property_value.chain')
+                 ->from('chain_property_value')
+                 ->where('chain_property_value.pdb_id', $pdb);
+        $query = $this->db->get();
+
+        // format the data as a JSON object and return it
+
+        foreach ($query->result() as $row) {
+            $chain = $row->chain;
+            // store property and value by chain name
+            if (!isset($chain_info[$chain])) {
+                $chain_info[$chain] = array();
+            }
+            $chain_info[$chain][$row->property] = $row->value;
+        }
+
+        return json_encode($chain_info);
+    }
+
+
     function save_loop_extraction_benchmark_annotation($contents)
     {
         try {
