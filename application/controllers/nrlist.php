@@ -3,7 +3,7 @@ class Nrlist extends CI_Controller {
 
     public function index()
     {
-        $this->output->cache(10000); # 1 week, in minutes
+        $this->output->cache(10001); # 1 week, in minutes
 
         $this->load->model('Nrlist_model', '', TRUE);
         $result = $this->Nrlist_model->get_all_releases();
