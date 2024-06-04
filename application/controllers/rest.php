@@ -373,7 +373,8 @@ class Rest extends MY_Controller {
             $parts = explode('|', $nt);
             $separators = count($parts);
             if ( $separators >= 4 and $separators <= 9 and
-                 $parts[1] != 'AU' and $parts[1] != 'BA1' ) {
+                 $parts[1] != 'AU' and $parts[1] != 'BA1' and strlen($parts[4]) > 0) {
+                // make sure there is a residue number, otherwise it might be a chain
                 return TRUE;
             } else {
                 return FALSE;
@@ -384,11 +385,14 @@ class Rest extends MY_Controller {
 
     private function _is_chain_id($query)
     {
-        //1FJG|1|A
         $parts = explode('|', $query);
         $separators = count($parts);
-        if ( $separators = 3 and
+        if ( $separators == 3 and
             $parts[1] != 'AU' and $parts[1] != 'BA1' ) {
+            // 1FJG|1|A
+            return TRUE;
+        } elseif ($separators == 9) {
+            // 1WVL|1|C||||||7_465
             return TRUE;
         } else {
             return FALSE;

@@ -1031,13 +1031,35 @@ class Ajax_model extends CI_Model {
         $model  = $fields[1];
         $chain  = $fields[2];
 
-        $this->db->select('unit_id')
-                ->from('unit_info')
-                ->where('pdb_id', $pdb_id)
-                ->where('model',  $model)
-                ->where('chain',  $chain)
-                ->order_by('number');
-        $query = $this->db->get();
+        // if $fields has more than 3 fields, the 9th field is the symmetry operator
+        // http://rnatest.bgsu.edu/rna3dhub/display3D/chain/1WVL|1|C
+        // http://rnatest.bgsu.edu/rna3dhub/display3D/chain/1WVL|1|C||||||1_555
+        // http://rnatest.bgsu.edu/rna3dhub/display3D/chain/1WVL|1|C||||||7_465
+
+        if (count($fields) == 9) {
+            $symmetry = $fields[8];
+        } else {
+            $symmetry = "1_555";
+        }
+
+        if ($symmetry == '*') {
+            $this->db->select('unit_id')
+                    ->from('unit_info')
+                    ->where('pdb_id', $pdb_id)
+                    ->where('model',  $model)
+                    ->where('chain',  $chain)
+                    ->order_by('number');
+            $query = $this->db->get();
+        } else {
+            $this->db->select('unit_id')
+                    ->from('unit_info')
+                    ->where('pdb_id', $pdb_id)
+                    ->where('model',  $model)
+                    ->where('chain',  $chain)
+                    ->where('sym_op', $symmetry)
+                    ->order_by('number');
+            $query = $this->db->get();
+        }
 
         if ($query->num_rows() == 0) { return False; }
 
