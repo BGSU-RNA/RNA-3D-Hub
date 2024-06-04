@@ -58,6 +58,8 @@
                   </li>
                 </ul>
                 View in <a href="<?=$pdb_url?>" target="_blank">PDB</a> or <a href="<?=$NAKB_url?>" target="_blank">NAKB</a>
+                <br>
+                <a href="<?=$circular_url?>" target="_blank">Circular interaction diagram</a> in PDF format
               </div>
 
               <!-- section1 -->
