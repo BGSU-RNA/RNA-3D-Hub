@@ -243,6 +243,7 @@ class Ajax_model extends CI_Model {
                  ->select('chain_info.taxonomy_id')
                  ->select('chain_info.entity_macromolecule_type')
                  ->select('chain_info.source')
+                 ->select('chain_info.compound')
                  ->from('chain_info')
                  ->where('chain_info.pdb_id', $pdb);
         $query = $this->db->get();
