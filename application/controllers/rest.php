@@ -37,9 +37,9 @@ class Rest extends MY_Controller {
 
     //     // search POST, then GET
     //     $query = $this->input->get_post('quality_ma');
-        
+
     //     // $this->output->enable_profiler(TRUE);
-        
+
     //     $query_type = $this->_parseInput($query);
 
     //     if ( $query_type ) {
@@ -60,9 +60,9 @@ class Rest extends MY_Controller {
 
         // search POST, then GET
         $query = $this->input->get_post('coord');
-        
+
         //$this->output->enable_profiler(TRUE);
-        
+
         $query_type = $this->_parseInput($query);
 
         if ( $query_type ) {
@@ -123,7 +123,7 @@ class Rest extends MY_Controller {
         $query = $this->input->get_post('coord_ma');
 
         //$this->output->enable_profiler(TRUE);
-        
+
         $this->load->model('Ajax_model', '', TRUE);
         $this->output->set_header("Access-Control-Allow-Origin: *");
         $this->output->set_header("Access-Control-Expose-Headers: Access-Control-Allow-Origin");
@@ -139,9 +139,9 @@ class Rest extends MY_Controller {
 
         // search POST, then GET
         $query = $this->input->get_post('core');
-        
+
         // $this->output->enable_profiler(TRUE);
-        
+
         $query_type = $this->_parseInput($query);
 
         if ( $query_type ) {
@@ -160,9 +160,9 @@ class Rest extends MY_Controller {
 
         // search POST, then GET
         $query = $this->input->get_post('ife');
-        
+
         // $this->output->enable_profiler(TRUE);
-        
+
         if ( $query ) {
             $this->load->model('Ajax_model', '', TRUE);
 
@@ -183,9 +183,9 @@ class Rest extends MY_Controller {
 
         // search POST, then GET
         $query = $this->input->get_post('quality');
-        
+
         //$this->output->enable_profiler(TRUE);
-        
+
         $query_type = $this->_parseInput($query);
 
         if ( $query_type ) {
@@ -205,9 +205,9 @@ class Rest extends MY_Controller {
 
         // search POST, then GET
         $query = $this->input->get_post('quality');
-        
+
         // $this->output->enable_profiler(TRUE);
-        
+
         $query_type = $this->_parseInput($query);
 
         if ( $query_type ) {
@@ -231,7 +231,7 @@ class Rest extends MY_Controller {
         $this->load->model('Ajax_model', '', TRUE);
 
 		// $this->output->enable_profiler(TRUE);
-		
+
         // don't load the database until the input was validated
         switch ($query_type) :
             case 'loop_id':
@@ -261,7 +261,7 @@ class Rest extends MY_Controller {
         $this->load->model('Ajax_model', '', TRUE);
 
         // $this->output->enable_profiler(TRUE);
-        
+
         switch ($query_type) :
             case 'unit_id':
                 return $this->Ajax_model->get_coord_relative($query);
@@ -276,7 +276,7 @@ class Rest extends MY_Controller {
         $this->load->model('Ajax_model', '', TRUE);
 
         // $this->output->enable_profiler(TRUE);
-        
+
         switch ($query_type) :
             case 'loop_id':
                 return $this->Ajax_model->get_loop_RSR($query);
@@ -297,7 +297,7 @@ class Rest extends MY_Controller {
         $this->load->model('Ajax_model', '', TRUE);
 
         // $this->output->enable_profiler(TRUE);
-        
+
         switch ($query_type) :
             case 'loop_id':
                 return $this->Ajax_model->get_loop_RSRZ($query);
@@ -318,7 +318,7 @@ class Rest extends MY_Controller {
     //     $this->load->model('Ajax_model', '', TRUE);
 
     //     // $this->output->enable_profiler(TRUE);
-        
+
     //     switch ($query_type) :
     //         case 'loop_id':
     //             return $this->Ajax_model->get_bulge_RSRZ($query);
@@ -364,7 +364,8 @@ class Rest extends MY_Controller {
             $parts = explode('|', $nt);
             $separators = count($parts);
             if ( $separators >= 4 and $separators <= 9 and
-                 $parts[1] != 'AU' and $parts[1] != 'BA1' ) {
+                 $parts[1] != 'AU' and $parts[1] != 'BA1' and strlen($parts[4]) > 0) {
+                // make sure there is a residue number, otherwise it might be a chain
                 return TRUE;
             } else {
                 return FALSE;
@@ -375,11 +376,14 @@ class Rest extends MY_Controller {
 
     private function _is_chain_id($query)
     {
-        //1FJG|1|A
         $parts = explode('|', $query);
         $separators = count($parts);
-        if ( $separators = 3 and
+        if ( $separators == 3 and
             $parts[1] != 'AU' and $parts[1] != 'BA1' ) {
+            // 1FJG|1|A
+            return TRUE;
+        } elseif ($separators == 9) {
+            // 1WVL|1|C||||||7_465
             return TRUE;
         } else {
             return FALSE;
