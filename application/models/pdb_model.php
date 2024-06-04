@@ -166,9 +166,9 @@ class Pdb_model extends CI_Model {
                     $annotation = "No text annotation";
                   }
                 }
-            
+
             if ($row->status == 1 or $row->status == 3) { // this goes all the way down to valid tables???
-                
+
                 if ( array_key_exists($row->loop_id, $motifs) ) {
                     $motif_id = anchor_popup("motif/view/{$motifs[$row->loop_id]}",
                       $motifs[$row->loop_id]);
@@ -176,7 +176,7 @@ class Pdb_model extends CI_Model {
                   $motif_id = 'Not in a motif group';
                 }
 
-                
+
 
               $annotation_and_motif_group = "{$annotation}<br>{$motif_id}";
 
@@ -453,6 +453,7 @@ class Pdb_model extends CI_Model {
                 $data['pdb_url'] = "https://www.rcsb.org/structure/{$pdb_id}";
                 $data['ndb_url'] = "http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget={$ndb_id}";
                 $data['NAKB_url'] = "https://www.nakb.org/atlas={$pdb_id}";
+                $data['circular_url'] = "http://rna.bgsu.edu/correspondence/circular?id={$pdb_id}&input_form=True";
 
             }
             // only for RNA chains
