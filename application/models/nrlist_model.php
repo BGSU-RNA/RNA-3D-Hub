@@ -1055,6 +1055,7 @@ class Nrlist_model extends CI_Model {
     function get_change_counts_by_release()
     {
         $this->db->select('nr_release_id')
+                 ->select('resolution')
                  ->select('new_class_count AS nag')
                  ->select('removed_class_count AS nrg')
                  ->select('updated_class_count AS nug')
@@ -1063,7 +1064,9 @@ class Nrlist_model extends CI_Model {
 
         $changes = array();
         foreach ($query->result() as $row) {
-            $changes[$row->nr_release_id] = $row->nag + $row->nug + $row->nrg;
+            if ($row->resolution == 'all') {
+                $changes[$row->nr_release_id] = $row->nag + $row->nug + $row->nrg;
+            }
         }
 
         return $changes;
@@ -1086,6 +1089,7 @@ class Nrlist_model extends CI_Model {
 
     function get_pdb_files_counts()
     {
+        // This seems to count ife ids in each release ... is that right?
         $this->db->select('ncl.nr_release_id, count(ii.pdb_id) as num')
                  ->from('ife_info AS ii')
                  ->join('nr_class_rank AS nch', 'ii.ife_id = nch.ife_id')
@@ -1181,7 +1185,7 @@ class Nrlist_model extends CI_Model {
     {
         $changes   = $this->get_change_counts_by_release();
         $pdb_count = $this->get_pdb_files_counts();
-        $releases  = $this->get_release_precedence();
+        // $releases  = $this->get_release_precedence();  // no longer used, it seems
 
         $this->db->select('nr_release_id')
                  ->select('date')
