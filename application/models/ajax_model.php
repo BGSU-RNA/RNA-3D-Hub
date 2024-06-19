@@ -673,14 +673,16 @@ class Ajax_model extends CI_Model {
 
     function get_coordinates($s)
     {
-        // This function uses old unit ids with _ symbols
-        // It really should not be needed anymore, as of November 2022
+        // This function allows old unit ids with _ symbols, which are still used on some pages!
+        // Especially so for the RNA 3D Structure Course
 
         // 1S72_AU_1_0_30_U_
         // $is_nt_list = preg_match('/([a-z]|[A-Z]|[0-9]){4}_[a-zA-Z0-9]{2,3}_\d+_\d+_\d+_\[a-zA-Z]/',$s);
 
-        echo 'Starting get_coordinates';
-        echo $s;
+        // echo 'Starting get_coordinates';
+        // echo $s;
+
+        // http://rna.bgsu.edu/rna3dhub/rest/getCoordinates?coord=1S72_AU_1_0_30_U_
 
         $is_nt_list = substr_count($s,'_');
         if ($is_nt_list > 3) {
@@ -1364,6 +1366,7 @@ class Ajax_model extends CI_Model {
     {
         // This looks like an old function that relies on
         // converting from old to new unit ids
+        // Old unit ids are still used in the RNA 3D Structure Course
 
         $exploded = explode(',', $unit_ids);
 

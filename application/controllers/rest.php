@@ -255,6 +255,9 @@ class Rest extends MY_Controller {
             case 'unit_id':
                 return $this->Ajax_model->get_unit_and_neighbor_coordinates($query,$distance);
 
+            case 'nt_list':  // old-style unit ids with _ separators for RNA 3D Structure Course
+                return $this->Ajax_model->get_coordinates($query);
+
             case 'motif_id':
                 return $this->Ajax_model->get_exemplar_coordinates($query);
 
@@ -348,12 +351,14 @@ class Rest extends MY_Controller {
             } elseif ( $this->_is_motif_id($query) ) {
                 return 'motif_id';
             } elseif ( $this->_is_nt_list($query) ) {
+                // old-style unit ids with _ separators
                 return 'nt_list';
             } elseif ( $this->_is_loop_pair($query) ) {
                 return 'loop_pair';
             } elseif ( $this->_is_short_nt_list($query) ) {
                 return 'short_nt_list';
             } elseif ( $this->_is_unit_id($query) ) {
+                // new-style unit ids with | separators
                 return 'unit_id';
             } elseif ( $this->_is_chain_id($query) ) {
                 return 'chain_id';
