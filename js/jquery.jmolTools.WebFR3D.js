@@ -239,7 +239,7 @@ if ( typeof Object.create !== 'function' ) {
                         'select [DC]/' + k + '.1; color gold;' +
                         'select [DG]/' + k + '.1; color chartreuse;' +
                         'select [DT]/' + k + '.1; color blue;' +
-                        'select [U]/' + k + '.3; color mediumblue;' +
+                        'select [U]/' + k + '.3; color powderblue;' +
                         'select [G]/' + k + '.3; color palegreen;' +
                         'select [C]/' + k + '.3; color khaki;' +
                         'select [A]/' + k + '.3; color tomato;' +
