@@ -27,6 +27,7 @@ class Ajax_model extends CI_Model {
         return $this->db->select('f_lwbp')
                         ->from('unit_pairs_interactions')
                         ->where('pdb_id', $pdb_id)
+                        ->where('program', 'matlab')
                         ->where_in('f_lwbp', $f_lwbp)
                         ->count_all_results() / 2;
     }
