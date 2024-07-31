@@ -857,6 +857,7 @@ if ( typeof Object.create !== 'function' ) {
     // default options
     $.fn.jmolTools.options = {
         serverUrlCoord   :  'http://rna.bgsu.edu/rna3dhub/rest/getCoordinates',
+        serverUrlCoord   : loc + '/rna3dhub/rest/getCoordinates',
         dataAttributeCoord: 'coord',
 
         serverUrlCoordMotifAtlas   : loc + '/rna3dhub/rest/getCoordinatesMotifAtlas',

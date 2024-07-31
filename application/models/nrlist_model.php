@@ -186,6 +186,12 @@ class Nrlist_model extends CI_Model {
     {
         return "<span class='rcsb_image' title='{$pdb}|asr|xsmall|'></span><a class='pdb'>$pdb</a>";
     }
+    function make_dna_pdb_widget_link($pdb,$index)
+    {
+        $ife_1st = explode('+', $pdb);
+        $ife_1st = $ife_1st[0];
+        return "<input type='checkbox' id='$index' data-coord=$ife_1st class='jmolInline'><br><a class='pdb'>$pdb</a>";
+    }
 
     function get_source_organism($ife_id)
     {
@@ -523,13 +529,15 @@ class Nrlist_model extends CI_Model {
             $i = 0;
             $table = array();
             foreach ($query -> result() as $row) {
-                $link = $this->make_pdb_widget_link($row->ife_id);
+                $link = $this->make_dna_pdb_widget_link($row->ife_id,$i);
+                // $link = '<input type='checkbox' id='$counter' data-coord= '$row->ife_id' class='jmolInline'>';
                 //if ( $i==0 ) {
                     //$link = $link . ' <strong>(rep)</strong>';
                 //}
 
                 $i++;
                 $table[] = array($i,
+                                $row->ife_id,
                                 $link,
                                 $row->title,
                                 // "<br><strong>Property:</strong> " . $row->property .
@@ -565,32 +573,49 @@ class Nrlist_model extends CI_Model {
                     ->where('ot.nr_class_name',$id)
                     ->order_by('ot.class_order','asc');
             $query = $this->db->get();
+            $counter = 0;
             foreach ($query -> result() as $row) {
-                $link = $this->make_pdb_widget_link($row->ife_id);
+                $link = $this->make_dna_pdb_widget_link($row->ife_id,floor($counter));
+                // print_r($link);
+                $counter = $counter+0.5;
+                // print_r($counter);
                 $annotations[] = array(
-                                $link,
+                                $row->ife_id,
                                 $row->property,
                                 $row->value
                                 );
+                // print_r($annotations);
             }
+            // print_r($annotations);
             
             $return_table = array();
             foreach ($table as $r){
                 $tem_r = $r;
                 foreach($annotations as $l){
+                    // print_r(1111);
+                    // print_r($tem_r[1]);
+                    // print_r($l[0]);
+                    // var_dump($tem_r[1] == $l[0]);
+                    // if (compare_ife_id(strval($tem_r[1]),strval($l[0]))){
                     if ($tem_r[1] == $l[0]){
+                        
+                        // print_r($tem_r[6]);
+                        // print_r($l[1]);
                         // $tem_r[2] .= "<br><strong>" . ($l[1] ?: "NULL") . ": </strong>"  . ($l[2] ?: "NULL");
                         // $tem_r[] = ($l[1] ?: "NULL");
                         // $tem_r[] = ($l[2] ?: "NULL");
                         // $tem_r[2] .= "; <br><strong>Value:</strong> " . $l[2];
-                        if ($tem_r[6] == $l[1]){
-                            $tem_r[6] = ($l[2] ?: "NULL");
-                        }
                         if ($tem_r[7] == $l[1]){
-                            $tem_r[7] = ($l[2] ?: "NULL");
+                            $tem_r[7] = ($l[2] ?: "");
+                            // print_r($l[2]);
+                        }
+                        if ($tem_r[8] == $l[1]){
+                            $tem_r[8] = ($l[2] ?: "");
+                            // print_r($l[2]);
                         }
                     }
                 }
+                array_splice($tem_r, 1, 1);
                 $return_table[] = $tem_r;
 
             }
@@ -938,7 +963,8 @@ class Nrlist_model extends CI_Model {
         $eff_discrepancy = array();
         $eff_discrepancy_one_row = array();
         foreach ($eff_data as $row) {
-            $tem_row = array();
+            // $tem_row = array();
+            // print_r($row);
             foreach ($row as $key => $value) {
                 if ($key == 'ife1'){
                     if (!in_array($value, $eff_ifes)){
@@ -946,12 +972,16 @@ class Nrlist_model extends CI_Model {
                     }
                 }
                 if ($key == 'discrepancy'){
-                    $tem_row[] = $value;
-                    $eff_discrepancy_one_row[] = floatval($value);
+                    // echo ($value?:"NULL");
+                    // $tem_row[] = $value;
+                    // $eff_discrepancy_one_row[] = (number_format($value,2) >0 ? number_format($value,2) : NULL );
+                    $eff_discrepancy_one_row[] = (number_format($value,4) >0? number_format($value,4) : NULL );
+                
+                    // echo ($value?:0);
                     // $eff_discrepancy[] = $value
                 }
             }
-            $eff_discrepancy[] = $tem_row;
+            // $eff_discrepancy[] = $tem_row;
         }
         $eff_data_cleaned = array();
         $eff_data_cleaned[] = '#heatmap'; 
@@ -967,9 +997,11 @@ class Nrlist_model extends CI_Model {
             // $two_d_array[] = $array_with_null;
             $two_d_array[] = array_slice($eff_discrepancy_one_row, $i, $size);
         }
+        // print_r($two_d_array);
         for ($i = 0; $i < $size; $i++) {
             $two_d_array[$i][$i] = 0; 
         }
+        // print_r($two_d_array);
         // $tem_change_array = json_encode($two_d_array) + ',';
         // echo json_encode($tem_change_array);
         // $two_d_array = json_decode($tem_change_array);
@@ -989,10 +1021,8 @@ class Nrlist_model extends CI_Model {
         // echo $eff_ifes;
         // echo 'eff_discrepancy';
         // echo $eff_discrepancy;
-        // return $heatmap_data;
         return json_encode($eff_data_cleaned);
-        // return json_encode(["#heatmap",[[0,0.1247],[0.1247,0],],["1EGW|1|E+1EGW|1|F","1EGW|1|G+1EGW|1|H"]]);
-        return $heatmap_data;
+        // return $heatmap_data;
     }
       
 
@@ -1287,13 +1317,14 @@ class Nrlist_model extends CI_Model {
         return $label;
     }
 
-    function get_pdb_files_counts()
+    function get_pdb_files_counts($type)
     {
         $this->db->select('ncl.nr_release_id, count(ii.pdb_id) as num')
                  ->from('ife_info AS ii')
                  ->join('nr_class_rank AS nch', 'ii.ife_id = nch.ife_id')
                  ->join('nr_classes AS ncl', 'nch.nr_class_name = ncl.name')
                  ->where('ncl.resolution', 'all')
+                 ->where('ncl.name LIKE', $type.'%')
                  ->group_by('ncl.nr_release_id');
         $query = $this->db->get();
 
@@ -1380,26 +1411,40 @@ class Nrlist_model extends CI_Model {
         return $query->num_rows();
     }
 
-    function get_all_releases()
+    function get_all_releases($type)
     {
         $changes   = $this->get_change_counts_by_release();
-        $pdb_count = $this->get_pdb_files_counts();
+        $pdb_count = $this->get_pdb_files_counts($type);
         $releases  = $this->get_release_precedence();
 
+        $this->db->select('DISTINCT(nr_release_id)')
+        ->from('nr_classes')
+        ->where('name LIKE', $type.'%');
+        $query = $this->db->get();
+        $released = array();
+        foreach ($query->result() as $row){
+            $released[] = $row->nr_release_id;
+        }
         $this->db->select('nr_release_id')
-                 ->select('date')
-                 ->select('description')
-                 ->from('nr_releases')
-                 ->order_by('index','desc');
+        ->select('date')
+        ->select('description')
+        ->from('nr_releases')
+        ->order_by('index','desc')
+        ->where_in('nr_release_id', $released);
         $query = $this->db->get();
 
+        if ($type == 'DNA'){
+            $url_type = 'dna';
+        } else{
+            $url_type = 'rna';
+        }
         $i = 0;
         foreach ($query->result() as $row) {
             if ($i == 0) {
-                $id = anchor(base_url("nrlist/release/".$row->nr_release_id), $row->nr_release_id.' (current)');
+                $id = anchor(base_url("nrlist/release/".$url_type."/".$row->nr_release_id), $row->nr_release_id.' (current)');
                 $i++;
             } else {
-                $id = anchor(base_url("nrlist/release/".$row->nr_release_id), $row->nr_release_id);
+                $id = anchor(base_url("nrlist/release/".$url_type."/".$row->nr_release_id), $row->nr_release_id);
             }
 
             if (array_key_exists($row->nr_release_id,$changes)) {
@@ -1558,24 +1603,26 @@ class Nrlist_model extends CI_Model {
     }
 */
 
-    function get_release($id, $resolution) // This function populates the Representative set pages
+    function get_release($id, $resolution, $molecule) 
+    // This function populates the Representative set pages
     {
         $resolution = str_replace('A', '', $resolution);
-
-        // get raw release data
+        if ($molecule == 'rna'){
+            $group_id = 'NR_' . $resolution;
+        } elseif ($molecule == 'dna'){
+            $group_id = 'DNA_' . $resolution;
+        } else {
+            show_404();
+        } 
         $this->db->select('ii.ife_id, ii.pdb_id, nl.name, nc.rank')
-                 ->from('ife_info AS ii')
-                 ->join('nr_class_rank AS nc', 'ii.ife_id = nc.ife_id')
-                 ->join('nr_classes AS nl', 'nc.nr_class_name = nl.name')
-                 ->where('nl.nr_release_id', $id)
-                //  // ->group_start()
-                //     ->like('nl.name', "NR_{$resolution}", 'after')
-                //     ->or_like('nl.name', "DNA_{$resolution}", 'after')
-                //  // ->group_end()
-                ->where("(nl.name LIKE 'NR_{$resolution}%' OR nl.name LIKE 'DNA_{$resolution}%')")
-                 ->order_by('nc.rank','asc');
-        $query = $this->db->get();
-
+            ->from('ife_info AS ii')
+            ->join('nr_class_rank AS nc', 'ii.ife_id = nc.ife_id')
+            ->join('nr_classes AS nl', 'nc.nr_class_name = nl.name')
+            ->where('nl.nr_release_id', $id)
+            ->where("nl.name LIKE '$group_id%'")
+            ->order_by('nc.rank','asc');
+            $query = $this->db->get();
+            
         // reorganize by class and rep and pdb
         $class = array();
         foreach ($query->result() as $row) {
@@ -1683,6 +1730,7 @@ class Nrlist_model extends CI_Model {
                  #->join('species_mapping AS sm', 'ci.taxonomy_id = sm.species_mapping_id', 'left')
                  ->where('nl.nr_release_id', $id)
                  ->where('nl.resolution', $resolution)
+                 ->where("nl.name LIKE '$group_id%'")
                  ->group_by('nl.name')
                  ->group_by('nl.nr_release_id')
                  ->group_by('nl.resolution')
@@ -1870,7 +1918,7 @@ class Nrlist_model extends CI_Model {
         return $result[0]->length;
     }
 
-    function get_csv($release, $resolution)
+    function get_csv($release, $resolution, $type)
     {
         $resolution = str_replace('A', '', $resolution);
         $this->db->select('ii.ife_id as id, nl.name as class_id, nc.rank')
@@ -1879,6 +1927,7 @@ class Nrlist_model extends CI_Model {
                  ->join('ife_info AS ii', 'nc.ife_id = ii.ife_id')
                  ->where('nl.nr_release_id', $release)
                  ->where('resolution', $resolution)
+                 ->where('nl.name LIKE', $type."%")
                  ->order_by('nc.rank','asc');
         $query = $this->db->get();
 

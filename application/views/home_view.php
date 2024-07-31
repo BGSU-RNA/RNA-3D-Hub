@@ -45,10 +45,11 @@
 
         <div class="span30p">
           <h2>Representative Sets</h2>
-          <p>RNA 3D structures grouped into equivalence classes by molecule type, organism, and resolution.
-          Taking the structure with the best structure quality measures from each equivalence class gives a Representative Set of RNA 3D structures.
+          <p>RNA&DNA 3D structures grouped into equivalence classes by molecule type, organism, and resolution.
+          Taking the structure with the best structure quality measures from each equivalence class gives a Representative Set of RNA/DNA 3D structures.
           Updated each week since 2011.</p>
-          <p><a class="btn primary" href="<?php echo $baseurl;?>nrlist">Explore</a></p>
+          <p><a class="btn primary" href="<?php echo $baseurl;?>nrlist">Explore RNA</a></p>
+          <p><a class="btn primary" href="<?php echo $baseurl;?>nrlist/dna">Explore DNA</a></p>
        </div>
 
       </div>

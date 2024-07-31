@@ -968,6 +968,7 @@ class Ajax_model extends CI_Model {
     {
         // query the database for chain_id
         // return the units that make up that chain_id
+        // keep only one alt_id per nucleotide number, prefer NULL over A over B
 
         $fields = explode("|",$chain_id);
         $pdb_id = $fields[0];
@@ -975,9 +976,11 @@ class Ajax_model extends CI_Model {
         $chain  = $fields[2];
 
         // if $fields has more than 3 fields, the 9th field is the symmetry operator
+        // return only unit ids in the designated symmetry operator, or the default 1_555
         // http://rnatest.bgsu.edu/rna3dhub/display3D/chain/1WVL|1|C
         // http://rnatest.bgsu.edu/rna3dhub/display3D/chain/1WVL|1|C||||||1_555
         // http://rnatest.bgsu.edu/rna3dhub/display3D/chain/1WVL|1|C||||||7_465
+        // http://rnatest.bgsu.edu/rna3dhub/display3D/chain/1WVL|1|C||||||. request all symmetries
 
         if (count($fields) == 9) {
             $symmetry = $fields[8];
@@ -985,24 +988,50 @@ class Ajax_model extends CI_Model {
             $symmetry = "1_555";
         }
 
-        $this->db->select('unit_id')
-                ->from('unit_info')
-                ->where('pdb_id', $pdb_id)
-                ->where('model',  $model)
-                ->where('chain',  $chain)
-                ->where('sym_op', $symmetry)
-                ->order_by('number');
-        $query = $this->db->get();
+        if ($symmetry == '.') {
+            $this->db->select('unit_id')
+                    ->from('unit_info')
+                    ->where('pdb_id', $pdb_id)
+                    ->where('model',  $model)
+                    ->where('chain',  $chain)
+                    ->order_by('number')
+                    ->order_by('alt_id');
+            $query = $this->db->get();
+        } else {
+            $this->db->select('unit_id')
+                    ->from('unit_info')
+                    ->where('pdb_id', $pdb_id)
+                    ->where('model',  $model)
+                    ->where('chain',  $chain)
+                    ->where('sym_op', $symmetry)
+                    ->order_by('number')
+                    ->order_by('alt_id');
+            $query = $this->db->get();
+        }
 
         if ($query->num_rows() == 0) { return False; }
 
+        $seen_ids = array();
         $complete_units = array();
         foreach ($query->result() as $row) {
-            $complete_units[] = $row->unit_id;
+            // store unit id as 9 fields but with alt_id blank
+            // also blank out nucleotide sequence for chains like 2VY2|1|W
+            $u = explode('|',$row->unit_id);       // get fields
+            while (count($u) < 9) { $u[] = ''; }   // pad out to 9 fields
+            $u[3] = '';                            // make sequence field blank
+            $u[6] = '';                            // make alt_id field blank
+            $clean_u = implode('|',$u);            // put fields into string
+            if (array_key_exists($clean_u,$seen_ids)) {
+                continue;
+            } else {
+                $seen_ids[$clean_u] = 1;
+                $complete_units[] = $row->unit_id;
+            }
         }
 
         return $complete_units;
     }
+
 
 
     function get_chain_coordinates($chain_id,$distance=10)
