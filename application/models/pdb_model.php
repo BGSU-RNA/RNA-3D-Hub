@@ -389,11 +389,27 @@ class Pdb_model extends CI_Model {
                  ->join('unit_info AS u1', 'upi.unit_id_1 = u1.unit_id')
                  ->join('unit_info AS u2', 'upi.unit_id_1 = u2.unit_id')
                  ->where('upi.pdb_id', $pdb_id)
+                 ->where('upi.program', 'matlab')
                  ->where($where)
                  #->order_by('number');
                  ->order_by('u1.model, u1.chain, u1.sym_op, u1.chain_index, u2.model, u2.chain, u2.sym_op, u2.chain_index');
         $query = $this->db->get();
-        //print $query;
+
+        # if length of query is zero, query again for python data
+        if ($query->num_rows() == 0) {
+            $this->db->select('upi.unit_id_1, upi.unit_id_2,' . $db_field)
+            ->from('unit_pairs_interactions AS upi')
+            ->join('unit_info AS u1', 'upi.unit_id_1 = u1.unit_id')
+            ->join('unit_info AS u2', 'upi.unit_id_1 = u2.unit_id')
+            ->where('upi.pdb_id', $pdb_id)
+            ->where('upi.program', 'python')
+            ->where($where)
+            #->order_by('number');
+            ->order_by('u1.model, u1.chain, u1.sym_op, u1.chain_index, u2.model, u2.chain, u2.sym_op, u2.chain_index');
+            $query = $this->db->get();
+
+        }
+
         $i = 1;
         $html = '';
         $csv  = '';
@@ -572,6 +588,7 @@ class Pdb_model extends CI_Model {
     {
         $this->db->select("count($interaction)/2 as counts")
                  ->from('unit_pairs_interactions')
+                 ->where('program', 'matlab')
                  ->where('pdb_id', $pdb_id);
         if ( $interaction == 'f_bphs' ) {
             $this->db->where("char_length($interaction) = 4");
@@ -798,6 +815,7 @@ class Pdb_model extends CI_Model {
                  ->join('unit_info as U1', 'U1.unit_id = upi.unit_id_1')
                  ->join('unit_info as U2', 'U2.unit_id = upi.unit_id_2')
                  ->where('upi.pdb_id', $pdb)
+                 ->where('upi.program', 'matlab')
                  ->where('f_crossing > 3')
                  ->where('f_lwbp is not null');
         $query = $this->db->get();

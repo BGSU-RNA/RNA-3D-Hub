@@ -623,10 +623,10 @@ class Motif_model extends CI_Model {
                         }
                     }
                 }
-        
+
                 $seq_com[] = implode('', $sequence);
                 $seq_nwc[] = implode('', $nwc_sequence);
-        
+
 
            }
         }
@@ -832,7 +832,7 @@ class Motif_model extends CI_Model {
             } else{
                 $dataString_3 .= '"'.$loop_id_1.'"';
             }
-            
+
             for ($j = 1; $j <= $this->num_loops; $j++) {
                 $loop_id_2 = $this->similarity[$j];
                 $cell = $disc[$loop_id_1][$loop_id_2];
@@ -842,14 +842,14 @@ class Motif_model extends CI_Model {
                 } else {
                     $dataString_2 .= $cell;
                 }
-                
+
             }
             $dataString_2.= '],';
         }
         $dataString_3 .= ']]';
         // return $matrix;
         $dataString .= $dataString_1 . $dataString_2 ."],". $dataString_3;
-        
+
         return $dataString;
     }
 
@@ -1008,7 +1008,7 @@ class Motif_model extends CI_Model {
             $query = $this->db->get();
             $result = $query->row();
 
-            // <> is not equal, same as != 
+            // <> is not equal, same as !=
             if ( $result <> FALSE ){
                 $this->chainbreak = $result->position;
             }
@@ -1064,7 +1064,7 @@ class Motif_model extends CI_Model {
     function generate_row($id)
     {
         ###echo "<p>id: $id</p>";
-        
+
         for ($i = 0; $i < count($this->header); $i++) {
             $key = $this->header[$i];
 
@@ -1117,8 +1117,8 @@ class Motif_model extends CI_Model {
                 }
 
                 $row[] = implode('+', $chain_set);
-                
-                    
+
+
             } elseif( $key == 'Standardized name'){
 
                 $parts = explode('|', $this->units[$this->similarity[$id]][1]);
@@ -1230,6 +1230,7 @@ class Motif_model extends CI_Model {
     {
         $this->db->select()
                  ->from('unit_pairs_interactions')
+                 ->where('program','matlab')
                  ->where_in('unit_id_1', array_keys($this->unit_ids))
                  ->where_in('unit_id_2', array_keys($this->unit_ids));
         $query = $this->db->get();
@@ -1392,17 +1393,17 @@ class Motif_model extends CI_Model {
 
             // Count the number of "*" characters
             $nCount = substr_count($inputString, "*");
-        
+
             // Return the RNA sequence with the N-mer count
             return "RNA ({$nCount}-mer)";
         } elseif (substr($inputString, 0, 14) == "U4 snRNA (5'-R") {
 
             $nCount = substr_count($inputString, "*");
-        
+
             return "U4 snRNA ({$nCount}-mer)";
         } else {
             return $inputString;
-        } 
+        }
     }
 
     function get_standardized_name($pbd, $chain){ #
