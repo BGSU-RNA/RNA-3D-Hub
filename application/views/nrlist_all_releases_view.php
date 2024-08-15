@@ -14,16 +14,6 @@
           <div class="span45p">
             <div class="row">
               <div class="span">
-                <p>
-                <p>
-                <b>
-                Releases 3.339 and 3.340 had a problem with ranking of IFEs.
-                They were rebuilt on June 23, 2024.
-                With release 3.339, we fixed problems with some files that could not be processed, such as
-                3ZP8, and produced IFEs between "structured" and "unstructured" chains
-                including, for example, 3ZP8|1|A and 3ZP8|1|B, for the first time.  That resulted in a number of
-                new or changed equivalence classes.
-              </b>
                   <p>
                   The Representative Sets of RNA 3D Structures organize all
                   RNA-containing 3D structures from PDB into sequence/structure equivalence classes
@@ -47,6 +37,11 @@
                   be delayed because of the time it takes to compute all-against-all geometric comparisons
                   within large equivalences classes such as Thermus thermophilus small ribosomal subunit.
                 </p>
+                <p>
+                  With release 3.339, we fixed problems with some files that could not be processed, such as
+                  3ZP8, and produced IFEs between "structured" and "unstructured" chains
+                  including, for example, 3ZP8|1|A and 3ZP8|1|B, for the first time.  That resulted in a number of
+                  new or changed equivalence classes.
                 <p>
                   With release 3.333, we improved the treatment of taxonomic ids, mapping the taxid
                   associated with the PDB chain to a single taxid for the species, so that different
