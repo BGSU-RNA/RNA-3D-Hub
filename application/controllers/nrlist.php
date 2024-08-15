@@ -199,23 +199,31 @@ class Nrlist extends CI_Controller {
     // }
 
     // public function download($type, $id, $res='all', $format='csv')
+    // Examples for RNA:
+    // http://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.348/3.0A/csv
+    // http://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.348/all/csv
     public function download($arg1, $arg2, $arg3='all', $arg4='csv')
     {
-        if ( strtoupper($arg1) == 'RNA'){
+        if (strtoupper($arg1) == 'RNA') {
             $class_type = 'NR';
             $id = $arg2;
             $res = $arg3;
             $format = $arg4;
-        } elseif (strtoupper($arg1) == 'DNA'){
+        } elseif (strtoupper($arg1) == 'DNA') {
             $class_type = 'DNA';
             $id = $arg2;
             $res = $arg3;
             $format = $arg4;
-        } else {
+        } elseif (strtoupper($arg1) == 'CURRENT') {
             $class_type = 'NR';
-            $id = $arg1;
+            $id = 'current';
             $res = $arg2;
             $format = $arg3;
+        } else {
+            $class_type = 'NR';
+            $id = $arg2;
+            $res = $arg3;
+            $format = $arg4;
         }
 
         if ($format != 'csv') {
