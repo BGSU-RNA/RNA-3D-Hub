@@ -599,7 +599,7 @@ class Nrlist_model extends CI_Model {
                 // print_r($annotations);
             }
             // print_r($annotations);
-            
+
             $return_table = array();
             foreach ($table as $r){
                 $tem_r = $r;
@@ -610,7 +610,7 @@ class Nrlist_model extends CI_Model {
                     // var_dump($tem_r[1] == $l[0]);
                     // if (compare_ife_id(strval($tem_r[1]),strval($l[0]))){
                     if ($tem_r[1] == $l[0]){
-                        
+
                         // print_r($tem_r[6]);
                         // print_r($l[1]);
                         // $tem_r[2] .= "<br><strong>" . ($l[1] ?: "NULL") . ": </strong>"  . ($l[2] ?: "NULL");
@@ -669,7 +669,7 @@ class Nrlist_model extends CI_Model {
             }
             return $table;
     }
-        
+
     }
 
     /*
@@ -944,12 +944,12 @@ class Nrlist_model extends CI_Model {
 
         }
         $eff_data = json_decode($heatmap_data,true);
-     
+
         $eff_ifes = array();
         $eff_discrepancy = array();
         $eff_discrepancy_one_row = array();
         foreach ($eff_data as $row) {
-        
+
             foreach ($row as $key => $value) {
                 if ($key == 'ife1'){
                     if (!in_array($value, $eff_ifes)){
@@ -957,40 +957,40 @@ class Nrlist_model extends CI_Model {
                     }
                 }
                 if ($key == 'discrepancy'){
-                   
+
                     $eff_discrepancy_one_row[] = (number_format($value,4) >0? number_format($value,4) : NULL );
-                
+
                 }
             }
-         
+
         }
         $eff_data_cleaned = array();
-        
-        $eff_data_cleaned[] = '#heatmap'; 
-        
+
+        $eff_data_cleaned[] = '#heatmap';
+
         $two_d_array = array();
-        $size = count($eff_ifes); 
+        $size = count($eff_ifes);
         // echo $size;
         for ($i = 0; $i < count($eff_discrepancy_one_row); $i += $size) {
-         
+
             $two_d_array[] = array_slice($eff_discrepancy_one_row, $i, $size);
         }
-      
+
         for ($i = 0; $i < $size; $i++) {
-            $two_d_array[$i][$i] = 0; 
+            $two_d_array[$i][$i] = 0;
         }
-       
-        $eff_data_cleaned[] = $two_d_array; 
+
+        $eff_data_cleaned[] = $two_d_array;
 
 
 
-        $eff_data_cleaned[] = $eff_ifes; 
-     
+        $eff_data_cleaned[] = $eff_ifes;
+
 
         return json_encode($eff_data_cleaned);
 
     }
-      
+
 
     function get_heatmap_data($id)
     {
@@ -1071,7 +1071,7 @@ class Nrlist_model extends CI_Model {
         foreach ($query -> result() as $row) {
             $link = $this->make_pdb_widget_link($row->ife_id);
             $assembly = $row->assembly_id;
-            
+
             $ife_components = explode("|", $row->ife_id);
             $pdb_id = $ife_components[0];
 
@@ -1113,8 +1113,8 @@ class Nrlist_model extends CI_Model {
 
         }
 
-        return $table; 
-    }    
+        return $table;
+    }
 
     function get_ribosome_chain($pdb, $assembly, $value)
     {
@@ -1573,7 +1573,118 @@ class Nrlist_model extends CI_Model {
     }
 */
 
-    function get_release($id, $resolution, $molecule) 
+    function read_chain_property_value_table()
+    {
+        # Query the entire cpv table. Load all data approach.
+        # cpv = chain_property_value
+        $this->db->select('cpv.pdb_id')
+            ->select('cpv.chain')
+            ->select('cpv.property')
+            ->select('cpv.value')
+            ->from('chain_property_value AS cpv');
+        $query_cpv = $this->db->get();
+
+        # Create dictionaries to store cpv data
+        $chain_to_standardized_name = array();
+        $chain_to_source = array();
+        $chain_to_rfam = array();
+
+        # populate dictionaries with pdb_chain keys
+        foreach ($query_cpv->result() as $row) {
+            $row_pdb = $row->pdb_id;
+            $row_chain = $row->chain;
+            $row_property = $row->property;
+            $row_value = $row->value;
+            if ($row_property == "standardized_name"){
+                $chain_to_standardized_name["{$row_pdb}_{$row_chain}"] = $row_value;
+            }
+            elseif ($row_property == "source") {
+                $chain_to_source["{$row_pdb}_{$row_chain}"] = $row_value;
+            }
+            elseif ($row_property == "rfam_family"){
+                $chain_to_rfam["{$row_pdb}_{$row_chain}"] = $row_value;
+            }
+        }
+
+        $return_list = array($chain_to_standardized_name, $chain_to_source, $chain_to_rfam);
+
+        return $return_list;
+    }
+
+    function read_chain_info_table()
+    {
+        # Query the chain_info table, omitting protein chains
+        $this->db->select('ci.pdb_id')
+            ->select('ci.chain_name')
+            ->select('ci.compound')
+            ->select('ci.entity_macromolecule_type')
+            ->select('ci.source')
+            ->select('ci.taxonomy_id')
+            ->from('chain_info AS ci')
+            ->where('ci.entity_macromolecule_type !=', 'Polypeptide(L)');
+        $query_cpv = $this->db->get();
+
+        # Create dictionaries to store data
+        $chain_to_taxid = array();
+        $chain_to_species = array();
+        $chain_to_compound = array();
+        $chain_to_type = array();
+
+        # populate dictionaries with pdb_chain keys
+        foreach ($query_cpv->result() as $row) {
+            $row_pdb = $row->pdb_id;
+            $row_chain = $row->chain_name;
+            $key = "{$row_pdb}_{$row_chain}";
+            $chain_to_taxid[$key] = $row->taxonomy_id;
+            $chain_to_species[$key] = $row->source;
+            $chain_to_compound[$key] = $row->compound;
+            $emt = $row->entity_macromolecule_type;
+            if ($emt == 'polyribonucleotide'){
+                $chain_to_type[$key] = 'RNA';
+            }
+            elseif ($emt == 'Polyribonucleotide (RNA)') {
+                $chain_to_type[$key] = 'RNA';
+            }
+            elseif ($emt == 'polydeoxyribonucleotide') {
+                $chain_to_type[$key] = 'DNA';
+            }
+            elseif ($emt == 'Polydeoxyribonucleotide (DNA)') {
+                $chain_to_type[$key] = 'DNA';
+            }
+            elseif ($emt == 'Peptide nucleic acid') {
+                $chain_to_type[$key] = 'PNA';
+            }
+            elseif ($emt == 'polydeoxyribonucleotide/polyribonucleotide hybrid') {
+                $chain_to_type[$key] = 'hybrid';
+            }
+            elseif ($emt == 'DNA/RNA Hybrid') {
+                $chain_to_type[$key] = 'hybrid';
+            }
+        }
+
+        $return_list = array($chain_to_taxid, $chain_to_species, $chain_to_compound, $chain_to_type);
+
+        return $return_list;
+    }
+
+    function read_taxid_species_domain_table()
+    {
+        # Query the taxid_species_domain table
+        $this->db->select('tsd.taxonomy_id')
+            ->select('tsd.species_taxid')
+            ->from('taxid_species_domain AS tsd');
+        $query_cpv = $this->db->get();
+
+        # Create dictionaries to store data
+        $taxid_to_species_taxid = array();
+        foreach ($query_cpv->result() as $row) {
+            $taxid_to_species_taxid[$row->taxonomy_id] = $row->species_taxid;
+        }
+
+        return $taxid_to_species_taxid;
+    }
+
+    function get_release($id, $resolution, $molecule)
     // This function populates the Representative set pages
     {
         $resolution = str_replace('A', '', $resolution);
@@ -1583,7 +1694,7 @@ class Nrlist_model extends CI_Model {
             $group_id = 'DNA_' . $resolution;
         } else {
             show_404();
-        } 
+        }
         $this->db->select('ii.ife_id, ii.pdb_id, nl.name, nc.rank')
             ->from('ife_info AS ii')
             ->join('nr_class_rank AS nc', 'ii.ife_id = nc.ife_id')
@@ -1592,7 +1703,7 @@ class Nrlist_model extends CI_Model {
             ->where("nl.name LIKE '$group_id%'")
             ->order_by('nc.rank','asc');
             $query = $this->db->get();
-            
+
         // reorganize by class and rep and pdb
         $class = array();
         foreach ($query->result() as $row) {
@@ -1617,10 +1728,10 @@ class Nrlist_model extends CI_Model {
         // get general pdb info
         $this->db->select('pdb_id, title, resolution, experimental_technique, release_date')
                  ->from('pdb_info')
-                 ->where_in('pdb_id', $pdbs )
+                 ->where_in('pdb_id', $pdbs)
                  ->group_by('pdb_id');
         $query = $this->db->get();
-        // Converting experimental technique to lower case equivalent (without changing pdb_info table)
+        // Convert experimental technique to lower case equivalent (without changing pdb_info table)
         $experimental_technique = array();
         $experimental_technique['X-RAY DIFFRACTION'] = 'X-ray diffraction';
         $experimental_technique['ELECTRON MICROSCOPY'] = 'Electron microscopy';
@@ -1645,7 +1756,7 @@ class Nrlist_model extends CI_Model {
 
         }
 
-        // check if any of the files became obsolete
+        // check if any of the files became obsolete ... not sure this still works
         $this->db->select('pdb_obsolete_id, replaced_by')
                  ->from('pdb_obsolete')
                  ->where_in('pdb_obsolete_id', $pdbs);
@@ -1707,37 +1818,9 @@ class Nrlist_model extends CI_Model {
                  ->order_by('ii.length','desc');
         $query = $this->db->get();
 
-        # Query the entire cpv table. Load all data approach.
-        $this->db->select('cpv.pdb_id')
-            ->select('cpv.chain')
-            ->select('cpv.property')
-            ->select('cpv.value')
-            ->from('chain_property_value AS cpv');
-        $query_cpv = $this->db->get();
-        $ife_to_cpv = array();
+        list($chain_to_standardized_name, $chain_to_source, $chain_to_rfam) = $this->read_chain_property_value_table();
 
-        //Creating dicts to store cpv data
-        $chain_to_standardized_name = array();
-        $chain_to_source = array();
-        $chain_to_rfam = array();
-        // $i = 0;
-
-        //populating dicts with cpv data #
-        foreach ($query_cpv->result() as $row) {
-            $row_pdb = $row->pdb_id;
-            $row_chain = $row->chain;
-            $row_property = $row->property;
-            $row_value = $row->value;
-            if ($row_property == "standardized_name"){
-                $chain_to_standardized_name["{$row_pdb}_{$row_chain}"] = $row_value;
-            }
-            elseif ($row_property == "source") {
-                $chain_to_source["{$row_pdb}_{$row_chain}"] = $row_value;
-            }
-            elseif ($row_property == "rfam_family"){
-                $chain_to_rfam["{$row_pdb}_{$row_chain}"] = $row_value;
-            }
-        }
+        # fill in data for the release
         foreach ($query->result() as $row) {
             $class_id = $row->name;
             #$nums     = $row->num;
@@ -1823,6 +1906,7 @@ class Nrlist_model extends CI_Model {
                 $cpv_html_list_item .= '<li>Rfam: ' . $rfam_representative . '</li>';
             }
 
+            # read pdb_property_value table for annotation information
             $this->db->select('ppv.pdb_id')
                     ->select('ppv.property')
                     ->select('ppv.value')
@@ -1832,7 +1916,7 @@ class Nrlist_model extends CI_Model {
             // $property_value = array();
             // foreach ($query_property->result as $row){
             //     $property_value[$row->property] = ($row->value ?: "NULL");
-            // }     
+            // }
             if ($query_property->num_rows() > 0) {
                 $property_value = array();
                 foreach ($query_property->result() as $row1) {
@@ -1841,10 +1925,10 @@ class Nrlist_model extends CI_Model {
             } else {
                 $property_value['NAKB_NA_annotation'] = 'NULL';
                 $property_value['NAKB_protein_annotation'] = 'NULL';
-            }       
+            }
 
             // $id refers to the release_id
-            if($molecule == 'dna'){
+            if ($molecule == 'dna'){
                 $table[] = array($i,
                                 anchor(base_url("nrlist/view/".$class_id),$class_id)
                                 #anchor(base_url("nrlist/view/".$class_id."/".$id),$class_id,$id)
@@ -1912,6 +1996,7 @@ class Nrlist_model extends CI_Model {
     }
 
     function get_csv($release, $resolution, $type)
+    // Retrieve information on one representative set release
     {
         $resolution = str_replace('A', '', $resolution);
         $this->db->select('ii.ife_id as id, nl.name as class_id, nc.rank')
@@ -1937,6 +2022,228 @@ class Nrlist_model extends CI_Model {
         }
 
         return $csv;
+    }
+
+    function get_csv_full($release, $resolution, $type, $format)
+    # Retrieve information on one representative set release at given resolution
+    # $type is NR for RNA or DNA for DNA
+    {
+
+        # set resolution cutoff
+        $resolution = str_replace('A', '', $resolution);
+        $this->db->select('ncr.ife_id as id')
+                ->select('nl.name as class_id')
+                ->select('ncr.rank')
+                ->select('cqs.nr_name as nr_name')
+                ->select('cqs.composite_quality_score as cq')
+                ->select('cqs.percent_observed')
+                ->select('cqs.maximum_experimental_length')
+                ->select('ic.average_rsr')
+                ->select('ic.average_rscc')
+                ->select('ic.obs_length')
+                ->select('ic.percent_clash')
+                ->select('ic.rfree')
+                ->select('pi.resolution')
+                ->select('pi.experimental_technique')
+                ->select('pi.release_date')
+                ->select('pi.title')
+                ->from('nr_class_rank AS ncr')
+                ->join('nr_classes AS nl', 'ncr.nr_class_name = nl.name')
+                ->join('nr_cqs AS cqs', 'ncr.ife_id = cqs.ife_id','inner')
+                ->join('ife_cqs as ic','ic.ife_id = ncr.ife_id')
+                ->join('ife_info as ii','ii.ife_id = ncr.ife_id')
+                ->join('pdb_info as pi','pi.pdb_id = ii.pdb_id')
+                ->where('nl.nr_release_id', $release)
+                ->where('nl.resolution', $resolution)
+                ->where('nl.name LIKE', $type."%")
+                ->where('REPLACE(cqs.nr_name, "all", "'.$resolution.'") = nl.name')
+                ->order_by('nl.name','asc')
+                ->order_by('ncr.rank','asc');
+        $query = $this->db->get();
+
+        list($chain_to_standardized_name, $chain_to_source, $chain_to_rfam) = $this->read_chain_property_value_table();
+
+        list($chain_to_taxid, $chain_to_species, $chain_to_compound, $chain_to_type) = $this->read_chain_info_table();
+
+        $taxid_to_species_taxid = $this->read_taxid_species_domain_table();
+
+        # get maximum observed length for each Rfam family
+        $rfam_to_max_observed = array();
+        foreach($query->result() as $row) {
+            # split ife id into chains
+            $chains = explode('+',$row->id);
+            $rfams = array();
+            foreach ($chains as $chain) {
+                $chain_fields = explode('|',$chain);
+                if (count($chain_fields) == 3) {
+                    # split ife id into chains (pdb_id, model, chain_id
+                    $pdb_id = $chain_fields[0];
+                    $chain_id = $chain_fields[2];
+                    $key = "{$pdb_id}_{$chain_id}";
+                    if (array_key_exists($key,$chain_to_rfam)){
+                        $rfam = $chain_to_rfam[$key];
+                        if (array_key_exists($rfam,$rfam_to_max_observed)){
+                            $rfam_to_max_observed[$rfam] = max($rfam_to_max_observed[$rfam],$row->obs_length);
+                        } else {
+                            $rfam_to_max_observed[$rfam] = $row->obs_length;
+                        }
+                        # nr.cqs stores the maximum over the equivalence class at "all" resolution
+                        # this will likely give a larger value than the calculation above
+                        // if ($row->maximum_experimental_length > $rfam_to_max_observed[$rfam]) {
+                        //     $rfam_to_max_observed[$rfam] = $row->maximum_experimental_length;
+                        // }
+                    }
+                }
+            }
+        }
+
+        // because of stapled ribosomes, joint 5S+23S, and other cases,
+        // we need to set a maximum observed length for some Rfam families
+        $rfam_max_allowed = $this->set_rfam_max_allowed();
+        foreach($rfam_max_allowed as $rfam => $max_allowed) {
+            if (array_key_exists($rfam,$rfam_to_max_observed)) {
+                $rfam_to_max_observed[$rfam] = min($rfam_to_max_observed[$rfam],$max_allowed);
+            }
+        }
+
+        $header_values = array("ec_id","ife_id","pdb_resolution","na_type","ec_rank","ec_cqs","average_rsr","average_rscc","percent_clash","rfree","ec_fraction_observed","nts_observed","rfam_reference_nts","rfam_fraction_observed","rfam_cqs","source","rfam","standardized_name","pdb_species","pdb_taxid","species_taxid","pdb_description","pdb_release_date","pdb_experimental_technique","pdb_title");
+        if ($format == 'csv'){
+            $header = '"' . implode('","',$header_values) . '"' . "\n";
+        } elseif ($format == 'tsv'){
+            $header = implode("\t",$header_values) . "\n";
+        }
+
+        $all_lines = array();
+        $all_lines[] = $header;
+        foreach($query->result() as $row) {
+            $compounds = array();
+            $types = array();
+            $taxids = array();
+            $species = array();
+            $species_taxids = array();
+            $rfams = array();
+            $sources = array();
+            $standardized_names = array();
+            $nts_observed = 0;
+            $rfam_max_observed = 0;
+            $taxid = '';
+            $species = '';
+            $species_taxid = '';
+
+            # split ife id into chains
+            $chains = explode('+',$row->id);
+            foreach($chains as $chain){
+                $chain_fields = explode('|',$chain);
+                $pdb_id = $chain_fields[0];
+                $chain_id = $chain_fields[2];
+                $key = "{$pdb_id}_{$chain_id}";
+                if (array_key_exists($key,$chain_to_compound)){
+                    $compounds[] = $chain_to_compound[$key];
+                } else {
+                    $compounds[] = 'NA';
+                }
+                if (array_key_exists($key,$chain_to_type)){
+                    $types[] = $chain_to_type[$key];
+                } else {
+                    $types[] = 'NA';
+                }
+                if (array_key_exists($key,$chain_to_species)){
+                    $species[] = $chain_to_species[$key];
+                } else {
+                    $species[] = 'NA';
+                }
+                if (array_key_exists($key,$chain_to_taxid)){
+                    $taxid = $chain_to_taxid[$key];
+                    $taxids[] = $taxid;
+                    if (array_key_exists($taxid,$taxid_to_species_taxid)){
+                        $species_taxid = $taxid_to_species_taxid[$taxid];
+                        $species_taxids[] = $species_taxid;
+                    } else {
+                        $species_taxids[] = 'NA';
+                    }
+                } else {
+                    $taxids[] = 'NA';
+                    $species_taxids[] = 'NA';
+                }
+                if (array_key_exists($key,$chain_to_standardized_name)){
+                    $standardized_names[] = $chain_to_standardized_name[$key];
+                } else {
+                    $standardized_names[] = 'NA';
+                }
+                if (array_key_exists($key,$chain_to_source)){
+                    $sources[] = $chain_to_source[$key];
+                } else {
+                    $sources[] = 'NA';
+                }
+                if (array_key_exists($key,$chain_to_rfam)){
+                    $rfam = $chain_to_rfam[$key];
+                    $rfams[] = $rfam;
+                    if (array_key_exists($rfam,$rfam_to_max_observed)) {
+                        $rfam_max_observed = $rfam_max_observed + $rfam_to_max_observed[$rfam];
+                    }
+                } else {
+                    $rfams[] = 'NA';
+                }
+            }
+            $compound = implode('+',$compounds);
+            $type = implode('+',$types);
+            $taxid = implode('+',$taxids);
+            $species = implode('+',$species);
+            $species_taxid = implode('+',$species_taxids);
+            $standardized_name = implode('+',$standardized_names);
+            $source = implode('+',$sources);
+            $rfam = implode('+',$rfams);
+
+            if ($rfam_max_observed == 0){
+                $rfam_fraction_observed = 0;
+            } else {
+                $rfam_fraction_observed = $row->obs_length / $rfam_max_observed;
+                // Some stapled or joint molecules have artificially large numbers
+                if ($rfam_fraction_observed > 1){
+                    $rfam_fraction_observed = 1;
+                }
+            }
+
+            // COMPSCORE_COEFFICENTS = {
+            //     'resolution': 1,
+            //     'average_rsr': 8,
+            //     'percent_clash': 0.6,
+            //     'average_rscc': 8,
+            //     'rfree': 18,
+            //     'fraction_unobserved': 4,
+            // }
+            // compscore = COMPSCORE_COEFFICENTS['resolution'] * member[0]['resolution']
+            // compscore += COMPSCORE_COEFFICENTS['percent_clash'] * member[0]['percent_clash']
+            // compscore += COMPSCORE_COEFFICENTS['average_rsr'] * member[0]['average_rsr']
+            // compscore += COMPSCORE_COEFFICENTS['average_rscc'] * (1 - member[0]['average_rscc'])
+            // compscore += COMPSCORE_COEFFICENTS['rfree'] * member[0]['rfree']
+            // compscore += COMPSCORE_COEFFICENTS['fraction_unobserved'] * member[0]['fraction_unobserved']
+
+            $rfam_cqs = 1 * $row->resolution + 8 * $row->average_rsr + 0.6 * ($row->percent_clash);
+            $rfam_cqs = $rfam_cqs + 8 * (1 - $row->average_rscc) + 18 * $row->rfree + 4 * (1 - $rfam_fraction_observed);
+
+            // make an array with all of the data fields in $row
+            $data = array($row->class_id,$row->id,$row->resolution,$type,($row->rank+1),$row->cq,
+                            $row->average_rsr,$row->average_rscc,$row->percent_clash,$row->rfree,$row->percent_observed,$row->obs_length,$rfam_max_observed,$rfam_fraction_observed,$rfam_cqs,
+                            $source,$rfam,$standardized_name,
+                            $species,$taxid,$species_taxid,$compound,
+                            $row->release_date,$row->experimental_technique,$row->title);
+
+            if ($format == 'csv'){
+                // convert $data to a string that is comma separated and has double quotation marks
+                $line = '"' . implode('","', $data) . '"' . "\n";
+            } else {
+                // convert $data to a string that is tab separated
+                $line = implode("\t", $data) . "\n";
+            }
+            // append $data to a $all_lines
+            $all_lines[] = $line;
+        }
+
+        // concatenate $all_lines into string
+        $final = implode('', $all_lines);
+
+        return $final;
     }
 
     function get_compare_radio_table()
@@ -2010,7 +2317,238 @@ class Nrlist_model extends CI_Model {
         return array($rel1, $rel2);
     }
 
+    function set_rfam_max_allowed()
+    {
+        // these values are taken from the infernal matches to chains on 2024-08-20
+        // set absolute maximum values for scoring fraction observed
+        // Avoids trouble with stapled ribosomes, joint 5S+23S, and other cases
+        // Also avoids giving too much credit to very long viral chains, CRISPR, things
+        // that can be much longer than the functional part of the molecule
+        // These were checked down to nts_observed / rfam_reference_observed = 1.2
+        $rfam_max_allowed = array();
+        $rfam_max_allowed['RF00001'] = 126;  # 5S rRNA, some are joint with 23S
+        $rfam_max_allowed['RF00002'] = 169;
+        $rfam_max_allowed['RF00003'] = 164;
+        $rfam_max_allowed['RF00004'] = 228;  // 8RO1|1|2
+        $rfam_max_allowed['RF00005'] = 93;   # 8CBK|1|T; viruses have longer matches to Infernal
+        $rfam_max_allowed['RF00007'] = 150;
+        $rfam_max_allowed['RF00008'] = 56;
+        $rfam_max_allowed['RF00009'] = 358;
+        $rfam_max_allowed['RF00010'] = 376;
+        $rfam_max_allowed['RF00011'] = 397;
+        $rfam_max_allowed['RF00012'] = 217;
+        $rfam_max_allowed['RF00013'] = 125;
+        $rfam_max_allowed['RF00015'] = 161;
+        $rfam_max_allowed['RF00017'] = 299;
+        $rfam_max_allowed['RF00020'] = 179;    // using 6J6G|1|D
+        $rfam_max_allowed['RF00023'] = 377;
+        $rfam_max_allowed['RF00024'] = 438;
+        $rfam_max_allowed['RF00025'] = 159;
+        $rfam_max_allowed['RF00026'] = 107;
+        $rfam_max_allowed['RF00027'] = 70;
+        $rfam_max_allowed['RF00028'] = 434;    // group I intron, using 7XD6|1|N
+        $rfam_max_allowed['RF00029'] = 866;    // group II intron, Rfam aligns only 98, using
+        $rfam_max_allowed['RF00030'] = 332;
+        $rfam_max_allowed['RF00031'] = 66;
+        $rfam_max_allowed['RF00032'] = 46;
+        $rfam_max_allowed['RF00036'] = 67;
+        $rfam_max_allowed['RF00037'] = 30;
+        $rfam_max_allowed['RF00044'] = 118;
+        $rfam_max_allowed['RF00050'] = 112;
+        $rfam_max_allowed['RF00059'] = 85;
+        $rfam_max_allowed['RF00061'] = 256;
+        $rfam_max_allowed['RF00066'] = 60;
+        $rfam_max_allowed['RF00075'] = 101;
+        $rfam_max_allowed['RF00080'] = 85;
+        $rfam_max_allowed['RF00083'] = 207;
+        $rfam_max_allowed['RF00094'] = 75;
+        $rfam_max_allowed['RF00100'] = 57;
+        $rfam_max_allowed['RF00102'] = 111;
+        $rfam_max_allowed['RF00114'] = 114;
+        $rfam_max_allowed['RF00161'] = 53;
+        $rfam_max_allowed['RF00162'] = 125;
+        $rfam_max_allowed['RF00163'] = 33;
+        $rfam_max_allowed['RF00164'] = 43;
+        $rfam_max_allowed['RF00166'] = 72;
+        $rfam_max_allowed['RF00167'] = 69;
+        $rfam_max_allowed['RF00168'] = 170;
+        $rfam_max_allowed['RF00169'] = 99;
+        $rfam_max_allowed['RF00173'] = 36;
+        $rfam_max_allowed['RF00174'] = 177;
+        $rfam_max_allowed['RF00175'] = 40;
+        $rfam_max_allowed['RF00177'] = 1808;  // bacterial SSU
+        $rfam_max_allowed['RF00180'] = 11;
+        $rfam_max_allowed['RF00185'] = 95;
+        $rfam_max_allowed['RF00207'] = 48;
+        $rfam_max_allowed['RF00209'] = 233;
+        $rfam_max_allowed['RF00210'] = 108;
+        $rfam_max_allowed['RF00220'] = 33;
+        $rfam_max_allowed['RF00228'] = 92;
+        $rfam_max_allowed['RF00230'] = 168;
+        $rfam_max_allowed['RF00233'] = 86;
+        $rfam_max_allowed['RF00234'] = 141;
+        $rfam_max_allowed['RF00240'] = 70;
+        $rfam_max_allowed['RF00250'] = 58;
+        $rfam_max_allowed['RF00254'] = 81;
+        $rfam_max_allowed['RF00270'] = 13;
+        $rfam_max_allowed['RF00373'] = 257;
+        $rfam_max_allowed['RF00374'] = 101;
+        $rfam_max_allowed['RF00375'] = 99;
+        $rfam_max_allowed['RF00379'] = 124;
+        $rfam_max_allowed['RF00380'] = 158;
+        $rfam_max_allowed['RF00382'] = 36;
+        $rfam_max_allowed['RF00386'] = 92;
+        $rfam_max_allowed['RF00390'] = 23;
+        $rfam_max_allowed['RF00436'] = 31;
+        $rfam_max_allowed['RF00442'] = 126;
+        $rfam_max_allowed['RF00455'] = 59;
+        $rfam_max_allowed['RF00458'] = 200;
+        $rfam_max_allowed['RF00480'] = 45;
+        $rfam_max_allowed['RF00488'] = 568;
+        $rfam_max_allowed['RF00500'] = 45;
+        $rfam_max_allowed['RF00504'] = 230;  // glycine riboswitch, using 6WLT|1|A
+        $rfam_max_allowed['RF00505'] = 65;
+        $rfam_max_allowed['RF00507'] = 78;
+        $rfam_max_allowed['RF00522'] = 40;
+        $rfam_max_allowed['RF00525'] = 81;
+        $rfam_max_allowed['RF00548'] = 134;
+        $rfam_max_allowed['RF00610'] = 14;
+        $rfam_max_allowed['RF00617'] = 14;
+        $rfam_max_allowed['RF00618'] = 127;
+        $rfam_max_allowed['RF00619'] = 125;
+        $rfam_max_allowed['RF00622'] = 69;
+        $rfam_max_allowed['RF00634'] = 119;
+        $rfam_max_allowed['RF00658'] = 31;
+        $rfam_max_allowed['RF00661'] = 71;
+        $rfam_max_allowed['RF00843'] = 82;
+        $rfam_max_allowed['RF00957'] = 93;
+        $rfam_max_allowed['RF01047'] = 61;
+        $rfam_max_allowed['RF01051'] = 91;
+        $rfam_max_allowed['RF01054'] = 59;
+        $rfam_max_allowed['RF01057'] = 54;
+        $rfam_max_allowed['RF01068'] = 8;
+        $rfam_max_allowed['RF01073'] = 59;
+        $rfam_max_allowed['RF01080'] = 9;
+        $rfam_max_allowed['RF01081'] = 13;
+        $rfam_max_allowed['RF01083'] = 14;
+        $rfam_max_allowed['RF01084'] = 129;
+        $rfam_max_allowed['RF01097'] = 35;
+        $rfam_max_allowed['RF01103'] = 18;
+        $rfam_max_allowed['RF01111'] = 13;
+        $rfam_max_allowed['RF01120'] = 10;
+        $rfam_max_allowed['RF01303'] = 10;
+        $rfam_max_allowed['RF01315'] = 13;
+        $rfam_max_allowed['RF01317'] = 21;
+        $rfam_max_allowed['RF01319'] = 8;
+        $rfam_max_allowed['RF01321'] = 12;
+        $rfam_max_allowed['RF01322'] = 11;
+        $rfam_max_allowed['RF01325'] = 10;
+        $rfam_max_allowed['RF01330'] = 37;
+        $rfam_max_allowed['RF01335'] = 30;
+        $rfam_max_allowed['RF01338'] = 14;
+        $rfam_max_allowed['RF01343'] = 30;
+        $rfam_max_allowed['RF01344'] = 52;
+        $rfam_max_allowed['RF01346'] = 8;
+        $rfam_max_allowed['RF01347'] = 14;
+        $rfam_max_allowed['RF01355'] = 8;
+        $rfam_max_allowed['RF01358'] = 16;
+        $rfam_max_allowed['RF01363'] = 56;
+        $rfam_max_allowed['RF01375'] = 31;
+        $rfam_max_allowed['RF01380'] = 19;
+        $rfam_max_allowed['RF01381'] = 23;
+        $rfam_max_allowed['RF01394'] = 16;
+        $rfam_max_allowed['RF01415'] = 68;
+        $rfam_max_allowed['RF01510'] = 64;
+        $rfam_max_allowed['RF01666'] = 46;
+        $rfam_max_allowed['RF01684'] = 58;
+        $rfam_max_allowed['RF01689'] = 83;
+        $rfam_max_allowed['RF01704'] = 50;
+        $rfam_max_allowed['RF01716'] = 15;
+        $rfam_max_allowed['RF01725'] = 96;
+        $rfam_max_allowed['RF01727'] = 43;
+        $rfam_max_allowed['RF01734'] = 51;
+        $rfam_max_allowed['RF01739'] = 61;
+        $rfam_max_allowed['RF01750'] = 75;
+        $rfam_max_allowed['RF01763'] = 41;
+        $rfam_max_allowed['RF01764'] = 127;
+        $rfam_max_allowed['RF01767'] = 51;
+        $rfam_max_allowed['RF01786'] = 74;
+        $rfam_max_allowed['RF01790'] = 10;
+        $rfam_max_allowed['RF01792'] = 9;
+        $rfam_max_allowed['RF01807'] = 184;
+        $rfam_max_allowed['RF01826'] = 49;
+        $rfam_max_allowed['RF01831'] = 99;
+        $rfam_max_allowed['RF01834'] = 11;
+        $rfam_max_allowed['RF01835'] = 30;
+        $rfam_max_allowed['RF01836'] = 17;
+        $rfam_max_allowed['RF01846'] = 333;
+        $rfam_max_allowed['RF01852'] = 95;
+        $rfam_max_allowed['RF01854'] = 264;
+        $rfam_max_allowed['RF01856'] = 95;
+        $rfam_max_allowed['RF01857'] = 136;
+        $rfam_max_allowed['RF01959'] = 1497;  // archaeal SSU
+        $rfam_max_allowed['RF01960'] = 2318;  // eukaryotic SSU
+        $rfam_max_allowed['RF01988'] = 36;
+        $rfam_max_allowed['RF01998'] = 414;   // Group II intron; infernal 84, but 414 is the max observed
+        $rfam_max_allowed['RF02001'] = 390;   // Group II intron; infernal 177
+        $rfam_max_allowed['RF02012'] = 158;
+        $rfam_max_allowed['RF02033'] = 248;
+        $rfam_max_allowed['RF02064'] = 26;
+        $rfam_max_allowed['RF02095'] = 71;
+        $rfam_max_allowed['RF02253'] = 29;
+        $rfam_max_allowed['RF02340'] = 71;
+        $rfam_max_allowed['RF02348'] = 79;
+        $rfam_max_allowed['RF02359'] = 36;
+        $rfam_max_allowed['RF02399'] = 8;
+        $rfam_max_allowed['RF02448'] = 15;
+        $rfam_max_allowed['RF02519'] = 34;
+        $rfam_max_allowed['RF02521'] = 85;
+        $rfam_max_allowed['RF02540'] = 3049;  // archaeal LSU
+        $rfam_max_allowed['RF02541'] = 3393;  // bacterial LSU
+        $rfam_max_allowed['RF02542'] = 1400;  // microsporidia SSU
+        $rfam_max_allowed['RF02543'] = 5067;  // eukaryotic LSU
+        $rfam_max_allowed['RF02545'] = 627;   // Trypanosomatid mitochondria SSU
+        $rfam_max_allowed['RF02546'] = 1176;  // Trypanosomatid mitochondria LSU, using 6YXX|1|AA
+        $rfam_max_allowed['RF02547'] = 95;
+        $rfam_max_allowed['RF02553'] = 80;
+        $rfam_max_allowed['RF02597'] = 12;
+        $rfam_max_allowed['RF02678'] = 81;
+        $rfam_max_allowed['RF02679'] = 51;
+        $rfam_max_allowed['RF02680'] = 101;
+        $rfam_max_allowed['RF02681'] = 61;
+        $rfam_max_allowed['RF02683'] = 86;
+        $rfam_max_allowed['RF02747'] = 64;
+        $rfam_max_allowed['RF02765'] = 12;
+        $rfam_max_allowed['RF02796'] = 57;
+        $rfam_max_allowed['RF02885'] = 51;
+        $rfam_max_allowed['RF02977'] = 39;
+        $rfam_max_allowed['RF02990'] = 12;
+        $rfam_max_allowed['RF03013'] = 56;
+        $rfam_max_allowed['RF03054'] = 44;
+        $rfam_max_allowed['RF03064'] = 73;
+        $rfam_max_allowed['RF03117'] = 157;
+        $rfam_max_allowed['RF03120'] = 145;
+        $rfam_max_allowed['RF03125'] = 40;
+        $rfam_max_allowed['RF03128'] = 11;
+        $rfam_max_allowed['RF03130'] = 16;
+        $rfam_max_allowed['RF03131'] = 22;
+        $rfam_max_allowed['RF03160'] = 56;
+        $rfam_max_allowed['RF03231'] = 19;
+        $rfam_max_allowed['RF03803'] = 14;
+        $rfam_max_allowed['RF03819'] = 72;
+        $rfam_max_allowed['RF03852'] = 48;
+        $rfam_max_allowed['RF04036'] = 65;
+        $rfam_max_allowed['RF04104'] = 118;
+        $rfam_max_allowed['RF04190'] = 68;
+        $rfam_max_allowed['RF04222'] = 50;
+
+        return $rfam_max_allowed;
+    }
+
 }
+
+
+
 
 /* End of file nrlist_model.php */
 /* Location: ./application/model/nrlist_model.php */
