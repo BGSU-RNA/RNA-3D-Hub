@@ -6,6 +6,7 @@
           <br>
           <small>Release <?=$release_id?>, <?=$description?></small>
           </h1>
+          See download options at <a href="https://www.bgsu.edu/research/rna/APIs.html#rfam_mapping">BGSU RNA API site</a>, new in August 2024
         </div>
 
         <div class="row">
@@ -25,8 +26,8 @@
                     <?php foreach(array('1.5A', '2.0A', '2.5A', '3.0A', '3.5A', '4.0A', '20.0A') as $res): ?>
                       <li><a href="<?=$baseurl?>nrlist/download/<?=$class_type?>/<?=$release_id?>/<?=$res?>/csv"><?=$res?></a></li>
                     <?php endforeach; ?>
-                    <li class="divider"></li>
                     <li><a href="<?=$baseurl?>nrlist/download/<?=$class_type?>/<?=$release_id?>/all/csv">All</a></li>
+                    <li>For full data download see <a href="https://www.bgsu.edu/research/rna/APIs.html#rfam_mapping" target="_blank">API page</a></li>
                   </ul>
                 </li>
             </ul>
