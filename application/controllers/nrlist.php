@@ -226,10 +226,6 @@ class Nrlist extends CI_Controller {
             $format = $arg4;
         }
 
-        if ($format != 'csv') {
-            show_404();
-        }
-
         $this->load->model('Nrlist_model', '', TRUE);
 
         if ($id == 'current') {
@@ -239,12 +235,32 @@ class Nrlist extends CI_Controller {
             return;
         }
 
-        $data['csv'] = $this->Nrlist_model->get_csv($id, $res, $class_type);
+        if ($format == 'csv') {
+            $data['csv'] = $this->Nrlist_model->get_csv($id, $res, $class_type);
 
-        $filename = "nrlist_{$id}_{$res}.{$format}";
-        $this->output->set_header("Content-disposition: attachment; filename=$filename")
-                     ->set_content_type('text/csv');
-        $this->load->view('csv_view', $data);
+            $filename = "nrlist_{$id}_{$res}.{$format}";
+            $this->output->set_header("Content-disposition: attachment; filename=$filename")
+                        ->set_content_type('text/csv');
+            $this->load->view('csv_view', $data);
+        } elseif ($format == 'full' || $format == 'full_csv') {
+            // http://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.343/2.5A/json
+            $data['csv'] = $this->Nrlist_model->get_csv_full($id, $res, $class_type, 'csv');
+
+            $filename = "ifes_{$id}_{$res}_full.csv";
+            $this->output->set_header("Content-disposition: attachment; filename=$filename")
+                        ->set_content_type('text/csv');
+            $this->load->view('csv_view', $data);
+        } elseif ($format == 'full_tsv') {
+            // http://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.343/2.5A/json
+            $data['csv'] = $this->Nrlist_model->get_csv_full($id, $res, $class_type, 'tsv');
+
+            $filename = "ifes_{$id}_{$res}_full.tsv";
+            $this->output->set_header("Content-disposition: attachment; filename=$filename")
+                        ->set_content_type('text/tab-separated-values');
+            $this->load->view('csv_view', $data);
+        } else {
+            show_404();
+        }
     }
 
     public function view($id)
