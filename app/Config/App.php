@@ -16,7 +16,7 @@ class App extends BaseConfig
      *
      * E.g., http://example.com/
      */
-    public string $baseURL = 'https://rnanew.bgsu.edu/';
+    public string $baseURL = 'https://rnanew.bgsu.edu/rna3dhub/';
 
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
@@ -83,7 +83,8 @@ class App extends BaseConfig
     |
     */
     // public string $permittedURIChars = 'a-z 0-9~%.:_\-';
-    public string $permittedURIChars = 'a-z 0-9~%.:_\-|';
+    // CLZ added | and , to the permitted characters
+    public string $permittedURIChars = 'a-z 0-9~%.,:_\-|';
 
     /**
      * --------------------------------------------------------------------------
