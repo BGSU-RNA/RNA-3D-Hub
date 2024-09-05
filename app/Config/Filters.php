@@ -34,6 +34,7 @@ class Filters extends BaseFilters
         'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
+        'disableDebug' => \App\Filters\DisableDebugFilter::class, // added 2024-07-08
     ];
 
     /**
