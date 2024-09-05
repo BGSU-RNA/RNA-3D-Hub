@@ -205,25 +205,35 @@ class Nrlist extends CI_Controller {
     public function download($arg1, $arg2, $arg3='all', $arg4='csv')
     {
         if (strtoupper($arg1) == 'RNA') {
+            // http://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.349/3.0A/csv
+            $class_type = 'NR';
+            $id = $arg2;
+            $res = $arg3;
+            $format = $arg4;
+        } elseif (strtoupper($arg1) == 'NR') {
+            // http://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.349/3.0A/csv
             $class_type = 'NR';
             $id = $arg2;
             $res = $arg3;
             $format = $arg4;
         } elseif (strtoupper($arg1) == 'DNA') {
+            // https://rna.bgsu.edu/rna3dhub/nrlist/download/DNA/0.2/3.0A/csv
             $class_type = 'DNA';
             $id = $arg2;
             $res = $arg3;
             $format = $arg4;
         } elseif (strtoupper($arg1) == 'CURRENT') {
+            // http://rna.bgsu.edu/rna3dhub/nrlist/download/current/2.5A/csv
             $class_type = 'NR';
             $id = 'current';
             $res = $arg2;
             $format = $arg3;
         } else {
+            // http://rna.bgsu.edu/rna3dhub/nrlist/download/3.349/3.0A/csv
             $class_type = 'NR';
-            $id = $arg2;
-            $res = $arg3;
-            $format = $arg4;
+            $id = $arg1;
+            $res = $arg2;
+            $format = $arg3;
         }
 
         $this->load->model('Nrlist_model', '', TRUE);
@@ -238,7 +248,11 @@ class Nrlist extends CI_Controller {
         if ($format == 'csv') {
             $data['csv'] = $this->Nrlist_model->get_csv($id, $res, $class_type);
 
-            $filename = "nrlist_{$id}_{$res}.{$format}";
+            if ($class_type == 'DNA') {
+                $filename = "nrlist_dna_{$id}_{$res}.{$format}";
+            } else {
+                $filename = "nrlist_{$id}_{$res}.{$format}";
+            }
             $this->output->set_header("Content-disposition: attachment; filename=$filename")
                         ->set_content_type('text/csv');
             $this->load->view('csv_view', $data);
@@ -246,7 +260,11 @@ class Nrlist extends CI_Controller {
             // http://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.343/2.5A/json
             $data['csv'] = $this->Nrlist_model->get_csv_full($id, $res, $class_type, 'csv');
 
-            $filename = "ifes_{$id}_{$res}_full.csv";
+            if ($class_type == 'DNA') {
+                $filename = "ifes_dna_{$id}_{$res}_full.csv";
+            } else {
+                $filename = "ifes_{$id}_{$res}_full.csv";
+            }
             $this->output->set_header("Content-disposition: attachment; filename=$filename")
                         ->set_content_type('text/csv');
             $this->load->view('csv_view', $data);
@@ -254,7 +272,11 @@ class Nrlist extends CI_Controller {
             // http://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.343/2.5A/json
             $data['csv'] = $this->Nrlist_model->get_csv_full($id, $res, $class_type, 'tsv');
 
-            $filename = "ifes_{$id}_{$res}_full.tsv";
+            if ($class_type == 'DNA') {
+                $filename = "ifes_dna_{$id}_{$res}_full.tsv";
+            } else {
+                $filename = "ifes_{$id}_{$res}_full.tsv";
+            }
             $this->output->set_header("Content-disposition: attachment; filename=$filename")
                         ->set_content_type('text/tab-separated-values');
             $this->load->view('csv_view', $data);
