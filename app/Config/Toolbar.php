@@ -33,6 +33,7 @@ class Toolbar extends BaseConfig
      *
      * @var list<class-string>
      */
+
     public array $collectors = [
         Timers::class,
         Database::class,

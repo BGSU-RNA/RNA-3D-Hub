@@ -34,8 +34,7 @@ class Filters extends BaseFilters
         'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
-        'disableDebug' => \App\Filters\DisableDebugFilter::class, // added 2024-07-08
-    ];
+        ];
 
     /**
      * List of special required filters.
@@ -58,7 +57,7 @@ class Filters extends BaseFilters
         'after' => [
             'pagecache',   // Web Page Caching
             'performance', // Performance Metrics
-            'toolbar',     // Debug Toolbar
+           // 'toolbar'    // Debug Toolbar, just completely disable it even in development, because nothing else worked
         ],
     ];
 

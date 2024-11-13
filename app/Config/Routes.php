@@ -1,14 +1,42 @@
 <?php
 
+use App\Controllers\search;
+$routes->get('search', [search::class, 'index']);
+
+use App\Controllers\nrlist;
+$routes->get('nrlist', [nrlist::class, 'index']);
+$routes->get('nrlist/dna', [nrlist::class, 'dna']);
+$routes->get('nrlist/rna', [nrlist::class, 'rna']);
+$routes->get('nrlist/release/(:segment)/(:segment)/(:segment)', [nrlist::class, 'release']);
+$routes->get('nrlist/release/(:segment)/(:segment)', [nrlist::class, 'release']);
+$routes->get('nrlist/release/(:segment)', [nrlist::class, 'release']);
+$routes->get('nrlist/download/(:segment)/(:segment)/(:segment)/(:segment)', [nrlist::class, 'download']);
+$routes->get('nrlist/download/(:segment)/(:segment)/(:segment)', [nrlist::class, 'download']);
+$routes->get('nrlist/download/(:segment)/(:segment)', [nrlist::class, 'download']);
+$routes->get('nrlist/download/(:segment)', [nrlist::class, 'download']);
+$routes->get('nrlist/view/(:segment)', [nrlist::class, 'view']);
+$routes->get('nrlist/view_debug/(:segment)', [nrlist::class, 'view_debug']);
+$routes->get('nrlist/compare_releases', [nrlist::class, 'compare_releases']);
+$routes->get('nrlist/compare/(:segment)', [nrlist::class, 'compare']);
+$routes->post('nrlist/compare/', [nrlist::class, 'compare']);
+$routes->get('nrlist/release_history', [nrlist::class, 'release_history']);
+
 use App\Controllers\display3D;
 $routes->get('display3D/unitid/(:segment)', [display3D::class, 'unitid']);
+$routes->get('display3D/chain/(:segment)', [display3D::class, 'chain']);
+$routes->get('display3D/multiple/(:segment)', [display3D::class, 'multiple']);
 
 use App\Controllers\rest;
-$routes->get('rest/getCoordinates', [rest::class, 'getCoordinates'], ['filter' => 'disableDebug']);
-$routes->get('rest/getCoordinatesMotifAtlas', [rest::class, 'getCoordinatesMotifAtlas'], ['filter' => 'disableDebug']);
-$routes->get('rest/getRSR', [rest::class, 'getRSR'], ['filter' => 'disableDebug']);
-$routes->get('rest/getRSRZ', [rest::class, 'getRSRZ'], ['filter' => 'disableDebug']);
-$routes->get('rest/SeqtoUnitMapping', [rest::class, 'SeqtoUnitMapping'], ['filter' => 'disableDebug']);
+// $routes->match(['GET','POST'],'rest/getCoordinates', [rest::class, 'getCoordinates']);
+$routes->match(['GET','POST'],'rest/getCoordinates', [rest::class, 'getCoordinates']);
+$routes->match(['GET','POST'],'rest/getCoordinatesMotifAtlas', [rest::class, 'getCoordinatesMotifAtlas']);
+$routes->match(['GET','POST'],'rest/getRSR', [rest::class, 'getRSR']);
+$routes->match(['GET','POST'],'rest/getRSRZ', [rest::class, 'getRSRZ']);
+$routes->get('rest/SeqtoUnitMapping', [rest::class, 'SeqtoUnitMapping']);
+$routes->match(['GET','POST'],'rest/getPdbInfo', [rest::class, 'getPdbInfo']);
+$routes->match(['GET','POST'],'rest/getChainInfo', [rest::class, 'getChainInfo']);
+$routes->match(['GET','POST'],'rest/getSequenceBasePairs', [rest::class, 'getSequenceBasePairs']);
+$routes->match(['GET','POST'],'rest/getChainSequenceBasePairs', [rest::class, 'getChainSequenceBasePairs']);
 
 use App\Controllers\home;
 $routes->get('/', [home::class, 'index']);
@@ -16,29 +44,37 @@ $routes->get('/', [home::class, 'index']);
 use App\Controllers\motifs;
 $routes->get('motifs', [motifs::class, 'index']);
 // $routes->get('motifs/index/(:segment)', [motifs::class, 'index']);
+$routes->get('motifs/release/(:segment)/(:segment)/(:segment)', [motifs::class, 'release']);
 $routes->get('motifs/release/(:segment)/(:segment)', [motifs::class, 'release']);
+$routes->get('motifs/release_history', [motifs::class, 'release_history']);
+$routes->get('motifs/compare_releases', [motifs::class, 'compare_releases']);
+$routes->get('motifs/polymorphs/(:segment)/(:segment)', [motifs::class, 'polymorphs']);
 
 use App\Controllers\motif;
-$routes->get('motif/view/(:segment)', [motif::class, 'view2023']);
+$routes->get('motif/view/(:segment)', [motif::class, 'view']);
+$routes->get('motif/view/(:segment)/(:segment)', [motif::class, 'view']);
 
 use App\Controllers\unitid;
 $routes->get('unitid', [unitid::class, 'index']);
+$routes->get('unitid/describe', [unitid::class, 'index']);
 $routes->get('unitid/describe/(:segment)', [unitid::class, 'describe']);
 
 use App\Controllers\loops;
 $routes->get('loops/view/(:segment)', [loops::class, 'view']);
+$routes->get('loops/download/(:segment)', [loops::class, 'download']);
+$routes->get('loops/download_with_breaks/(:segment)', [loops::class, 'download_with_breaks']);
 
 use App\Controllers\pdb;
 $routes->get('pdb', [pdb::class, 'index']);
 $routes->get('pdb/(:segment)', [pdb::class, 'general_info']);
 $routes->get('pdb/(:segment)/motifs', [pdb::class, 'motifs']);
-$routes->get('pdb/(:segment)/interactions/(fr3d)/(:segment)', [pdb::class, 'interactions']);
+$routes->get('pdb/(:segment)/interactions/(:segment)/(:segment)/(:segment)', [pdb::class, 'interactions']);
+$routes->get('pdb/(:segment)/interactions/(:segment)/(:segment)', [pdb::class, 'interactions']);
+$routes->get('pdb/(:segment)/interactions/(:segment)', [pdb::class, 'interactions']);
+$routes->get('pdb/(:segment)/interactions', [pdb::class, 'interactions']);
 $routes->get('pdb/(:segment)/2d', [pdb::class, 'two_d']);
 // get('pdb/(:alphanum)/interactions/fr3d/(.+)', 'Pdb::interactions/$1/fr3d/$2');
 // https://rnanew.bgsu.edu/rna3dhub/pdb/8GLP/interactions/fr3d/basepairs
-
-use App\Controllers\search;
-$routes->get('search', [search::class, 'index']);
 
 
 // From https://www.codeigniter.com/user_guide/tutorial/news_section.html#display-the-news
