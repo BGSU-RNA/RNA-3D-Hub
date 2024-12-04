@@ -16,7 +16,7 @@
               <div class="span">
                 <p>
                   We moved to a new server on September 10, 2024.
-                  Release 3.352 looks good.
+                  Release 3.352 and after look good.
                   Basepair annotations for new structures are now being done by fr3d-python and
                   not the older Matlab code.
                   <p>
@@ -102,7 +102,7 @@
                   representative sets. For example, see PDB
                   <a href="https://www.rcsb.org/structure/1DV4">1DV4</a>.
                 </p>
-              </div>
+                </div>
             </div>
             <br>
             <div class="row">

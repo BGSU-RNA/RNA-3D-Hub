@@ -260,6 +260,7 @@ class Nrlist_model extends Model {
         $experimental_technique['SOLUTION NMR'] = 'Solution NMR';
         $experimental_technique['FIBER DIFFRACTION'] = 'Fiber diffraction';
         $experimental_technique['THEORETICAL MODEL, SOLUTION NMR'] = 'Theoretical model, solution NMR';
+        $experimental_technique['SOLUTION NMR, THEORETICAL MODEL'] = 'Solution NMR, theoretical model';
         $experimental_technique['FLUORESCENCE TRANSFER'] = 'Fluorescence transfer';
         $experimental_technique['NEUTRON DIFFRACTION'] = 'Neutron diffraction';
         $experimental_technique['SOLUTION NMR, SOLUTION SCATTERING'] = 'Solution NMR, solution scattering';
@@ -728,7 +729,7 @@ class Nrlist_model extends Model {
                 $i = $row->ife1_index;
                 $j = $row->ife2_index;
                 // old
-                $d = (number_format($row->discrepancy,4) >0? number_format($row->discrepancy,4) : NULL );
+//                $d = (number_format($row->discrepancy,4) >0? number_format($row->discrepancy,4) : NULL );
                 // new, more robust to $row->discrepancy being null
                 $d = (isset($row->discrepancy) && $row->discrepancy > 0) ? number_format($row->discrepancy, 4) : NULL;                $discrepancy[$i][$j] = $d;
                 $discrepancy[$j][$i] = $d;

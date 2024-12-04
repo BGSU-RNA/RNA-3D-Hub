@@ -15,11 +15,11 @@ class Nrlist extends BaseController {
 
     public function index()
     {
+        // list release history.  takes a while to generate, but seems to be OK.
+        // caching really helps
         // http://rna.bgsu.edu/rna3dhub/nrlist
-        // Will probably exceed the time limit, but the query will continue running and then be cached
-        // When someone else visits the page, the cached version will be served
         $this->cachePage(60*60*24*7); # 1 week, in seconds
-        ini_set('max_execution_time', 300); // Set to 300 seconds (5 minutes), doesn't solve the problem
+        ini_set('max_execution_time', 300);
 
         // This query takes around 70 seconds, just over the time limit
         $result = $this->Nrlist_model->get_all_releases('NR');
@@ -31,6 +31,7 @@ class Nrlist extends BaseController {
         $data['title']   = 'Representative Sets of RNA 3D Structures';
         $data['pageicon'] = base_url() . 'icons/R_icon.png';
         $data['baseurl'] = base_url();
+        $data['molecule'] = 'rna';
 
         // $data['images'] = $this->Nrlist_model->get_newest_pdb_images();
         $data['total_pdbs'] = $this->Nrlist_model->get_total_pdb_count();
@@ -41,36 +42,40 @@ class Nrlist extends BaseController {
              . view('footer');
     }
 
-    public function rna()
-    {
-        // Default page
-        // $this->cachePage(60*60*24*7); # 1 week, in seconds
-        // ini_set('max_execution_time', 300); // Set to 300 seconds (5 minutes)
+    // public function rna()
+    // {
+    //     // Default page
+    //     // https://rna.bgsu.edu/rna3dhub/nrlist/rna
+    //     // $this->cachePage(60*60*24*7); # 1 week, in seconds
+    //     // ini_set('max_execution_time', 300); // Set to 300 seconds (5 minutes)
 
-        $result = $this->Nrlist_model->get_all_releases('NR');
+    //     $result = $this->Nrlist_model->get_all_releases('NR');
 
-        $table = new \CodeIgniter\View\Table();
-        $table->setHeading('Release id', 'All changes', 'Date', 'Number of IFEs');
-        $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table'>" );
-        $table->setTemplate($tmpl);
-        $data['table']   = $table->generate($result);
-        $data['title']   = 'Representative Sets of RNA 3D Structures';
-        $data['pageicon'] = base_url() . 'icons/R_icon.png';
-        $data['baseurl'] = base_url();
+    //     $table = new \CodeIgniter\View\Table();
+    //     $table->setHeading('Release id', 'All changes', 'Date', 'Number of IFEs');
+    //     $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table'>" );
+    //     $table->setTemplate($tmpl);
+    //     $data['table']   = $table->generate($result);
+    //     $data['title']   = 'Representative Sets of RNA 3D Structures';
+    //     $data['pageicon'] = base_url() . 'icons/R_icon.png';
+    //     $data['baseurl'] = base_url();
+    //     $data['molecule'] = 'rna';
 
-        // $data['images'] = $this->Nrlist_model->get_newest_pdb_images();
-        $data['total_pdbs'] = $this->Nrlist_model->get_total_pdb_count();
+    //     // $data['images'] = $this->Nrlist_model->get_newest_pdb_images();
+    //     $data['total_pdbs'] = $this->Nrlist_model->get_total_pdb_count();
 
-        return view('header_view', $data)
-             . view('menu_view', $data)
-             . view('nrlist_all_releases_view', $data)
-             . view('footer');
-    }
+    //     return view('header_view', $data)
+    //          . view('menu_view', $data)
+    //          . view('nrlist_all_releases_view', $data)
+    //          . view('footer');
+    // }
 
     public function dna()
     {
+        // https://rna.bgsu.edu/rna3dhub/nrlist/dna
+        // List all DNA releases
         // Do not cache until there are many releases; fast to re-generate
-        // $this->cachePage(60*60*24*7); # 1 week, in seconds
+        $this->cachePage(60*60*24*7); # 1 week, in seconds
 
         $result = $this->Nrlist_model->get_all_releases('DNA');
 
@@ -80,8 +85,9 @@ class Nrlist extends BaseController {
         $table->setTemplate($tmpl);
         $data['table']   = $table->generate($result);
         $data['title']   = 'Representative Sets of DNA 3D Structures';
-        $data['pageicon'] = base_url() . 'icons/R_icon.png';
+        $data['pageicon'] = base_url() . 'icons/D_icon.png';
         $data['baseurl'] = base_url();
+        $data['molecule'] = 'dna';
 
         // $data['images'] = $this->Nrlist_model->get_newest_pdb_images();
         $data['total_pdbs'] = $this->Nrlist_model->get_total_pdb_count();
@@ -96,16 +102,19 @@ class Nrlist extends BaseController {
     {
         if ( strtoupper($arg1) == 'RNA'){
             $type = 'rna';
+            $type_upper = 'RNA';
             $class_type = 'NR';
             $id = $arg2;
             $res = $arg3;
         } elseif (strtoupper($arg1) == 'DNA'){
             $type = 'dna';
+            $type_upper = 'DNA';
             $class_type = 'DNA';
             $id = $arg2;
             $res = $arg3;
         } else {
             $type = 'rna';
+            $type_upper = 'RNA';
             $class_type = 'NR';
             $id = $arg1;
             if ($arg2 == 'current'){
@@ -125,11 +134,16 @@ class Nrlist extends BaseController {
         }
 
         $data['title'] = "Representative set $id";
-        $data['pageicon'] = base_url() . 'icons/R_icon.png';
+        if ($type == 'dna'){
+            $data['pageicon'] = base_url() . 'icons/D_icon.png';
+        } else {
+            $data['pageicon'] = base_url() . 'icons/R_icon.png';
+        }
         $data['release_id']  = $id;
         $data['description'] = $this->Nrlist_model->get_release_description($id);
         $data['resolution'] = $res;
         $data['type'] = $type;
+        $data['type_upper'] = $type_upper;
         $data['class_type'] = $class_type;
 
         $temp = $this->Nrlist_model->get_release($id, $res, $type);

@@ -26,7 +26,7 @@
                   show all-against-all geometric comparisons of the structures within each class.
                 </p>
                 <p>
-                  Representative sets of DNA 3D structures are in development.
+                  Representative sets of DNA 3D structures are in development in Fall 2024.
                   We are starting with the same date as we used for representative sets of RNA 3D structures,
                   and we will fill in DNA releases as they would have been.
                   We will need to modify the methodology somewhat compared to RNA.
@@ -47,6 +47,11 @@
                   usually 1, and C is the chain identifier, one to four characters.
                   IFEs are made up of individual chains linked with + signs.
                 </p>
+                <p>
+                  In releases 0.1 to 0.5, we notice that some equivalence classes are too large,
+                  apparently because some structures that have fewer observed nucleotides have
+                  small discrepancy to many disparate structures, and so link together structures
+                  that belong in different equivalence classes.
                 </p>
                 <p>
                   Unique and stable ids are assigned to all equivalence classes
