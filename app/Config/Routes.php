@@ -5,8 +5,8 @@ $routes->get('search', [search::class, 'index']);
 
 use App\Controllers\nrlist;
 $routes->get('nrlist', [nrlist::class, 'index']);
+$routes->addRedirect('rna3dhub/nrlist/rna', 'rna3dhub/nrlist');
 $routes->get('nrlist/dna', [nrlist::class, 'dna']);
-$routes->get('nrlist/rna', [nrlist::class, 'rna']);
 $routes->get('nrlist/release/(:segment)/(:segment)/(:segment)', [nrlist::class, 'release']);
 $routes->get('nrlist/release/(:segment)/(:segment)', [nrlist::class, 'release']);
 $routes->get('nrlist/release/(:segment)', [nrlist::class, 'release']);
@@ -25,9 +25,9 @@ use App\Controllers\display3D;
 $routes->get('display3D/unitid/(:segment)', [display3D::class, 'unitid']);
 $routes->get('display3D/chain/(:segment)', [display3D::class, 'chain']);
 $routes->get('display3D/multiple/(:segment)', [display3D::class, 'multiple']);
+$routes->get('display3D/pdb_chain_range/(:segment)', [display3D::class, 'pdb_chain_range']);
 
 use App\Controllers\rest;
-// $routes->match(['GET','POST'],'rest/getCoordinates', [rest::class, 'getCoordinates']);
 $routes->match(['GET','POST'],'rest/getCoordinates', [rest::class, 'getCoordinates']);
 $routes->match(['GET','POST'],'rest/getCoordinatesMotifAtlas', [rest::class, 'getCoordinatesMotifAtlas']);
 $routes->match(['GET','POST'],'rest/getRSR', [rest::class, 'getRSR']);
