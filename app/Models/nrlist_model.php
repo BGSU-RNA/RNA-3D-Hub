@@ -1281,6 +1281,33 @@ class Nrlist_model extends Model {
         }
     }
 
+    function get_previous_release($molecule='rna')
+    {
+        if ($molecule == 'rna'){
+            $group_id = 'NR_';
+        } elseif ($molecule == 'dna'){
+            $group_id = 'DNA_';
+        } else {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+
+        // need to use nr_classes to distinguish between NR and DNA
+        $query = $this->db->table('nr_classes')
+                ->select('nr_release_id')
+                ->like('name', $group_id . '%')
+                ->orderBy('nr_class_id','desc')
+                ->distinct()
+                ->limit(2)
+                ->get()
+                ->getResult();
+
+        if ($query) {
+            return $query[1]->nr_release_id;
+        } else {
+            return null;
+        }
+    }
+
     function make_release_label($num)
     {
         if ($num == 0) {
