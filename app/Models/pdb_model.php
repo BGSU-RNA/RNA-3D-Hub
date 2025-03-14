@@ -17,9 +17,10 @@ class Pdb_model extends Model {
     }
     function get_all_pdbs()
     {
-        $builder = $this->db->table('pdb_info');
-        $query = $builder ->select('distinct(pdb_id)');
-        $query = $query->get()->getResult();
+        $query = $this->db->table('pdb_info')
+                  ->select('distinct(pdb_id)')
+                  ->get()
+                  ->getResult();
         foreach ($query as $row) {
             $id = $row->pdb_id;
             if ($id != 'XXXX') {
@@ -28,13 +29,32 @@ class Pdb_model extends Model {
         }
         return $pdbs;
     }
-    function get_recent_rna_containing_structures($num)
+
+    function get_all_pdbs_data()
     {
-        $builder = $this->db->table('pdb_info');
-        $query = $builder ->select('distinct(pdb_id)')
+        $query = $this->db->table('pdb_info')
+                  ->select('pdb_id,release_date')
+                  ->get()
+                  ->getResult();
+        $data = array();
+        foreach ($query as $row) {
+            $id = $row->pdb_id;
+            if ($id != 'XXXX') {
+                $data[$id] = $row;
+            }
+        }
+        return $data;
+    }
+
+    function get_recent_rna_containing_structures($num)
+    // Note: now that we have DNA structures, this will also show DNA structures with no RNA
+    {
+        $query = $this->db->table('pdb_info')
+                 ->select('distinct(pdb_id)')
                  ->orderBy('release_date', 'desc')
-                 ->limit($num);
-        $query = $query->get()->getResult();
+                 ->limit($num)
+                 ->get()
+                 ->getResult();
         foreach($query as $row) {
             $pdbs[] = $row->pdb_id;
         }
@@ -133,18 +153,22 @@ class Pdb_model extends Model {
         $loop_mapping_table = $this->get_loop_mappings($pdb_id);
 
         // big query for output table
-        $builder = $this->db->table('loop_qa AS lq');
-        $query = $builder->select('lq.loop_id')
+        // CAST(li.sort_name AS BINARY) makes the sort case sensitive, to separate chain 1a from 1A
+        $query = $this->db->table('loop_qa AS lq')
+                 ->select('lq.loop_id')
                  ->select('lq.status')
                  ->select('lq.modifications')
-                 ->select('lq.nt_signature')
                  ->select('lq.complementary')
                  ->select('li.loop_name')
+                 ->select('li.sort_name')
+                 ->select('li.deprecate')
                  ->select('la.annotation_1')
                  ->join('loop_info AS li', 'li.loop_id = lq.loop_id')
                  ->join('loop_annotations AS la', 'lq.loop_id = la.loop_id', 'left')
-                 ->where('li.pdb_id', $pdb_id);
-        $query = $query->get()->getResult();
+                 ->where('li.pdb_id', $pdb_id)
+                 ->orderBy('CAST(li.sort_name AS BINARY),li.loop_id')
+                 ->get()
+                 ->getResult();
 
         $loop_types = array('IL','HL','J');
         foreach ($loop_types as $loop_type) {
@@ -166,7 +190,7 @@ class Pdb_model extends Model {
             }
 
             // building direct annotation + motif group (column 4)
-            if(!is_null($row->annotation_1)){
+            if (!is_null($row->annotation_1)){
                   $annotation = $row->annotation_1;
                 } else {
                   if( array_key_exists($row->loop_id, $loop_mapping_table) ){
@@ -180,38 +204,38 @@ class Pdb_model extends Model {
                   }
                 }
 
-            if ($row->status == 1 or $row->status == 3) { // this goes all the way down to valid tables???
+            if (($row->status == 1 or $row->status == 3) and $row->deprecate == 0) {
 
                 if ( array_key_exists($row->loop_id, $motifs) ) {
                     $motif_id = anchor_popup("motif/view/{$motifs[$row->loop_id]}",
                       $motifs[$row->loop_id]);
                 } else {
-                  $motif_id = 'Not in a motif group';
+                  $motif_id = '';
                 }
 
-              $annotation_and_motif_group = "{$annotation}<br>{$motif_id}";
+                $annotation_and_motif_group = "{$annotation}<br>{$motif_id}";
 
-              // building loop mapping info (column 5)
-              if( array_key_exists($row->loop_id, $loop_mapping_table) ){
-                // if($row->loop_id != $loop_mapping_table[$row->loop_id]->similar_loop){
-                if(is_null($row->annotation_1) && !array_key_exists($row->loop_id, $motifs)){
-                  $match_type = $loop_mapping_table[$row->loop_id]->match_type;
+                // building loop mapping info (column 5)
+                if ( array_key_exists($row->loop_id, $loop_mapping_table) ){
+                    // if($row->loop_id != $loop_mapping_table[$row->loop_id]->similar_loop){
+                    if(is_null($row->annotation_1) && !array_key_exists($row->loop_id, $motifs)){
+                    $match_type = $loop_mapping_table[$row->loop_id]->match_type;
 
-                  $similar_loop = anchor_popup("loops/view/{$loop_mapping_table[$row->loop_id]->similar_loop}",
-                      $loop_mapping_table[$row->loop_id]->similar_loop);
+                    $similar_loop = anchor_popup("loops/view/{$loop_mapping_table[$row->loop_id]->similar_loop}",
+                        $loop_mapping_table[$row->loop_id]->similar_loop);
 
-                  if ( array_key_exists($loop_mapping_table[$row->loop_id]->similar_loop, $motifs) ) {
-                    $similar_motif = anchor_popup("motif/view/{$motifs[$loop_mapping_table[$row->loop_id]->similar_loop]}", $motifs[$loop_mapping_table[$row->loop_id]->similar_loop]);
-                  } else {
-                      $similar_motif = 'NA';
-                  }
-                  $loop_mapping_info = "{$match_type}<br>{$similar_loop}<br>{$similar_motif}";
+                    if ( array_key_exists($loop_mapping_table[$row->loop_id]->similar_loop, $motifs) ) {
+                        $similar_motif = anchor_popup("motif/view/{$motifs[$loop_mapping_table[$row->loop_id]->similar_loop]}", $motifs[$loop_mapping_table[$row->loop_id]->similar_loop]);
+                    } else {
+                        $similar_motif = 'NA';
+                    }
+                    $loop_mapping_info = "{$match_type}<br>{$similar_loop}<br>{$similar_motif}";
+                    } else {
+                    $loop_mapping_info = "";
+                    }
                 } else {
-                  $loop_mapping_info = "";
+                    $loop_mapping_info = "";
                 }
-              } else {
-                $loop_mapping_info = "";
-              }
 
 
                 $valid_tables[$loop_type][] = array(array( 'class' => 'loop',
@@ -236,15 +260,19 @@ class Pdb_model extends Model {
                                                          ),
                                                       anchor_popup("loops/view/{$row->loop_id}",
                                                         $row->loop_id),
-                                                      $this->make_reason_label($row->status),
+                                                      $this->make_reason_label($row->status,$row->deprecate),
                                                       $annotation);
             }
         }
         return array('valid' => $valid_tables, 'invalid' => $invalid_tables);
     }
-    function make_reason_label($status)
+    function make_reason_label($status,$deprecate)
     {
-        return '<label class="label important">' . $this->qa_status[$status] . '</label>';
+        if ($deprecate == 1) {
+            return '<label class="label important">Deprecated</label>';
+        } else {
+            return '<label class="label important">' . $this->qa_status[$status] . '</label>';
+        }
     }
     function get_checkbox($id)
     {
@@ -294,7 +322,7 @@ class Pdb_model extends Model {
     }
     function _get_unit_ids($pdb_id)
     {
-        // retrieve new-style IDs from unit_info
+        // retrieve all unit_id values from unit_info
         $builder = $this->db->table('unit_info');
         $query = $builder ->select('unit_id')
                  ->where('pdb_id', $pdb_id);
@@ -365,14 +393,16 @@ class Pdb_model extends Model {
             $db_field = implode(',', array_slice($db_fields,1));
             $interaction_description = implode(',', array_slice($header_values,1));
             $has_desired_interaction_type = '(' . implode(' IS NOT NULL OR ', $db_fields) . ')';
+        } elseif ($interaction_type == 'ligand') {
+
+
+
         } else {
             return array( 'data'   => array(),
                           'header' => array(),
                           'csv'    => ''
                          );
         }
-
-        $unit_ids = $this->_get_unit_ids($pdb_id);
 
         $query = $this->db->table('unit_pairs_interactions_2024 AS upi')
                 ->select('program, upi.unit_id_1, upi.unit_id_2,' . $db_field)
@@ -390,28 +420,27 @@ class Pdb_model extends Model {
         foreach ($query as $row) {
             $output_fields = array();
             $csv_fields    = array();
-            $csv_fields[0] = $unit_ids[$row->unit_id_1];
+            $csv_fields[0] = $row->unit_id_1;
             foreach ($targets as $target) {
                 if ( isset($row->{$db_fields[$target]}) and ($row->{$db_fields[$target]} != '') ) {
-//                    $output_fields[] = str_replace("'","*",$row->{$db_fields[$target]});  // didn't help
                     $output_fields[] = $row->{$db_fields[$target]};
                     $csv_fields[]    = $row->{$db_fields[$target]};
                 } else {
                     $csv_fields[] = '';
                 }
             }
-            $csv_fields[] = $unit_ids[$row->unit_id_2];
-            $ids = $unit_ids[$row->unit_id_1] .','. $unit_ids[$row->unit_id_2];
-            $html .= str_pad('<span>' . $unit_ids[$row->unit_id_1] . '</span>', 32, ' ') .
+            $csv_fields[] = $row->unit_id_2;
+            $ids = $row->unit_id_1 .','. $row->unit_id_2;
+            $html .= str_pad('<span>' . $row->unit_id_1 . '</span>', 32, ' ') .
                     "<a class='jmolInline' id='s{$i}'>" .
                     str_pad(implode(', ', $output_fields), 8, ' ', STR_PAD_BOTH) .
                     "</a>" .
-            //       '<span style="text-align: right;">' . str_pad($unit_ids[$row->unit_id_2], 22, ' ', STR_PAD_LEFT) . ' <a href="http://rna.bgsu.edu/correspondence/SVS?id=' . $ids . '&format=unique&input_form=True" target="_blank" rel="noopener noreferrer">R3DSVS</a>' . '</span>' .
-                    str_pad('<span>' . $unit_ids[$row->unit_id_2]. '</span>', 32, ' ', STR_PAD_LEFT) . ' <a href="http://rna.bgsu.edu/correspondence/SVS?id=' . $ids . '&format=unique&input_form=True" target="_blank" rel="noopener noreferrer">R3DSVS</a>' .
+                    str_pad('<span>' . $row->unit_id_2. '</span>', 32, ' ', STR_PAD_LEFT) . ' <a href="http://rna.bgsu.edu/correspondence/SVS?id=' . $ids . '&format=unique&input_form=True" target="_blank" rel="noopener noreferrer">R3DSVS</a>' .
                     "\n";
             $csv .= '"' . implode('","', $csv_fields) . '"' . "\n";
             $i++;
         }
+
         $header2 = array_merge( $header, explode(',', $interaction_description) );
         return array( 'data'   => $html,
                       'header' => array_merge( $header, explode(',', $interaction_description) ),
