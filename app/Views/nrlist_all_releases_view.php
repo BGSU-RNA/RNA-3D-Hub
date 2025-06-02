@@ -15,11 +15,6 @@
             <div class="row">
               <div class="span">
                 <p>
-                  We moved to a new server on September 10, 2024.
-                  Release 3.352 and after look good.
-                  Basepair annotations for new structures are now being done by fr3d-python and
-                  not the older Matlab code.
-                  <p>
                   The Representative Sets of RNA 3D Structures organize all
                   RNA-containing 3D structures from PDB into sequence/structure equivalence classes
                   and selects a high-quality representative structure from each class.
@@ -29,7 +24,6 @@
                   structures of the same molecule from the same organism.
                   Equivalence classes show all structures of the same molecule, and the associated heat maps
                   show all-against-all geometric comparisons of the structures within each class.
-                </p>
                 <p>
                   Releases are generated weekly, and previous releases are available starting from 2011.
                   The default listing shows structures at 4 Angstrom resolution or better, but
@@ -41,7 +35,30 @@
                   Some weeks, when many new structures are released, the representative set listing can
                   be delayed because of the time it takes to compute all-against-all geometric comparisons
                   within large equivalences classes such as Thermus thermophilus small ribosomal subunit.
-                </p>
+                <p>
+                  With release 3.382, we fixed some problems where poor chain alignments pushed IFEs
+                  into different equivalent classes.  The fix reduced the number of equivalence classes
+                  by over 100.
+                <p>
+                  With release 3.378, we improved the identification of Integrated Functional Elements (IFEs),
+                  especially in the case of a structured chain (having many Watson-Crick basepairs)
+                  interacting with an unstructured chain.  For example, the Drosophila melanogaster 2S
+                  ribosomal RNA is now in an IFE with the 5.8S and the long LSU chain.
+                  Many smaller RNAs are affected.
+                  The reduction in the number of IFEs occurs because more chains are grouped together;
+                  there are fewer one-chain IFEs now.
+                  Also, we fixed a bug that led to the 5.8S being separated from the rest of the LSU
+                  in some eukaryotic structures released in Fall 2024.
+                  Also, we fixed the calculation of the composite quality score in many cases.
+                  Then, in equivalence classes with more than two IFEs, we re-calculated the ranking,
+                  even when the list of IFEs was unchanged.
+                  In those cases, the version number at the end of the equivalence class id
+                  was incremented by one.
+                <p>
+                  We moved to a new server on September 10, 2024.
+                  Release 3.352 and after look good.
+                  Basepair annotations for new structures are now being done by fr3d-python and
+                  not the older Matlab code.
                 <p>
                   With release 3.339, we fixed problems with some files that could not be processed, such as
                   3ZP8, and produced IFEs between "structured" and "unstructured" chains
@@ -61,12 +78,10 @@
                   The intention is to select the structure
                   with the best experimental evidence for the coordinates being reported.
                   Details will be provided in an upcoming publication.
-                </p>
                 <p>
                   Individual chains are named in the format XXXX|M|C, where XXXX is the PDB entry, M is the model number,
                   usually 1, and C is the chain identifier, one to four characters.
                   IFEs are made up of individual chains linked with + signs.
-                </p>
                 <p>
                   With release 2.0, we upgraded the BGSU RNA 3D Hub Site
                   to include new RNA 3D structures distributed in
@@ -83,19 +98,16 @@
                   Before release 3.0, the representative of each equivalence class
                   was chosen as the structure with the most annotated basepairs per nucleotide,
                   as a proxy for modeling quality.
-                </p>
                 <p>
                   Note that the representative sets were formerly referred to as
                   non-redundant lists, but in fact these lists have one instance of homologous
                   IFEs from each species, so they have some redundancy at the level of molecule.
-                </p>
                 <p>
                   Unique and stable ids are assigned to all equivalence classes
                   of structure files.
                   Representative sets are updated
                   automatically every week, and a versioning system is
                   implemented to provide independent access to data snapshots.
-                </p>
                 <p>
                   <span class="label notice">Notice</span>
                   PDB files with no full nucleotides are not included in the
