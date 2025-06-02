@@ -4,18 +4,37 @@ use App\Controllers\search;
 $routes->get('search', [search::class, 'index']);
 
 use App\Controllers\nrlist;
+// list of release numbers, dates, number of IFEs
 $routes->get('nrlist', [nrlist::class, 'index']);
-$routes->addRedirect('rna3dhub/nrlist/rna', 'rna3dhub/nrlist');
+$routes->addRedirect('nrlist/rna', 'nrlist');
 $routes->get('nrlist/dna', [nrlist::class, 'dna']);
+// representative set pages that list all members of equivalence classes
+// example https://rna.bgsu.edu/rna3dhub/nrlist/release/rna/3.387/3.5A
 $routes->get('nrlist/release/(:segment)/(:segment)/(:segment)', [nrlist::class, 'release']);
 $routes->get('nrlist/release/(:segment)/(:segment)', [nrlist::class, 'release']);
 $routes->get('nrlist/release/(:segment)', [nrlist::class, 'release']);
+// representative set downloads, including tsv/full and other formats
+$routes->get('nrlist/download/(:segment)/(:segment)/(:segment)/(:segment)/(:segment)', [nrlist::class, 'download']);
 $routes->get('nrlist/download/(:segment)/(:segment)/(:segment)/(:segment)', [nrlist::class, 'download']);
 $routes->get('nrlist/download/(:segment)/(:segment)/(:segment)', [nrlist::class, 'download']);
 $routes->get('nrlist/download/(:segment)/(:segment)', [nrlist::class, 'download']);
 $routes->get('nrlist/download/(:segment)', [nrlist::class, 'download']);
+// non-redundant lists by rfam clan and maybe other techniques
+// example https://rna.bgsu.edu/rna3dhub/nrlist/nonredundant/rna/3.387/3.5A/clan/4      display on the screen
+// example https://rna.bgsu.edu/rna3dhub/nrlist/nonredundant/rna/3.387/3.5A/clan/4/tsv  download
+// example https://rna.bgsu.edu/rna3dhub/nrlist/nonredundant/rna/3.387/3.5A/clan/4/csv  download
+// example https://rna.bgsu.edu/rna3dhub/nrlist/nonredundant/rna/3.387/3.5A/clan/4/json  download
+$routes->get('nrlist/nonredundant/(:segment)/(:segment)/(:segment)/(:segment)/(:segment)/(:segment)', [nrlist::class, 'nonredundant']);
+$routes->get('nrlist/nonredundant/(:segment)/(:segment)/(:segment)/(:segment)/(:segment)', [nrlist::class, 'nonredundant']);
+$routes->get('nrlist/nonredundant/(:segment)/(:segment)/(:segment)/(:segment)', [nrlist::class, 'nonredundant']);
+$routes->get('nrlist/nonredundant/(:segment)/(:segment)/(:segment)', [nrlist::class, 'nonredundant']);
+$routes->get('nrlist/nonredundant/(:segment)/(:segment)', [nrlist::class, 'nonredundant']);
+$routes->get('nrlist/nonredundant/(:segment)', [nrlist::class, 'nonredundant']);
+$routes->get('nrlist/nonredundant', [nrlist::class, 'nonredundant']);
+// equivalence class views
 $routes->get('nrlist/view/(:segment)', [nrlist::class, 'view']);
 $routes->get('nrlist/view_debug/(:segment)', [nrlist::class, 'view_debug']);
+// older and might not work so well
 $routes->get('nrlist/compare_releases', [nrlist::class, 'compare_releases']);
 $routes->get('nrlist/compare/(:segment)', [nrlist::class, 'compare']);
 $routes->post('nrlist/compare/', [nrlist::class, 'compare']);
@@ -28,6 +47,8 @@ $routes->get('display3D/multiple/(:segment)', [display3D::class, 'multiple']);
 $routes->get('display3D/pdb_chain_range/(:segment)', [display3D::class, 'pdb_chain_range']);
 
 use App\Controllers\rest;
+$routes->match(['GET','POST'],'rest/getAssemblies', [rest::class, 'getAssemblies']);
+$routes->match(['GET','POST'],'rest/getCenters', [rest::class, 'getCenters']);
 $routes->match(['GET','POST'],'rest/getCoordinates', [rest::class, 'getCoordinates']);
 $routes->match(['GET','POST'],'rest/getCoordinatesMotifAtlas', [rest::class, 'getCoordinatesMotifAtlas']);
 $routes->match(['GET','POST'],'rest/getRSR', [rest::class, 'getRSR']);
@@ -66,6 +87,7 @@ $routes->get('loops/download_with_breaks/(:segment)', [loops::class, 'download_w
 
 use App\Controllers\pdb;
 $routes->get('pdb', [pdb::class, 'index']);
+$routes->get('pdb/data', [pdb::class, 'data']);
 $routes->get('pdb/(:segment)', [pdb::class, 'general_info']);
 $routes->get('pdb/(:segment)/motifs', [pdb::class, 'motifs']);
 $routes->get('pdb/(:segment)/interactions/(:segment)/(:segment)/(:segment)', [pdb::class, 'interactions']);
