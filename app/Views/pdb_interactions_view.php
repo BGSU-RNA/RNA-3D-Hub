@@ -29,6 +29,8 @@
                     <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/baseaa">Base-amino acids</a></li> -->
                     <li class="divider"></li>
                     <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/all">All interactions</a></li>
+                    <li class="divider"></li>
+                    <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/ligand">Ligands</a></li>
                   </ul>
                 </li>
                 <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/2d">2D Diagram</a></li>
@@ -73,6 +75,7 @@
               function jmolScript(cmd) {Jmol.script(jmolApplet0, cmd)};
               function jmolScriptWait(cmd) {Jmol.scriptWait(jmolApplet0, cmd)};
             </script>
+
             <label><input type="checkbox" id="showNtNums">Nucleotide numbers</label>
             <input type="button" class="btn" id="neighborhood" value="Show neighborhood">
             <button type="button" id="stereo" class="btn">Stereo</button>
@@ -165,7 +168,7 @@
     var jmolDiv = $('#jmol');
     $this = $(this);
 
-    // clear jmol window
+    // clear jmol window, otherwise you get the same units each time!
     jmolScript('zap;');
 
     $('a.current').removeClass('current').addClass('viewed');

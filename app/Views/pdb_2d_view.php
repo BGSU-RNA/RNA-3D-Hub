@@ -38,10 +38,13 @@
                 <li class="dropdown" data-dropdown="dropdown">
                 <a href="#" class="dropdown-toggle">Interactions</a>
                   <ul class="dropdown-menu">
-                    <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/basepairs">Base-pair</a></li>
-                    <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/stacking">Base-stacking</a></li>
+                  <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/basepairs">Basepair</a></li>
+                    <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/basepair_detail">Basepair detail</a></li>
+                    <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/stacking">Base stacking</a></li>
                     <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/basephosphate">Base-phosphate</a></li>
                     <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/baseribose">Base-ribose</a></li>
+						        <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/oxygen_stacking">Oxygen stacking</a></li>
+						        <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/sugar_ribose">Sugar-ribose</a></li>
                     <li class="divider"></li>
                     <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/all">All interactions</a></li>
                   </ul>

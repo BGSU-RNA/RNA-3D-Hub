@@ -28,6 +28,20 @@ class Pdb extends BaseController {
                 . view('footer');
 	}
 
+    public function data()
+    // dictionary from pdb id to selected data
+    {
+        $data = json_encode($this->Pdb_model->get_all_pdbs_data());
+        $response = service('response');
+        $response->setHeader('Access-Control-Allow-Origin', '*')
+                 ->setHeader('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin')
+                 ->setContentType('application/json');
+        $response->setBody($data);
+        return $response;
+
+    }
+
+
     public function general_info($id)
     {
         // main landing page for a single PDB structure with general info and links to specific pages
@@ -52,6 +66,7 @@ class Pdb extends BaseController {
             $data['baa_counts'] = $this->Pdb_model->get_baseaa_info($id);
         } else {
             $data['message'] = $pdb_status['message'];
+            $data['title'] = '';
         }
 
         // Page title and structure title were both using $data['title']!
@@ -73,7 +88,7 @@ class Pdb extends BaseController {
     public function interactions($id, $method="fr3d", $interaction_type="basepairs", $format=NULL)
     {
         // validate inputs
-        $interaction_types = array('basepairs', 'basepair_detail', 'stacking', 'basephosphate', 'baseribose', 'baseaa', 'oxygen_stacking', 'sugar_ribose', 'all');
+        $interaction_types = array('basepairs', 'basepair_detail', 'stacking', 'basephosphate', 'baseribose', 'baseaa', 'oxygen_stacking', 'sugar_ribose', 'all', 'ligand');
         if (!preg_match('/fr3d/i', $method)) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound("Unknown annotation method");
         }
@@ -160,8 +175,10 @@ class Pdb extends BaseController {
         $pdb_status = $this->is_valid_pdb($id, 'il');
         $data['valid'] = $pdb_status['valid'];
 
+        // We no longer have a "Choose a structure" dropdown, so don't get the data; faster
+        // $data['pdbs'] = $this->Pdb_model->get_all_pdbs();
+
         if ( $pdb_status['valid'] ) {
-            $data['pdbs'] = $this->Pdb_model->get_all_pdbs();
             $results = $this->Pdb_model->get_loops($id);
             $loop_types = array('IL', 'HL', 'J');
             foreach ($loop_types as $loop_type) {

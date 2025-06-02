@@ -91,14 +91,25 @@ class Pdb_model extends Model {
         // If it does not, then no motif assignments are shown
         // That may be safer for structures that used to be in the Motif Atlas
 
-        // $loop_type = IL or HL
+        // $loop_type = IL or HL or J for all junctions
 
-        $latest_release = $this->get_latest_motif_release($loop_type);
-        $builder = $this->db->table('ml_loops');
-        $query = $builder ->select()
-                 ->where('ml_release_id', $latest_release)
-                 ->like('loop_id', strtoupper($loop_type) . '_', 'right');
-        $query = $query->get()->getResult();
+        if ($loop_type == 'J') {
+            $latest_release = $this->get_latest_motif_release('J3');
+            $query = $this->db->table('ml_loops')
+                     ->select()
+                     ->where('ml_release_id', $latest_release)
+                     ->like('loop_id', 'J', 'right')
+                     ->get()
+                     ->getResult();
+         } else {
+            $latest_release = $this->get_latest_motif_release($loop_type);
+            $query = $this->db->table('ml_loops')
+                    ->select()
+                    ->where('ml_release_id', $latest_release)
+                    ->like('loop_id', strtoupper($loop_type) . '_', 'right')
+                    ->get()
+                    ->getResult();
+        }
         $data = array();
         foreach ($query as $row) {
             $data[$row->loop_id] = $row->motif_id;
@@ -180,6 +191,7 @@ class Pdb_model extends Model {
         // $motifs = array_merge($motifs, $this->get_latest_motif_assignments($pdb_id, 'HL'));
         $motifs = $this->get_all_latest_motif_assignments('IL');
         $motifs = array_merge($motifs, $this->get_all_latest_motif_assignments('HL'));
+        $motifs = array_merge($motifs, $this->get_all_latest_motif_assignments('J'));
 
         foreach ($query as $row) {
             $loop_type = substr($row->loop_id, 0, 2);
@@ -384,6 +396,7 @@ class Pdb_model extends Model {
         $header         = array('#', 'Nucleotide id 1', 'Nucleotide id 2');
 
         if (in_array($interaction_type, $url_parameters) ) {
+            // arrays to map interaction type to the corresponding database field
             $targets = array_keys($url_parameters, $interaction_type);
             $db_field = $db_fields[$targets[0]];
             $interaction_description = $header_values[$targets[0]];
@@ -394,9 +407,8 @@ class Pdb_model extends Model {
             $interaction_description = implode(',', array_slice($header_values,1));
             $has_desired_interaction_type = '(' . implode(' IS NOT NULL OR ', $db_fields) . ')';
         } elseif ($interaction_type == 'ligand') {
-
-
-
+            $interaction_description = 'Ligand';
+            $header = array('#', 'Ligand id', 'Ligand name', 'Ligand type');
         } else {
             return array( 'data'   => array(),
                           'header' => array(),
@@ -404,41 +416,68 @@ class Pdb_model extends Model {
                          );
         }
 
-        $query = $this->db->table('unit_pairs_interactions_2024 AS upi')
-                ->select('program, upi.unit_id_1, upi.unit_id_2,' . $db_field)
-                ->join('unit_info AS u1', 'upi.unit_id_1 = u1.unit_id')
-                ->join('unit_info AS u2', 'upi.unit_id_1 = u2.unit_id')
-                ->where('upi.pdb_id', $pdb_id)
-                ->where($has_desired_interaction_type)
-                ->orderBy('u1.model, u1.chain, u1.sym_op, u1.chain_index, u2.model, u2.chain, u2.sym_op, u2.chain_index')
-                ->get()
-                ->getResult();
-
         $i = 1;
         $html = '';
         $csv  = '';
-        foreach ($query as $row) {
-            $output_fields = array();
-            $csv_fields    = array();
-            $csv_fields[0] = $row->unit_id_1;
-            foreach ($targets as $target) {
-                if ( isset($row->{$db_fields[$target]}) and ($row->{$db_fields[$target]} != '') ) {
-                    $output_fields[] = $row->{$db_fields[$target]};
-                    $csv_fields[]    = $row->{$db_fields[$target]};
-                } else {
-                    $csv_fields[] = '';
-                }
+
+        if ($interaction_type == 'ligand') {
+            // query to get all solitary units in the structure, ones with no chain_index
+            // unit is not HOH
+            $query = $this->db->table('unit_info AS ui')
+                ->select('unit_id, unit, unit_type_id, number')
+                ->where('ui.pdb_id', $pdb_id)
+                ->where('ui.chain_index', NULL)
+                ->where('ui.unit !=', 'HOH')
+                ->orderBy('ui.unit_type_id,ui.unit,ui.number')
+                ->get()
+                ->getResult();
+
+            foreach ($query as $row) {
+                $csv_fields    = array();
+                $csv_fields[0] = $row->unit_id;
+                $csv_fields[1] = $row->unit;
+                $csv .= '"' . implode('","', $csv_fields) . '"' . "\n";
+                $html .= str_pad('<span>' . $row->unit_id . '</span>', 32, ' ') .
+                        "<a class='jmolInline' id='s{$i}'>" .
+                        str_pad($row->unit, 8, ' ', STR_PAD_BOTH) . "</a><span></span>" .
+                        $row->unit_type_id . "\n";
+                $i++;
             }
-            $csv_fields[] = $row->unit_id_2;
-            $ids = $row->unit_id_1 .','. $row->unit_id_2;
-            $html .= str_pad('<span>' . $row->unit_id_1 . '</span>', 32, ' ') .
-                    "<a class='jmolInline' id='s{$i}'>" .
-                    str_pad(implode(', ', $output_fields), 8, ' ', STR_PAD_BOTH) .
-                    "</a>" .
-                    str_pad('<span>' . $row->unit_id_2. '</span>', 32, ' ', STR_PAD_LEFT) . ' <a href="http://rna.bgsu.edu/correspondence/SVS?id=' . $ids . '&format=unique&input_form=True" target="_blank" rel="noopener noreferrer">R3DSVS</a>' .
-                    "\n";
-            $csv .= '"' . implode('","', $csv_fields) . '"' . "\n";
-            $i++;
+        } else {
+            // query for one or all interaction types
+            $query = $this->db->table('unit_pairs_interactions_2024 AS upi')
+                    ->select('program, upi.unit_id_1, upi.unit_id_2,' . $db_field)
+                    ->join('unit_info AS u1', 'upi.unit_id_1 = u1.unit_id')
+                    ->join('unit_info AS u2', 'upi.unit_id_1 = u2.unit_id')
+                    ->where('upi.pdb_id', $pdb_id)
+                    ->where($has_desired_interaction_type)
+                    ->orderBy('u1.model, u1.chain, u1.sym_op, u1.chain_index, u2.model, u2.chain, u2.sym_op, u2.chain_index')
+                    ->get()
+                    ->getResult();
+
+            foreach ($query as $row) {
+                $output_fields = array();
+                $csv_fields    = array();
+                $csv_fields[0] = $row->unit_id_1;
+                foreach ($targets as $target) {
+                    if ( isset($row->{$db_fields[$target]}) and ($row->{$db_fields[$target]} != '') ) {
+                        $output_fields[] = $row->{$db_fields[$target]};
+                        $csv_fields[]    = $row->{$db_fields[$target]};
+                    } else {
+                        $csv_fields[] = '';
+                    }
+                }
+                $csv_fields[] = $row->unit_id_2;
+                $csv .= '"' . implode('","', $csv_fields) . '"' . "\n";
+                $ids = $row->unit_id_1 .','. $row->unit_id_2;
+                $html .= str_pad('<span>' . $row->unit_id_1 . '</span>', 32, ' ') .
+                        "<a class='jmolInline' id='s{$i}'>" .
+                        str_pad(implode(', ', $output_fields), 8, ' ', STR_PAD_BOTH) .
+                        "</a>" .
+                        str_pad('<span>' . $row->unit_id_2. '</span>', 32, ' ', STR_PAD_LEFT) . ' <a href="http://rna.bgsu.edu/correspondence/SVS?id=' . $ids . '&format=unique&input_form=True" target="_blank" rel="noopener noreferrer">R3DSVS</a>' .
+                        "\n";
+                $i++;
+            }
         }
 
         $header2 = array_merge( $header, explode(',', $interaction_description) );

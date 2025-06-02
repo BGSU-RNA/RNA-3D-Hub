@@ -25,7 +25,7 @@
               <a href="https://twitter.com/rna3dhub">Twitter</a>
             </p> -->
 
-            <select data-placeholder="Choose one of <?php echo count($pdbs); ?> RNA-containing 3D structures" tabindex="1" id="chosen" style="width:350px">
+            <select data-placeholder="Choose one of <?php echo count($pdbs); ?> nucleic acid containing 3D structures" tabindex="1" id="chosen" style="width:350px">
              <option value=""></option>
             <?php foreach ($pdbs as $pdb): ?>
               <option value="<?=$pdb?>"><?=$pdb?></option>
