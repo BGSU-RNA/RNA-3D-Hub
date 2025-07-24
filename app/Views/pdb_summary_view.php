@@ -62,7 +62,7 @@
                 </ul>
                 View in <a href="<?=$pdb_url?>" target="_blank">PDB</a> or <a href="<?=$NAKB_url?>" target="_blank">NAKB</a>
                 <br>
-                <a href="https://rna.bgsu.edu/fr3d/circular?chains=<?=$pdb_id?>&input_form=True" target="_blank">Circular diagram PDF</a>
+                <a href="https://rna.bgsu.edu/fr3d/r3dcid?chains=<?=$pdb_id?>&input_form=True" target="_blank">Circular interaction diagram PDF</a>
               </div>
 
               <!-- section1 -->
