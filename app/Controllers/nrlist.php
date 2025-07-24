@@ -98,8 +98,7 @@ class Nrlist extends BaseController {
              . view('footer');
     }
 
-    public function release($arg1, $arg2='current', $arg3='4.0A')
-    {
+    public function release($arg1, $arg2='current', $arg3='4.0A') {
         if ( strtoupper($arg1) == 'RNA'){
             $type = 'rna';
             $type_upper = 'RNA';
@@ -166,12 +165,14 @@ class Nrlist extends BaseController {
     }
 
     // Examples for RNA:
-    // http://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.348/3.0A/csv
-    // http://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.348/all/csv
-    public function download($arg1, $arg2, $arg3='all', $arg4='csv')
-    {
+    // https://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.388/2.5A/csv
+    // https://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.388/3.0A/tsv/full
+    // https://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.388/2.5A/json
+    // https://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.348/3.0A/csv
+    // https://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.348/all/csv
+    public function download($arg1, $arg2, $arg3='all', $arg4='csv', $scope='') {
         if (strtoupper($arg1) == 'RNA') {
-            // http://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.349/3.0A/csv
+            // https://rna.bgsu.edu/rna3dhub/nrlist/download/RNA/3.349/3.0A/csv
             $class_type = 'NR';
             $id = $arg2;
             $res = $arg3;
@@ -194,6 +195,12 @@ class Nrlist extends BaseController {
             $id = 'current';
             $res = $arg2;
             $format = $arg3;
+        } elseif (strtoupper($arg1) == 'PREVIOUS') {
+            // http://rna.bgsu.edu/rna3dhub/nrlist/download/previous/2.5A/csv
+            $class_type = 'NR';
+            $id = 'previous';
+            $res = $arg2;
+            $format = $arg3;
         } else {
             // http://rna.bgsu.edu/rna3dhub/nrlist/download/3.349/3.0A/csv
             $class_type = 'NR';
@@ -204,13 +211,27 @@ class Nrlist extends BaseController {
 
         if ($id == 'current') {
             $id = $this->Nrlist_model->get_latest_release();
+        } elseif ($id == 'previous') {
+            $id = $this->Nrlist_model->get_previous_release();
         } elseif ( !$this->Nrlist_model->is_valid_release($id) ) {
             echo 'Invalid release id';
             return;
         }
 
-        if ($format == 'csv') {
-            $data['csv'] = $this->Nrlist_model->get_csv($id, $res, $class_type);
+        // improve the appearance of the URL, replacing full_csv with csv/full
+        if ($scope == 'full') {
+            $format = 'full_' . $format;
+        }
+
+        if ($format == 'full') {
+            $format = 'full_csv';
+        }
+
+        if ($format == 'csv' || $format == 'tsv' || $format == 'json') {
+            // https://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.388/2.5A/csv
+            // https://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.388/2.5A/tsv
+            // https://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.388/2.5A/json
+            $data = $this->Nrlist_model->get_class_rep_members($id, $res, $class_type, $format);
 
             if ($class_type == 'DNA') {
                 $filename = "nrlist_dna_{$id}_{$res}.{$format}";
@@ -220,51 +241,221 @@ class Nrlist extends BaseController {
 
             // bypass the view system to avoid debugging comments
             $response = service('response');
-            $response->setHeader('Content-Disposition', "attachment; filename={$filename}")
-                     ->setContentType('text/csv');
-            $response->setBody($data['csv']);
+            if ($format == 'csv') {
+                $response->setHeader('Content-Disposition', "attachment; filename={$filename}")
+                ->setContentType('text/csv');
+            } elseif ($format == 'tsv') {
+                $response->setHeader('Content-Disposition', "attachment; filename={$filename}")
+                ->setContentType('text/tab-separated-values');
+            } elseif ($format == 'json') {
+                $response->setHeader('Content-Disposition', "attachment; filename={$filename}")
+                ->setContentType('text/csv');
+            }
+            $response->setBody($data);
             return $response;
 
-        } elseif ($format == 'full' || $format == 'full_csv') {
-            // http://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.343/2.5A/json
-            $data['csv'] = $this->Nrlist_model->get_csv_full($id, $res, $class_type, 'csv');
+        } elseif ($format == 'full_csv' || $format == 'full_tsv' || $format == 'full_json') {
+            // https://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.388/2.5A/csv/full
+            // https://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.388/2.5A/tsv/full
+            // https://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.388/2.5A/json/full
+            $format = str_replace("full_","",$format);
+            $data = $this->Nrlist_model->get_release_full($id, $res, $class_type, $format);
 
             if ($class_type == 'DNA') {
-                $filename = "ifes_dna_{$id}_{$res}_full.csv";
+                $filename = "ifes_dna_{$id}_{$res}_full.{$format}";
             } else {
-                $filename = "ifes_{$id}_{$res}_full.csv";
+                $filename = "ifes_{$id}_{$res}_full.{$format}";
+            }
+
+            // bypass the view system to avoid debugging comments
+            $response = service('response');
+            if ($format == 'csv') {
+                $response->setHeader('Content-Disposition', "attachment; filename={$filename}")
+                ->setContentType('text/csv');
+            } elseif ($format == 'tsv') {
+                $response->setHeader('Content-Disposition', "attachment; filename={$filename}")
+                ->setContentType('text/tab-separated-values');
+            } elseif ($format == 'json') {
+                $response->setHeader('Content-Disposition', "attachment; filename={$filename}")
+                ->setContentType('application/json');
+            }
+            $response->setBody($data);
+            return $response;
+        } else {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+    }
+
+    public function nonredundant($arg1='rna', $id='current', $res='4.0A', $criterion='clan', $count_limit='1', $format='html') {
+        // non-redundant lists based on rfam clan
+        // $arg1 is rna or dna, but only rna is supported now
+        // $arg2 is release like 3.387 or current or previous
+        // $arg3 is resolution cutoff like 3.5A
+        // $arg4 is the grouping criterion like clan, clan_domain
+        // $arg5 is the number from each group to take
+        // $arg6 is 'csv' or 'tsv' or 'json' or blank for human readable html
+        // https://rna.bgsu.edu/rna3dhub/nrlist/nonredundant/rna/current/2.5A/clan/3/csv
+        // https://rna.bgsu.edu/rna3dhub/nrlist/nonredundant/rna/current/2.5A/clan/3/tsv
+        // https://rna.bgsu.edu/rna3dhub/nrlist/nonredundant/rna/current/2.5A/clan/3/json
+        // https://rna.bgsu.edu/rna3dhub/nrlist/nonredundant/rna/current/2.5A/clan/3/
+
+        $type = strtoupper($arg1);
+        if ($type == 'RNA') {
+            $class_type = 'NR';
+        } elseif ($type == 'DNA') {
+            $class_type = 'DNA';
+        } else {
+            echo 'Invalid molecule type';
+            return;
+        }
+
+        if ($criterion != 'clan' && $criterion != 'clan_domain') {
+            echo 'Invalid Rfam scope; use clan or clan_domain';
+            return;
+        }
+
+        if (strtolower($id) == 'current') {
+            $id = $this->Nrlist_model->get_latest_release();
+        } elseif (strtolower($id) == 'previous') {
+            $id = $this->Nrlist_model->get_previous_release();
+        } elseif ( !$this->Nrlist_model->is_valid_release($id) ) {
+            echo 'Invalid release id';
+            return;
+        }
+
+        // https://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.386/2.5A/
+        $all_output = $this->Nrlist_model->get_non_redundant($class_type, $id, $res, $criterion, $count_limit);
+
+        if ($class_type == 'DNA') {
+            $filename = "nonredundant_dna_{$id}_{$res}_{$criterion}_{$count_limit}.{$format}";
+        } else {
+            $filename = "nonredundant_rna_{$id}_{$res}_{$criterion}_{$count_limit}.{$format}";
+        }
+
+        // change the format to what was requested
+        $header = $all_output[0];
+        $nc = count($header);
+        if ($format == 'csv' || $format == 'tsv') {
+            $all_lines = array();
+            foreach ($all_output as $row) {
+                // leave off the sorting column, the last column
+                $all_lines[] = $this->Nrlist_model->format_line(array_slice($row,0,$nc),$format);
+            }
+
+            // bypass the view system to avoid debugging comments
+            $response = service('response');
+            if ($format == 'csv') {
+                $response->setHeader('Content-Disposition', "attachment; filename={$filename}")
+                ->setContentType('text/csv');
+            } else {
+                $response->setHeader('Content-Disposition', "attachment; filename={$filename}")
+                ->setContentType('text/tab-separated-values');
+            }
+            $response->setBody(implode("",$all_lines));
+            return $response;
+
+        } elseif ($format == 'json') {
+            $json_data = array();
+            foreach (array_slice($all_output,1) as $line) {
+                $json_row = array();
+                foreach ($line as $index => $entry) {
+                    if ($index < $nc) {
+                        $json_row[$header[$index]] = $entry;
+                    }
+                }
+                $json_data[] = $json_row;
             }
 
             // bypass the view system to avoid debugging comments
             $response = service('response');
             $response->setHeader('Content-Disposition', "attachment; filename={$filename}")
-                        ->setContentType('text/csv');
-            $response->setBody($data['csv']);
+                        ->setContentType('application/json');
+            $response->setBody(json_encode($json_data));
             return $response;
 
-        } elseif ($format == 'full_tsv') {
-            // http://rna.bgsu.edu/rna3dhub/nrlist/download/NR/3.343/2.5A/json
-            $data['csv'] = $this->Nrlist_model->get_csv_full($id, $res, $class_type, 'tsv');
+        } elseif ($format == 'html') {
 
-            if ($class_type == 'DNA') {
-                $filename = "ifes_dna_{$id}_{$res}_full.tsv";
+            $data['title'] = "Non-redundant set based on release $id";
+            if ($class_type == 'DNA'){
+                $data['pageicon'] = base_url() . 'icons/D_icon.png';
+                $all_output = array();
             } else {
-                $filename = "ifes_{$id}_{$res}_full.tsv";
+                $data['pageicon'] = base_url() . 'icons/R_icon.png';
+                $data_header = array('ife_id', 'pdb_resolution', 'pdb_experimental_technique', 'rfam', 'clan_or_rfam', 'standardized_name', 'pdb_species', 'source', 'nts_observed', 'clan_cqs2', 'pdb_release_date');
+                $html_header = array('#','IFE','Resolution','Method','Rfam family','Clan or Rfam','Standardized name','Organism','Source','#NTs','Clan CQS2','Date');
             }
 
-            // bypass the view system to avoid debugging comments
-            $response = service('response');
-            $response->setHeader('Content-Disposition', "attachment; filename={$filename}")
-                        ->setContentType('text/tab-separated-values');
-            $response->setBody($data['csv']);
-            return $response;
+            $header_index = array();
+            foreach ($header as $index => $htext) {
+                $header_index[$htext] = $index;
+            }
 
+            $tax_url = 'https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=';
+            $rfam_url = 'https://rfam.org/family/';
+            $clan_url = 'https://rfam.org/clan/';
+
+            $html_output = array();
+            foreach (array_slice($all_output,1) as $index => $row) {
+                $html_row = array($index+1);
+                foreach ($data_header as $field) {
+                    if ($field == 'ife_id') {
+                        $html_row[] = "<a class='pdb'>" . $row[$header_index[$field]] . "</a>";
+                    } elseif ($field == 'pdb_species') {
+                        $tid = $row[$header_index['pdb_taxid']];
+                        $sid = $row[$header_index['pdb_species']];
+                        $html_row[] = anchor_popup("$tax_url$tid", "$sid");
+                    } elseif ($field == 'rfam') {
+                        $r = array();
+                        foreach (explode('+',$row[$header_index['rfam']]) as $rfam) {
+                            $r[] = anchor_popup("$rfam_url$rfam", "$rfam");
+                        }
+                        $html_row[] = implode('+',$r);
+                    } elseif ($field == 'clan_or_rfam') {
+                        $r = array();
+                        foreach (explode(',',$row[$header_index[$field]]) as $rfam) {
+                            if ($rfam[0] == 'R') {
+                                $r[] = anchor_popup("$rfam_url$rfam", "$rfam");
+                            } else {
+                                $r[] = anchor_popup("$clan_url$rfam", "$rfam");
+                            }
+                        }
+                        $html_row[] = implode(',',$r);
+                    } elseif ($field == 'clan_cqs2') {
+                        $html_row[] = sprintf('%.4f', $row[$header_index[$field]]);
+                    } else {
+                        $html_row[] = $row[$header_index[$field]];
+                    }
+                }
+                $html_output[] = $html_row;
+            }
+
+            $data['release_id']  = $id;
+            $data['description'] = $this->Nrlist_model->get_release_description($id);
+            $data['resolution'] = $res;
+            $data['type'] = $type;
+            $data['type_upper'] = strtoupper($type);
+            $data['class_type'] = $class_type;
+            $data['criterion'] = $criterion;
+            $data['count_limit'] = $count_limit;
+
+            $table = new \CodeIgniter\View\Table();
+            $tmpl = array( 'table_open'  => "<table class='condensed-table zebra-striped bordered-table' id='sort'>" );
+            $table->setTemplate($tmpl);
+            $table->setHeading($html_header);
+            $data['class'] = $table->generate($html_output);
+
+            $data['baseurl'] = base_url();
+            return view('header_view', $data)
+                 . view('menu_view', $data)
+                 . view('release_nonredundant_view', $data)
+                 . view('footer');
         } else {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
     }
 
     public function view($id)
+    // View an equivalence class
     // Example:  http://rna.bgsu.edu/rna3dhub/nrlist/view/NR_4.0_06650.37
     {
         $this->cachePage(60*60*24*30); # 30 days
@@ -288,7 +479,7 @@ class Nrlist extends BaseController {
         $members = $this->Nrlist_model->get_members($id);
         $tmpl = array( 'table_open'  => "<table class='condensed-table bordered-table zebra-striped' id='members_id'>" );
         $table = new \CodeIgniter\View\Table($tmpl);
-        $table->setHeading('#','IFE','Standardized name', 'Molecule', 'Organism', 'Source', 'Rfam', 'Title','Method','Res.&nbsp;&Aring','Date');
+        $table->setHeading('#','IFE','Standardized name', 'Molecule', 'Organism', 'Source', 'Rfam', 'Title','Method','Res.&nbsp;&Aring','#NTs','Date');
 
         $data['members'] = $table->generate($members);
         $data['num_members'] = count($members);
@@ -308,9 +499,9 @@ class Nrlist extends BaseController {
         $tmpl = array( 'table_open'  => "<table class='condensed-table bordered-table zebra-striped' id='sort'>" );
         $table = new \CodeIgniter\View\Table($tmpl);
         if ($type == 'DNA'){
-            $table->setHeading('#S','View','PDB','Title','Method','Resolution','Length','NAKB NA annotation','NAKB protein annotation');
+            $table->setHeading('#S','View','PDB','Title','Method','Resolution','#NTs','NAKB NA annotation','NAKB protein annotation');
         } else {
-            $table->setHeading('#S','View','PDB','Title','Method','Resolution','Length');
+            $table->setHeading('#S','View','PDB','Title','Method','Resolution','#NTs');
         }
         $data['statistics'] = $table->generate($statistics);
         $revised_stat = $data['statistics'];
