@@ -123,13 +123,13 @@ class Nrlist extends BaseController {
             }
         }
 
-        $this->cachePage(60*60*24*7); # 1 week
-
         if ($id == 'current') {
             $id = $this->Nrlist_model->get_latest_release($type);
-            $this->cachePage(10000); # 1 week, should stay current this way
+            $this->cachePage(60*60*24*3); # 3 days, stays pretty current
         } elseif ( !$this->Nrlist_model->is_valid_release($id) ) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        } else {
+            $this->cachePage(60*60*24*7*2); # 2 weeks
         }
 
         $data['title'] = "Representative set $id";
