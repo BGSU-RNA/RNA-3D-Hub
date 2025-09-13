@@ -57,9 +57,9 @@ class Nrlist_model extends Model {
         $sql = "CALL nr_release_diff(?,?)";
         $par = array($rel1, $rel2);
 
-        $query = $this->db->query($sql, $par);
+        $query = $this->db->query($sql, $par)->getUnbufferedRow();
 
-        if ($query->num_rows == 0) {
+        if (count($query) == 0) {
             $par = array($rel2,$rel1);
             $query = $this->db->query($sql, $par);
         }
@@ -1684,7 +1684,7 @@ class Nrlist_model extends Model {
             $label = $this->get_annotation_label_type($comment);
             $counts_text .= "<span class='label $label'>$comment</span> <strong>$count</strong>;    ";
         }
-        $counts_text .= ' Note: * after Rfam id indicates a mapping to Rfam family proposed by RNA 3D Hub.';
+        $counts_text .= ' Note: * after Rfam id indicates a mapping to Rfam family proposed by RNA 3D Hub; <a href="https://rna.bgsu.edu/data/pdb_chain_to_best_rfam.txt" target="_blank">see all mappings</a>.';
         $counts_text .= '<br><br>';
 
         // make the table
@@ -1965,6 +1965,23 @@ class Nrlist_model extends Model {
         return implode($separator,$my_unique);
     }
 
+    function cqs($row,$percent_observed) {
+        $cqs = 1 * $row->ife_cqs_resolution + 0.6 * ($row->percent_clash) + 4 * (1 - $percent_observed);
+        $cqs = $cqs + 8 * $row->average_rsr + 8 * (1 - $row->average_rscc) + 18 * $row->rfree;;
+        return $cqs;
+    }
+
+    function cqs2($row,$percent_observed) {
+        if ($row->experimental_technique == 'ELECTRON MICROSCOPY') {
+            $cqs2 = 1 * $row->ife_cqs_resolution + 1 * ($row->percent_clash) + 2.9 * (1 - $percent_observed);
+            $cqs2 = $cqs2 + 7.5 * (1 - $row->average_Q_score) + 5.0 * (1 - $row->average_residue_inclusion) + 2.8;
+        } else {
+            $cqs2 = 1 * $row->ife_cqs_resolution + 1 * ($row->percent_clash) + 2.9 * (1 - $percent_observed);
+            $cqs2 = $cqs2 + 6.4 * $row->average_rsr + 7 * (1 - $row->average_rscc) + 21 * $row->rfree;;
+        }
+        return $cqs2;
+    }
+
     function get_release_full($release, $resolution, $type, $format) {
         // Retrieve data on all IFEs in representative set $release up to $resolution
         // $type is NR for RNA or DNA for DNA
@@ -2009,6 +2026,8 @@ class Nrlist_model extends Model {
                 ->orderBy('ncr.rank','asc')
                 ->get()
                 ->getResult();
+
+        // echo 'Found ' . strval(count($query)) . ' rows in full query\n';
 
         list($chain_to_standardized_name, $chain_to_source, $chain_to_rfam) = $this->read_chain_property_value_table();
 
@@ -2244,58 +2263,28 @@ class Nrlist_model extends Model {
                 $clan_fraction_observed = min(1,$row->obs_length / $clan_max_observed);
             }
 
-            // COMPSCORE_COEFFICENTS = {
-            //     'resolution': 1,
-            //     'average_rsr': 8,
-            //     'percent_clash': 0.6,
-            //     'average_rscc': 8,
-            //     'rfree': 18,
-            //     'fraction_unobserved': 4,
-            // }
-            // compscore = COMPSCORE_COEFFICENTS['resolution'] * member[0]['resolution']
-            // compscore += COMPSCORE_COEFFICENTS['percent_clash'] * member[0]['percent_clash']
-            // compscore += COMPSCORE_COEFFICENTS['average_rsr'] * member[0]['average_rsr']
-            // compscore += COMPSCORE_COEFFICENTS['average_rscc'] * (1 - member[0]['average_rscc'])
-            // compscore += COMPSCORE_COEFFICENTS['rfree'] * member[0]['rfree']
-            // compscore += COMPSCORE_COEFFICENTS['fraction_unobserved'] * member[0]['fraction_unobserved']
-
-            $base_cqs = 1 * $row->ife_cqs_resolution + 0.6 * ($row->percent_clash) + 4 * (1 - $row->percent_observed);
-            $ec_cqs2 = $base_cqs + 8 * $row->average_rsr + 8 * (1 - $row->average_rscc) + 18 * $row->rfree;
-
-            if ($row->experimental_technique == 'ELECTRON MICROSCOPY') {
-                // $ec_cqs2 = $base_cqs + 8 * (1 - $row->average_Q_score) + 5 * (1 - $row->average_residue_inclusion) + 1.5;
-                $ec_cqs2 = $base_cqs + 8.5 * (1 - $row->average_Q_score) + 5.5 * (1 - $row->average_residue_inclusion) + 1.75;
-            }
+            $ec_cqs  = $this->cqs($row,$row->percent_observed);
+            $ec_cqs2 = $this->cqs2($row,$row->percent_observed);
 
             if ($rfam_max_observed > 0) {
                 // cqs relative to Rfam family
-                $base_cqs = 1 * $row->ife_cqs_resolution + 0.6 * ($row->percent_clash) + 4 * (1 - $rfam_fraction_observed);
-                $rfam_cqs = $base_cqs + 8 * $row->average_rsr + 8 * (1 - $row->average_rscc) + 18 * $row->rfree;
-                $rfam_cqs2 = $rfam_cqs;
-
-                if ($row->experimental_technique == 'ELECTRON MICROSCOPY') {
-                    // $rfam_cqs2 = $base_cqs + 8 * (1 - $row->average_Q_score) + 5 * (1 - $row->average_residue_inclusion) + 1.5;
-                    $rfam_cqs2 = $base_cqs + 8.5 * (1 - $row->average_Q_score) + 5.5 * (1 - $row->average_residue_inclusion) + 1.75;
-                }
+                $rfam_cqs  = $this->cqs($row,$rfam_fraction_observed);
+                $rfam_cqs2 = $this->cqs2($row,$rfam_fraction_observed);
             } else {
-                $rfam_cqs = NULL;
+                $rfam_cqs  = NULL;
                 $rfam_cqs2 = NULL;
             }
 
             if ($clan_max_observed > 0) {
                 // cqs relative to clan
-                $clan_base_cqs = 1 * $row->ife_cqs_resolution + 0.6 * ($row->percent_clash) + 4 * (1 - $clan_fraction_observed);
-                $clan_cqs2 = $clan_base_cqs + 8 * $row->average_rsr + 8 * (1 - $row->average_rscc) + 18 * $row->rfree;
-
-                if ($row->experimental_technique == 'ELECTRON MICROSCOPY') {
-                    // $clan_cqs2 = $clan_base_cqs + 8 * (1 - $row->average_Q_score) + 5 * (1 - $row->average_residue_inclusion) + 1.5;
-                    $clan_cqs2 = $clan_base_cqs + 8.5 * (1 - $row->average_Q_score) + 5.5 * (1 - $row->average_residue_inclusion) + 1.75;
-                }
+                $clan_cqs  = $this->cqs($row,$clan_fraction_observed);
+                $clan_cqs2 = $this->cqs2($row,$clan_fraction_observed);
             } else {
                 // this "clan" is a single rfam family
                 $clan = implode(',',array_unique(explode('+',$rfam)));
                 $clan_max_observed = $rfam_max_observed;
                 $clan_fraction_observed = $rfam_fraction_observed;
+                $clan_cqs  = $rfam_cqs;
                 $clan_cqs2 = $rfam_cqs2;
             }
 
@@ -2561,14 +2550,14 @@ class Nrlist_model extends Model {
 
     function set_rfam_max_allowed($rfam_to_clan)
     {
-        // read pdb_chain_to_rfam.txt and find the longest pdb chain stretch for each rfam family
+        // read pdb_chain_to_best_rfam.txt and find the longest pdb chain stretch for each rfam family
         $rfam_to_max_allowed = array();
-        $file_lines = file('/usr/local/pipeline/alignments/pdb_chain_to_rfam.txt');
+        $file_lines = file('/usr/local/pipeline/alignments/pdb_chain_to_best_rfam.txt');
         foreach ($file_lines as $line) {
             $line = str_replace("\n","",$line);
             $resultArray = explode("\t", $line);
             $rfam = $resultArray[0];
-            if ($rfam !== "RF00000") {
+            if ($rfam !== "RF00000" && $rfam !== "rfam_acc") {
                 $pdb_length = $resultArray[4] - $resultArray[3] + 1;
                 if (array_key_exists($rfam,$rfam_to_max_allowed)) {
                     $rfam_to_max_allowed[$rfam] = max($pdb_length,$rfam_to_max_allowed[$rfam]);
@@ -2578,7 +2567,7 @@ class Nrlist_model extends Model {
             }
         }
 
-        # correct a problem caused by stapled ribosomes; this won't be the last such case
+        # correct a problem caused by stapled ribosomes; this won't be the only such case
         $rfam_to_max_allowed['RF02541'] = 3119;
 
         return $rfam_to_max_allowed;
