@@ -48,6 +48,8 @@ class Pdb extends BaseController {
 
         // $this->cachePage(262974); # 6 months
 
+        $id = explode('|',$id)[0];
+
         $pdb_status = $this->is_valid_pdb($id, 'il');
         $data['valid'] = $pdb_status['valid'];
         $data['pdbs'] = $this->Pdb_model->get_all_pdbs();
@@ -87,6 +89,9 @@ class Pdb extends BaseController {
 
     public function interactions($id, $method="fr3d", $interaction_type="basepairs", $format=NULL)
     {
+        // strip off model and chain if present
+        $id = explode('|',$id)[0];
+
         // validate inputs
         $interaction_types = array('basepairs', 'basepair_detail', 'stacking', 'basephosphate', 'baseribose', 'baseaa', 'oxygen_stacking', 'sugar_ribose', 'all', 'ligand');
         if (!preg_match('/fr3d/i', $method)) {
@@ -171,6 +176,9 @@ class Pdb extends BaseController {
 	{
         // $this->cachePage(262974); # 6 months
 
+        // strip off model and chain if present
+        $id = explode('|',$id)[0];
+
         // check the pdb id
         $pdb_status = $this->is_valid_pdb($id, 'il');
         $data['valid'] = $pdb_status['valid'];
@@ -230,6 +238,9 @@ class Pdb extends BaseController {
 
     public function two_d($pdb_id)
     {
+        // strip off model and chain if present
+        $id = explode('|',$pdb_id)[0];
+
         $pdb_status = $this->is_valid_pdb($pdb_id, 'il');
         $data['pdbs'] = $this->Pdb_model->get_all_pdbs();
         $data['valid'] = $pdb_status['valid'];
