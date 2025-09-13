@@ -51,6 +51,7 @@ $routes->match(['GET','POST'],'rest/getAssemblies', [rest::class, 'getAssemblies
 $routes->match(['GET','POST'],'rest/getCenters', [rest::class, 'getCenters']);
 $routes->match(['GET','POST'],'rest/getCoordinates', [rest::class, 'getCoordinates']);
 $routes->match(['GET','POST'],'rest/getCoordinatesMotifAtlas', [rest::class, 'getCoordinatesMotifAtlas']);
+$routes->match(['GET','POST'],'rest/getNeighbors', [rest::class, 'getNeighbors']);
 $routes->match(['GET','POST'],'rest/getRSR', [rest::class, 'getRSR']);
 $routes->match(['GET','POST'],'rest/getRSRZ', [rest::class, 'getRSRZ']);
 $routes->get('rest/SeqtoUnitMapping', [rest::class, 'SeqtoUnitMapping']);
