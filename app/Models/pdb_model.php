@@ -11,7 +11,7 @@ class Pdb_model extends Model {
     {
         // $CI = & get_instance();
         // $CI->load->helper('url');
-        $this->qa_status = array(NULL,'valid','missing nts','modified nts','abnormal chain','incomplete nts','complementary','symmetry','all high RSRZ','pair high RSRZ');
+        $this->qa_status = array(NULL,'valid','missing nts','modified nts','abnormal chain','incomplete nts','complementary','symmetry','poor quality numbers','pair high RSRZ');
         // Call the Model constructor
         parent::__construct();
     }
