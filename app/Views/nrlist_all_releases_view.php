@@ -36,6 +36,30 @@
                   be delayed because of the time it takes to compute all-against-all geometric comparisons
                   within large equivalences classes such as Thermus thermophilus small ribosomal subunit.
                 <p>
+                  With release 4.0, we start using Composite Quality Score 2, or CQS2, to rank
+                  integrated functional elements (IFEs) within equivalence classes.
+                  For cryo-em structures, CQS2 uses Q-score and residue inclusion from the PDB
+                  validation report as structure quality indicators,
+                  so the ranking of EM structures will be more useful.
+                  Moreover, the coefficients for Q-score and residue inclusion are set so that CQS2 scores
+                  for EM and X-ray are on similar scales, so that equivalence classes with both
+                  X-ray and EM structures have them interleaved appropriately.
+                  For example, see the E. coli LSU and SSU classes by filtering on PDB file 8b0x.
+                  The coefficients of CQS2 for X-ray structures are modified using recent data,
+                  compared to the coefficients for the original CQS.
+                <p>
+                  For X-ray, CQS2 = resolution + percent_clash + 2.9*fraction_unobserved + 21*rfee + 6.4*average_rsr + 7*(1-average_rscc).
+                  For EM, CQS2 = resolution + percent_clash + 2.9*fraction_unobserved + 7.5*(1-average_Q_score) + 5*(1-average_residue_inclusion) + 2.8.
+                  For NMR and other structures lacking one of these variables, worst-possible placeholder values are used instead.
+                <p>
+                  Also with release 4.0, we note that modified nucleotides appear consistently in all
+                  annotations, basepair annotations are refined, 3-way, 4-way, and higher order junctions
+                  are extracted from all structures, and loops that are separated by exactly one
+                  Watson-Crick basepair are extracted and the "merged" loop that reaches across the
+                  single Watson-Crick basepair is also extracted.
+                  Release 4.0 of the RNA 3D Motif Atlas will be built with X-ray structures at 3.0A
+                  or better and with a limited set of EM structures of the highest resolutions.
+                <p>
                   With release 3.382, we fixed some problems where poor chain alignments pushed IFEs
                   into different equivalent classes.  The fix reduced the number of equivalence classes
                   by over 100.
@@ -71,13 +95,14 @@
                   This resulted in unusually many changes to equivalence classes.
                 <p>
                   With release 3.0, we modified the procedure for choosing the representative
-                  of each equivalence class.
+                  of each equivalence class using a new Composite Quality Score (CQS).
                   The representative is now chosen as the IFE (Integrated Functional Element)
                   which optimizes a combination of resolution, RSR, RSCC, Rfree, percent of nucleotides with steric clashes,
                   and the fraction of the molecule observed.
-                  The intention is to select the structure
-                  with the best experimental evidence for the coordinates being reported.
-                  Details will be provided in an upcoming publication.
+                  The intention is to select the structure with the best experimental
+                  evidence for the coordinates being reported.
+                  For X-ray, CQS2 = resolution + 0.6*percent_clash + 4*fraction_unobserved + 18*rfee + 8*average_rsr + 8*(1-average_rscc).
+                  For EM, NMR, and other structures lacking one of these variables, worst-possible placeholder values are used instead.
                 <p>
                   Individual chains are named in the format XXXX|M|C, where XXXX is the PDB entry, M is the model number,
                   usually 1, and C is the chain identifier, one to four characters.
