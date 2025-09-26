@@ -321,8 +321,7 @@ class Pdb_model extends Model {
         }
 
     }
-    function pdb_is_annotated($pdb_id, $interaction_type)
-    {
+    function pdb_is_annotated($pdb_id, $interaction_type) {
         $builder = $this->db->table('pdb_info AS pi');
         $query = $builder ->select('pi.pdb_id')
                  ->where('pi.pdb_id', $pdb_id);
@@ -332,8 +331,8 @@ class Pdb_model extends Model {
             return False;
         }
     }
-    function _get_unit_ids($pdb_id)
-    {
+
+    function _get_unit_ids($pdb_id) {
         // retrieve all unit_id values from unit_info
         $builder = $this->db->table('unit_info');
         $query = $builder ->select('unit_id')
@@ -345,8 +344,8 @@ class Pdb_model extends Model {
         }
         return $unit_ids;
     }
-    function get_interactions($pdb_id, $interaction_type)
-    {
+
+    function get_interactions($pdb_id, $interaction_type, $method, $format) {
         /* Commented out since we don't have aa-nt annotations yet
         if ( $interaction_type == 'baseaa' ) {
             $unit_ids = $this->_get_unit_ids($pdb_id);
@@ -403,7 +402,11 @@ class Pdb_model extends Model {
             $has_desired_interaction_type = "$db_field IS NOT NULL";
         } elseif ( $interaction_type == 'all' ) {
             $targets = array_keys(array_slice($url_parameters,1));
-            $db_field = implode(',', array_slice($db_fields,1));
+            if ($method == 'matlab') {
+                $db_field = implode(',', $db_fields);    // use all fields, f_lwbp_detail will be NULL
+            } else {
+                $db_field = implode(',', array_slice($db_fields,1));    // leave off f_lwbp
+            }
             $interaction_description = implode(',', array_slice($header_values,1));
             $has_desired_interaction_type = '(' . implode(' IS NOT NULL OR ', $db_fields) . ')';
         } elseif ($interaction_type == 'ligand') {
@@ -412,13 +415,16 @@ class Pdb_model extends Model {
         } else {
             return array( 'data'   => array(),
                           'header' => array(),
-                          'csv'    => ''
+                          'csv'    => '',
+                          'tsv'    => '',
+                          'count'  => 0
                          );
         }
 
         $i = 1;
         $html = '';
         $csv  = '';
+        $tsv  = '';
 
         if ($interaction_type == 'ligand') {
             // query to get all solitary units in the structure, ones with no chain_index
@@ -433,49 +439,85 @@ class Pdb_model extends Model {
                 ->getResult();
 
             foreach ($query as $row) {
-                $csv_fields    = array();
-                $csv_fields[0] = $row->unit_id;
-                $csv_fields[1] = $row->unit;
-                $csv .= '"' . implode('","', $csv_fields) . '"' . "\n";
-                $html .= str_pad('<span>' . $row->unit_id . '</span>', 32, ' ') .
-                        "<a class='jmolInline' id='s{$i}'>" .
-                        str_pad($row->unit, 8, ' ', STR_PAD_BOTH) . "</a><span></span>" .
-                        $row->unit_type_id . "\n";
+                if ($format == 'csv') {
+                    $csv_fields    = array();
+                    $csv_fields[0] = $row->unit_id;
+                    $csv_fields[1] = $row->unit;
+                    $csv_fields[2] = $row->unit_type_id;
+                    $csv .= '"' . implode('","', $csv_fields) . '"' . "\n";
+                } elseif ($format == 'tsv') {
+                    $tsv .= $row->unit_id . "\t" . $row->unit . "\t" . $row->unit_type_id . "\n";
+                } else {
+                    $html .= str_pad('<span>' . $row->unit_id . '</span>', 32, ' ') .
+                            "<a class='jmolInline' id='s{$i}'>" .
+                            str_pad($row->unit, 8, ' ', STR_PAD_BOTH) . "</a><span></span>" .
+                            $row->unit_type_id . "\n";
+                }
                 $i++;
             }
         } else {
             // query for one or all interaction types
-            $query = $this->db->table('unit_pairs_interactions_2024 AS upi')
-                    ->select('program, upi.unit_id_1, upi.unit_id_2,' . $db_field)
-                    ->join('unit_info AS u1', 'upi.unit_id_1 = u1.unit_id')
-                    ->join('unit_info AS u2', 'upi.unit_id_1 = u2.unit_id')
-                    ->where('upi.pdb_id', $pdb_id)
-                    ->where($has_desired_interaction_type)
-                    ->orderBy('u1.model, u1.chain, u1.sym_op, u1.chain_index, u2.model, u2.chain, u2.sym_op, u2.chain_index')
-                    ->get()
-                    ->getResult();
+            if ($method == 'matlab') {
+                // matlab annotations are stored in an older table, and do not cover all PDB files
+                // last Matlab annotations were in summer 2024
+                $query = $this->db->table('unit_pairs_interactions AS upi')
+                        ->select('program, upi.unit_id_1, upi.unit_id_2,' . $db_field)
+                        ->join('unit_info AS u1', 'upi.unit_id_1 = u1.unit_id')
+                        ->join('unit_info AS u2', 'upi.unit_id_1 = u2.unit_id')
+                        ->where('upi.program', 'matlab')
+                        ->where('upi.pdb_id', $pdb_id)
+                        ->where($has_desired_interaction_type)
+                        ->orderBy('u1.model, u1.chain, u1.sym_op, u1.chain_index, u2.model, u2.chain, u2.sym_op, u2.chain_index')
+                        ->get()
+                        ->getResult();
+            } else {
+                $query = $this->db->table('unit_pairs_interactions_2024 AS upi')
+                        ->select('program, upi.unit_id_1, upi.unit_id_2,' . $db_field)
+                        ->join('unit_info AS u1', 'upi.unit_id_1 = u1.unit_id')
+                        ->join('unit_info AS u2', 'upi.unit_id_1 = u2.unit_id')
+                        ->where('upi.pdb_id', $pdb_id)
+                        ->where($has_desired_interaction_type)
+                        ->orderBy('u1.model, u1.chain, u1.sym_op, u1.chain_index, u2.model, u2.chain, u2.sym_op, u2.chain_index')
+                        ->get()
+                        ->getResult();
+            }
 
             foreach ($query as $row) {
-                $output_fields = array();
-                $csv_fields    = array();
-                $csv_fields[0] = $row->unit_id_1;
-                foreach ($targets as $target) {
-                    if ( isset($row->{$db_fields[$target]}) and ($row->{$db_fields[$target]} != '') ) {
-                        $output_fields[] = $row->{$db_fields[$target]};
-                        $csv_fields[]    = $row->{$db_fields[$target]};
-                    } else {
-                        $csv_fields[] = '';
+                if ($format == 'csv') {
+                    $csv_fields    = array();
+                    $csv_fields[0] = $row->unit_id_1;
+                    foreach ($targets as $target) {
+                        if ( isset($row->{$db_fields[$target]}) and ($row->{$db_fields[$target]} != '') ) {
+                            $csv_fields[]    = $row->{$db_fields[$target]};
+                        } else {
+                            $csv_fields[] = '';
+                        }
                     }
+                    $csv_fields[] = $row->unit_id_2;
+                    $csv .= '"' . implode('","', $csv_fields) . '"' . "\n";
+                } elseif ($format == 'tsv') {
+                    $csv_fields    = array();
+                    foreach ($targets as $target) {
+                        if ( isset($row->{$db_fields[$target]}) and ($row->{$db_fields[$target]} != '') ) {
+                            $csv_fields[]    = $row->{$db_fields[$target]};
+                        }
+                    }
+                    $tsv .= $row->unit_id_1 . "\t" . implode(',', $csv_fields) . "\t" . $row->unit_id_2 . "\t" . "\n";
+                } else {
+                    $output_fields = array();
+                    foreach ($targets as $target) {
+                        if ( isset($row->{$db_fields[$target]}) and ($row->{$db_fields[$target]} != '') ) {
+                            $output_fields[] = $row->{$db_fields[$target]};
+                        }
+                    }
+                    $ids = $row->unit_id_1 .','. $row->unit_id_2;
+                    $html .= str_pad('<span>' . $row->unit_id_1 . '</span>', 32, ' ') .
+                            "<a class='jmolInline' id='s{$i}'>" .
+                            str_pad(implode(', ', $output_fields), 8, ' ', STR_PAD_BOTH) .
+                            "</a>" .
+                            str_pad('<span>' . $row->unit_id_2. '</span>', 32, ' ', STR_PAD_LEFT) . ' <a href="http://rna.bgsu.edu/correspondence/SVS?id=' . $ids . '&format=unique&input_form=True" target="_blank" rel="noopener noreferrer">R3DSVS</a>' .
+                            "\n";
                 }
-                $csv_fields[] = $row->unit_id_2;
-                $csv .= '"' . implode('","', $csv_fields) . '"' . "\n";
-                $ids = $row->unit_id_1 .','. $row->unit_id_2;
-                $html .= str_pad('<span>' . $row->unit_id_1 . '</span>', 32, ' ') .
-                        "<a class='jmolInline' id='s{$i}'>" .
-                        str_pad(implode(', ', $output_fields), 8, ' ', STR_PAD_BOTH) .
-                        "</a>" .
-                        str_pad('<span>' . $row->unit_id_2. '</span>', 32, ' ', STR_PAD_LEFT) . ' <a href="http://rna.bgsu.edu/correspondence/SVS?id=' . $ids . '&format=unique&input_form=True" target="_blank" rel="noopener noreferrer">R3DSVS</a>' .
-                        "\n";
                 $i++;
             }
         }
@@ -483,7 +525,9 @@ class Pdb_model extends Model {
         $header2 = array_merge( $header, explode(',', $interaction_description) );
         return array( 'data'   => $html,
                       'header' => array_merge( $header, explode(',', $interaction_description) ),
-                      'csv'    => $csv
+                      'csv'    => $csv,
+                      'tsv'    => $tsv,
+                      'count'  => $i
                      );
     }
 
