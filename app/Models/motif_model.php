@@ -1,0 +1,1654 @@
+<?php
+namespace App\Models;
+use CodeIgniter\Model;
+
+ini_set("memory_limit","200M");
+
+class Motif_model extends Model {
+
+    public string $release_id = '';
+    public array $loops = [];
+    public array $nts = [];
+    public array $unit_ids = [];
+    public array $full_nts = [];
+    public array $full_units = [];
+    public array $header = [];
+    public array $disc = [];
+    public array $f_lwbp = [];
+    public array $similarity = [];
+    public array $full_length = [];
+    public array $chainbreak = [];
+    public int $motiflen = 0;
+    public $motif_id = '';
+    public $loop_annotation1 = [];
+    public $num_loops = 0;
+    public $release = '';
+    public $last_release_id = '';
+    public $num_unit = 0;
+    public array $units = [];
+
+    function __construct()
+    {
+        $this->release_id  = '';
+        $this->last_release_id = '';
+        $this->loops       = array(); // loops in the search order
+        $this->nts         = array(); // human-readable nts
+        #$this->nt_ids      = array(); // full nt ids
+        $this->unit_ids    = array();
+        $this->full_nts    = array();
+        $this->full_units  = array();
+        $this->header      = array();
+        $this->disc        = array();
+        $this->f_lwbp      = array();
+        $this->similarity  = array(); // loops in similarity order
+        $this->full_length = array();
+        $this->chainbreak  = array();
+        $this->motiflen    = 0;
+        // Call the Model constructor
+        parent::__construct();
+    }
+
+    function is_valid_motif_id($motif_id)
+    {
+        $query = $this->db->table('ml_motifs_info')
+                        ->select('motif_id')
+                        ->where('motif_id', $motif_id)
+                        ->limit(1)
+                        ->get();
+        $query_result = $query->getRow();
+        if ( $query_result != NULL ) {
+            return TRUE;
+        } else {
+            return FALSE;
+        }
+    }
+
+    function _get_aligned_unit_ids($motif_id) {
+        // In the past, we stored the positions again and again with each release.
+        // Turns out, that was more robust to cascading deletes!
+        // Now we do not store over and over.
+        // However, with some J3, the alignment for a specific motif group changed from
+        // release to release, also causing trouble.
+
+        // for consistency, ignore the $release_id and instead use the
+        // most recent ml_release_id, because that is what the motif group pages show
+
+        $release_id = $this->get_latest_release_for_motif($motif_id);
+
+        $query = $this->db->table('ml_loop_positions AS ML')
+                 ->select()
+                 ->where('motif_id', $motif_id)
+                 ->where('ml_release_id', $release_id)
+                 ->orderby('loop_id, position')
+                 ->get()
+                 ->getResult();
+
+        // if (count($query) == 0) {
+        //     // if there were no results, try without $release_id
+        //     $q = $this->db->table('ml_loop_positions AS ML')
+        //             ->select()
+        //             ->where('motif_id', $motif_id)
+        //             ->orderby('ml_release_id,loop_id, position')
+        //             ->get()
+        //             ->getResult();
+
+        //     // find the release closest to desired and use it
+        //     $release_dist = 99999999999;
+        //     $fields = explode('.',$release_id);
+        //     $major = $fields[0];
+        //     $minor = $fields[1];
+        //     foreach ($q as $row) {
+        //         $fields = explode('.',$row->ml_release_id);
+        //         $new_dist = 10000*abs($fields[0]-$major) + abs($fields[1]-$minor);
+        //         if ($new_dist < $release_dist) {
+        //             $release_dist = $new_dist;
+        //             $closest_release = $row->ml_release_id;
+        //         }
+        //     }
+        //     $query = array();
+        //     foreach ($q as $row) {
+        //         if ($row->ml_release_id == $closest_release) {
+        //             $query[] = $row;
+        //         }
+        //     }
+        // }
+
+        $temp = array();
+
+        // store the data temporarily in the given order
+        foreach ($query as $row) {
+            // $temp['IL_XXXX_YYY'][0] = unit_id
+            $temp[$row->loop_id][$row->position] = $row->unit_id;
+        }
+
+        // get the right order for motifs in the group
+        // $query = $this->db->table('ml_loop_order')
+        //         ->select('loop_id')
+        //          ->where('motif_id', $motif_id)
+        //          ->where('ml_release_id', $release_id)
+        //          ->orderby('original_order')
+        //          ->get()
+        //          ->getResult();
+
+        // if (empty($query_result)) {
+            $query = $this->db->table('ml_loop_order')
+                ->select('loop_id')
+                ->where('motif_id', $motif_id)
+                ->orderby('original_order')
+                ->get()
+                ->getResult();
+        // }
+
+        $data = array();
+        foreach ($query as $row) {
+            if (isset($temp[$row->loop_id])) {
+                // skip loop ids that are missing for whatever reason
+                $data[$row->loop_id] = $temp[$row->loop_id];
+            }
+        }
+
+        return $data;
+    }
+
+    function get_csv($motif_id,$release_id)
+    {
+        $data = $this->_get_aligned_unit_ids($motif_id,$release_id);
+        $csv = '';
+
+        foreach($data as $loop_id) {
+            $csv .= '"' . implode('","', $loop_id) . '"' . "\n";
+        }
+
+        return $csv;
+    }
+
+    function get_json($motif_id,$release_id) {
+        // for one motif id, get information about that motif group
+        // return in json format
+        // https://rna.bgsu.edu/rna3dhub/motifs/release/il/3.9/json
+
+        // ignores the $release_id and uses the most recent ml_release_id
+
+        $data['motif_id']  = $motif_id;
+        $alignment = $this->_get_aligned_unit_ids($motif_id,$release_id);
+
+        // get bp_signature, annotation, common_name
+        $data = array_merge($data, $this->get_annotations($motif_id));
+        // annotations and common_name are no longer maintained, so blank them out
+        $data['annotation'] = '';
+        $data['common_name'] = '';
+
+        // get manual annotations that are done loop by loop
+        $this->get_loop_annotations();
+        $data['annotations'] = $this->loop_annotation1;
+
+        $data['num_instances'] = count($data['annotations']);
+
+        // some data was lost from ml_loop_positions,
+        // so the alignment can be empty
+        $array_keys = array_keys($alignment);
+        if (count($array_keys) == 0) {
+            return json_encode($data);
+        }
+        $data['alignment'] = $alignment;
+
+        // number of core nucleotides depends on the alignment
+        $data['num_nucleotides'] = count($alignment[array_pop($array_keys)]);
+
+        $this->get_chainbreak();
+        $data['chainbreak'] = $this->chainbreak;
+
+        return json_encode($data);
+    }
+
+    function get_loop_annotations() {
+        // look up annotations by loop id, get NULL when no annotation
+        $query = $this->db->table('loop_annotations AS la')
+                          ->select('ml.loop_id AS ml_loop_id, la.loop_id, la.annotation_1, la.annotation_2')
+                          ->join('ml_loops as ml', 'ml.loop_id = la.loop_id', 'RIGHT')
+                          ->where('ml.ml_release_id', $this->release_id)
+                          ->where('ml.motif_id', $this->motif_id)
+                          ->get()
+                          ->getResult();
+
+        // $query = $this->db->table('loop_annotations AS la')
+        //                 ->select('la.loop_id, la.annotation_1, la.annotation_2')
+        //                 ->join('ml_loops as ml', 'ml.loop_id = la.loop_id', 'LEFT')
+        //                 ->join('loop_mapping as lm', 'lm.query_loop_id = ml.loop_id')
+        //                 ->where('ml.ml_release_id', $this->release_id)
+        //                 ->where('ml.motif_id', $this->motif_id)
+        //                 ->orderBy('lm.loop_mapping_id')
+        //                 ->get()
+        //                 ->getResult();
+
+        if (!empty($query)) {
+            foreach($query as $row){
+                if ($row->annotation_1 == '') {
+                    $loop_annotation1[$row->ml_loop_id] = '';
+                    $aquery = $this->db->table('loop_annotations AS la')
+                                       ->select('la.loop_id, la.annotation_1, la.annotation_2')
+                                       ->join('loop_mapping as lm', 'lm.query_loop_id = la.loop_id')
+                                       ->where('lm.loop_id', $row->ml_loop_id)
+                                       ->where('lm.match_type','homologous')
+                                       ->orderBy('lm.loop_mapping_id')
+                                       ->get()
+                                       ->getResult();
+                    foreach($aquery as $arow) {
+                        // use the most recent loop mapping
+                        if ($aquery != NULL) {
+                            $loop_annotation1[$row->ml_loop_id] = $arow->annotation_1 . ' (H)';
+                        }
+                    }
+
+                } else {
+                    $loop_annotation1[$row->ml_loop_id] = $row->annotation_1;
+                    #$loop_annotation2[$row->loop_id] = $row->annotation_2;
+                }
+            }
+        } else {
+            $loop_annotation1 = (array) null;
+        }
+
+        $this->loop_annotation1 = $loop_annotation1;
+        #$this->loop_annotation2 = $loop_annotation2;
+
+    }
+
+    function get_annotations_count() {
+
+        # Check whether the loop_annotation1 array has values
+        if ($this->loop_annotation1) {
+
+            if (count($this->loop_annotation1) > 0) {
+                # get the annotation from the loop_annotation1 array
+                $annotation = array_values($this->loop_annotation1);
+                # count the number of unique annotation label. Key would be the annotation label and the value would be the count
+                $annotation_count = array_count_values($annotation);
+                # sort the array by desc value
+                arsort($annotation_count);
+
+                # get the keys from the annotation_count array
+                # $keys = array_keys($annotation_count);
+
+                return $annotation_count;
+            } else {
+                return false;
+            }
+        } else {
+        	return false;
+        }
+
+    }
+
+    function get_annotations($motif_id) {
+        // bp_signature is the only useful thing here
+        // common_name and annotation are no longer maintained
+        $query = $this->db->table('ml_motif_annotations')
+                    ->select()
+                    ->where('motif_id', $motif_id)
+                    ->limit(1);
+        $query_result = $query->get()->getRow();
+
+        if ($query_result != NULL) {
+            // null values get replaced by empty string to avoid trim(null)
+            return array(
+                'common_name'  => trim($query_result->common_name ?? ''),
+                'annotation'   => trim($query_result->annotation ?? ''),
+                'bp_signature' => trim($query_result->bp_signature ?? '')
+            );
+        } else {
+            return array(
+                'common_name' => '',
+                'annotation' => '',
+                'bp_signature' => ''
+            );
+        }
+    }
+
+    // no longer saving annotations from a web page
+    // function save_annotation( $data )
+    // {
+    //     $query = $this->db->table('ml_motif_annotations')
+    //                 ->select()
+    //                 ->where('motif_id', $data['motif_id'])
+    //                 ->limit(1);
+    //     $query_result = $query->get()->getResult();
+
+    //     if ( $query->num_rows > 0 ) {
+    //         $this->db->set($data['column'], trim($data['value']) );
+    //         $this->db->set('author', trim($data['author']) );
+
+    //         return $this->db
+    //                     ->where('motif_id', $data['motif_id'])
+    //                     ->update('ml_motif_annotations');
+    //     } else {
+    //         return 0;
+    //     }
+    // }
+
+    function compare_motifs($motif1, $motif2)
+    {
+        // compare two motifs page
+        // http://rna.bgsu.edu/rna3dhub/motif/compare/IL_56467.6/IL_39521.5 for example
+
+        // get ordering and loop ids
+        $query = $this->db->table('ml_loop_order')
+                    ->select()
+                    ->where('motif_id', $motif1)
+                    ->orWhere('motif_id', $motif2)
+                    ->orderby('motif_id, similarity_order')
+                    // limit to one release only to avoid duplication
+                    ->groupby('motif_id, loop_id');
+        $query_result = $query->get()->getResult();
+
+        $i = 0;
+        foreach($query as $row) {
+            $order[$row->motif_id][] = $row->loop_id;
+            $loop_ids[] = $row->loop_id;
+            $motifs[$row->motif_id][$row->loop_id] = 1;
+        }
+
+        // get loop sequences
+        $query = $this->db->table('loop_info')
+                    ->select('loop_id, seq')
+                    ->wherein('loop_id', $loop_ids);
+        $query_result = $query->get()->getResult();
+        foreach($query as $row) {
+            $seqs[$row->loop_id] = $row->seq;
+        }
+
+        // get mutual discrepancies - old, because loop_search_qa is no longer being populated
+        //$query = $builder->select('MMD.loop_id_1 as loop1,
+        //                   MMD.loop_id_2 as loop2,
+        //                   MMD.discrepancy as disc,
+        //                   LQ.status as status,
+        //                   LQ.message as qa_message,
+        //                   LQ.status as qa_status')
+        //         $this->db->table('ml_mutual_discrepancy AS MMD')
+        //         ->join('loop_search_qa AS LQ', 'MMD.loop_id_1 = LQ.loop_id_1 AND MMD.loop_id_2 = LQ.loop_id_2', 'left')
+        //         ->wherein('MMD.loop_id_1', $loop_ids)
+        //         ->wherein('MMD.loop_id_2', $loop_ids);
+        //$query_result = $query->get()->getResult();
+
+        // get mutual discrepancies
+        // Problem!  We no longer seem to store discrepancies for loops that end up in
+        // different motif groups!  So the query ends up being empty, it seems
+        // Except maybe for a loop id with itself, which gives discrepancy 0 but which
+        // is never displayed on the page
+        $query = $this->db->table('ml_mutual_discrepancy AS MMD')
+                ->select('MMD.loop_id_1 as loop1,
+                           MMD.loop_id_2 as loop2,
+                           MMD.discrepancy as disc')
+                 ->wherein('MMD.loop_id_1', $loop_ids)
+                 ->wherein('MMD.loop_id_2', $loop_ids);
+        $query_result = $query->get()->getResult();
+
+        $matrix = array();
+
+        foreach ($query as $row) {
+            //$qa_status[$row->loop1][$row->loop2] = $row->qa_status;
+            //$qa_message[$row->loop1][$row->loop2] = $row->qa_message;
+
+            $qa_status[$row->loop1][$row->loop2] = $row->loop1;
+            $qa_message[$row->loop1][$row->loop2] = $row->loop2;
+            $matrix[$row->loop1][$row->loop2] = $row->disc;
+        }
+
+        // make the table
+        $table = array();
+        $table[] = array(); // left top corner empty cell
+
+        // horizontal header
+        $i = 0;
+        for ($j = 0; $j < count($order[$motif2]); $j++) {
+
+            $loop1 = $order[$motif1][$i];
+            $loop2 = $order[$motif2][$j];
+
+            $class = 'annotation';
+
+            if (array_key_exists($loop2, $motifs[$motif1]) and
+                array_key_exists($loop2, $motifs[$motif2])) {
+                $data = '1&2';
+                $title = "Loop $loop2 is present in both $motif1 and $motif2";
+            } else {
+                $data = '2';
+                $class .= ' highlight';
+                $title = "Loop $loop2 is only in $motif2";
+            }
+
+            $table[] = array(
+                             'data' => $data,
+                             'class' => $class,
+                             'rel'   => 'twipsy',
+                             'title' => $title
+                             );
+        }
+
+        for ($i = 0; $i < count($order[$motif1]); $i++) {
+            for ($j = 0; $j < count($order[$motif2]); $j++) {
+
+                $loop1 = $order[$motif1][$i];
+                $loop2 = $order[$motif2][$j];
+
+                $class = 'annotation';
+
+                // first cell of each row with row info
+                if ($j == 0) {
+                    if (array_key_exists($loop1, $motifs[$motif1]) and
+                        array_key_exists($loop1, $motifs[$motif2])) {
+                        $data = '1&2';
+                        $title = "Loop $loop1 is present in both $motif1 and $motif2";
+                    } else {
+                        $class .= ' highlight';
+                        $data = '1';
+                        $title = "Loop $loop1 is only in $motif1";
+                    }
+
+                    $table[] = array(
+                                     'data' => $data,
+                                     'class' => $class,
+                                     'rel'   => 'twipsy',
+                                     'title' => $title
+                                     );
+                }
+
+                $data = '';
+                $class = '';
+                $error_code = 0;
+                // for asymmetric searches choose the real discrepancy over -1's
+                // if both searches not loaded in the db yet, assign -2
+                if (!array_key_exists($loop1, $matrix)) {
+                    $disc = -2;
+                } elseif (!array_key_exists($loop2, $matrix[$loop1])) {
+                    $disc = -2;
+                } elseif (!array_key_exists($loop2, $matrix)) {
+                    $disc = -2;
+                } elseif (!array_key_exists($loop1, $matrix[$loop2])) {
+                    $disc = -2;
+                } elseif ( $matrix[$loop1][$loop2] == '' and $matrix[$loop2][$loop1] == '' ) {
+                    $disc = -2;
+                    $error_code = max($qa_status[$loop1][$loop2], $qa_status[$loop2][$loop1]);
+                } else {
+                    $disc = max($matrix[$loop1][$loop2], $matrix[$loop2][$loop1]);
+                    $error_code = max($qa_status[$loop1][$loop2], $qa_status[$loop2][$loop1]);
+                }
+
+                if ( $disc == -1 ) {
+                    $annotation = 'no match at discrepancy < 1.0';
+                } elseif ( $disc == -2 ) {
+                    $annotation = 'discrepancy data not loaded yet';
+                } else {
+                    $annotation = number_format($disc, 4);
+                }
+
+                $title = implode(', ', array("{$loop1}:{$loop2}", $annotation));
+
+                if ($error_code > 0) {
+                    $class = '';
+                    $data = 'x';
+
+                    if ( $error_code == 4 ) {
+                        $title .= '<br>Extra basepair:<br>';
+                    } elseif ( $error_code == 5 ) {
+                        $title .= '<br>Extra near pair:<br>';
+                    } elseif ( $error_code == 6 ) {
+                        $title .= '<br>Intercalation:<br>';
+                    } elseif ( $error_code == 7 ) {
+                        $title .= '<br>Basepair conflict:<br>';
+                    } elseif ( $error_code == 8 ) {
+                        $title .= '<br>Basepair-basestacking mismatch:<br>';
+                    }
+
+                    if ( $qa_message[$loop1][$loop2] ) {
+                        $title .= $qa_message[$loop1][$loop2];
+                    } elseif ( $qa_message[$loop2][$loop1] ) {
+                        $title .= $qa_message[$loop2][$loop1];
+                    }
+                }
+
+                if ( $seqs[$loop1] == $seqs[$loop2] ) {
+                    $title .= '<br>Attention: identical sequences';
+                    $class .= 'identical';
+                }
+
+                $coord = "{$loop1}:{$loop2}";
+
+                $table[] = array(
+                                 'data'  => $data,
+                                 'class' => implode(' ' , array($this->get_css_class($disc), 'jmolTools-loop-pairs', $class)),
+                                 'rel'   => 'twipsy',
+                                 'title' => $title,
+                                 'data-coord' => $coord
+                                );
+            }
+        }
+
+        $num_columns = $j + 1; // one additional column for the first cell in each row
+
+        return array('table' => $table, 'columns' => $num_columns);
+
+    }
+
+    // similar motifs tab
+    function get_similar_motifs($motif_id)
+    {
+        $data = array();
+
+        // check one search orientation
+        $query = $this->db->table('ml_loops as t1')
+                            ->selectmin('t2.disc', 'similarity_level')
+                            ->select('t3.motif_id as similar_motif')
+                            ->join('loop_searches as t2', 't1.loop_id = t2.loop_id_1')
+                            ->join('ml_loops as t3', 't2.loop_id_2 = t3.loop_id')
+                            ->where('t1.motif_id', $motif_id)
+                            ->where('t1.ml_release_id', $this->release_id)
+                            ->where('t3.ml_release_id', $this->release_id)
+                            ->where('t3.motif_id !=', $motif_id)
+                            ->where('t2.disc >=', 0)
+                            ->groupby('t3.motif_id')
+                            ->orderby('t2.disc');
+        $query_result = $query->get()->getResult();
+
+        foreach ($query_result as $row) {
+            $data[$row->similarity_level] = $row->similar_motif;
+        }
+
+        // check the second search orientation
+        $query =$this->db->table('ml_loops as t1')
+                        ->selectmin('t2.disc', 'similarity_level')
+                        ->select('t3.motif_id as similar_motif')
+                        ->join('loop_searches as t2', 't1.loop_id = t2.loop_id_2')
+                        ->join('ml_loops as t3', 't2.loop_id_1 = t3.loop_id')
+                        ->where('t1.motif_id', $motif_id)
+                        ->where('t1.ml_release_id', $this->release_id)
+                        ->where('t3.ml_release_id', $this->release_id)
+                        ->where('t3.motif_id !=', $motif_id)
+                        ->where('t2.disc >=', 0)
+                        ->groupby('t3.motif_id')
+                        ->orderby('t2.disc');
+        $query_result = $query->get()->getResult();
+
+        foreach ($query_result as $row) {
+            $data[$row->similarity_level] = $row->similar_motif;
+        }
+
+        // sort by discrepancy
+        ksort($data);
+        $done = array();
+        $table = array();
+
+        $i = 1;
+        foreach ($data as $similarity_level => $similar_motif) {
+            if (!array_key_exists($similar_motif, $done)) {
+                $query = $this->db->table('ml_motif_annotations')
+                                ->select('common_name')
+                                ->where('motif_id', $similar_motif);
+                $name = '';
+                $query_result = $query->get()->getResult();
+                foreach($query_result as $row){
+                    $name = $row->common_name;
+                }
+
+                $compare_link = anchor_popup("motif/compare/$motif_id/$similar_motif", 'Compare');
+                $table[] = array($i,
+                                 number_format($similarity_level, 4),
+                                 anchor_popup("motif/view/$similar_motif", $similar_motif),
+                                 $compare_link,
+                                 $name);
+                $done[$similar_motif] = 0;
+                $i++;
+            }
+        }
+
+        return $table;
+    }
+
+    // linkage
+    function get_linkage_data( $motif_id )
+    {
+        // get loop ids from this motif
+        $query = $this->db->table('ml_loops')
+                        ->select('loop_id')
+                        ->where('motif_id', $motif_id)
+                        ->where('ml_release_id', $this->release_id);
+        $query_result = $query->get()->getResult();
+        $loops = array();
+
+        foreach ($query_result as $row) {
+            $loops[] = $row->loop_id;
+        }
+
+        // intraclusteral linkage
+        $query = $this->db->table('ml_mutual_discrepancy')
+                        ->selectmax('discrepancy', 'intra_max_disc')
+                        ->selectavg('discrepancy', 'intra_avg_disc')
+                        ->wherein('loop_id_1', $loops)
+                        ->where('ml_release_id', $this->release_id);
+        $query_result = $query->get()->getResult();
+
+        $results = array();
+        foreach ($query_result as $row) {
+            $results['linkage']['intra_max_disc'] = $row->intra_max_disc;
+            $results['linkage']['intra_avg_disc'] = $row->intra_avg_disc;
+        }
+
+        $query = $this->db->table('ml_mutual_discrepancy')
+                        ->selectmin('discrepancy', 'intra_min_disc')
+                        ->wherein('loop_id_1', $loops)
+                        ->where('ml_release_id', $this->release_id)
+                        ->where('discrepancy >', 0);
+        $query_result = $query->get()->getResult();
+        foreach ($query_result as $row) {
+            $results['linkage']['intra_min_disc'] = $row->intra_min_disc;
+        }
+
+        // interclusteral linkage
+
+        return $results;
+    }
+
+    // sequence variation
+    function get_sequence_variants($motif_id)
+    {
+        $latest_release = $this->get_latest_release_for_motif($motif_id);
+        $seq   = array();
+        $seq_com = array();
+
+        foreach($this->loops as $loop_id) {
+            // get indexes of bordering nucleotides for loop id
+            $query = $this->db->table('loop_positions AS LP')
+                    ->select('LP.position')
+                     ->join('ml_loop_positions AS ML', 'LP.loop_id = ML.loop_id AND ' .
+                                                       'LP.unit_id = ML.unit_id')
+                     ->where('ML.ml_release_id', $latest_release)
+                     ->where('LP.loop_id', $loop_id)
+                     ->where('LP.border', 1)
+                     ->orderby('ML.position');
+            $query_result = $query->get()->getResult();
+
+            $first = "";
+            $last  = "";
+
+            foreach($query_result as $row) {
+                if ( $first == "" ){
+                    $first = $row->position;
+                }
+
+                $last = $row->position;
+            }
+
+            list($loop_type, $pdb, $order) = explode('_', $loop_id);
+
+            if ( $loop_type == 'HL' ) {
+                $query = $this->db->table('loop_info AS LI')
+                                ->select('LI.seq, LI.nwc_seq')
+                                ->where('LI.loop_id', $loop_id);
+                $query_result = $query->get()->getResult();
+
+                foreach ( $query_result as $row ){
+                    $seq_com[] = $row->seq;
+                    $seq_nwc[] = $row->nwc_seq;
+                }
+            } elseif ( $loop_type == 'IL' ) {
+                $query = $this->db->table('loop_info AS LI')
+                                ->select('LI.seq, LI.nwc_seq, LI.r_seq, LI.r_nwc_seq')
+                                ->where('LI.loop_id', $loop_id);
+                $query_result = $query->get()->getResult();
+
+                foreach ( $query_result as $row ){
+                    if ( $first <= $last ){
+                        $seq_com[] = $row->seq;
+                        $seq_nwc[] = $row->nwc_seq;
+                    } else {
+                        $seq_com[] = $row->r_seq;
+                        $seq_nwc[] = $row->r_nwc_seq;
+                    }
+                }
+           } elseif ( $loop_type[0] == 'J' ) {
+                $query = $this->db->table('loop_positions')
+                                ->select('unit_id, border')
+                                ->orderby('position_2023','asc')
+                                ->where('loop_id',$loop_id);
+                $query_result = $query->get()->getResult();
+
+                $sequence = array();
+                $nwc_sequence = array();
+                $count_border = 0;
+                $modified_nucleotides = array();
+
+                foreach ($query_result as $row) {
+                    $parts = explode('|', $row->unit_id);
+                    // $sequence[] = $parts[3];
+                    if($row->border==1){
+                        $count_border++;
+                        if($count_border != 3 and $count_border != 5 and $count_border != 7 and $count_border != 9){
+                            $sequence[] = $parts[3];
+                        }else{
+                            $sequence[] = '*' . $parts[3];
+                            $nwc_sequence[] = '*';
+                        }
+                    }else{
+                        if (strlen($parts[3]) == 1){
+                            $sequence[] = $parts[3];
+                            $nwc_sequence[] = $parts[3];
+                        }else{
+                            $sequence[] = '(' . $parts[3] . ')';
+                            $modified_nucleotides[] = $parts[3];
+                            $nwc_sequence[] = '(' . $parts[3] . ')';
+                        }
+                    }
+                }
+
+                $seq_com[] = implode('', $sequence);
+                $seq_nwc[] = implode('', $nwc_sequence);
+
+
+           }
+        }
+
+        $counts = array_count_values($seq_com);
+        arsort($counts);
+        foreach($counts as $seq => $count) {
+            $complete[] = array($seq, $count);
+        }
+
+        $counts = array_count_values($seq_nwc);
+        arsort($counts);
+        foreach($counts as $seq => $count) {
+            $nwc[] = array($seq, $count);
+        }
+
+        return array('complete' => $complete,
+                     'nwc'      => $nwc);
+    }
+
+    function get_latest_release_for_motif($motif_id)
+    {
+        $query = $this->db->table('ml_releases AS MR')
+                        ->select('MR.ml_release_id')
+                        ->join('ml_motifs_info AS MM', 'MR.ml_release_id = MM.ml_release_id')
+                        ->where('MM.motif_id',$motif_id)
+                        ->where('MR.type', substr($motif_id, 0, 2))
+                        ->orderby('index','desc')
+                        ->limit(1);
+        $query_result = $query->get()->getRow();
+        return $query_result->ml_release_id;
+    }
+
+    function get_first_release_for_motif($motif_id)
+    {
+        $query = $this->db->table('ml_releases AS MR')
+                        ->select('MR.ml_release_id')
+                        ->join('ml_motifs_info AS MM', 'MR.ml_release_id = MM.ml_release_id')
+                        ->where('MM.motif_id',$motif_id)
+                        ->where('MR.type', substr($motif_id, 0, 2))
+                        ->orderby('index','asc')
+                        ->limit(1);
+        $query_result = $query->get()->getRow();
+        return $query_result->ml_release_id;
+    }
+
+    // history tab
+    function get_motif_release_history($motif_id)
+    {
+        $query = $this->db->table('ml_releases AS MR')
+                        ->select()
+                        ->join('ml_motifs_info AS MM', 'MR.ml_release_id = MM.ml_release_id')
+                        ->where('MM.motif_id',$motif_id)
+                        ->where('MR.type', substr($motif_id, 0, 2))
+                        ->orderby('date');
+        $query_result = $query->get()->getResult();
+
+        $table[0][0] = 'Release';
+        $table[1][0] = '<strong>Date</strong>';
+        $table[2][0] = '<strong>Status</strong>';
+        foreach ($query_result as $row) {
+            $table[0][] = anchor(base_url("motifs/release/".substr($motif_id,0,2) .'/'.$row->ml_release_id), $row->ml_release_id);
+            $table[1][] = date('Y-m-d', strtotime($row->date));
+
+            if ($row->comment == 'Exact match') {
+                $label = 'success';
+            } elseif ($row->comment == 'New id, no parents') {
+                $label = 'notice';
+            } else {
+                $label = 'important';
+            }
+
+            $table[2][] = "<span class='label $label'>{$row->comment}</span>";
+        }
+
+        return $table;
+    }
+
+    function get_history($motif_id)
+    {
+        $query = $this->db->table('ml_releases AS MR')
+                 ->select('MR.ml_release_id')
+                 ->join('ml_motifs_info AS MM', 'MR.ml_release_id = MM.ml_release_id')
+                 ->where('MM.motif_id', $motif_id)
+                 ->orderby('date');
+        $query_result = $query->get()->getResult();
+
+        foreach ($query_result as $row) {
+            $releases_present[] = $row->ml_release_id;
+        }
+
+        $query = $this->db->table('ml_set_diff')
+                 ->select()
+                 ->wherein('release_id', $releases_present)
+                 ->where('motif_id1', $this->motif_id)
+                 ->orderby('overlap', 'desc');
+        $query_result = $query->get()->getResult();
+        $tables['parents'] = $this->make_history_table($query_result, $motif_id);
+
+        $query = $this->db->table('ml_set_diff')
+                 ->select()
+                 ->wherenotin('release_id', $releases_present)
+                 ->where('motif_id1', $this->motif_id)
+                 ->orderby('overlap', 'desc');
+        $query_result = $query->get()->getResult();
+        $tables['children'] = $this->make_history_table($query_result, $motif_id);
+
+        return $tables;
+    }
+
+    function make_history_table($result, $motif_id)
+    {
+        $history_table = array();
+
+        for ($i = 0; $i < count($result); $i++) {
+            $history_table[] = array(
+                                anchor_popup("motif/view/{$result[$i]->motif_id2}", $result[$i]->motif_id2) .
+                                '<br>' . anchor_popup("motif/compare/{$result[$i]->motif_id2}/{$result[$i]->motif_id1}", 'Compare'),
+                                $this->make_loop_links($result[$i]->intersection),
+                                $this->make_loop_links($result[$i]->one_minus_two),
+                                $this->make_loop_links($result[$i]->two_minus_one)
+                             );
+        }
+
+        return $history_table;
+    }
+
+    function make_loop_links($loop_list)
+    {
+        if ( $loop_list == '' ) {
+            return $loop_list;
+        }
+
+        $loops = explode(',', $loop_list);
+
+        for ($i = 0; $i < count($loops); $i++) {
+            $loops[$i] = anchor_popup("loops/view/$loops[$i]", $loops[$i]);
+        }
+
+        return implode(', ', $loops);
+    }
+
+    // mutual discrepancy matrix widget ... old style not correctly converted
+    // function get_mutual_discrepancy_matrix()
+    // {
+    //     ini_set('memory_limit', '512M');
+
+    //     $query = $this->db->table('ml_mutual_discrepancy')
+    //              ->select()
+    //              ->where('ml_release_id', $this->release_id)
+    //              ->wherein('loop_id_1', $this->loops)
+    //              ->wherein('loop_id_2', $this->loops);
+    //     $query_result = $query->get()->getResult();
+
+    //     $disc = array(); // $disc['IL_1S72_001']['IL_1J5E_023'] = 0.2897
+    //     for ($i = 0; $i < count($result); $i++) {
+    //         $disc[$result[$i]['loop_id_1']][$result[$i]['loop_id_2']] = $result[$i]['discrepancy'];
+    //     }
+
+    //     $matrix = array();
+    //     for ($i = 1; $i <= $this->num_loops; $i++) {
+    //         $loop_id_1 = $this->similarity[$i];
+    //         for ($j = 1; $j <= $this->num_loops; $j++) {
+    //             $loop_id_2 = $this->similarity[$j];
+    //             $cell = array('data-disc' => $disc[$loop_id_1][$loop_id_2],
+    //                           'data-pair' => "$loop_id_1:$loop_id_2",
+    //                           'class'     => $this->get_css_class($disc[$loop_id_1][$loop_id_2]),
+    //                           'rel'       => 'twipsy',
+    //                           'title'     => "$loop_id_1:$loop_id_2, {$disc[$loop_id_1][$loop_id_2]}");
+    //             $matrix[] = $cell;
+    //         }
+    //     }
+    //     return $matrix;
+    // }
+
+
+    function get_mutual_discrepancy_matrix_efficient()
+    {
+        // get the all against all discrepancy matrix and store in an efficient way for the heatmap
+        ini_set('memory_limit', '512M');
+        $query = $this->db->table('ml_mutual_discrepancy')
+                    ->select()
+                    ->where('ml_release_id', $this->release_id)
+                    ->wherein('loop_id_1', $this->loops)
+                    ->wherein('loop_id_2', $this->loops);
+        $query_result = $query->get()->getResult();
+
+        $dataString = '';
+        $dataString_2 = '';
+        $dataString_3 = '';
+        $dataString_1 = 'var data = ["#heatmap",[';
+        $disc = array(); // $disc['IL_1S72_001']['IL_1J5E_023'] = 0.2897
+        for ($i = 0; $i < count($query_result); $i++) {
+            $disc[$query_result[$i]->loop_id_1][$query_result[$i]->loop_id_2] = $query_result[$i]->discrepancy;
+        }
+        $dataString_3.= '[';
+        // $matrix = str();
+        for ($i = 1; $i <= $this->num_loops; $i++) {
+            $loop_id_1 = $this->similarity[$i];
+            $dataString_2.= '[';
+            if ($i != $this->num_loops){
+                $dataString_3 .= '"'.$loop_id_1.'"'.',';
+            } else{
+                $dataString_3 .= '"'.$loop_id_1.'"';
+            }
+
+            for ($j = 1; $j <= $this->num_loops; $j++) {
+                $loop_id_2 = $this->similarity[$j];
+                $cell = $disc[$loop_id_1][$loop_id_2];
+                // <td title='IL_3U4M_004:IL_3U4M_004, 0' rel='twipsy' class='md00' data-pair='IL_3U4M_004:IL_3U4M_004' data-disc='0'></td>
+                if ($j != $this->num_loops){
+                    $dataString_2 .= $cell.",";
+                } else {
+                    $dataString_2 .= $cell;
+                }
+
+            }
+            $dataString_2.= '],';
+        }
+        $dataString_3 .= ']]';
+        $dataString .= $dataString_1 . $dataString_2 ."],". $dataString_3;
+
+        return $dataString;
+    }
+
+    function get_css_class($disc)
+    {
+        $class = '';
+
+        if ( $disc == 0 ) {
+            $class = 'md00';
+        } elseif ( $disc == -1 ) {
+            $class = 'md_no_match';
+        } elseif ( $disc == -2 ) {
+            $class = 'md_not_loaded';
+        } elseif ( $disc < 0.1 ) {
+            $class = 'md01';
+        } elseif ( $disc < 0.2 ) {
+            $class = 'md02';
+        } elseif ( $disc < 0.3 ) {
+            $class = 'md03';
+        } elseif ( $disc < 0.4 ) {
+            $class = 'md04';
+        } elseif ( $disc < 0.5 ) {
+            $class = 'md05';
+        } elseif ( $disc < 0.6 ) {
+            $class = 'md06';
+        } elseif ( $disc < 0.7 ) {
+            $class = 'md07';
+        } elseif ( $disc < 0.8 ) {
+            $class = 'md08';
+        } elseif ( $disc < 0.9 ) {
+            $class = 'md09';
+        } else {
+            $class = 'md10';
+        }
+
+        return $class;
+    }
+
+    // checkbox widget
+    function get_checkboxes($loops)
+    {
+        // $full_nts['IL_1S72_001'][1] = '1S72_AU_...'
+        $checkbox_div = '<ul class="inputs-list">';
+        for ($i = 1; $i <= count($loops); $i++) {
+            $checkbox_div .= "<li><label><input type='checkbox' id='{$loops[$i]}' class='jmolInline' ";
+            ksort($this->full_nts[$loops[$i]]);
+            ksort($this->full_units[$loops[$i]]);
+            $checkbox_div .= "data-coord='" . implode(",", $this->full_units[$loops[$i]]) . "'>";
+            $checkbox_div .= "data-coord='" . implode(",", $this->full_units[$loops[$i]]) . "'>";
+            $checkbox_div .= "data-quality='" . implode(",", $this->full_units[$loops[$i]]) . "'>";
+            $checkbox_div .= "&nbsp;{$loops[$i]}";
+            $checkbox_div .= '</label></li>';
+            //<input type='checkbox' id='s1' class='jmolInline' data-coord='1S72_1_0_1095,1S72_1_0_1261'><label for='s1'>IL_1S72_038</label><br>
+        }
+        $checkbox_div .= '</ul>';
+        return $checkbox_div;
+    }
+
+    function get_checkbox($i)
+    {
+        // echo "<p>i: $i // loops: " . $this->loops[$i] . "</p>";
+        // ksort($this->full_nts[$this->loops[$i]]);
+        // Commenting out the following line does not seem to cause trouble
+        // ksort($this->full_units[$this->similarity[$i]]);
+
+        $j = $i-1;
+
+        // Previous code had a pop-up arrow for the loop id link
+        // return "<label><input type='checkbox' id='{$j}' class='jmolInline'
+        //        data-coord_ma='{$this->similarity[$i]}|{$this->motif_id}|{$this->release_id}'" . " " . "data-quality='". "{$this->similarity[$i]}" . "'>{$this->similarity[$i]}</label>"
+        //        . "<span class='loop_link'>" . anchor("loops/view/{$this->similarity[$i]}", '&#10140;') . "</span>";
+
+        return "<input type='checkbox' id='{$j}' class='jmolInline'
+               data-coord_ma='{$this->similarity[$i]}|{$this->motif_id}|{$this->release_id}'" . " " . "data-quality='". "{$this->similarity[$i]}" . "'>"
+               . "<a href=\"https://rna.bgsu.edu/rna3dhub/loops/view/{$this->similarity[$i]}\" target=\"_blank\">{$this->similarity[$i]}</a>";
+
+    }
+
+    function get_checkbox_alone($i)
+    {
+        $j = $i-1;
+        return "<input type='checkbox' id='{$j}' class='jmolInline'
+               data-coord_ma='{$this->similarity[$i]}|{$this->motif_id}|{$this->release_id}'" . " " . "data-quality='". "{$this->similarity[$i]}" . "'>";
+    }
+
+    function get_loop_link($i)
+    {
+        return "<a href=\"https://rna.bgsu.edu/rna3dhub/loops/view/{$this->similarity[$i]}\" target=\"_blank\">{$this->similarity[$i]}</a>";
+    }
+
+    function get_interaction_table() {
+        // make the table of instances and interactions for a motif group page
+        $this->get_nucleotides();
+        if ($this->num_unit == 0) {
+            return array();
+        }
+        $this->get_loops();
+        $this->get_discrepancies();
+        $this->get_interactions();
+        $this->get_loop_annotations();
+        $this->get_loop_lengths();
+        $this->get_chainbreak();
+        $this->get_motiflen();
+        $this->get_header();
+
+        for ($i = 0; $i < $this->num_loops; $i++) {
+            $rows[$i] = $this->generate_row($i+1);
+        }
+
+        $rows = $this->remove_empty_columns($rows);
+
+        return $rows;
+    }
+
+    function get_loop_lengths()
+    {
+        // get lengths of complete loops to calculate the number of bulges.
+        $builder = $this->db->table('loop_info');
+        $query = $builder->select('loop_id, length')
+                        ->wherein('loop_id', $this->loops);
+        $query_result = $query->get()->getResult();
+
+        foreach($query_result as $row) {
+            $this->full_length[$row->loop_id] = $row->length;
+        }
+    }
+
+    function get_header()
+    {
+        $header = array('#S', 'Loop id', 'PDB', 'Disc', '#Non-core', 'Annotation', 'Chain(s)', 'Standardized name for chain');
+
+        // 1, 2, ..., N
+        for ($i = 1; $i <= $this->motiflen; $i++) {
+            // if (is_string($this->chainbreak)) {
+            //     if ($i == $this->chainbreak + 1) { // insert a column after chainbreak
+            //         $header[] = 'break';
+            //     }
+            // } elseif (is_array($this->chainbreak)) {
+            //     foreach ($this->chainbreak as $value){
+            //         if ($i == $value +1){
+            //             $header[] = 'break';
+            //         }
+            //     }
+            // }
+
+            // chainbreak should always be an array; empty for HL, one entry for IL, two for J3, etc.
+            foreach ($this->chainbreak as $value){
+                if ($i == $value +1){
+                    $header[] = 'break';
+                }
+            }
+            $header[] = ' ';
+			$header[] = $i;
+		}
+
+        // 1-2, ..., 1-N, ..., N-1 - N
+        for ($i = 1; $i <= $this->motiflen; $i++) {
+            for ($j = $i; $j <= $this->motiflen; $j++) {
+                $header[] = "$i-$j";
+            }
+        }
+
+        $this->header = $header;
+    }
+
+	function get_chainbreak() 	{
+        // note the last nucleotide in each strand before a break
+        $this->chainbreak = array();
+
+        // if a hairpin, there is no chainbreak
+		if ( substr($this->motif_id, 0, 2) == 'HL' ) {
+			return;
+		}
+
+        if ( substr($this->motif_id, 0, 2) == 'IL' ) {
+            $query = $this->db->table('loop_positions AS LP')
+                    ->select('ML.position')
+                    ->distinct()
+                    ->join('ml_loop_positions AS ML', 'LP.loop_id = ML.loop_id AND ' .
+                                                    'LP.unit_id = ML.unit_id')
+                    ->where('LP.border', 1)
+                    ->where('ML.motif_id', $this->motif_id)
+                    ->where('ML.ml_release_id', $this->release_id)
+                    ->orderby('ML.position', 'ASC')
+                    ->limit(1,1);
+            $result = $query->get()->getRow();
+
+            // <> is not equal, same as !=
+            if ( $result != NULL ){
+                // append the result to the array
+                $this->chainbreak[] = $result->position;
+            }
+        } else {
+            // IL, J3, J4, etc.
+            $query = $this->db->table('loop_positions AS LP')
+                    ->select('ML.position')
+                    ->distinct()
+                    ->join('ml_loop_positions AS ML', 'LP.loop_id = ML.loop_id AND ' .
+                                                    'LP.unit_id = ML.unit_id')
+                    ->where('LP.border', 1)
+                    ->where('ML.motif_id', $this->motif_id)
+                    ->where('ML.ml_release_id', $this->release_id)
+                    ->orderby('ML.position', 'ASC');
+            $query_result = $query->get()->getResult();
+
+            $count = 1;
+            foreach ($query_result as $row) {
+                if ($count % 2 == 0) {
+                    $this->chainbreak[] = $row->position;
+                }
+                $count +=1;
+            }
+            // Remove the last element from the chainbreak array if it is not empty
+            if (!empty($this->chainbreak)) {
+                array_pop($this->chainbreak);
+            }
+		}
+
+
+#
+#       #echo "<p>TC: " . $this->chainbreak . "</p>";
+	}
+
+    function get_motiflen()
+    {
+        $builder = $this->db->table('loop_positions AS LP');
+        $query = $builder->selectmax('ML.position')
+                        ->join('ml_loop_positions AS ML', 'LP.loop_id = ML.loop_id AND ' .
+                                                        'LP.unit_id = ML.unit_id')
+                        ->where('LP.border', 1)
+                        ->where('ML.motif_id', $this->motif_id)
+                        ->where('ML.ml_release_id', $this->release_id);
+        $query_result = $query->get()->getRow();
+        // $result = $query->row();
+
+        if ($query_result != NULL){
+            $this->motiflen = $query_result->position ?? 0;
+        } else {
+            $this->motiflen = 0;
+        }
+    }
+
+    function generate_row($id)
+    {
+        ###echo "<p>id: $id</p>";
+
+        for ($i = 0; $i < count($this->header); $i++) {
+            $key = $this->header[$i];
+
+            // if ( $key == '#D' ) {
+            //     // $row[] = array_search($this->similarity[$id], $this->loops);
+            //     $row[] = '';
+            // } elseif ( $key == '#S') {
+            if ( $key == '#S' ) {
+                $row[] = $id . ' ' . $this->get_checkbox_alone($id);
+            } elseif ( $key == 'Loop id' ) {
+                // $row[] = array('class'=>'loop','data'=>$this->get_checkbox($id)); //$this->loops[$id];
+                $row[] = $this->get_loop_link($id);
+            } elseif ( $key == 'PDB' ) {
+                $parts = explode("_", $this->similarity[$id]);
+                $row[] = '<a class="pdb">' . $parts[1] . '</a>';
+            } elseif ( $key == '#Non-core' ) {
+                $row[] = $this->full_length[$this->similarity[$id]] - count($this->full_units[$this->similarity[$id]]);
+            } elseif ( $key == 'break' ) {
+            	$row[] = '*';
+            } elseif ( is_int($key) ) {
+                $sid = $this->similarity[$id];
+                // check that $sid is a key in units
+                if (array_key_exists($sid, $this->units)) {
+                    // check that $key is a key in units[$sid]
+                    if (array_key_exists($key, $this->units[$sid])) {
+                        $parts = explode('|', $this->units[$sid][$key]);
+                        $row[] = $parts[3];  # base sequence
+                        $row[] = implode('|',array_slice($parts,4)); # number and all remaining fields in the unit id
+                    } else {
+                        $row[] = ' ';
+                        $row[] = ' ';
+                    }
+                } else {
+                    $row[] = ' ';
+                    $row[] = ' ';
+                }
+
+            } elseif ( $key == ' ' ) {
+                // do nothing
+            } elseif ( $key == 'Disc' ) {
+                $loop_index = array_search($this->similarity[$id], $this->loops);
+                $row[] = $this->disc[$this->loops[1]][$this->loops[$loop_index]];
+            } elseif( $key == 'Annotation' ) {
+                 # Check if the motif instance has an annotation associated with it
+                 if (array_key_exists($this->similarity[$id], $this->loop_annotation1)) {
+                    $row[] = $this->loop_annotation1[$this->similarity[$id]];
+                 } else {
+                    $row[] = ' ';
+                 }
+            } elseif( $key == 'Chain(s)' ) {
+                $chain_set = array();
+                for ($j = 1; $j <= $this->motiflen; $j++) {
+                    // the following lines have an index problem sometimes, but why?
+                    $sid = $this->similarity[$id];
+                    // if $sid is an index of $this->units ...
+                    if (array_key_exists($sid, $this->units)) {
+                        // if $j is an index of $this->units[$sid] ...
+                        if (array_key_exists($j, $this->units[$sid])) {
+                            $uni = $this->units[$sid][$j];
+                            $parts = explode('|', $uni);
+                            $chain_id = $parts[2];
+                            if (!in_array($chain_id, $chain_set)) {
+                                $chain_set[] = $chain_id;
+                            }
+                        }
+                    }
+                }
+
+                $row[] = implode('+', $chain_set);
+
+
+            } elseif ($key == 'Standardized name for chain'){
+
+                $parts = explode('|', $this->units[$this->similarity[$id]][1]);
+                $partsend = explode('|', end($this->units[$this->similarity[$id]]));
+
+                $standardized_name_set = array();
+
+                //get standardized name of chain of first nuclotide
+                $builder = $this->db->table('chain_property_value');
+                $query = $builder->select('value')
+                                ->where('property', 'standardized_name')
+                                ->where('pdb_id', $parts[0])
+                                ->where('chain', $parts[2])
+                                ->limit(1);
+                $query_result = $query->get()->getRow();
+
+                if ( $query_result != NULL ){
+                    $standardized_name = $query_result->value;
+                    $short_standardized_name = explode(';', $standardized_name);
+                    $short_standardized_name = end($short_standardized_name);
+                } else {
+                    // get the PDB description of the chain
+                    $builder = $this->db->table('chain_info');
+                    $query = $builder->select('compound')
+                            ->where('pdb_id', $parts[0])
+                            ->where('chain_name', $parts[2])
+                            ->limit(1);
+                    $query_result = $query->get()->getRow();
+                    if ( $query_result != NULL ){
+                        $short_standardized_name = $query_result->compound;
+                        // fix some special cases (but there could be many special cases!)
+                        $short_standardized_name = $this->parseRna($short_standardized_name);
+                    }
+                }
+
+                if (isset($short_standardized_name)) {
+                    $standardized_name_set[] = $short_standardized_name;
+                }
+
+                //get the last nucleotide? in case of IL or J3 with multiple strands
+                if ($parts[2] == $partsend[2]){
+                    if (isset($short_standardized_name)) {
+                        // if (strlen($short_standardized_name)>=25){
+                        //     $row[] = 'RNA (25-MER)';
+                        // } else {
+                        //     $row[] = $short_standardized_name;
+                        // }
+                        //$row[] = $short_standardized_name;
+                    } else {
+                        //$row[] = ' ';
+                    }
+                } else {
+                    $query = $this->db->table('chain_property_value')
+                                    ->select('value')
+                                    ->where('property', 'standardized_name')
+                                    ->where('pdb_id', $partsend[0])
+                                    ->where('chain', $partsend[2])
+                                    ->limit(1)
+                                    ->get();
+
+                    if ( $query->getNumRows() > 0 ){
+                        $standardized_name_2 = $query->getRow()->value;
+                        $short_standardized_name_2 = explode(';', $standardized_name_2);
+                        $short_standardized_name_2  = end($short_standardized_name_2);
+                    } else {
+                        $query = $this->db->table('chain_info')
+                                ->select('compound')
+                                ->where('pdb_id', $partsend[0])
+                                ->where('chain_name', $partsend[2])
+                                ->limit(1)
+                                ->get();
+                        if ($query->getNumRows() > 0){
+                            $short_standardized_name_2 = $query->getRow()->compound;
+                            $short_standardized_name_2 = $this->parseRna($short_standardized_name_2);
+                        }
+                    }
+
+                    // $row[] = $short_standardized_name. ' + ' . $short_standardized_name_2;
+
+                    // if new, add to the array
+                    if (isset($short_standardized_name_2) & ($short_standardized_name != $short_standardized_name_2)){
+                        $standardized_name_set[] = $short_standardized_name_2;
+                    }
+                }
+
+                // 7JNH and maybe others have a compound name that is of the form X,X with repetition
+                if (count($standardized_name_set)==1) {
+                    $fields = explode(',',$standardized_name_set[0]);
+                    if (count($fields)==2) {
+                        if ($fields[0] == $fields[1]) {
+                            $standardized_name_set[0] = $fields[0];
+                        }
+                    }
+                }
+
+                $row[] = implode(' + ', $standardized_name_set);
+
+            } else {
+                $parts = explode('-', $key);
+
+                // if $parts[0] is an index of $this->units ...
+                if (array_key_exists($this->similarity[$id], $this->units)) {
+                    // if $parts[0] is an index of $this->units[$this->similarity[$id]] ...
+                    if (array_key_exists($parts[0], $this->units[$this->similarity[$id]])) {
+                        $unit_1 = $this->units[$this->similarity[$id]][$parts[0]];
+                        if (array_key_exists($parts[1], $this->units[$this->similarity[$id]])) {
+                            $unit_2 = $this->units[$this->similarity[$id]][$parts[1]];
+
+                            if ( isset($this->f_lwbp[$unit_1][$unit_2]) ) {
+                                $row[] = $this->f_lwbp[$unit_1][$unit_2];
+                            } else {
+                                $row[] = '';
+                            }
+                        } else {
+                            $row[] = '';
+                        }
+                    } else {
+                        $row[] = '';
+                    }
+                } else {
+                    $row[] = '';
+                }
+
+                // $unit_1 = $this->units[$this->similarity[$id]][$parts[0]];
+                // $unit_2 = $this->units[$this->similarity[$id]][$parts[1]];
+
+                // if ( isset($this->f_lwbp[$unit_1][$unit_2]) ) {
+                //     $row[] = $this->f_lwbp[$unit_1][$unit_2];
+                // } else {
+                //     $row[] = '';
+                // }
+            }
+        }
+        return $row;
+    }
+
+    function get_interactions()
+    {
+        $query = $this->db->table('unit_pairs_interactions_2024')
+                        ->select()
+                        ->wherein('unit_id_1', array_keys($this->unit_ids))
+                        ->wherein('unit_id_2', array_keys($this->unit_ids))
+                        ->get()
+                        ->getResult();
+
+        foreach($query as $row) {
+            $unit_full_1 = $row->unit_id_1;
+            $unit_full_2 = $row->unit_id_2;
+
+            if ( array_key_exists($unit_full_1,$this->unit_ids) and
+                 array_key_exists($unit_full_2,$this->unit_ids) ) {
+                $unit_1 = $this->unit_ids[$unit_full_1];
+                $unit_2 = $this->unit_ids[$unit_full_2];
+
+                $this->f_lwbp[$unit_1][$unit_2] = $row->f_lwbp_detail;
+            }
+        }
+    }
+
+    function get_discrepancies()
+    {
+        // get discrepancies from the first loop, which is the centroid
+        if ( $this->num_loops == 0 ) {
+            $this->disc = array();
+            return;
+        }
+
+        $builder = $this->db->table('ml_mutual_discrepancy');
+        $query = $builder->select()
+                        ->where('ml_release_id', $this->release_id)
+                        ->where('loop_id_1', $this->loops[1])
+                        ->wherein('loop_id_2', $this->loops);
+        $query_result = $query->get()->getResult();
+
+        if (count($query_result) == 0) {
+            $disc[$this->loops[1]][$this->loops[1]] = 0.0;
+        } else {
+            for ($i = 0; $i < count($query_result); $i++) {
+                $disc[$query_result[$i]->loop_id_1][$query_result[$i]->loop_id_2] = number_format($query_result[$i]->discrepancy,4);
+            }
+        }
+
+        $this->disc = $disc;
+
+    }
+
+    function get_loops() {
+        $builder = $this->db->table('ml_loop_order');
+        $query = $builder->select('loop_id, original_order, similarity_order')
+                        ->where('ml_release_id', $this->release_id)
+                        ->where('motif_id', $this->motif_id)
+                        ->orderby('similarity_order');
+        $query_result = $query->get()->getResult();
+
+        foreach($query_result as $row) {
+            $loops[$row->original_order] = $row->loop_id;
+            $similarity[$row->similarity_order] = $row->loop_id;
+        }
+
+        if (count($query_result) > 0) {
+            $this->loops = $loops;
+            $this->num_loops = count($loops);
+            $this->similarity = $similarity;
+        } else {
+            $this->loops = array();
+            $this->num_loops = 0;
+            $this->similarity = array();
+        }
+        // $loops[1] = 'IL_1S72_001'
+        // $similarity[1] = 'IL_1J5E_029'
+    }
+
+    function get_nucleotides() {
+        #$query = $builder->select('MLP.loop_id, MLP.nt_id, MLP.position, UI.unit_id')
+        $builder = $this->db->table('ml_loop_positions AS MLP');
+        $query = $builder->select('MLP.loop_id, MLP.position, UI.unit_id')
+                        ->join('unit_info AS UI', 'MLP.unit_id = UI.unit_id')
+                        ->where('ml_release_id', $this->release_id)
+                        ->where('motif_id', $this->motif_id);
+        $query_result = $query->get()->getResult();
+
+        for ($i = 0; $i < count($query_result); $i++) {
+
+            // $unit_id = $query_result[$i]['unit_id'];
+            $unit_id = $query_result[$i]->unit_id;
+
+            // $units[$query_result[$i]['loop_id']][$query_result[$i]['position']] = $unit_id;
+            // $this->full_units[$query_result[$i]['loop_id']][$query_result[$i]['position']] = $query_result[$i]['unit_id'];
+            // $this->unit_ids[$query_result[$i]['unit_id']] = $unit_id;
+            $units[$query_result[$i]->loop_id][$query_result[$i]->position] = $unit_id;
+            $this->full_units[$query_result[$i]->loop_id][$query_result[$i]->position] = $query_result[$i]->unit_id;
+            $this->unit_ids[$query_result[$i]->unit_id] = $unit_id;
+        }
+
+        #$this->nts = $nts;
+        #$this->num_nt = count($nts, COUNT_RECURSIVE) / count($nts);
+        if (count($query_result) > 0) {
+            $this->units = $units;
+            $this->num_unit = count($units, COUNT_RECURSIVE) / count($units);
+        } else {
+            $this->units = array();
+            $this->num_unit = 0;
+        }
+
+        // $nts['IL_1S72_001'][1] = 'A 102'
+        // $nt_ids['1S72_AU_...'] = 'A 102'
+        // $full_nts['IL_1S72_001'][1] = '1S72_AU_...'
+    }
+
+    function remove_empty_columns($rows)
+    {
+        // find empty columns
+        $to_delete = array();
+        for ( $i = 0; $i < count($this->header); $i++ ) {
+            $empty = 0;
+
+            for ( $j = 0; $j < $this->num_loops; $j++ ) {
+                if ( $rows[$j][$i] == '' ) {
+                    $empty++;
+                } else {
+                    break;
+                }
+            }
+
+            if ( $empty == $this->num_loops ) {
+                $to_delete[] = $i;
+            }
+        }
+
+        // remove empty columns
+        for ( $i = 0; $i < count($to_delete); $i++ ) {
+            unset($this->header[$to_delete[$i]]);
+
+            for ( $j = 0; $j < $this->num_loops; $j++ ) {
+                unset($rows[$j][$to_delete[$i]]);
+            }
+        }
+
+        return $rows;
+	}
+
+    // auxiliary functions
+    function set_release_id()
+    {
+        $this->release_id = $this->get_latest_release_for_motif($this->motif_id);
+        return $this->release_id;
+    }
+
+    function set_first_release_id()
+    {
+        $this->release_id = $this->get_first_release_for_motif($this->motif_id);
+        return $this->release_id;
+    }
+
+    function set_motif_id($motif_id)
+    {
+        $this->motif_id = $motif_id;
+    }
+
+    function is_current_motif($motif_id)
+    {
+        $builder = $this->db->table('ml_releases');
+        $query = $builder->select()
+                        ->where('type', substr($motif_id, 0, 2))
+                        ->orderby('date','desc');
+        $query_result = $query->get()->getRow();
+
+        if ($query_result->ml_release_id == $this->release_id) {
+            return ' <label class="label success">current</label>';
+        } else {
+            return '';
+        }
+    }
+
+    function parseRNA($inputString) {
+        // Check if input string starts with "5'-R"   RNA(5'-R
+
+        if (substr($inputString, 0, 5) == "5'-R(" or substr($inputString, 0, 8) == "RNA (5'-" or substr($inputString, 0, 5) == "5'-D(" or substr($inputString, 0, 6) == "(5'-R(" or substr($inputString, 0, 8) == "RNA(5'-R" or substr($inputString, 0, 8) == "RNA (5-R" or substr($inputString, 0, 7) == "RNA(5-R") {
+
+            // Count the number of "*" characters
+            $nCount = substr_count($inputString, "*");
+
+            // Return the RNA sequence with the N-mer count
+            return "RNA ({$nCount}-mer)";
+        } elseif (substr($inputString, 0, 14) == "U4 snRNA (5'-R") {
+
+            $nCount = substr_count($inputString, "*");
+
+            return "U4 snRNA ({$nCount}-mer)";
+        } else {
+            return $inputString;
+        }
+    }
+
+    function get_standardized_name($pbd, $chain){ #
+        $query = $this->db->table('chain_property_value')
+                        ->select('value')
+                        ->where('property', 'standardized_name')
+                        ->where('pdb_id', $pbd)
+                        ->where("BINARY chain = '".$chain."'", null, false)
+                        ->limit(1);
+        $query_result = $query->get()->getResult();
+
+        if ( count($result) > 0 ){
+            $standardized_name = $result[0]['value'];
+            $short_standardized_name = explode(';', $standardized_name);
+            $short_standardized_name  = end($short_standardized_name);
+        } else {
+            $query = $this->db->table('chain_info')
+                    ->select('compound')
+                    ->where('pdb_id', $pbd)
+                    ->where("BINARY chain_name = '".$chain."'", null, false)
+                    ->limit(1);
+            $query_result = $query->get()->getResult();
+            if ( count($result) > 0 ){
+                $short_standardized_name = $result[0]['compound'];
+                $short_standardized_name = $this->parseRna($short_standardized_name);
+            } else{
+
+            }
+        }
+        return $short_standardized_name;
+    }
+}
+
+
+
+// 2023-03-23
+/* End of file motif_model.php */
+/* Location: ./application/model/motif_model.php */
