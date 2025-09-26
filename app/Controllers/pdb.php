@@ -87,14 +87,13 @@ class Pdb extends BaseController {
 //         $this->output->enable_profiler(TRUE);
     }
 
-    public function interactions($id, $method="fr3d", $interaction_type="basepairs", $format=NULL)
-    {
+    public function interactions($id, $method="fr3d", $interaction_type="basepairs", $format=NULL) {
         // strip off model and chain if present
         $id = explode('|',$id)[0];
 
         // validate inputs
         $interaction_types = array('basepairs', 'basepair_detail', 'stacking', 'basephosphate', 'baseribose', 'baseaa', 'oxygen_stacking', 'sugar_ribose', 'all', 'ligand');
-        if (!preg_match('/fr3d/i', $method)) {
+        if (!preg_match('/fr3d/i', $method) && !preg_match('/matlab/i', $method)) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound("Unknown annotation method");
         }
         if (array_search($interaction_type, $interaction_types) === false ) {
@@ -103,11 +102,11 @@ class Pdb extends BaseController {
 
         // detect download requests
         if (!is_null($format)) {
-            if ( $format != 'csv' ) { // Only csv format is supported for now
+            if ( $format != 'csv' && $format != 'tsv') { // csv and tsv
                 throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound("Unknown download format");
             }
             $is_download = true;
-            $filename = "{$id}_{$method}_{$interaction_type}.csv";
+            $filename = "{$id}_{$method}_{$interaction_type}.{$format}";
         } else {
             $is_download = false;
         }
@@ -125,9 +124,12 @@ class Pdb extends BaseController {
 
         // generate interactions
         if ( $pdb_status['valid'] ) {
-            $result = $this->Pdb_model->get_interactions($id, $interaction_type);
+            if ($method == 'matlab' && $interaction_type == 'basepair_detail') {
+                $interaction_type = 'basepairs';
+            }
+            $result = $this->Pdb_model->get_interactions($id, $interaction_type, $method, $format);
             // if there are pairwise interactions in the structure
-            if ( $result['data'] != '' ) {
+            if ( $result['count'] > 0 ) {
                 $tmpl = array( 'table_open'  => '<table class="bordered-table zebra-striped span8">' );
                 $tmpl = array('table_open' => '<table id="filterable-table" class="bordered-table zebra-striped span8">');
                 $table = new \CodeIgniter\View\Table();
@@ -146,7 +148,7 @@ class Pdb extends BaseController {
         }
 
         // send out the results
-        if ( $is_download ) {
+        if ($is_download && $format == 'csv') {
             $data['csv'] = $result['csv'];
             // bypass the view system to avoid debugging comments
             $response = service('response');
@@ -156,7 +158,16 @@ class Pdb extends BaseController {
                      ->setContentType('text/csv');
             $response->setBody($data['csv']);
             return $response;
-
+        } elseif ($is_download && $format == 'tsv') {
+            $data['tsv'] = $result['tsv'];
+            // bypass the view system to avoid debugging comments
+            $response = service('response');
+            $response->setHeader('Content-Type', 'text/tab-separated-values; charset=utf-8')
+                     ->setHeader('Content-Disposition', "attachment; filename={$filename}")
+                     ->setHeader('Access-Control-Allow-Origin', '*')
+                     ->setHeader('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin');
+            $response->setBody($data['tsv']);
+            return $response;
         } else {
             $data['title'] = strtoupper($id) . ' ' . $interaction_type;
             $data['pageicon'] = base_url() . 'icons/S_icon.png';
