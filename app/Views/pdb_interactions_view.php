@@ -4,7 +4,8 @@
         <div class="page-header">
           <h1><?=strtoupper($pdb_id)?>
           <small>Pairwise Interaction Annotations: <?=strtoupper($method)?> <?=$interaction_type?> </small>
-          <small><a class="btn pull-right success" href="<?=$current_url?>/csv">Download</a></small>
+          <small><a class="btn pull-right success" href="<?=$current_url?>/csv">Download csv</a></small>
+          <small><a class="btn pull-right success" href="<?=$current_url?>/tsv">Download tsv</a></small>
           </h1>
         </div>
 
