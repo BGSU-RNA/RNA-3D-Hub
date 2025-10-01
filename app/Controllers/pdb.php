@@ -8,13 +8,11 @@ class Pdb extends BaseController {
 
     public $Pdb_model;
 
-    function __construct()
-    {
+    function __construct() {
         $this->Pdb_model = new pdb_model();
     }
 
-	public function index()
-	{
+	public function index() {
         // $this->cachePage(262974); # 6 months
 
         $data['pdbs'] = $this->Pdb_model->get_all_pdbs();
@@ -28,9 +26,8 @@ class Pdb extends BaseController {
                 . view('footer');
 	}
 
-    public function data()
+    public function data() {
     // dictionary from pdb id to selected data
-    {
         $data = json_encode($this->Pdb_model->get_all_pdbs_data());
         $response = service('response');
         $response->setHeader('Access-Control-Allow-Origin', '*')
@@ -38,12 +35,9 @@ class Pdb extends BaseController {
                  ->setContentType('application/json');
         $response->setBody($data);
         return $response;
-
     }
 
-
-    public function general_info($id)
-    {
+    public function general_info($id) {
         // main landing page for a single PDB structure with general info and links to specific pages
 
         // $this->cachePage(262974); # 6 months
@@ -183,8 +177,7 @@ class Pdb extends BaseController {
         }
     }
 
-	public function motifs($id)
-	{
+	public function motifs($id) {
         // $this->cachePage(262974); # 6 months
 
         // strip off model and chain if present
@@ -247,8 +240,7 @@ class Pdb extends BaseController {
                 . view('footer');
 	}
 
-    public function two_d($pdb_id)
-    {
+    public function two_d($pdb_id) {
         // strip off model and chain if present
         $id = explode('|',$pdb_id)[0];
 
@@ -295,8 +287,7 @@ class Pdb extends BaseController {
                 . view('footer');
     }
 
-    private function is_valid_pdb($pdb_id, $interaction_type=NULL )
-    {
+    private function is_valid_pdb($pdb_id, $interaction_type=NULL ) {
         $messages = array( 'invalid_id'      => "Not a valid PDB id.",
                            'not_annotated'   => "This structure has not been annotated with pairwise interactions or does not contain RNA. Please check back later.");
         $message = '';
@@ -318,7 +309,6 @@ class Pdb extends BaseController {
         }
         return array( 'message' => $message, 'valid' => $valid );
     }
-
 }
 
 /* End of file pdb.php */
