@@ -7,16 +7,15 @@ class Pdb_model extends Model {
 
     public array $qa_status = [];
 
-    function __construct()
-    {
+    function __construct() {
         // $CI = & get_instance();
         // $CI->load->helper('url');
         $this->qa_status = array(NULL,'valid','missing nts','modified nts','abnormal chain','incomplete nts','complementary','symmetry','poor quality numbers','pair high RSRZ');
         // Call the Model constructor
         parent::__construct();
     }
-    function get_all_pdbs()
-    {
+
+    function get_all_pdbs() {
         $query = $this->db->table('pdb_info')
                   ->select('distinct(pdb_id)')
                   ->get()
@@ -30,8 +29,7 @@ class Pdb_model extends Model {
         return $pdbs;
     }
 
-    function get_all_pdbs_data()
-    {
+    function get_all_pdbs_data() {
         $query = $this->db->table('pdb_info')
                   ->select('pdb_id,release_date')
                   ->get()
@@ -46,9 +44,8 @@ class Pdb_model extends Model {
         return $data;
     }
 
-    function get_recent_rna_containing_structures($num)
+    function get_recent_rna_containing_structures($num) {
     // Note: now that we have DNA structures, this will also show DNA structures with no RNA
-    {
         $query = $this->db->table('pdb_info')
                  ->select('distinct(pdb_id)')
                  ->orderBy('release_date', 'desc')
@@ -60,8 +57,8 @@ class Pdb_model extends Model {
         }
         return $pdbs;
     }
-    function get_latest_motif_assignments($pdb_id, $loop_type)
-    {
+
+    function get_latest_motif_assignments($pdb_id, $loop_type) {
         // This does not actually get all the most recent assignments
         // It only searches the most recent motif atlas release
         // If the structure has loops in that release, they are shown
@@ -83,8 +80,8 @@ class Pdb_model extends Model {
         }
         return $data;
     }
-    function get_all_latest_motif_assignments($loop_type) // new
-    {
+
+    function get_all_latest_motif_assignments($loop_type) {
         // This does not actually get all the most recent assignments
         // It only searches the most recent motif atlas release
         // If the structure has loops in that release, they are shown
@@ -116,8 +113,8 @@ class Pdb_model extends Model {
         }
         return $data;
     }
-    function get_latest_loop_release()
-    {
+
+    function get_latest_loop_release() {
         $query = $this->db->table('loop_releases')
                  ->select('loop_release_id')
                  ->orderBy('date','desc')
@@ -126,8 +123,8 @@ class Pdb_model extends Model {
                  ->getResult();
         return $query[0]['loop_release_id'];
     }
-    function get_latest_loop_release_for_this_pdb($pdb_id)
-    {
+
+    function get_latest_loop_release_for_this_pdb($pdb_id) {
         $query = $this->db->table('loop_releases AS lr')
                  ->select('lq.loop_release_id')
                  ->join('loop_qa AS lq', 'lq.loop_release_id = lr.loop_release_id')
@@ -139,8 +136,8 @@ class Pdb_model extends Model {
                  ->getResult();
         return $query[0]['loop_release_id'];
     }
-    function get_loop_mappings($pdb_id)
-    {
+
+    function get_loop_mappings($pdb_id) {
         $builder = $this->db->table('loop_mapping AS lm');
     	$query = $builder ->select('lm.loop_id')
     			->select('lm.query_loop_id AS similar_loop')
@@ -158,8 +155,7 @@ class Pdb_model extends Model {
     	return $loop_mapping_table;
     }
 
-    function get_loops($pdb_id)
-    {
+    function get_loops($pdb_id) {
         // sub query for only most recent loop_mapping per loop id
         $loop_mapping_table = $this->get_loop_mappings($pdb_id);
 
@@ -278,20 +274,20 @@ class Pdb_model extends Model {
         }
         return array('valid' => $valid_tables, 'invalid' => $invalid_tables);
     }
-    function make_reason_label($status,$deprecate)
-    {
+
+    function make_reason_label($status,$deprecate) {
         if ($deprecate == 1) {
             return '<label class="label important">Deprecated</label>';
         } else {
             return '<label class="label important">' . $this->qa_status[$status] . '</label>';
         }
     }
-    function get_checkbox($id)
-    {
+
+    function get_checkbox($id) {
         return "<input type='radio' id='{$id}' class='jmolInline' data-coord='{$id}' data-quality='{$id}'>";
     }
-    function pdb_exists($pdb_id)
-    {
+
+    function pdb_exists($pdb_id) {
         // does BGSU RNA Site know about this structure?
         $builder = $this->db->table('pdb_info');
         $query = $builder ->select('pdb_id')
@@ -311,7 +307,7 @@ class Pdb_model extends Model {
             return false; // URL does not exist
         }
 
-        $pdb_rest_url = 'http://www.pdb.org/pdb/rest/describePDB?structureId=';
+        $pdb_rest_url = 'https://www.pdb.org/pdb/rest/describePDB?structureId=';
         $pdb_description = file_get_contents($pdb_rest_url . $pdb_id);
         // when a pdb doesn't exist, $pdb_description == '</PDBdescription>'
         if ( strpos($pdb_description, '<PDBdescription>') === false ) {
@@ -321,6 +317,7 @@ class Pdb_model extends Model {
         }
 
     }
+
     function pdb_is_annotated($pdb_id, $interaction_type) {
         $builder = $this->db->table('pdb_info AS pi');
         $query = $builder ->select('pi.pdb_id')
@@ -531,8 +528,7 @@ class Pdb_model extends Model {
                      );
     }
 
-    function get_general_info($pdb_id)
-    {
+    function get_general_info($pdb_id) {
         // get a list of all chains in the pdb_id
         $builder = $this->db->table('pdb_info AS pi');
         $query = $builder ->select()
@@ -601,8 +597,7 @@ class Pdb_model extends Model {
         $data['non_na_compounds'] = implode(', ', $non_na_compounds);
         return $data;
     }
-    function get_latest_nr_release($pdb_id)
-    {
+    function get_latest_nr_release($pdb_id) {
         $builder = $this->db->table('nr_releases');
         $query = $builder ->select('nr_release_id')
                  ->orderBy('date', 'desc')
@@ -610,8 +605,8 @@ class Pdb_model extends Model {
         $query = $query->get()->getRow();
         return $query->nr_release_id;
     }
-    function get_nrlist_info($pdb_id)
-    {
+
+    function get_nrlist_info($pdb_id) {
         // get the latest nr release
         $data['latest_nr_release'] = $this->get_latest_nr_release($pdb_id);
         // get nr equivalence classes
@@ -639,8 +634,8 @@ class Pdb_model extends Model {
         }
         return $data;
     }
-    function get_loops_info($pdb_id)
-    {
+
+    function get_loops_info($pdb_id) {
         $query = $this->db->table('loop_info')
                  ->select('count(loop_id) as counts, type')
                  ->where('pdb_id', $pdb_id)
@@ -669,8 +664,8 @@ class Pdb_model extends Model {
 
         return $data;
     }
-    function get_latest_motif_release($motif_type)
-    {
+
+    function get_latest_motif_release($motif_type) {
         // this is unreliable as a way to find most recent motif assignment
         $builder = $this->db->table('ml_releases');
         $query = $builder ->select('ml_release_id')
@@ -686,8 +681,8 @@ class Pdb_model extends Model {
             return $result->ml_release_id;
         }
     }
-    function get_motifs_info($pdb_id, $motif_type)
-    {
+
+    function get_motifs_info($pdb_id, $motif_type) {
         // count how many motif groups are present in the loops of the given type
         $latest_release = $this->get_latest_motif_release($motif_type);
 
@@ -715,8 +710,7 @@ class Pdb_model extends Model {
         return $query->counts;
     }
 
-    function get_pairwise_info($pdb_id, $interaction_type)
-    {
+    function get_pairwise_info($pdb_id, $interaction_type) {
         // query to count the number of interactions of each type
         // start using unit_pairs_interactions_2024 for these counts,
         // even if the numbers are a little different from the
@@ -738,16 +732,15 @@ class Pdb_model extends Model {
         return number_format($result->counts, 0);
     }
 
-    function get_baseaa_info($pdb_id)
-    {
+    function get_baseaa_info($pdb_id) {
         $builder = $this->db->table('unit_aa_interactions');
         $query = $builder ->select("count(na_unit_id) as counts")
                  ->where('pdb_id', $pdb_id);
         $result = $query->get()->getRow();
         return number_format($result->counts, 0);
     }
-    function get_related_structures($pdb_id)
-    {
+
+    function get_related_structures($pdb_id) {
         $pdb_id = strtoupper($pdb_id);
         $latest_nr_release = $this->get_latest_nr_release($pdb_id);
         // choose the equivalence class
@@ -797,8 +790,7 @@ class Pdb_model extends Model {
                      'representative' => $representative);
     }
 
-    function get_ordered_nts($pdb_id)
-    {
+    function get_ordered_nts($pdb_id) {
         // look up nucleotides in the chains in $pdb_id
         $query = $this->db->table('unit_info AS ui')
                  ->select('ui.unit_id as id, ui.model, ui.chain, ui.sym_op, ui.unit as sequence, ui.unit_type_id')
@@ -839,8 +831,7 @@ class Pdb_model extends Model {
         return $chain_data;
     }
 
-    function get_ordered_nts_very_old($pdb_id)
-    {
+    function get_ordered_nts_very_old($pdb_id) {
         $query = this->db->table('unit_info AS ui')
                  ->select('ui.unit_id as id, ui.chain, ui.unit as sequence')
                  ->selectmin('ui.sym_op')
@@ -867,8 +858,8 @@ class Pdb_model extends Model {
         }
         return array_values($chain_data);
     }
-    function get_airport($pdb_id)
-    {
+
+    function get_airport($pdb_id) {
         $new_result = '';
         $table = 'pdb_airport';
         if (! $this->db->table_exists($table)) {
@@ -939,8 +930,7 @@ class Pdb_model extends Model {
         return ($json) ? $json : false;
     }
 
-    function get_longrange_bp($pdb)
-    {
+    function get_longrange_bp($pdb) {
         // retrieve all basepairs with f_lwbp > 3
         $query = $this->db->table('unit_pairs_interactions_2024 AS upi')
                  ->select('U1.unit_id as nt1')
