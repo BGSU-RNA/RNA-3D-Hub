@@ -63,6 +63,9 @@ $routes->match(['GET','POST'],'rest/getChainSequenceBasePairs', [rest::class, 'g
 use App\Controllers\home;
 $routes->get('/', [home::class, 'index']);
 
+use App\Controllers\pages;
+$routes->get('pages/(:segment)', [pages::class,'page']);
+
 use App\Controllers\motifs;
 $routes->get('motifs', [motifs::class, 'index']);
 // $routes->get('motifs/index/(:segment)', [motifs::class, 'index']);
