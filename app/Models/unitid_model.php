@@ -44,7 +44,7 @@ class unitid_model extends Model {
         } else {
             $row = $query->getRow();
             $result = array();
-            $result[] = array('unit_id'  => 'not available',
+            $result[] = array('unit_id'  => $row->unit_id,
                                 'model'    => $row->model,
                                 'chain'    => $row->chain,
                                 'seq_id'   => $row->number,
