@@ -37,6 +37,8 @@
 						        <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/sugar_ribose">Sugar-ribose</a></li>
                     <li class="divider"></li>
                     <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/all">All interactions</a></li>
+                    <li class="divider"></li>
+                    <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/ligand">Ligands</a></li>
                   </ul>
                 </li>
                 <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/2d">2D Diagram</a></li>
@@ -62,7 +64,7 @@
                 </ul>
                 View in <a href="<?=$pdb_url?>" target="_blank">PDB</a> or <a href="<?=$NAKB_url?>" target="_blank">NAKB</a>
                 <br>
-                <a href="https://rna.bgsu.edu/fr3d/r3dcid?chains=<?=$pdb_id?>&input_form=True" target="_blank">Circular interaction diagram PDF</a>
+                <a href="https://rna.bgsu.edu/fr3d/r3dcid?chains=<?=$pdb_id?>&format=html" target="_blank">Circular interaction diagram</a>
               </div>
 
               <!-- section1 -->
@@ -143,6 +145,8 @@
                   <li><?=$bst_counts?> <a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/stacking">base-stacking</a></li>
                   <li><?=$bph_counts?> <a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/basephosphate">base-phosphate</a></li>
                   <li><?=$brb_counts?> <a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/baseribose">base-ribose</a></li>
+                  <li><?=$so_counts?> <a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/oxygen_stacking">oxygen stacking</a></li>
+                  <li><?=$sr_counts?> <a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/sugar_ribose">sugar-ribose</a></li>
                   <!-- Commented out since we don't have aa-nt annotations yet
                   <li><?=$baa_counts?> <a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/fr3d/baseaa">base-amino acids</a></li> -->
                 </ul>

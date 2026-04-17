@@ -47,6 +47,8 @@
 						        <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/sugar_ribose">Sugar-ribose</a></li>
                     <li class="divider"></li>
                     <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/all">All interactions</a></li>
+                    <li class="divider"></li>
+                    <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/ligand">Ligands</a></li>
                   </ul>
                 </li>
                 <li class="active"><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/2d">2D Diagram</a></li>
