@@ -185,12 +185,14 @@ class Rest extends ResourceController {
         // https://rna.bgsu.edu/rna3dhub/rest/getPdbInfo?pdb=2PYO&cla=1&res=1
         // https://rna.bgsu.edu/rna3dhub/rest/getPdbInfo?pdb=2PYO
         $pdb = $this->request->getVar('pdb');
-        $cla = $this->request->getVar('cla');
-        $res = $this->request->getVar('res');
+        $format = $this->request->getVar('format');
+        if (strlen($format) == 0) {
+            $format = 'html';
+        }
         $response = service('response');
         $response->setHeader('Access-Control-Allow-Origin', '*')
                  ->setHeader('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin')
-                 ->setBody($this->Ajax_model->get_pdb_info($pdb,$cla,$res));
+                 ->setBody($this->Ajax_model->get_pdb_info($pdb,$format));
         return $response;
     }
 
