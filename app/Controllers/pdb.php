@@ -59,6 +59,8 @@ class Pdb extends BaseController {
             $data['bst_counts'] = $this->Pdb_model->get_pairwise_info($id, 'f_stacks');
             $data['bph_counts'] = $this->Pdb_model->get_pairwise_info($id, 'f_bphs');
             $data['brb_counts'] = $this->Pdb_model->get_pairwise_info($id, 'f_brbs');
+            $data['so_counts'] = $this->Pdb_model->get_pairwise_info($id, 'f_so');
+            $data['sr_counts'] = $this->Pdb_model->get_pairwise_info($id, 'f_sugar_ribose');
             $data['baa_counts'] = $this->Pdb_model->get_baseaa_info($id);
         } else {
             $data['message'] = $pdb_status['message'];
@@ -124,7 +126,7 @@ class Pdb extends BaseController {
             $result = $this->Pdb_model->get_interactions($id, $interaction_type, $method, $format);
             // if there are pairwise interactions in the structure
             if ( $result['count'] > 0 ) {
-                $tmpl = array( 'table_open'  => '<table class="bordered-table zebra-striped span8">' );
+                $tmpl = array('table_open' => '<table class="bordered-table zebra-striped span8">' );
                 $tmpl = array('table_open' => '<table id="filterable-table" class="bordered-table zebra-striped span8">');
                 $table = new \CodeIgniter\View\Table();
                 $table->setTemplate($tmpl);
