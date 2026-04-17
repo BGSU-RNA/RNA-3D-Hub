@@ -11,10 +11,6 @@
         <!-- Follow us on <a href="https://twitter.com/rna3dhub">Twitter</a>. -->
         </p>
         <p>
-          RNA 3D Hub moved to a new server on September 10, 2024.
-          All links should work as before, but please let us know if you find any problems.
-          Write to Craig Zirbel at <a href="mailto:zirbel@bgsu.edu">zirbel@bgsu.edu</a>.
-        <p>
           Every week we download and annotate all new RNA-containing 3D structures from PDB.
           Annotations of individual 3D structures are available in the RNA Structure Atlas.
           The Representative Sets of RNA structures organize 3D structures by molecule type (such as large ribosomal subunit) and by species, by order of structure quality measures.
