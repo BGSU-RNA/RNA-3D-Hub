@@ -100,18 +100,22 @@ class Ajax_model extends Model {
         return $query[0]->source;
     }
 
-    function get_pdb_info($inp,$cla="") {
+    function get_pdb_info($inp,$format="html") {
         // https://rna.bgsu.edu/rna3dhub/rest/getPdbInfo?pdb=1FJG&cla=1&res=1
         // https://rna.bgsu.edu/rna3dhub/rest/getPdbInfo?pdb=5L4O|1|A
         // https://rna.bgsu.edu/rna3dhub/rest/getPdbInfo?pdb=2PYO&cla=1&res=1
         // https://rna.bgsu.edu/rna3dhub/rest/getPdbInfo?pdb=2PYO
+        // https://rna.bgsu.edu/rna3dhub/rest/getPdbInfo?pdb=8GLP|1|L5+8GLP|1|L8
+
         $pdb_url = "https://www.rcsb.org/structure/";
 
         //  Is the input $pdb a pdb_id or an ife_id?
         //  Assess and set the variables accordingly.
-        $pdb = substr($inp,0,4);
-        $ife = (strlen($inp) > 4) ? $inp : "foo";
-        $ife = str_replace('+ ','+',$ife);
+
+        $fields = explode("|",$inp);
+        $pdb = $fields[0];
+        $json = array();
+
         $query = $this->db->table('pdb_info AS pi')
                         ->select('pi.title')
                         ->select('pi.experimental_technique')
@@ -123,27 +127,6 @@ class Ajax_model extends Model {
 
         if ( $query!=NULL ) {
             $row = $query;
-
-            // if ( $ife == "foo" ) {
-            //     $rsc = "foo";
-            // } else {
-            //     if ( $cla ) {
-            //         $tmp = preg_replace('/^NR_[1-4]\.[05]_/','NR_all_',$cla);
-            //         $rsc = preg_replace('/^NR_20.0_/','NR_all_',$tmp);
-            //     } else {
-            //         $query = $this->db->table('nr_classes AS cl')
-            //                     ->select('cl.name')
-            //                     ->join('nr_releases AS nr','nr.nr_release_id = cl.nr_release_id')
-            //                     ->join('nr_class_rank AS ch','ch.nr_class_name = cl.name')
-            //                     ->where('ch.ife_id', $ife)
-            //                     ->where('cl.resolution', "all")
-            //                     ->orderby('nr.index DESC')
-            //                     ->limit(1)
-            //                     ->get()
-            //                     ->getRow();
-            //         $rsc = $query->name;
-            //     }
-            // }
 
             // don't report resolution for nmr structures
             if (preg_match('/NMR/', $row->experimental_technique)) {
@@ -164,12 +147,22 @@ class Ajax_model extends Model {
                         "<u>Release date</u>: {$row->release_date}<br/>" .
                         "<u>Organism</u>: <i>{$source}</i><br/>". $resolution;
 
-            //  Isolate nt/bp in preparation for removal.
             $pdb_info .= "<hr/>" .
-                         "<i>$nucleotides nucleotides, $basepairs basepairs, $bpnt basepairs/nucleotide</i><br/>";
+                        "<i>$nucleotides nucleotides, $basepairs basepairs, $bpnt basepairs/nucleotide</i><br/>";
 
-            //  Separate the CQS logic, and conditionally display these values
-            if ( $ife != "foo" ){
+            $json['title'] = $row->title;
+            $json['method'] = $row->experimental_technique;
+            $json['release_date'] = $row->release_date;
+            $json['source'] = $source;
+            $json['resolution'] = $row->resolution;
+            $json['num_nucleotides'] = $nucleotides;
+            $json['num_basepairs'] = $basepairs;
+
+            // check for chain or IFE
+            if (count($fields) > 2) {
+                // there is a chain like 4TNA|1|A or maybe an IFE with more than one chain
+                $ife = str_replace('+ ','+',$inp);
+                $ife = str_replace(' ','+',$ife);
                 $query = $this->db->table('ife_cqs AS ic')
                          ->select('ic.ife_id')
                          ->select('ic.clashscore')
@@ -184,25 +177,23 @@ class Ajax_model extends Model {
                          ->select('nc.percent_observed')
                          ->join('nr_cqs AS nc','ic.ife_id = nc.ife_id')
                          ->where('ic.ife_id', $ife)
-                        //  ->where('nc.nr_name', $rsc)
                          ->limit(1);
                 $ifequery = $query->get()->getRow();
 
                 if ( $ifequery!=NULL ) {
                     $row = $ifequery;
-
                     $cqs    = $row->composite_quality_score;
                     $cqs2   = $row->cqs2;
                     $arsr   = ( $row->average_rsr == 40 ) ? "not applicable; using 40 for CQS" : $row->average_rsr;
                     $pclash = $row->percent_clash;
                     $arscc  = ( $row->average_rscc == -1) ? "not applicable; using -1 for CQS" : $row->average_rscc;
                     $rfree  = ( $row->rfree == 1) ? "not applicable; using 1 for CQS" : $row->rfree;
-                    #$fruno  = $row->fraction_unobserved;
                     $frobs   = $row->percent_observed;
                     $aQs     = $row->average_Q_score;
                     $ari     = $row->average_residue_inclusion;
                 } else {
                     $cqs    = "not available";
+                    $cqs2   = "not available";
                     $arsr   = "not available";
                     $pclash = "not available";
                     $arscc  = "not available";
@@ -211,6 +202,16 @@ class Ajax_model extends Model {
                     $aQs    = "not available";
                     $ari    = "not available";
                 }
+
+                $json['composite_quality_score'] = $cqs;
+                $json['cqs2'] = $cqs2;
+                $json['average_rsr'] = $arsr;
+                $json['percent_clash'] = $pclash;
+                $json['average_rscc'] = $arscc;
+                $json['rfree'] = $rfree;
+                $json['percent_observed'] = $frobs;
+                $json['average_Q_score'] = $aQs;
+                $json['average_residue_inclusion'] = $ari;
 
                 if ($exp_tech == "ELECTRON MICROSCOPY") {
                     $pdb_info .= "<hr/>" .
@@ -271,7 +272,11 @@ class Ajax_model extends Model {
             }
         }
 
-        return $pdb_info;
+        if ($format == 'json') {
+            return json_encode($json);
+        } else {
+            return $pdb_info;
+        }
     }
 
     function get_assembly_info($pdb)
@@ -330,7 +335,7 @@ class Ajax_model extends Model {
         foreach ($query as $row) {
             // store by chain_name
             // convert $row to an array
-            $chain_info['chains'][$row->chain_name] = (array) $row; // key-value pair
+            $chain_info['chains'][$row->chain_name] = (array) $row;
         }
 
         // query chain_property_value table for information on this pdb id
@@ -349,6 +354,21 @@ class Ajax_model extends Model {
                 $chain_info[$chain] = array();
             }
             $chain_info['chains'][$chain][$row->property] = $row->value;
+        }
+
+        // query unit_info table to find solitary nucleotides
+        $query = $this->db->table('unit_info')
+                 ->select('unit_id')
+                 ->select('chain')
+                 ->where('chain_index', null)
+                 ->whereIn('unit_type_id', ['rna','dna'])
+                 ->where('pdb_id', $pdb)
+                 ->get()
+                 ->getResult();
+
+        // record solitary nucleotides according to the chain they appear in
+        foreach ($query as $row) {
+            $chain_info['chains'][$row->chain]['solitary'][] = $row->unit_id;
         }
 
         // duplication for backward compatibility
