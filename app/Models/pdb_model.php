@@ -399,13 +399,14 @@ class Pdb_model extends Model {
             $has_desired_interaction_type = "$db_field IS NOT NULL";
         } elseif ( $interaction_type == 'all' ) {
             $targets = array_keys(array_slice($url_parameters,1));
+            $targets = array_keys($url_parameters);
             if ($method == 'matlab') {
                 $db_field = implode(',', $db_fields);    // use all fields, f_lwbp_detail will be NULL
             } else {
                 $db_field = implode(',', array_slice($db_fields,1));    // leave off f_lwbp
             }
             $interaction_description = implode(',', array_slice($header_values,1));
-            $has_desired_interaction_type = '(' . implode(' IS NOT NULL OR ', $db_fields) . ')';
+            $has_desired_interaction_type = '(' . implode(' IS NOT NULL OR ', $db_fields) . ' IS NOT NULL)';
         } elseif ($interaction_type == 'ligand') {
             $interaction_description = 'Ligand';
             $header = array('#', 'Ligand id', 'Ligand name', 'Ligand type');
@@ -485,7 +486,7 @@ class Pdb_model extends Model {
                     $csv_fields[0] = $row->unit_id_1;
                     foreach ($targets as $target) {
                         if ( isset($row->{$db_fields[$target]}) and ($row->{$db_fields[$target]} != '') ) {
-                            $csv_fields[]    = $row->{$db_fields[$target]};
+                            $csv_fields[] = $row->{$db_fields[$target]};
                         } else {
                             $csv_fields[] = '';
                         }
@@ -508,8 +509,13 @@ class Pdb_model extends Model {
                         }
                     }
                     $ids = $row->unit_id_1 .','. $row->unit_id_2;
+                    $combination = '';
+                    $base1 = explode("|",$row->unit_id_1)[3];
+                    $base2 = explode("|",$row->unit_id_2)[3];
+                    $combination = $base1 . '-' . $base2;
+
                     $html .= str_pad('<span>' . $row->unit_id_1 . '</span>', 32, ' ') .
-                            "<a class='jmolInline' id='s{$i}'>" .
+                            "<a class='jmolInline' id='s{$i}' data-filter='{$combination}'>" .
                             str_pad(implode(', ', $output_fields), 8, ' ', STR_PAD_BOTH) .
                             "</a>" .
                             str_pad('<span>' . $row->unit_id_2. '</span>', 32, ' ', STR_PAD_LEFT) . ' <a href="http://rna.bgsu.edu/correspondence/SVS?id=' . $ids . '&format=unique&input_form=True" target="_blank" rel="noopener noreferrer">R3DSVS</a>' .
@@ -712,24 +718,23 @@ class Pdb_model extends Model {
 
     function get_pairwise_info($pdb_id, $interaction_type) {
         // query to count the number of interactions of each type
-        // start using unit_pairs_interactions_2024 for these counts,
-        // even if the numbers are a little different from the
-        // matlab interactions still being displayed for older structures
+        // using unit_pairs_interactions_2024 for these counts
 
         // omit entries starting with the letter "n"
         $query = $this->db->table('unit_pairs_interactions_2024')
-                 ->select("count($interaction_type)/2 as counts")
+                 ->select("count($interaction_type) as counts")
                  ->where('pdb_id', $pdb_id)
                  ->notLike("$interaction_type", 'n%', 'after');
 
-        // if ( $interaction_type == 'f_bphs' ) {
-        //     $query->where("char_length($interaction_type) = 4");
-        // } else {
-        //     $query->where("char_length($interaction_type) = 3");
-        // }
-
         $result = $query->get()->getRow();
-        return number_format($result->counts, 0);
+
+        if ($interaction_type == 'f_lwbp' || $interaction_type == 'f_stacks' || $interaction_type == 'f_so') {
+            // basepairs, stacks, oxygen stacking are listed twice in the table, both nt orders
+            return number_format($result->counts / 2, 0);
+        } else {
+            // bph, br, sr are listed just once in the table
+            return number_format($result->counts, 0);
+        }
     }
 
     function get_baseaa_info($pdb_id) {
