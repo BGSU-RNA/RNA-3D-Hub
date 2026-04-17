@@ -697,11 +697,21 @@ class Nrlist_model extends Model {
             // takes about 6.5 seconds for 103 IFEs
             // takes about 20 seconds for 488 IFEs, but at least it loads! 270 MB
             // takes about 50 seconds for 739 IFEs, 279 MB https://rna.bgsu.edu/rna3dhub/nrlist/view/NR_all_35542.138
-            $file_lines = file('/var/www/html/discrepancy/IFEdiscrepancy.txt');
+
+            // the command to load the whole file failed when the IFEdiscrepancy.txt file was 287 MB on 2026/02/09
+            // $file_lines = file('/var/www/html/discrepancy/IFEdiscrepancy.txt');
+            // now we read the file line by line
+
+            $fh = fopen('/var/www/html/discrepancy/IFEdiscrepancy.txt', 'r');
+            if (!$fh) {
+                throw new Exception("Could not open IFEdiscrepancy.txt file");
+            }
+
             $count = $n;
-            foreach ($file_lines as $line) {
-                $line = str_replace("\n","",$line);
+            while (($line = fgets($fh)) !== false) {
+                $line = rtrim($line, "\r\n");
                 $resultArray = explode("\t", $line);
+
                 if (in_array($resultArray[0],$index_to_ife) and in_array($resultArray[1],$index_to_ife)) {
                     $i = $ife_to_index[$resultArray[0]];
                     $j = $ife_to_index[$resultArray[1]];
@@ -717,6 +727,7 @@ class Nrlist_model extends Model {
                     }
                 }
             }
+            fclose($fh);
         } else {
             // this query is slow enough that it bogs down the server
             // takes about 1.6 seconds for 52 IFEs
@@ -1645,6 +1656,7 @@ class Nrlist_model extends Model {
         $experimental_technique['SOLID-STATE NMR'] = 'Solid-state NMR';
         $experimental_technique['ELECTRON MICROSCOPY, SOLUTION NMR'] = 'Electron microscopy, solution NMR';
         $experimental_technique['X-RAY DIFFRACTION, SOLUTION SCATTERING'] = 'X-ray diffraction, solution scattering';
+        $experimental_technique['HYBRID'] = 'Hybrid';
 
         foreach ($query as $row) {
             $pdb[$row->pdb_id]['title']      = $row->title;
