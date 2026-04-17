@@ -3,7 +3,6 @@
       <div class="content">
         <div class="page-header">
           <h1>
-            <?=strtoupper($unit_id)?>
             <small><?=anchor('unitid', 'Unit id nomenclature')?></small>
           </h1>
         </div>
