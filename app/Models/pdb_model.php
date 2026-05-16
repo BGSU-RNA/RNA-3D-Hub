@@ -386,9 +386,9 @@ class Pdb_model extends Model {
         }
         */
 
-        $url_parameters = array('basepairs', 'stacking', 'basephosphate', 'baseribose', 'basepair_detail', 'oxygen_stacking', 'sugar_ribose');
-        $db_fields      = array('f_lwbp', 'f_stacks', 'f_bphs', 'f_brbs', 'f_lwbp_detail', 'f_so', 'f_sugar_ribose');
-        $header_values  = array('Basepair', 'Base-stacking', 'Base-phosphate', 'Base-ribose', 'Basepair detail', 'Oxygen stacking', 'Sugar-ribose');
+        $url_parameters = array('basepairs', 'stacking', 'basephosphate', 'baseribose', 'basepair_detail', 'oxygen_stacking', 'sugar_ribose', 'coplanar');
+        $db_fields      = array('f_lwbp', 'f_stacks', 'f_bphs', 'f_brbs', 'f_lwbp_detail', 'f_so', 'f_sugar_ribose','f_coplanar');
+        $header_values  = array('Basepair', 'Base-stacking', 'Base-phosphate', 'Base-ribose', 'Basepair detail', 'Oxygen stacking', 'Sugar-ribose', 'Coplanar');
         $header         = array('#', 'Nucleotide id 1', 'Nucleotide id 2');
 
         if (in_array($interaction_type, $url_parameters) ) {
