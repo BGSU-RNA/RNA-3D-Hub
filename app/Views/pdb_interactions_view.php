@@ -25,6 +25,7 @@
                     <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/baseribose">Base-ribose</a></li>
 						        <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/oxygen_stacking">Oxygen stacking</a></li>
 						        <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/sugar_ribose">Sugar-ribose</a></li>
+						        <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/coplanar">Coplanar</a></li>
 
                     <!-- Commented out since we don't have aa-nt interactions yet
                     <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/baseaa">Base-amino acids</a></li> -->
