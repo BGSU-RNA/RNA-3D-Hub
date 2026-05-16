@@ -30,8 +30,8 @@ class Pdb extends BaseController {
     // dictionary from pdb id to selected data
         $data = json_encode($this->Pdb_model->get_all_pdbs_data());
         $response = service('response');
-        $response->setHeader('Access-Control-Allow-Origin', '*')
-                 ->setHeader('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin')
+        $response->setHeader('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin')
+                // ->setHeader('Access-Control-Allow-Origin', '*')
                  ->setContentType('application/json');
         $response->setBody($data);
         return $response;
@@ -88,7 +88,7 @@ class Pdb extends BaseController {
         $id = explode('|',$id)[0];
 
         // validate inputs
-        $interaction_types = array('basepairs', 'basepair_detail', 'stacking', 'basephosphate', 'baseribose', 'baseaa', 'oxygen_stacking', 'sugar_ribose', 'all', 'ligand');
+        $interaction_types = array('basepairs', 'basepair_detail', 'stacking', 'basephosphate', 'baseribose', 'baseaa', 'oxygen_stacking', 'sugar_ribose', 'coplanar', 'all', 'ligand');
         if (!preg_match('/fr3d/i', $method) && !preg_match('/matlab/i', $method)) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound("Unknown annotation method");
         }
@@ -149,7 +149,7 @@ class Pdb extends BaseController {
             // bypass the view system to avoid debugging comments
             $response = service('response');
             $response->setHeader('Content-Disposition', "attachment; filename={$filename}")
-                     ->setHeader('Access-Control-Allow-Origin', '*')
+                    //  ->setHeader('Access-Control-Allow-Origin', '*')
                      ->setHeader('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin')
                      ->setContentType('text/csv');
             $response->setBody($data['csv']);
@@ -158,10 +158,12 @@ class Pdb extends BaseController {
             $data['tsv'] = $result['tsv'];
             // bypass the view system to avoid debugging comments
             $response = service('response');
-            $response->setHeader('Content-Type', 'text/tab-separated-values; charset=utf-8')
-                     ->setHeader('Content-Disposition', "attachment; filename={$filename}")
-                     ->setHeader('Access-Control-Allow-Origin', '*')
-                     ->setHeader('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin');
+            $response->setHeader('Content-Type', 'text/plain; charset=utf-8');
+            // omit these additional header settings, especially Access-Control-Allow-Origin,
+            // because it messes up some API calls from other servers, with duplicate statements of the same * thing
+                    //  ->setHeader('Content-Disposition', "attachment; filename={$filename}")
+                    //  ->setHeader('Access-Control-Allow-Origin', '*')
+                    //  ->setHeader('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin');
             $response->setBody($data['tsv']);
             return $response;
         } else {
