@@ -94,7 +94,7 @@ $routes->get('pdb', [pdb::class, 'index']);
 $routes->get('pdb/data', [pdb::class, 'data']);
 $routes->get('pdb/(:segment)', [pdb::class, 'general_info']);
 $routes->get('pdb/(:segment)/motifs', [pdb::class, 'motifs']);
-$routes->get('pdb/(:segment)/interactions/(:segment)/(:segment)/(:segment)', [pdb::class, 'interactions']);
+$routes->match(['GET','HEAD'],'pdb/(:segment)/interactions/(:segment)/(:segment)/(:segment)', [pdb::class, 'interactions']);
 $routes->get('pdb/(:segment)/interactions/(:segment)/(:segment)', [pdb::class, 'interactions']);
 $routes->get('pdb/(:segment)/interactions/(:segment)', [pdb::class, 'interactions']);
 $routes->get('pdb/(:segment)/interactions', [pdb::class, 'interactions']);
