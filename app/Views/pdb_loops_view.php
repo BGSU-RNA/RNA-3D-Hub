@@ -18,7 +18,7 @@
 
         <!-- navigation -->
         <div class="row">
-          <div class="span8">
+          <div class="span12">
             <ul class="tabs">
                 <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>">Summary</a></li>
                 <li class="active"><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/motifs">Loops</a></li>
@@ -39,7 +39,8 @@
                     <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/interactions/<?=$method?>/ligand">Ligands</a></li>
                   </ul>
                 </li>
-                <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/2d">2D Diagram</a></li>
+                <li><a href="<?=$baseurl?>pdb/<?=$pdb_id?>/2d">Interactive 2D</a></li>
+                <li><a href="https://rna.bgsu.edu/fr3d/r3dcid?chains=<?=$pdb_id?>&format=html" target="_blank">Circular interaction diagram</a></li>
             </ul>
           </div>
           <a class="btn primary pull-right" href="<?=$baseurl?>loops/download/<?=$pdb_id?>">Download loops</a>
