@@ -1,4 +1,5 @@
           Copyright <?php echo date("Y"); ?> <a href="https://rna.bgsu.edu">BGSU RNA group</a>.
+          Database contents are licensed under Creative Commons Attribution 4.0 International (CC BY 4.0).
           <em>Page generated in {elapsed_time} s</em>
 
     </div> <!-- /container -->
