@@ -1,0 +1,1001 @@
+/* Override some defaults */
+body, html {
+    background-color: #eee;
+}
+body {
+    padding-top: 40px; /* 40px to make the container go all the way to the bottom of the topbar */
+}
+.container > footer p {
+    text-align: center; /* center align it with the container */
+}
+.container {
+    width: 80%;
+}
+container-large{
+  width: 95%;
+  margin-left: auto;
+  margin-right: auto;
+  zoom: 1;
+}
+/* The white background content wrapper */
+.content {
+    background-color: #fff;
+    padding: 20px;
+    min-height: 500px;
+    margin: 0 -20px; /* negative indent the amount of the padding to maintain the grid system */
+    -webkit-border-radius: 0 0 6px 6px;
+       -moz-border-radius: 0 0 6px 6px;
+            border-radius: 0 0 6px 6px;
+    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+       -moz-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+            box-shadow: 0 1px 2px rgba(0,0,0,.15);
+}
+/* Page header tweaks */
+.page-header {
+    background-color: #f5f5f5;
+    padding: 20px 20px 10px;
+    margin: -20px -20px 20px;
+}
+h1 small {
+    margin-left: 10px;
+}
+small .label {
+    float: none;
+}
+
+/* Pairwise interactions horizontal scrolling div */
+.motifview .interactions th, .motifview .interactions td {
+	white-space: nowrap;
+	text-align:right;
+}
+.motifview .loop {
+    width:150px;
+}
+#history td {
+    white-space: normal;
+}
+/*
+.motifview .interactions table {
+	margin-bottom:10px;
+}
+*/
+.motifview h1 li, .motifs_view h1 li {
+    font-size: small;
+}
+.jmolheight {
+    height:340px;
+    width:565px;
+    margin-bottom:10px;
+}
+.jmolmatrixheight{
+    height:340px;
+    width:340px;
+    margin-bottom:10px;
+}
+.motifview #annotation-panel {
+    padding: 10px;
+    min-height: 300px;
+    margin-right:10px;
+    background-color:whiteSmoke;
+}
+.motifview dd {
+    margin-bottom:10px;
+}
+.motifview #jmolBlock {
+    margin-left: 0px;
+}
+.motifview #interactions {
+    margin-bottom: 10px;
+}
+.motifview #variants {
+    padding: 5px 10px;
+}
+.motifview #variants table {
+    font-family:monospace;
+}
+.motifview #variants .block-div {
+    margin-left: 5px;
+}
+/*
+.motifview #checkboxes {
+    overflow:auto;
+    height:340px;
+}
+*/
+.motifview input[type=checkbox] {
+    margin-right:3px;
+}
+/*
+.motifview ul.inputs-list {
+    width:100px;
+    margin-left:auto;
+    margin-right:auto;
+}
+*/
+/*
+.motifview div.mdmatrix {
+    border: 1px solid #ddd;
+}
+*/
+
+/* motif annotation well */
+/*
+.motifview form, .motifview .well, .motifview dl {
+    margin-bottom:0;
+}
+*/
+/*
+.motifview .well {
+    padding-top:5px;
+    padding-bottom:5px;
+}
+*/
+/* motif annotation well */
+
+/* Mutual discrepancy matrix */
+.motifview .mdmatrix table {
+    height:340px;
+    width:340px;
+    table-layout: fixed;
+}
+.motif_compare_view .mdmatrix table {
+    table-layout:fixed;
+    height: 340px;
+}
+.motifview #legend, .motif_compare_view #legend {
+    height: 1em;
+}
+/* overrides bootstrap */
+.motifview .mdmatrix td, .motifview .mdmatrix tr,
+.motif_compare_view .mdmatrix td, .motif_compare_view .mdmatrix tr {
+    padding:0;
+    border-top-width:0;
+}
+.motif_compare_view .mdmatrix td {
+    line-height: 0px;
+}
+.motif_compare_view .mdmatrix .annotation {
+    font-size: xx-small;
+    text-align: center;
+    vertical-align: middle;
+}
+.motif_compare_view .highlight {
+    color: red;
+}
+.motif_compare_view .identical{
+-webkit-animation:rotating 1s linear infinite alternate;
+   -moz-animation:rotating 1s linear infinite alternate;
+    -ms-animation:rotating 1s linear infinite alternate;
+     -o-animation:rotating 1s linear infinite alternate;
+        animation:rotating 1s linear infinite alternate;
+}
+@-webkit-keyframes rotating {
+    from{
+        transform: rotate(-3deg);
+        -ms-transform: rotate(-3deg); /* IE 9 */
+        -webkit-transform: rotate(-3deg); /* Safari and Chrome */
+        -o-transform: rotate(-3deg); /* Opera */
+        -moz-transform: rotate(-3deg); /* Firefox */
+    }
+    to{
+        transform: rotate(3deg);
+        -ms-transform: rotate(3deg); /* IE 9 */
+        -webkit-transform: rotate(3deg); /* Safari and Chrome */
+        -o-transform: rotate(3deg); /* Opera */
+        -moz-transform: rotate(3deg); /* Firefox */
+    }
+}
+.block-div {
+  border: 1px solid #ddd;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+}
+/* Color classes */
+.motifview .md00, .motif_compare_view .md00 {background-color:rgb(100%,0%,0%);}
+.motifview .md01, .motif_compare_view .md01 {background-color:rgb(100%,25%,0%);}
+.motifview .md02, .motif_compare_view .md02 {background-color:rgb(100%,50%,0%);}
+.motifview .md03, .motif_compare_view .md03 {background-color:rgb(100%,75%,0%);}
+.motifview .md04, .motif_compare_view .md04 {background-color:rgb(100%,100%,0%);}
+.motifview .md05, .motif_compare_view .md05 {background-color:rgb(75%,100%,25%);}
+.motifview .md06, .motif_compare_view .md06 {background-color:rgb(50%,100%,50%);}
+.motifview .md07, .motif_compare_view .md07 {background-color:rgb(25%,100%,75%);}
+.motifview .md08, .motif_compare_view .md08 {background-color:rgb(0%,100%,100%);}
+.motifview .md09, .motif_compare_view .md09 {background-color:rgb(0%,50%,100%);}
+.motifview .md10, .motif_compare_view .md10 {background-color:rgb(0%,0%,100%);}
+.motif_compare_view .md_no_match {background-color:rgb(0%,0%,0%);}
+.motif_compare_view .md_not_loaded {background-color:grey;}
+
+
+/*
+.motifview .md00 {background-color:rgb(104,104,104);}
+.motifview .md01 {background-color:rgb(112,112,112);}
+.motifview .md02 {background-color:rgb(120,120,120);}
+.motifview .md03 {background-color:rgb(128,128,128);}
+.motifview .md04 {background-color:rgb(136,136,136);}
+.motifview .md05 {background-color:rgb(144,144,144);}
+.motifview .md06 {background-color:rgb(152,152,152);}
+.motifview .md07 {background-color:rgb(160,160,160);}
+.motifview .md08 {background-color:rgb(168,168,168);}
+.motifview .md09 {background-color:rgb(176,176,176);}
+.motifview .md10 {background-color:rgb(184,184,184);}
+*/
+.motifview .clicked, .motifview .jmolActive, .motifview .mdmatrix td:hover {
+    background-repeat: no-repeat;
+    background-size: 50%;
+    background-position: 50%;
+}
+.motif_compare_view .jmolActive {
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: 50%;
+}
+.motifview .clicked {
+    background-image: url('http://rna.bgsu.edu/img/MotifAtlas/glyphicons_free/glyphicons/png/glyphicons_206_ok_2.png');
+}
+.motifview .jmolActive, .motif_compare_view .jmolActive {
+    background-image: url('http://rna.bgsu.edu/img/MotifAtlas/glyphicons_free/glyphicons/png/glyphicons_185_screenshot.png');
+}
+.motifview .mdmatrix-table td:hover {
+    background-image: url('http://rna.bgsu.edu/img/MotifAtlas/glyphicons_free/glyphicons/png/glyphicons_239_riflescope.png');
+}
+.motifview label, .motif_compare_view label {
+    width:auto;
+}
+.motifview #mdmatrix-help, .motif_compare_view #mdmatrix-help {
+    background-image: url('http://rna.bgsu.edu/img/MotifAtlas/glyphicons_free/glyphicons/png/glyphicons_194_circle_question_mark.png');
+    background-size: 100%;
+    height:1em;
+    width:1em;
+    display: inline-block;
+    margin-right: 10px;
+    float:right;
+}
+.motifview ul.tabs {
+    margin-bottom: 5px;
+}
+.motif_compare_view #mdmatrix-help {
+    margin-right: 0px;
+}
+.motif_compare_view .mdmatrix td {
+    text-align: center;
+    vertical-align: middle;
+    font-size: xx-small;
+}
+/* history widget */
+.motifview .history table {
+    width:940px;
+}
+.motifview .center {
+    margin-left:auto;
+    margin-right:auto;
+}
+.motifview .special_style {
+    margin-left:0px;
+}
+.nr_all_releases_view td {
+    text-align:center;
+}
+.motifs_compare_view input[type=radio], .nrlist_release_compare_view input[type=radio] {
+    margin-right:10px;
+}
+.motifs_compare_results_view .comparison, .nrlist_release_compare_results_view .comparison {
+    overflow:auto;
+    max-height:300px;
+}
+.nrlist_release_compare_results_view .info, .motifs_release_compare_results_view .info {
+    margin-bottom:10px;
+    padding:10px;
+}
+.nrlist_release_compare_view .compare {
+    overflow:auto;
+    max-height:400px;
+    margin-bottom:10px;
+}
+.nrlist_release_view .parents table {
+    table-layout: fixed;
+}
+
+.nrlist_class_view #members_table {
+    table-layout: fixed;
+    /* width: 100%; */
+    word-wrap: break-word;
+}
+.nrlist_class_view #members_table th:nth-of-type(1) {
+    width: 1px;
+}
+.nrlist_class_view #members_table th:nth-of-type(2) {
+    width: 20px;
+}
+.nrlist_class_view #members_table th:nth-of-type(3) {
+    width: 40px;
+}
+.nrlist_class_view #members_table th:nth-of-type(4) {
+    width: 25px;
+}
+.nrlist_class_view #members_table th:nth-of-type(5) {
+    width: 20px;
+}
+.nrlist_class_view #members_table th:nth-of-type(6) {
+    width: 10px;
+}
+.nrlist_class_view #members_table th:nth-of-type(7) {
+    width: 15px;
+}
+.nrlist_class_view #members_table th:nth-of-type(8) {
+    width: 90px;
+}
+.nrlist_class_view #members_table th:nth-of-type(9) {
+    width: 20px;
+}
+.nrlist_class_view #members_table th:nth-of-type(10) {
+    width: 8px;
+}
+.nrlist_class_view #members_table th:nth-of-type(11) {
+    width: 15px;
+}
+
+
+
+.nrlist_class_view .parents table {
+    table-layout: fixed;
+}
+.nrlist_class_view .parents th:nth-of-type(1) {
+    width:120px;
+}
+.nrlist_class_view .parents th:nth-of-type(2) {
+    width:120px;
+}
+.nrlist_class_view .parents th:nth-of-type(3) {
+    width:80px;
+}
+.nrlist_class_view .parents th:nth-of-type(4) {
+    width:300px;
+}
+.nrlist_class_view .parents th:nth-of-type(5) {
+    width:150px;
+}
+.nrlist_class_view .parents th:nth-of-type(6) {
+    width:150px;
+}
+
+.nrlist_release_view label {
+    width: auto;
+    padding-top: 0px;
+}
+.nrlist_release_view .dataTables_filter,
+.nrlist_release_view .dataTables_info {
+    display: inline;
+}
+.nrlist_release_view .dataTables_info {
+    margin-left: 20px;
+}
+.overflow_400 {
+    overflow:auto;
+    max-height:400px;
+}
+.maxheight400 {
+    overflow:auto;
+    max-height:400px;
+}
+.horizontal_overflow {
+    overflow-x: none;
+    overflow-y: auto;
+}
+.pdb_loops_view div.valid {
+    max-height:300px;
+    overflow:auto;
+    margin-bottom:15px;
+    overflow: -moz-scrollbars-vertical;
+    overflow-y: scroll;
+}
+.pdb_loops_view div.modified {
+    max-height:200px;
+    overflow:auto;
+    overflow: -moz-scrollbars-vertical;
+    overflow-y: scroll;
+}
+.pdb_loops_view label {
+    width: auto;
+}
+.pdb_loops_view table {
+    margin-bottom: 0px;
+}
+.pdb_loops_view input[type=checkbox] {
+    margin-right:5px;
+}
+.pdb_loops_view .content {
+    min-height: 650px;
+}
+.nrlist_release_history_view td {
+    text-align:center;
+}
+
+/* LAB */
+/*
+.pdb_loops_view .jmolheight, .loops_sfdata_view .jmolheight, .motifs_graph_view .jmolheight {
+
+}
+*/
+
+.nodec {
+    text-decoration:none;
+}
+.nodec:hover {
+    text-decoration:none;
+}
+.popover {
+    z-index: 10000;
+}
+.popover .content {
+    margin: 0;
+    min-height:20px;
+    /*max-height:220px;*/
+    max-height:auto;
+    overflow:auto;
+}
+.popover .content p {
+    font-size:12px;
+}
+.pdb {
+    border-bottom:1px dotted;
+}
+.pdb:hover {
+    text-decoration:none;
+    cursor:pointer;
+}
+.motifs_compare_view .label {
+    margin-left:10px;
+}
+
+.loops_sfdata_view .scroll_table, .loops_benchmark_view .scroll_table {
+    overflow:auto;
+    max-height:300px;
+    table-layout: fixed;
+}
+.loops_sfdata_view .twipsy, .loops_benchmark_view .twipsy {
+    position:static;
+}
+.loops_sfdata_view #explanation>p {
+    font-size:smaller;
+}
+.loops_sfdata_view label.narrow {
+/*      width:105px;*/
+    width:auto;
+}
+.loops_paginated_view label {
+    width:auto;
+}
+.loops_sfdata_view td {
+    text-align:center;
+    font-size:x-small;
+}
+.loops_benchmark_view #save, .loops_benchmark_view #status {
+    display: none;
+}
+/*
+.loops_sfdata_view input[type=radio],.loops_sfdata_view input[type=checkbox], .motifs_graph_view input[type=checkbox] {
+    margin-right:10px;
+}
+*/
+input[type=radio], input[type=checkbox] {
+    margin-right:10px;
+}
+.loops_sfdata_view th:nth-of-type(1) {
+    width:50px;
+    text-align:left;
+}
+.motifs_graph_view #cytoscapeweb {
+    height:340px;
+    margin-bottom:10px;
+}
+.motifs_graph_view #buttons>.btn {
+    margin-left:10px;
+}
+.motifs_graph_view input, .motifs_graph_view .btn {
+    margin-bottom:5px;
+}
+.motifs_graph_view #varna>img {
+    width:150px;
+}
+
+
+/* motifs_view */
+.motifs_view img.thumbnail {
+    width:90px;
+}
+.motifs_view img.varna {
+    width:150px;
+}
+.svg_varna {
+    background-size: 160px;
+    width: 150px;
+}
+.motifs_view .content {
+    min-height: 500px;
+}
+.motifs_view .page-header a {
+    margin-left: 5px;
+}
+.motifs_view label {
+    width: auto;
+}
+.motifs_view ul {
+    margin-bottom: 5px;
+}
+.motifs_view a.fancybox {
+    margin-bottom: 0px;
+}
+.motifs_view .dataTables_filter {
+    display: inline-block;
+}
+.motifs_view .btn, .motifview .btn {
+    margin: 2px 5px 5px 0px;
+}
+.motifs_view .content {
+    min-height: 700px;
+}
+/* motifs_view */
+
+
+/* override bootstrap */
+.pagination .next a {
+    border-right: 1px solid;
+    border-right-color: #DDD;
+    border-right-color: rgba(0, 0, 0, 0.15);
+}
+.loops_benchmark_view .label, .pdb_loops_view .label {
+    width:auto;
+}
+#jmol>label {
+    width:auto;
+}
+.loops_paginated_view th:nth-of-type(2) {
+    width:125px;
+}
+.loops_paginated_view .loop_link, .motifs_polymorphs_view .loop_link, .loops_single_view .loop_link,
+.motifview .loop_link, .pdb_loops_view .loop_link {
+    display:none;
+}
+.loops_paginated_view .loop:hover .loop_link, .motifs_polymorphs_view .loop:hover .loop_link,
+.loops_single_view .loop:hover .loop_link, .motifview .loop:hover .loop_link,
+.pdb_loops_view .loop:hover .loop_link {
+    margin-left:2px;
+    display:inline;
+}
+.motifs_polymorphs_view table {
+    table-layout: fixed;
+}
+.motifs_polymorphs_view th:nth-of-type(3) {
+    width:80px;
+}
+
+/* Login page */
+.login_view label{
+    width: auto;
+}
+.login_view form .input, .login_view #submit {
+    margin-left: 100px;
+}
+.login_view #submit {
+    margin-top: 2em;
+}
+/* Login page */
+
+/* LAB */
+
+body.home {
+    padding-top: 60px;
+}
+/* RCSB stylesheet */
+.rcsb_clickable {cursor: pointer;}
+.rcsb_highlighted {border-bottom: 1px dotted #6493c2; display: inline-block;}
+.rcsb_hidden {display: none;}
+.rcsb_menu_text {background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAHxJREFUeNpiXLVqVQ8DA4M+EP9hQAUsQHwSRLwCYhcG7GANE5CYBsTHsEjuAuJ5TKGhoV+AjBYg/o8kCbKuCSj3G2QCA5CxHUitQFIwDyh2FMRgQhLsAuKvQPwGiLthgoz//yNMXr169SQg9QmouwbZK8hgKxB/RxYACDAA08AhcOf+QrUAAAAASUVORK5CYII%3D) right no-repeat; *background: url(http://darvo.sdsc.edu:10601/pdb/widgets/images/downArrow.png) right no-repeat; _background: none; padding-right: 10px; _padding-right: 0; position: relative; z-index: 1;}
+.rcsb_menu {background: #eaf2f8; border: 1px solid #dfdfdf; display: block;  font-family: Verdana, Geneva, sans-serif; font-size: 12px; font-style: normal; font-weight: normal; letter-spacing: 0pt; line-height: 1.5; padding: 2px; position: absolute; text-align: left; width: 175px; z-index: 900;}
+.rcsb_menu a {color: #336699; text-decoration:none;}
+.rcsb_menu a:visited {color: #6493c2;}
+.rcsb_menu a:hover {color: #ff6600; text-decoration: underline;}
+.rcsb_menu_left {left:0;}
+.rcsb_menu_right {right:0;}
+.rcsb_menu_top {top:100%;}
+.rcsb_menu_bottom {bottom:100%;}
+.rcsb_search_text {background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAMAAAC67D+PAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAK5QTFRFqKio+vr69fX1/Pz89/f3vL7E9PT21NTUxMfSx8fH9PT0vLy8zMzPzc3N0dPav7+/w8PD+fn5urzEu7u77u7usbGx7e3t6Orx7+/xyMjI19jdq6urubm5w8bRzs7PxcXF1dXW8fHxysrKt7e309PTuLi44OLs6urq2trawMDArKys9vb2tri/wsTM39/f4eHh09TW7Ozspqamvb296u75np6e5Oj38fP79/j9////nf3UYgAAADp0Uk5T////////////////////////////////////////////////////////////////////////////ADfA/woAAABnSURBVHjaJMEHEoIwAATACxGwImJFKYKKUqwx4P3/Y2TGXZC0wsPHXxHkeJ3snCM2YDab/oxXCT7UvjO2AJ9z72sUFVif7da456Bc6iYeBicLVHpyG6WuIC5aycX7OiChI8G/XoABABxvDrlc/BH5AAAAAElFTkSuQmCC) right no-repeat; *background: url(http://darvo.sdsc.edu:10601/pdb/widgets/images/search.png) right no-repeat; _background: none; padding-right: 14px; _padding-right: 0;}
+.rcsb_ext_text {background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAOCAYAAAAbvf3sAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAHlJREFUeNqkUoEJwCAMq7pfBJ+0O1K/kc6KjjGtThYoCEnaWFVEBDFGDwAIc6Bz7oQQgs9FK7CGtYoP2Xm3ydO61o1nTkukBA2b6AyjSKLhKTbGlHrjGHVhobX2W6SZeGhIKS3vgC07r1Raa9Wg2v0axfDrHVa4BBgAS6NZ7QexVxsAAAAASUVORK5CYII%3D) right no-repeat; *background: url(http://darvo.sdsc.edu:10601/pdb/widgets/images/extLink.png) right no-repeat; _background: none; padding-right: 15px; _padding-right: 0;}
+.rcsb_tooltip {background: #ffffc7; border:1px solid #dfdfdf; font-family: Verdana, Geneva, sans-serif; font-size: 12px; font-style: normal; font-weight: normal; letter-spacing: 0pt; line-height: 1.5; max-width:260px; padding:2px; position:static; text-align:center;}
+.rcsb_tooltip .rcsb_h2 {margin: 0px; padding: 0px;}
+.rcsb_tooltip_wrapper {display: block; position: absolute; width: auto; z-index:900;}
+#rcsb_shadowbox_shadow_bg {background: #333; filter: alpha(opacity=90); height: 100%; left: 0; opacity: 0.9; position: fixed; top: 0; width: 100%; z-index: 1001;}
+#rcsb_shadowbox_imgBox {background: #fff; filter: alpha(opacity=100); height: 565px; left: 50%; margin-left: -250px; margin-top: -280px; opacity: 1; position: fixed; top: 50%; width: 500px; z-index: 1002;}
+#rcsb_shadowbox_closeBox {bottom: 0; color: #333; font-family: Verdana, Geneva, sans-serif; padding:10px; position: absolute; right: 0;}
+#rcsb_shadowbox_idBox {bottom: 0; color: #333; font-family: Verdana, Geneva, sans-serif; font-size: 10px; left: 0; margin-right:100px; padding:10px; position: absolute;}
+
+.rcsb_inlineBox {min-height: 150px; display: -moz-inline-stack; display: inline-block; vertical-align: top; margin: 5px; zoom: 1; *display: inline; _height: 150px;}
+
+.rcsb_altBg {background: #eaf2f8;}
+/* RCSB stylesheet */
+
+.resizable {
+    resize:both;
+    overflow:auto;
+}
+
+/* loops_single_view */
+.loops_single_view label, .motif_compare_view label {
+    width: auto;
+    float: none;
+}
+.loops_single_view th:nth-of-type(2) {
+    width: 130px;
+}
+/*
+.loops_single_view tab-pane {
+    border:none;
+}
+*/
+.pdb_interactions_view .page-header a {
+    margin-right: 10px;
+}
+.pdb_interactions_view .page-header a.btn {
+    margin-top: 7px;
+}
+.pdb_interactions_view a {
+    text-decoration: none;
+}
+.pdb_interactions_view a.viewed {
+    color: #bfbfbf;
+}
+.pdb_interactions_view a.current {
+    color: #ff6600;
+}
+.pdb_interactions_view span {
+    border-bottom:1px dotted #0069D6;
+}
+.pdb_interactions_view #jmol>label {
+    margin-right: 10px;
+}
+.pdb_loops_view .pills a {
+    border-radius: 5px;
+}
+.pdb_loops_view .pills .active a {
+    background-color: #08C;
+}
+
+/* PDB summary view */
+.pdb_summary_view .media-grid a {
+    margin-left: 10px;
+    margin-bottom: 5px;
+}
+.pdb_summary_view dl, .pdb_summary_view ul {
+    margin-bottom: 5px;
+}
+.pdb_summary_view .well {
+    padding-bottom: 5px;
+    padding-top: 10px;
+}
+
+/* Google search bootstrap fixes */
+.search_view input {
+    border: none;
+    color: black;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+	box-shadow: none;
+}
+.search_view input:focus {
+    box-shadow: none;
+    border: none;
+    color: black;
+}
+.search_view table th, .search_view table td {
+    padding-top: 1px;
+    padding: none;
+    border-top: none;
+}
+
+/* PDB 2D views */
+.pdb-2d-view #rna-2d .interaction {
+  stroke-width: 1.5;
+  stroke: black;
+  opacity: 0.7;
+}
+.pdb-2d-view #rna-2d .LR {
+  stroke-dasharray: 5,5;
+}
+.pdb-2d-view #rna-2d .cWW,
+.pdb-2d-view #rna-2d .ncWW {
+  stroke: #000000;
+}
+.pdb-2d-view #rna-2d .tWW,
+.pdb-2d-view #rna-2d .ntWW {
+  stroke: #663300;
+}
+.pdb-2d-view #rna-2d .cWS,
+.pdb-2d-view #rna-2d .ncWS {
+  stroke: #669900;
+}
+.pdb-2d-view #rna-2d .tWS,
+.pdb-2d-view #rna-2d .ntWS {
+  stroke: #3333cc;
+}
+.pdb-2d-view #rna-2d .cWH,
+.pdb-2d-view #rna-2d .ncWH {
+  stroke: #00cc00;
+}
+.pdb-2d-view #rna-2d .tWH,
+.pdb-2d-view #rna-2d .ntWH {
+  stroke: #cc00ff;
+}
+.pdb-2d-view #rna-2d .cSH,
+.pdb-2d-view #rna-2d .ncSH {
+  stroke: #ff9900;
+}
+.pdb-2d-view #rna-2d .tSH,
+.pdb-2d-view #rna-2d .ntSH {
+  stroke: #3333ff;
+}
+.pdb-2d-view #rna-2d .cSS,
+.pdb-2d-view #rna-2d .ncSS {
+  stroke: #cc9900;
+}
+.pdb-2d-view #rna-2d .tSS,
+.pdb-2d-view #rna-2d .ntSS {
+  stroke: #666699;
+}
+.pdb-2d-view #rna-2d .cHH,
+.pdb-2d-view #rna-2d .ncHH {
+  stroke: #009900;
+}
+.pdb-2d-view #rna-2d .tHH,
+.pdb-2d-view #rna-2d .ntHH {
+  stroke: #6600ff;
+}
+.pdb-2d-view #rna-2d .motif {
+  fill: #000;
+  fill-opacity: .25;
+  stroke: #B0A2A8;
+}
+.pdb-2d-view #rna-2d .IL {
+  fill: #5BB75B;
+  stroke: #387038;
+}
+.pdb-2d-view #rna-2d .HL {
+  fill: #49AFCD;
+  stroke: #1f6377;
+}
+.pdb-2d-view #rna-2d .J3 {
+  fill: #CDAC4A;
+  stroke: #D2A41A;
+}
+.pdb-2d-view #rna-2d .frame {
+  fill: #fff;
+  fill-opacity: 0;
+  stroke: #aaa;
+}
+.pdb-2d-view #rna-2d .brush {
+  fill: #000;
+  fill-opacity: .125;
+  stroke: #B0A2A8;
+}
+.pdb-2d-view #rna-2d .nucleotide {
+  cursor: default;
+}
+.pdb-2d-view #interaction-controls .cWW {
+  color: #000000;
+}
+.pdb-2d-view #interaction-controls .cWW.active {
+  color: #FFFFFF;
+  background: #000000;
+  background-image: -webkit-linear-gradient(top, #000000, #000000);
+  background-image: -moz-linear-gradient(top, #000000, #000000);
+  background-image: -o-linear-gradient(top, #000000, #000000);
+  background-image: linear-gradient(top, #000000, #000000);
+}
+.pdb-2d-view #interaction-controls .tWW {
+  color: #3d1f00;
+}
+.pdb-2d-view #interaction-controls .tWW.active {
+  color: #FFFFFF;
+  background: #3d1f00;
+  background-image: -webkit-linear-gradient(top, #3d1f00, #663300);
+  background-image: -moz-linear-gradient(top, #3d1f00, #663300);
+  background-image: -o-linear-gradient(top, #3d1f00, #663300);
+  background-image: linear-gradient(top, #3d1f00, #663300);
+}
+.pdb-2d-view #interaction-controls .cWH {
+  color: #007a00;
+}
+.pdb-2d-view #interaction-controls .cWH.active {
+  color: #FFFFFF;
+  background: #007a00;
+  background-image: -webkit-linear-gradient(top, #007a00, #00cc00);
+  background-image: -moz-linear-gradient(top, #007a00, #00cc00);
+  background-image: -o-linear-gradient(top, #007a00, #00cc00);
+  background-image: linear-gradient(top, #007a00, #00cc00);
+}
+.pdb-2d-view #interaction-controls .tWH {
+  color: #7a0099;
+}
+.pdb-2d-view #interaction-controls .tWH.active {
+  color: #FFFFFF;
+  background: #7a0099;
+  background-image: -webkit-linear-gradient(top, #7a0099, #cc00ff);
+  background-image: -moz-linear-gradient(top, #7a0099, #cc00ff);
+  background-image: -o-linear-gradient(top, #7a0099, #cc00ff);
+  background-image: linear-gradient(top, #7a0099, #cc00ff);
+}
+.pdb-2d-view #interaction-controls .cWS {
+  color: #3d5c00;
+}
+.pdb-2d-view #interaction-controls .cWS.active {
+  color: #FFFFFF;
+  background: #3d5c00;
+  background-image: -webkit-linear-gradient(top, #3d5c00, #669900);
+  background-image: -moz-linear-gradient(top, #3d5c00, #669900);
+  background-image: -o-linear-gradient(top, #3d5c00, #669900);
+  background-image: linear-gradient(top, #3d5c00, #669900);
+}
+.pdb-2d-view #interaction-controls .tWS {
+  color: #1f1f7a;
+}
+.pdb-2d-view #interaction-controls .tWS.active {
+  color: #FFFFFF;
+  background: #1f1f7a;
+  background-image: -webkit-linear-gradient(top, #1f1f7a, #3333cc);
+  background-image: -moz-linear-gradient(top, #1f1f7a, #3333cc);
+  background-image: -o-linear-gradient(top, #1f1f7a, #3333cc);
+  background-image: linear-gradient(top, #1f1f7a, #3333cc);
+}
+.pdb-2d-view #interaction-controls .cHH {
+  color: #005c00;
+}
+.pdb-2d-view #interaction-controls .cHH.active {
+  color: #FFFFFF;
+  background: #005c00;
+  background-image: -webkit-linear-gradient(top, #005c00, #009900);
+  background-image: -moz-linear-gradient(top, #005c00, #009900);
+  background-image: -o-linear-gradient(top, #005c00, #009900);
+  background-image: linear-gradient(top, #005c00, #009900);
+}
+.pdb-2d-view #interaction-controls .tHH {
+  color: #3d0099;
+}
+.pdb-2d-view #interaction-controls .tHH.active {
+  color: #FFFFFF;
+  background: #3d0099;
+  background-image: -webkit-linear-gradient(top, #3d0099, #6600ff);
+  background-image: -moz-linear-gradient(top, #3d0099, #6600ff);
+  background-image: -o-linear-gradient(top, #3d0099, #6600ff);
+  background-image: linear-gradient(top, #3d0099, #6600ff);
+}
+.pdb-2d-view #interaction-controls .cSH {
+  color: #995c00;
+}
+.pdb-2d-view #interaction-controls .cSH.active {
+  color: #FFFFFF;
+  background: #995c00;
+  background-image: -webkit-linear-gradient(top, #995c00, #ff9900);
+  background-image: -moz-linear-gradient(top, #995c00, #ff9900);
+  background-image: -o-linear-gradient(top, #995c00, #ff9900);
+  background-image: linear-gradient(top, #995c00, #ff9900);
+}
+.pdb-2d-view #interaction-controls .tSH {
+  color: #1f1f99;
+}
+.pdb-2d-view #interaction-controls .tSH.active {
+  color: #FFFFFF;
+  background: #1f1f99;
+  background-image: -webkit-linear-gradient(top, #1f1f99, #3333ff);
+  background-image: -moz-linear-gradient(top, #1f1f99, #3333ff);
+  background-image: -o-linear-gradient(top, #1f1f99, #3333ff);
+  background-image: linear-gradient(top, #1f1f99, #3333ff);
+}
+.pdb-2d-view #interaction-controls .cSS {
+  color: #7a5c00;
+}
+.pdb-2d-view #interaction-controls .cSS.active {
+  color: #FFFFFF;
+  background: #7a5c00;
+  background-image: -webkit-linear-gradient(top, #7a5c00, #cc9900);
+  background-image: -moz-linear-gradient(top, #7a5c00, #cc9900);
+  background-image: -o-linear-gradient(top, #7a5c00, #cc9900);
+  background-image: linear-gradient(top, #7a5c00, #cc9900);
+}
+.pdb-2d-view #interaction-controls .tSS {
+  color: #3d3d5c;
+}
+.pdb-2d-view #interaction-controls .tSS.active {
+  color: #FFFFFF;
+  background: #3d3d5c;
+  background-image: -webkit-linear-gradient(top, #3d3d5c, #666699);
+  background-image: -moz-linear-gradient(top, #3d3d5c, #666699);
+  background-image: -o-linear-gradient(top, #3d3d5c, #666699);
+  background-image: linear-gradient(top, #3d3d5c, #666699);
+}
+.pdb-2d-view .block-controls .btn-block {
+  width: 58px;
+  margin-bottom: 5px;
+}
+.pdb-2d-view .block-controls #mode-toggle {
+  margin-bottom: 15px;
+  padding-left: 10px;
+}
+.pdb-2d-view .block-controls #mode-toggle.active {
+  padding-left: 12px;
+}
+.pdb-2d-view #about-selection {
+  margin-top: 10px;
+}
+.pdb-2d-view .btn {
+  margin-left: 3px;
+}
+.pdb-2d-view #motif-controls {
+  padding-bottom: 10px;
+}
+.pdb-2d-view #motif-toggle {
+  padding-left: 9px;
+}
+.pdb-2d-view .block-message a {
+  text-decoration: underline;
+}
+.pdb-2d-view #jmol {
+  padding: 15px;
+}
+.pdb-2d-view #related-structures a {
+  font-weight: normal;
+}
+
+.pdb-2d-view .width-320-px {
+  width: 320px;
+}
+.pdb-2d-view .width-500-px{
+  width: 500px;
+}
+.pdb-2d-view .width-565-px{
+  width: 565px;
+}
+/* Motif Atlas home page */
+.motifs_home_view .hero-unit, .pdb_view .hero-unit {
+    padding: 30px;
+    margin-bottom: 10px;
+}
+.motifs_home_view .btn {
+    margin-right:10px;
+    margin-bottom: 5px;
+}
+
+/* RNA 3D Hub homepage */
+.home ul {
+    margin-bottom: 8px;
+}
+
+
+/* Sankey diagrams */
+.motifs_compare_results_view .node rect {
+  cursor: move;
+  fill-opacity: .9;
+  shape-rendering: crispEdges;
+}
+.motifs_compare_results_view .node text {
+  pointer-events: none;
+  text-shadow: 0 1px 0 #fff;
+}
+.motifs_compare_results_view .link {
+  fill: none;
+  stroke: #000;
+  stroke-opacity: .2;
+}
+.motifs_compare_results_view .link:hover {
+  stroke-opacity: .5;
+}
+.motifs_compare_results_view .motif-summary-table {
+    height: 300px;
+    overflow: auto;
+}
+.motifs_compare_results_view .help {
+    font-size: smaller;
+}
+.motifs_compare_results_view .sankey_chart {
+    overflow: auto;
+    height: 505px;
+}
