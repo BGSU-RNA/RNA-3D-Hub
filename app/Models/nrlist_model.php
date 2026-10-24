@@ -1417,11 +1417,11 @@ class Nrlist_model extends Model {
         }
     }
 
-    function add_annotation_label($class_id,$reason)
+    function add_annotation_label($class_id,$ec_to_comment)
     {
-        if (array_key_exists($class_id,$reason)) {
-            $label = $this->get_annotation_label_type($reason[$class_id]);
-            return " <span class='label $label'>{$reason[$class_id]}</span>";
+        if (array_key_exists($class_id,$ec_to_comment)) {
+            $label = $this->get_annotation_label_type($ec_to_comment[$class_id]);
+            return " <span class='label $label'>{$ec_to_comment[$class_id]}</span>";
         } else {
             return '';
         }
@@ -1587,8 +1587,10 @@ class Nrlist_model extends Model {
         return $rfam_to_rna3dhub_mapping_made;
     }
 
+
     function get_release($id, $resolution, $molecule) {
-        // This function populates the Representative set pages
+        // This function populates the representative set pages
+        // 2026 refactor aims to speed up the queries and processing
         $resolution = str_replace('A', '', $resolution);
         if ($molecule == 'rna'){
             $group_id = 'NR_' . $resolution;
@@ -1598,10 +1600,10 @@ class Nrlist_model extends Model {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
         }
 
-        // record the representative of each class
+        // query to get membership in each equivalence class
+        // record information to be looked up later once the ordering of classes is clear from a later query
         $query = $this->db->table('ife_info AS ii')
-            ->select('ii.ife_id, ii.pdb_id, nl.name, nc.rank, ife_cqs.obs_length')
-            ->join('ife_cqs','ife_cqs.ife_id = ii.ife_id')
+            ->select('ii.ife_id, ii.pdb_id, nl.name')
             ->join('nr_class_rank AS nc', 'ii.ife_id = nc.ife_id')
             ->join('nr_classes AS nl', 'nc.nr_class_name = nl.name')
             ->where('nl.nr_release_id', $id)
@@ -1610,32 +1612,21 @@ class Nrlist_model extends Model {
             ->get()
             ->getResult();
 
-        // map equivalence class name to representative ife_id, pdb_id, obs_length
-        $class = array();
-        $ifes = array();
-        $pdbs = array();
-        $rep_length = array();
+        // map equivalence class name to ife members in rank order
+        $ec_to_ife_ids = array();      // map equivalence class to its ifes in increasing rank order
+        $pdbs = array();               // record all pdb ids in the table, to look up their information
         foreach ($query as $row) {
-            $ifes[] = $row->ife_id;
             $pdbs[] = $row->pdb_id;
 
-            if ($row->rank == 0) {
-                $reps[$row->name] = $row->ife_id;
-                $pdbs_rep[$row->name] = $row->pdb_id;
-                $rep_length[$row->name] = $row->obs_length;
+            if (!array_key_exists($row->name, $ec_to_ife_ids) ) {
+                $ec_to_ife_ids[$row->name] = array();
             }
-
-            if (!array_key_exists($row->name, $class) ) {
-                $class[$row->name] = array();
-            }
-
-            $class[$row->name][] = $row->ife_id;
+            $ec_to_ife_ids[$row->name][] = $row->ife_id;
         }
 
-        $ifes = array_unique($ifes);
         $pdbs = array_unique($pdbs);
 
-        // get general pdb info
+        // get general pdb info for all pdb ids in the table
         $builder = $this->db->table('pdb_info');
         $query = $builder->select('pdb_id, title, resolution, experimental_technique, release_date')
                 ->whereIn('pdb_id', $pdbs)
@@ -1670,28 +1661,25 @@ class Nrlist_model extends Model {
         $query = $builder->select('pdb_obsolete_id, replaced_by')
                 ->whereIn('pdb_obsolete_id', $pdbs);
         $query = $query->get()->getResult();
-
         foreach ($query as $row) {
             $pdb[$row->pdb_obsolete_id]['title'] = "OBSOLETE: replaced by <a class='pdb'>{$row->replaced_by}</a>";
             $pdb[$row->pdb_obsolete_id]['resolution'] = '';
         }
 
-        // get annotations: "updated/>2 parents" etc.
+        // get equivalence class comments like "updated/>2 parents" etc.
         $builder = $this->db->table('nr_classes');
         $query = $builder->select('nr_class_id, comment')
                 ->where('nr_release_id',$id)
                 ->where('resolution', $resolution);
         $query = $query->get()->getResult();
-
         foreach ($query as $row) {
-            $reason[$row->nr_class_id] = $row->comment;
+            $ec_to_comment[$row->nr_class_id] = $row->comment;
             $reason_flat[]             = $row->comment;
         }
 
-        // count all annotation types
+        // count all comment types
         $counts = array_count_values($reason_flat);
         $counts_text = '';
-
         foreach ($counts as $comment => $count) {
             $label = $this->get_annotation_label_type($comment);
             $counts_text .= "<span class='label $label'>$comment</span> <strong>$count</strong>;    ";
@@ -1699,19 +1687,15 @@ class Nrlist_model extends Model {
         $counts_text .= ' Note: * after Rfam id indicates a mapping to Rfam family proposed by RNA 3D Hub; <a href="https://rna.bgsu.edu/data/pdb_chain_to_best_rfam.txt" target="_blank">see all mappings</a>.';
         $counts_text .= '<br><br>';
 
-        // make the table
-        $table = array();
-        $i = 1;
-
-        // get order of equivalence classes from largest to smallest
+        // get data on representative ifes in decreasing order of observed nucleotides
         $query = $this->db->table('nr_class_rank AS nc')
                 ->select('nl.name')
                 ->select('ii.ife_id')
                 ->select('ii.pdb_id')
-                ->select('group_concat(DISTINCT ci.compound separator ", ") as compound', FALSE)
-                ->select('ci.source as species_name')     // changed 2022-06-29
-                ->select('ci.taxonomy_id AS species_id')  // changed 2022-06-29
-                ->select('nl.nr_class_id')
+                ->select('group_concat(DISTINCT ci.compound separator ", ") as compound', FALSE) // multiple matches to chain_info table
+                ->select('ci.source as species_name')
+                ->select('ci.taxonomy_id AS species_id')
+                ->select('nl.nr_class_id')                 // integer identifier
                 ->select('ife_cqs.obs_length')
                 ->join('ife_info AS ii', 'nc.ife_id = ii.ife_id')
                 ->join('ife_cqs', 'nc.ife_id = ife_cqs.ife_id')
@@ -1721,9 +1705,8 @@ class Nrlist_model extends Model {
                 ->where('nl.nr_release_id', $id)
                 ->where('nl.resolution', $resolution)
                 ->where("nl.name LIKE '$group_id%'")
+                ->where('nc.rank', 0)            // representative only, so we order by its length
                 ->groupBy('nl.name')
-                ->groupBy('nl.nr_release_id')
-                ->groupBy('nl.resolution')
                 ->orderBy('ife_cqs.obs_length','desc')
                 ->get()
                 ->getResult();
@@ -1733,16 +1716,19 @@ class Nrlist_model extends Model {
 
         $rfam_mapped_by_rna3dhub = $this->read_rfam_mapping_file();
 
+        // make the table
+        $table = array();
+        $i = 1;
+
         // fill in data for the release, one equivalence class at a time
         foreach ($query as $row) {
             $class_id = $row->name;
-            $ife_id   = $reps[$class_id];       // representative ife_id
-            $pdb_id   = $pdbs_rep[$class_id];   // representative pdb_id
-            $rep_len  = $rep_length[$class_id]; // representative number of nucleotides
+            $rep_len  = $row->obs_length;                   // number of nucleotides observed in representative ife
             $tax_link = $this->tax_url . $row->species_id;
-
             $source   = ( is_null($row->species_name) ) ? "" : anchor_popup("$tax_link", "$row->species_name");
             $compound = (strlen($row->compound) > 40 ) ? substr($row->compound, 0, 40) . "[...]" : $row->compound;
+            $ife_id   = $row->ife_id;
+            $pdb_id   = $row->pdb_id;
 
             // this if else block could be reduced to a single explode function / made more efficient
             if (preg_match('/\+/',$ife_id)){
@@ -1775,13 +1761,13 @@ class Nrlist_model extends Model {
                 $best_models = "1";
             }
 
-            // adding cpv data using the representative ife as the key to stdname, source and rfam dicts.
-            $ife_chain_list = explode('+', $ife_id);
+            // add cpv data using the representative ife as the key to stdname, source and rfam dicts.
+            $ife_chain_list = explode('+', $ife_id);    // representative may have multiple chains
             $rfam_list = array();
             $clan = array();
             $source_representative = "";
             $standardized_name_representative = "";
-            foreach ($ife_chain_list as $ife_chain){
+            foreach ($ife_chain_list as $ife_chain){    // loop over chains in the representative IFE
                 $ife_split = explode('|', $ife_chain);
                 $ife_pdb_id = $ife_split[0];
                 $chain = end($ife_split);
@@ -1826,12 +1812,6 @@ class Nrlist_model extends Model {
             }
             if (!empty($source_representative)){
                 $biological_context = "Source";
-                // $biological_context = "source";
-                // if ($source_representative == "Mitochondria" or $source_representative == "Chloroplast"){
-                    // $biological_context = "Organelle";
-                // } elseif ($source_representative == "Synthetic"){
-                    // $biological_context = "Source";
-                // }
                 $cpv_html_list_item .= '<li>' . $biological_context . ': ' . $source_representative . '</li>';
             }
             if (!empty($rfam_representative)){
@@ -1841,69 +1821,59 @@ class Nrlist_model extends Model {
                 $cpv_html_list_item .= '<li>' . $clan_text . '</li>';
             }
 
-            // read pdb_property_value table for annotation information
-            $builder = $this->db->table('pdb_property_value AS ppv');
-            $query_property = $builder->select('ppv.pdb_id')
-                    ->select('ppv.property')
-                    ->select('ppv.value')
-                    ->where('ppv.pdb_id',$row->pdb_id);
-            $query_property = $query_property->get();
-            // $property_value = array();
-            // foreach ($query_property->result as $row){
-            //     $property_value[$row->property] = ($row->value ?: "NULL");
-            // }
-            if ($query_property->getNumRows() > 0) {
-                $property_value = array();
-                foreach ($query_property->getResult() as $row1) {
-                    $property_value[$row1->property] = ($row1->value ?: "NULL");
-                }
-            } else {
-                $property_value['NAKB_NA_annotation'] = 'NULL';
-                $property_value['NAKB_protein_annotation'] = 'NULL';
-            }
-
-            // $id refers to the release_id
             if ($molecule == 'dna'){
+                // read pdb_property_value table for NAKB annotation information for the representative
+                $builder = $this->db->table('pdb_property_value AS ppv');
+                $query_property = $builder->select('ppv.pdb_id')
+                        ->select('ppv.property')
+                        ->select('ppv.value')
+                        ->where('ppv.pdb_id',$row->pdb_id);
+                $query_property = $query_property->get();
+
+                if ($query_property->getNumRows() > 0) {
+                    $property_value = array();
+                    foreach ($query_property->getResult() as $row1) {
+                        $property_value[$row1->property] = ($row1->value ?: "NULL");
+                    }
+                } else {
+                    $property_value['NAKB_NA_annotation'] = 'NULL';
+                    $property_value['NAKB_protein_annotation'] = 'NULL';
+                }
+
+                // add one row to the DNA representative set table
                 $table[] = array($i,
                                 anchor(base_url("nrlist/view/".$class_id),$class_id)
-                                //anchor(base_url("nrlist/view/".$class_id."/".$id),$class_id,$id)
-                                . '<br>' . $this->add_annotation_label($row->nr_class_id, $reason)
+                                . '<br>' . $this->add_annotation_label($row->nr_class_id, $ec_to_comment)
                                 . '<br>' . $source,
                                 $this->add_space_to_long_IFE($ife_id) . ' (<a class="pdb">' . $pdb_id . '</a>)' .
                                 '<ul>' .
                                 '<li>' . $compound . '</li>' .
                                 '<li>' . $pdb[$pdb_id]['experimental_technique'] . '</li>' .
-                                //  '<li>Chain(s): ' . $best_chains . '; model(s): ' . $best_models . '</li>' .
                                 '<li>Release Date: ' . $pdb[$pdb_id]['release_date'] . '</li>' .
                                 $cpv_html_list_item.
-                                //'<li>' . $pdb[$pdb_id]['release_date'] '</li>' .//
                                 '</ul>',
                                 $pdb[$pdb_id]['resolution'],
                                 $rep_len,
-                                "(" . $this->count_pdb_class($class[$class_id]) . ") " . $this->add_pdb_class($class[$class_id]),
-                                //"(" . $nums . "," . $this->count_pdb_class($class[$class_id]) . ") " . $this->add_pdb_class($class[$class_id])
+                                "(" . $this->count_pdb_class($ec_to_ife_ids[$class_id]) . ") " . $this->add_pdb_class($ec_to_ife_ids[$class_id]),
                                 ($property_value['NAKB_NA_annotation'] ?: 'NULL'),
                                 ($property_value['NAKB_protein_annotation'] ?: 'NULL')
-                                // '1','1'
                                 );
                 } else {
+                    // add one row to the RNA representative set table
                     $table[] = array($i,
                                 anchor(base_url("nrlist/view/".$class_id),$class_id)
-                                //anchor(base_url("nrlist/view/".$class_id."/".$id),$class_id,$id)
-                                . '<br>' . $this->add_annotation_label($row->nr_class_id, $reason)
+                                . '<br>' . $this->add_annotation_label($row->nr_class_id, $ec_to_comment)
                                 . '<br>' . $source,
                                 $this->add_space_to_long_IFE($ife_id) . ' (<a class="pdb">' . $pdb_id . '</a>)' .
                                 '<ul>' .
                                 '<li>' . $compound . '</li>' .
                                 '<li>' . $pdb[$pdb_id]['experimental_technique'] . '</li>' .
-                                //  '<li>Chain(s): ' . $best_chains . '; model(s): ' . $best_models . '</li>' .
                                 '<li>Release Date: ' . $pdb[$pdb_id]['release_date'] . '</li>' .
                                 $cpv_html_list_item.
-                                //'<li>' . $pdb[$pdb_id]['release_date'] '</li>' .//
                                 '</ul>',
                                 $pdb[$pdb_id]['resolution'],
                                 $rep_len,
-                                "(" . $this->count_pdb_class($class[$class_id]) . ") " . $this->add_pdb_class($class[$class_id])
+                                "(" . $this->count_pdb_class($ec_to_ife_ids[$class_id]) . ") " . $this->add_pdb_class($ec_to_ife_ids[$class_id])
                                 );
                 }
             $i++;
@@ -1941,25 +1911,25 @@ class Nrlist_model extends Model {
 
         foreach ($query as $row) {
             if ( $row->rank == 0 ) {
-                $reps[$row->class_id] = $row->id;
+                $ec_to_rep_ife_id[$row->class_id] = $row->id;
             }
             $members[$row->class_id][] = $row->id;
         }
 
         if ($format == 'csv') {
             $output = '';
-            foreach ($reps as $class_id => $rep) {
+            foreach ($ec_to_rep_ife_id as $class_id => $rep) {
                 $output .= '"' . implode('","', array($class_id, $rep, implode(',', $members[$class_id]))) . '"' . "\n";
             }
         } elseif ($format == 'tsv') {
             $output = '';
-            foreach ($reps as $class_id => $rep) {
+            foreach ($ec_to_rep_ife_id as $class_id => $rep) {
                 $output .= implode("\t", array($class_id, $rep, implode(',', $members[$class_id]))) . "\n";
             }
 
         } elseif ($format == 'json') {
             $id_to_rep_members = array();
-            foreach ($reps as $class_id => $rep) {
+            foreach ($ec_to_rep_ife_id as $class_id => $rep) {
                 $row = array();
                 $row['representative'] = $rep;
                 $row['members'] = $members[$class_id];
