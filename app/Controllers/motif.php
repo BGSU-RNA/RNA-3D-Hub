@@ -56,8 +56,6 @@ class Motif extends BaseController {
 //                 // bypass the view system to avoid debugging comments
 //                 $response = service('response');
 //                 $response->setHeader('Content-Disposition', "attachment; filename={$filename}")
-//                         ->setHeader('Access-Control-Allow-Origin', '*')
-//                         ->setHeader('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin')
 //                         ->setContentType('text/csv');
 //                 $response->setBody($data['csv']);
 //                 return $response;
@@ -67,8 +65,6 @@ class Motif extends BaseController {
 //                 // bypass the view system to avoid debugging comments
 //                 $response = service('response');
 //                 $response->setHeader('Content-Disposition', "attachment; filename={$filename}")
-//                         ->setHeader('Access-Control-Allow-Origin', '*')
-//                         ->setHeader('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin')
 //                         ->setContentType('application/json');
 //                 $response->setBody($data['csv']);
 //                 return $response;
@@ -201,8 +197,6 @@ class Motif extends BaseController {
                 // bypass the view system to avoid debugging comments
                 $response = service('response');
                 $response->setHeader('Content-Disposition', "attachment; filename={$filename}")
-                        ->setHeader('Access-Control-Allow-Origin', '*')
-                        ->setHeader('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin')
                         ->setContentType('text/csv');
                 $response->setBody($data['csv']);
                 return $response;
@@ -212,8 +206,6 @@ class Motif extends BaseController {
                 // bypass the view system to avoid debugging comments
                 $response = service('response');
                 $response->setHeader('Content-Disposition', "attachment; filename={$filename}")
-                        ->setHeader('Access-Control-Allow-Origin', '*')
-                        ->setHeader('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin')
                         ->setContentType('application/json');
                 $response->setBody($data['csv']);
                 return $response;

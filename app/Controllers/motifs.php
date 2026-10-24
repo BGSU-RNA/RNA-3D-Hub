@@ -80,8 +80,6 @@ class Motifs extends BaseController {
                 // bypass the view system to avoid debugging comments
                 $response = service('response');
                 $response->setHeader('Content-Disposition', "attachment; filename={$filename}")
-                        ->setHeader('Access-Control-Allow-Origin', '*')
-                        ->setHeader('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin')
                         ->setContentType('text/tab-separated-values');
                 $response->setBody($data);
                 return $response;
@@ -115,8 +113,6 @@ class Motifs extends BaseController {
                     // bypass the view system to avoid debugging comments
                     $response = service('response');
                     $response->setHeader('Content-Disposition', "attachment; filename={$filename}")
-                            ->setHeader('Access-Control-Allow-Origin', '*')
-                            ->setHeader('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin')
                             ->setContentType('text/csv');
                     $response->setBody($data);
                     return $response;
@@ -126,8 +122,6 @@ class Motifs extends BaseController {
                     // bypass the view system to avoid debugging comments
                     $response = service('response');
                     $response->setHeader('Content-Disposition', "attachment; filename={$filename}")
-                            ->setHeader('Access-Control-Allow-Origin', '*')
-                            ->setHeader('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin')
                             ->setContentType('application/json');
                     $response->setBody($data);
                     return $response;
