@@ -60,8 +60,7 @@ class Rest extends ResourceController {
 
             // bypass the view system to try to avoid debugging comments
             $response = service('response');
-            $response->setHeader('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin')
-                     ->setBody($data['csv']);
+            $response->setBody($data['csv']);
             return $response;
 
         } else {
@@ -90,8 +89,7 @@ class Rest extends ResourceController {
 
             // bypass the view system to try to avoid debugging comments
             $response = service('response');
-            $response->setHeader('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin')
-                     ->setBody($text);
+            $response->setBody($text);
             return $response;
 
         } else {
@@ -123,8 +121,7 @@ class Rest extends ResourceController {
 
             // bypass the view system to try to avoid debugging comments
             $response = service('response');
-            $response->setHeader('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin')
-                     ->setBody($data['csv']);
+            $response->setBody($data['csv']);
             return $response;
 
         } else {
@@ -148,8 +145,7 @@ class Rest extends ResourceController {
 
         // bypass the view system to avoid debugging comments
         $response = service('response');
-        $response->setHeader('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin')
-                 ->setBody($data['csv']);
+        $response->setBody($data['csv']);
         return $response;
     }
 
@@ -168,9 +164,7 @@ class Rest extends ResourceController {
         if ( $query_type ) {
             $data['csv'] = $this->_database_lookup_relative($query, $query_type);
             $response = service('response');
-            $response->setHeader('Access-Control-Allow-Origin', '*')
-                        ->setHeader('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin')
-                        ->setContentType('text/csv');
+            $response->setContentType('text/csv');
             $response->setBody($data['csv']);
             return $response;
         } else {
@@ -190,9 +184,7 @@ class Rest extends ResourceController {
             $format = 'html';
         }
         $response = service('response');
-        $response->setHeader('Access-Control-Allow-Origin', '*')
-                 ->setHeader('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin')
-                 ->setBody($this->Ajax_model->get_pdb_info($pdb,$format));
+        $response->setBody($this->Ajax_model->get_pdb_info($pdb,$format));
         return $response;
     }
 
@@ -203,8 +195,6 @@ class Rest extends ResourceController {
 
         $model = model(Ajax_model::class);
 
-        $this->response->setHeader('Access-Control-Allow-Origin', '*');
-        $this->response->setHeader("Access-Control-Expose-Headers", "Access-Control-Allow-Origin");
         $data['json'] = $model->get_assembly_info($pdb);
         return view('json_view', $data);
     }
@@ -225,9 +215,7 @@ class Rest extends ResourceController {
         // https://rna.bgsu.edu/rna3dhub/rest/getChainInfo?pdb=7K00
         $pdb = $this->request->getVar('pdb');
         $response = service('response');
-        $response->setHeader('Access-Control-Allow-Origin', '*')
-                 ->setHeader('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin')
-                 ->setBody($this->Ajax_model->get_chain_info($pdb));
+        $response->setBody($this->Ajax_model->get_chain_info($pdb));
         return $response;
     }
 
@@ -245,8 +233,6 @@ class Rest extends ResourceController {
 
         $model = model(Ajax_model::class);
 
-        $this->response->setHeader('Access-Control-Allow-Origin', '*');
-        $this->response->setHeader("Access-Control-Expose-Headers", "Access-Control-Allow-Origin");
         $data['json'] = $model->get_sequence_basepairs($pdb, $chain, $nested);
         return view('json_view', $data);
     }
@@ -266,9 +252,7 @@ class Rest extends ResourceController {
         $data['json'] = $this->Ajax_model->get_chain_sequence_basepairs($pdb, $chain, $nested);
 
         $response = service('response');
-        $response->setHeader('Access-Control-Allow-Origin', '*')
-                 ->setHeader('Access-Control-Expose-Headers', 'Access-Control-Allow-Origin')
-                 ->setContentType('application/json')
+        $response->setContentType('application/json')
                  ->setBody($data['json']);
         return $response;
     }
@@ -285,8 +269,6 @@ class Rest extends ResourceController {
         if ($query) {
             $model = model(Ajax_model::class);
 
-            $this->response->setHeader('Access-Control-Allow-Origin', '*');
-            $this->response->setHeader("Access-Control-Expose-Headers", "Access-Control-Allow-Origin");
             $data['json'] = $model->get_seq_unit_mapping($query);
             return view('json_view', $data);
         } else {
@@ -308,8 +290,6 @@ class Rest extends ResourceController {
         $query_type = $this->_parseInput($query);
 
         if ( $query_type ) {
-            $this->response->setHeader('Access-Control-Allow-Origin', '*');
-            $this->response->setHeader("Access-Control-Expose-Headers", "Access-Control-Allow-Origin");
             $data['json'] = $this->_database_lookup_RSR($query, $query_type);
             return view('json_view', $data);
         } else {
@@ -333,8 +313,6 @@ class Rest extends ResourceController {
         // echo $query_type;
 
         if ( $query_type ) {
-            $this->response->setHeader('Access-Control-Allow-Origin', '*');
-            $this->response->setHeader("Access-Control-Expose-Headers", "Access-Control-Allow-Origin");
             $data['json'] = $this->_database_lookup_RSRZ($query, $query_type);
             // return view('json_view', $data);
             return view('json_view', $data);
@@ -652,8 +630,6 @@ class Rest extends ResourceController {
     function getMotifFlowJSON($motif_type, $release_id1, $release_id2)
     {
         $model = model(Motifs_model::class);
-        $this->response->setHeader('Access-Control-Allow-Origin', '*');
-        $this->response->setHeader("Access-Control-Expose-Headers", "Access-Control-Allow-Origin");
         echo $model->getSankeyDataJSON($release_id1, $release_id2, $motif_type);
     }
 
